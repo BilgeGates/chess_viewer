@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="az">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Şahmat FEN Redaktoru</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 20px;
+        color: #1f2937;
+      }
+
+      .container {
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        color: white;
+        font-size: 3em;
+        font-weight: 800;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        margin-bottom: 10px;
+        letter-spacing: -1px;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: auto 480px;
+        gap: 30px;
+        align-items: start;
+      }
+
+      .panel {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .canvas-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+      }
+
+      #chessboard {
+        border-radius: 8px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      button {
+        padding: 14px 28px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: inherit;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      }
+
+      .btn-success:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #111827;
+        font-size: 15px;
+        letter-spacing: -0.2px;
+      }
+
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: "SF Mono", "Monaco", "Consolas", monospace;
+        transition: all 0.3s;
+        background: #f9fafb;
+      }
+
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        background: white;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+        line-height: 1.6;
+      }
+
+      select {
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+      }
+
+      .color-input {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .color-input span {
+        font-size: 13px;
+        color: #6b7280;
+        font-weight: 600;
+      }
+
+      input[type="color"] {
+        width: 100%;
+        height: 55px;
+        border: 3px solid #e5e7eb;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: white;
+      }
+
+      input[type="color"]:hover {
+        border-color: #667eea;
+        transform: scale(1.02);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(to right, #667eea, #764ba2);
+        outline: none;
+        cursor: pointer;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .preset-btn {
+        padding: 12px 18px;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        border: 2px solid #d1d5db;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: inherit;
+      }
+
+      .preset-btn:hover {
+        background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+        border-color: #9ca3af;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .info-box {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 4px solid #3b82f6;
+        padding: 18px;
+        border-radius: 12px;
+        margin-top: 25px;
+      }
+
+      .info-box h3 {
+        color: #1e40af;
+        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .info-box p {
+        color: #1e3a8a;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 1200px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2.5em;
+        }
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2em;
+        }
+
+        .panel {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="main-grid">
+        <div class="panel canvas-container">
+          <canvas id="chessboard"></canvas>
+          <div class="buttons">
+            <button class="btn-primary" onclick="downloadImage()">
+              PNG Yüklə
+            </button>
+            <button class="btn-success" onclick="copyToClipboard()">
+              Kopyala
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="form-group">
+            <label>FEN Kodu</label>
+            <textarea
+              id="fenInput"
+              oninput="drawBoard()"
+              placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+            >
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
+            >
+          </div>
+
+          <div class="form-group">
+            <label>Fiqur Stili</label>
+            <select id="pieceStyle" onchange="drawBoard()">
+              <option value="cburnett">CBurnett (Chess.com)</option>
+              <option value="merida">Merida (Lichess)</option>
+              <option value="reillycraig">Reilly Craig (Diagram)</option>
+              <option value="pirouetti">Pirouetti (Modern)</option>
+              <option value="chessnut">Chessnut (3D Style)</option>
+              <option value="kosal">Kosal (Elegant)</option>
+              <option value="fresca">Fresca (Hand-drawn)</option>
+              <option value="tatiana">Tatiana (Premium)</option>
+              <option value="alpha">Alpha (Minimal)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Hazır Pozisiyalar</label>
+            <div class="grid-2">
+              <button
+                class="preset-btn"
+                onclick="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')"
+              >
+                Başlanğıc
+              </button>
+              <button class="preset-btn" onclick="setFEN('8/8/8/8/8/8/8/8')">
+                Boş Lövhə
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Lövhə Teması</label>
+            <div class="grid-2">
+              <button class="preset-btn" onclick="applyTheme('classic')">
+                Klassik
+              </button>
+              <button class="preset-btn" onclick="applyTheme('green')">
+                Yaşıl
+              </button>
+              <button class="preset-btn" onclick="applyTheme('blue')">
+                Mavi
+              </button>
+              <button class="preset-btn" onclick="applyTheme('purple')">
+                Bənövşəyi
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Öz Rənglərini Seç</label>
+            <div class="grid-2">
+              <div class="color-input">
+                <span>Açıq Xana</span>
+                <input
+                  type="color"
+                  id="lightSquare"
+                  value="#f0d9b5"
+                  oninput="drawBoard()"
+                />
+              </div>
+              <div class="color-input">
+                <span>Tünd Xana</span>
+                <input
+                  type="color"
+                  id="darkSquare"
+                  value="#b58863"
+                  oninput="drawBoard()"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label
+              >Lövhə Ölçüsü:
+              <span id="sizeValue" style="color: #667eea">400</span>px</label
+            >
+            <input
+              type="range"
+              id="boardSize"
+              min="200"
+              max="600"
+              value="400"
+              step="50"
+              oninput="updateSize()"
+            />
+          </div>
+
+          <div class="info-box">
+            <h3>İstifadə Qaydaları</h3>
+            <p>
+              <strong>FEN formatı:</strong> Böyük hərflər ağ (K/Q/R/B/N/P),
+              kiçik hərflər qara. Rəqəmlər boş xanaları göstərir.
+            </p>
+            <p style="margin-top: 8px">
+              <strong>Keyfiyyət:</strong> 200-600px arası maksimum keyfiyyətlə
+              export edilir.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentStyle = null;
+
+      const canvas = document.getElementById("chessboard");
+      const ctx = canvas.getContext("2d", { alpha: false });
+
+      // === REAL SVG STAUNTON FIQURLARI ===
+      const pieceImages = {};
+      const pieceMap = {
+        K: "wK",
+        Q: "wQ",
+        R: "wR",
+        B: "wB",
+        N: "wN",
+        P: "wP",
+        k: "bK",
+        q: "bQ",
+        r: "bR",
+        b: "bB",
+        n: "bN",
+        p: "bP",
+      };
+
+      function getPieceBaseUrl(style) {
+        return `https://lichess1.org/assets/piece/${style}/`;
+      }
+
+      function preloadPieces(style, callback) {
+        Object.keys(pieceImages).forEach((k) => delete pieceImages[k]);
+
+        const baseUrl = getPieceBaseUrl(style);
+        let loaded = 0;
+        const total = Object.keys(pieceMap).length;
+
+        Object.keys(pieceMap).forEach((key) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            loaded++;
+            if (loaded === total && callback) callback();
+          };
+          img.src = `${baseUrl}${pieceMap[key]}.svg`;
+
+          pieceImages[key] = img;
+        });
+      }
+
+      const themes = {
+        classic: { light: "#f0d9b5", dark: "#b58863" },
+        green: { light: "#ffffdd", dark: "#86a666" },
+        blue: { light: "#dee3e6", dark: "#8ca2ad" },
+        purple: { light: "#e8c9d0", dark: "#b08ba2" },
+      };
+
+      function parseFEN(fenString) {
+        const rows = fenString.trim().split("/");
+
+        if (rows.length !== 8) throw "FEN sətri 8 olmalıdır";
+
+        const board = [];
+
+        for (let row of rows) {
+          let boardRow = [];
+          for (let char of row) {
+            if (isNaN(char)) {
+              boardRow.push(char);
+            } else {
+              boardRow.push(...Array(parseInt(char)).fill(""));
+            }
+          }
+          if (boardRow.length !== 8) throw "Hər sətirdə 8 xana olmalıdır";
+          board.push(boardRow);
+        }
+        return board;
+      }
+
+      function drawBoard() {
+        const pieceStyle = document.getElementById("pieceStyle").value;
+
+        if (currentStyle !== pieceStyle) {
+          currentStyle = pieceStyle;
+          preloadPieces(pieceStyle, drawBoard);
+          return;
+        }
+
+        const fen = document.getElementById("fenInput").value;
+        const lightSquare = document.getElementById("lightSquare").value;
+        const darkSquare = document.getElementById("darkSquare").value;
+        const boardSize = parseInt(document.getElementById("boardSize").value);
+
+        const pixelRatio = window.devicePixelRatio || 1;
+        canvas.width = boardSize * pixelRatio;
+        canvas.height = boardSize * pixelRatio;
+        canvas.style.width = boardSize + "px";
+        canvas.style.height = boardSize + "px";
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(pixelRatio, pixelRatio);
+
+        const squareSize = boardSize / 8;
+
+        try {
+          const board = parseFEN(fen);
+
+          for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+              const isLight = (row + col) % 2 === 0;
+              ctx.fillStyle = isLight ? lightSquare : darkSquare;
+              ctx.fillRect(
+                col * squareSize,
+                row * squareSize,
+                squareSize,
+                squareSize
+              );
+
+              if (board[row] && board[row][col]) {
+                const piece = board[row][col];
+                const img = pieceImages[piece];
+                if (img && img.complete) {
+                  ctx.drawImage(
+                    img,
+                    col * squareSize + squareSize * 0.05,
+                    row * squareSize + squareSize * 0.05,
+                    squareSize * 0.9,
+                    squareSize * 0.9
+                  );
+                }
+              }
+            }
+          }
+
+          saveState();
+
+          const fontSize = Math.max(8, Math.min(14, squareSize * 0.18));
+          ctx.font = `bold ${fontSize}px Arial`;
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+
+          const getBrightness = (hex) => {
+            const rgb = parseInt(hex.slice(1), 16);
+            const r = (rgb >> 16) & 0xff;
+            const g = (rgb >> 8) & 0xff;
+            const b = (rgb >> 0) & 0xff;
+            return (r * 299 + g * 587 + b * 114) / 1000;
+          };
+
+          for (let i = 0; i < 8; i++) {
+            const isLightSquareLeft = i % 2 === 0;
+            const bgColorLeft = isLightSquareLeft ? lightSquare : darkSquare;
+            const brightnessLeft = getBrightness(bgColorLeft);
+            ctx.fillStyle =
+              brightnessLeft > 128
+                ? "rgba(0,0,0,0.75)"
+                : "rgba(255,255,255,0.9)";
+            ctx.shadowColor =
+              brightnessLeft > 128
+                ? "rgba(255,255,255,0.6)"
+                : "rgba(0,0,0,0.6)";
+            ctx.shadowBlur = 1.5;
+            ctx.fillText(
+              8 - i,
+              squareSize * 0.05,
+              squareSize * i + squareSize * 0.05
+            );
+
+            const isLightSquareBottom = (7 + i) % 2 === 0;
+            const bgColorBottom = isLightSquareBottom
+              ? lightSquare
+              : darkSquare;
+            const brightnessBottom = getBrightness(bgColorBottom);
+            ctx.fillStyle =
+              brightnessBottom > 128
+                ? "rgba(0,0,0,0.75)"
+                : "rgba(255,255,255,0.9)";
+            ctx.shadowColor =
+              brightnessBottom > 128
+                ? "rgba(255,255,255,0.6)"
+                : "rgba(0,0,0,0.6)";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(
+              String.fromCharCode(97 + i),
+              squareSize * (i + 1) - squareSize * 0.05,
+              boardSize - squareSize * 0.05
+            );
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+          }
+
+          ctx.shadowBlur = 0;
+        } catch (error) {
+          ctx.fillStyle = "#ef4444";
+          ctx.font = "bold 20px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.shadowColor = "rgba(0,0,0,0.3)";
+          ctx.shadowBlur = 3;
+          ctx.fillText("FEN Xətası", boardSize / 2, boardSize / 2 - 15);
+          ctx.font = "14px Arial";
+          ctx.fillText(
+            "Düzgün format daxil edin",
+            boardSize / 2,
+            boardSize / 2 + 10
+          );
+          ctx.shadowBlur = 0;
+          ctx.shadowColor = "transparent";
+        }
+      }
+
+      function setFEN(fen) {
+        document.getElementById("fenInput").value = fen;
+        drawBoard();
+      }
+
+      function applyTheme(themeName) {
+        const theme = themes[themeName];
+        document.getElementById("lightSquare").value = theme.light;
+        document.getElementById("darkSquare").value = theme.dark;
+        drawBoard();
+      }
+
+      function updateSize() {
+        const size = document.getElementById("boardSize").value;
+        document.getElementById("sizeValue").textContent = size;
+        drawBoard();
+      }
+
+      function downloadImage() {
+        const link = document.createElement("a");
+        link.download = "chess-position-hq.png";
+        link.href = canvas.toDataURL("image/png", 1.0);
+        link.click();
+      }
+
+      async function copyToClipboard() {
+        try {
+          const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/png", 1.0)
+          );
+          await navigator.clipboard.write([
+            new ClipboardItem({ "image/png": blob }),
+          ]);
+          alert("Maksimum keyfiyyətdə kopyalandı!");
+        } catch (err) {
+          alert("Kopyalama xətası! PNG Yüklə düyməsindən istifadə edin.");
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem("fen", document.getElementById("fenInput").value);
+        localStorage.setItem(
+          "style",
+          document.getElementById("pieceStyle").value
+        );
+        localStorage.setItem(
+          "light",
+          document.getElementById("lightSquare").value
+        );
+        localStorage.setItem(
+          "dark",
+          document.getElementById("darkSquare").value
+        );
+        localStorage.setItem(
+          "size",
+          document.getElementById("boardSize").value
+        );
+      }
+
+      function loadState() {
+        if (localStorage.getItem("fen"))
+          fenInput.value = localStorage.getItem("fen");
+
+        if (localStorage.getItem("style"))
+          pieceStyle.value = localStorage.getItem("style");
+
+        if (localStorage.getItem("light"))
+          lightSquare.value = localStorage.getItem("light");
+
+        if (localStorage.getItem("dark"))
+          darkSquare.value = localStorage.getItem("dark");
+
+        if (localStorage.getItem("size")) {
+          boardSize.value = localStorage.getItem("size");
+          sizeValue.textContent = boardSize.value;
+        }
+      }
+
+      loadState();
+      drawBoard();
+    </script>
+  </body>
+</html>
