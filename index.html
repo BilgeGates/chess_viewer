@@ -7,8 +7,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
-
-    <title>Şahmat FEN Redaktoru</title>
+    <title>Şahmat FEN Yükləyici</title>
     <style>
       * {
         margin: 0;
@@ -17,177 +16,299 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #1a1d29;
         min-height: 100vh;
-        padding: 30px 20px;
-        color: #1f2937;
+        padding: 40px 24px;
+        color: #e2e8f0;
       }
 
       .container {
-        max-width: 1500px;
+        max-width: 1400px;
         margin: 0 auto;
       }
 
       h1 {
-        color: white;
-        font-size: 3em;
-        font-weight: 800;
-        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        margin-bottom: 10px;
-        letter-spacing: -1px;
+        color: #ffffff;
+        font-size: 2.25em;
+        font-weight: 600;
+        margin-bottom: 32px;
+        letter-spacing: -0.5px;
       }
 
       .main-grid {
         display: grid;
-        grid-template-columns: auto 480px;
-        gap: 30px;
+        grid-template-columns: 1fr 420px;
+        grid-template-rows: auto auto;
+        gap: 20px;
         align-items: start;
       }
 
+      .canvas-container {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .settings-panel {
+        grid-column: 2;
+        grid-row: 1 / 3;
+      }
+
       .panel {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        background: #252936;
+        border-radius: 8px;
+        padding: 32px;
+        border: 1px solid #333645;
       }
 
       .canvas-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 25px;
+        gap: 12px;
       }
 
       #chessboard {
-        border-radius: 8px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         image-rendering: -webkit-optimize-contrast;
         image-rendering: crisp-edges;
       }
 
       .buttons {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr) repeat(2, 1fr);
+        gap: 12px;
+        width: 100%;
+        max-width: 500px;
       }
 
       button {
-        padding: 14px 28px;
-        border: none;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 600;
+        padding: 12px 20px;
+        border: 1px solid #3d4153;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.15s ease;
         font-family: inherit;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: #2d3142;
+        color: #e8eaf0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      button:hover {
+        background: #363a4d;
+        border-color: #4a4e63;
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      button i {
+        font-size: 14px;
       }
 
       .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #3b7dd6;
+        border-color: #3470c4;
         color: white;
       }
 
       .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        background: #4489e0;
+        border-color: #3d7dd1;
       }
 
       .btn-success {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: #10b981;
+        border-color: #0ea472;
         color: white;
       }
 
       .btn-success:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        background: #14c992;
+        border-color: #10af7d;
+      }
+
+      .btn-warning {
+        background: #f59e0b;
+        border-color: #d97706;
+        color: white;
+      }
+
+      .btn-warning:hover {
+        background: #fbbf24;
+        border-color: #f59e0b;
       }
 
       .form-group {
-        margin-bottom: 25px;
+        margin-bottom: 24px;
       }
 
       label {
         display: block;
-        font-weight: 700;
+        font-weight: 500;
         margin-bottom: 10px;
-        color: #111827;
-        font-size: 15px;
-        letter-spacing: -0.2px;
+        color: #cbd5e1;
+        font-size: 14px;
       }
 
       textarea,
-      select {
+      select,
+      input[type="number"],
+      input[type="text"] {
         width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e5e7eb;
-        border-radius: 10px;
-        font-size: 14px;
-        font-family: "SF Mono", "Monaco", "Consolas", monospace;
-        transition: all 0.3s;
-        background: #f9fafb;
-      }
-
-      textarea:focus,
-      select:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        background: white;
+        padding: 11px 13px;
+        border: 1px solid #3d4153;
+        border-radius: 6px;
+        font-size: 13px;
+        transition: all 0.15s ease;
+        background: #1e212e;
+        color: #e2e8f0;
       }
 
       textarea {
+        font-family: "SF Mono", "Monaco", "Consolas", monospace;
         resize: vertical;
-        min-height: 80px;
+        min-height: 90px;
         line-height: 1.6;
       }
 
       select {
+        font-family: inherit;
         cursor: pointer;
+        font-weight: 500;
+      }
+
+      textarea:focus,
+      select:focus,
+      input:focus {
+        outline: none;
+        border-color: #3b7dd6;
+        background: #252936;
+      }
+
+      input[type="number"] {
+        font-family: "SF Mono", "Monaco", "Consolas", monospace;
+        text-align: center;
         font-weight: 600;
+      }
+
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
       }
 
       .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 12px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .size-control {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .size-control input[type="range"] {
+        flex: 1;
+      }
+
+      .size-control input[type="number"] {
+        width: 100px;
+        flex-shrink: 0;
       }
 
       .color-input {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+        position: relative;
       }
 
       .color-input span {
         font-size: 13px;
-        color: #6b7280;
-        font-weight: 600;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .color-picker-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        background: linear-gradient(135deg, #1e212e 0%, #252936 100%);
+        border: 2px solid #3d4153;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .color-picker-wrapper:hover {
+        border-color: #4a5568;
+        background: linear-gradient(135deg, #252936 0%, #2d3142 100%);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .color-preview {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1),
+          0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .color-picker-wrapper:hover .color-preview {
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: scale(1.08);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15),
+          0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+
+      .color-hex {
+        font-family: "SF Mono", "Monaco", "Consolas", monospace;
+        font-size: 14px;
+        color: #e2e8f0;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       }
 
       input[type="color"] {
-        width: 100%;
-        height: 55px;
-        border: 3px solid #e5e7eb;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s;
-        background: white;
-      }
-
-      input[type="color"]:hover {
-        border-color: #667eea;
-        transform: scale(1.02);
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
       }
 
       input[type="range"] {
         width: 100%;
-        height: 8px;
-        border-radius: 4px;
-        background: linear-gradient(to right, #667eea, #764ba2);
+        height: 6px;
+        border-radius: 3px;
+        background: #2d3142;
         outline: none;
         cursor: pointer;
         -webkit-appearance: none;
@@ -195,162 +316,227 @@
 
       input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 24px;
-        height: 24px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: white;
+        background: #3b7dd6;
         cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s;
+        transition: background 0.15s ease;
       }
 
       input[type="range"]::-webkit-slider-thumb:hover {
-        transform: scale(1.2);
+        background: #4489e0;
       }
 
       input[type="range"]::-moz-range-thumb {
-        width: 24px;
-        height: 24px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        background: white;
+        background: #3b7dd6;
         cursor: pointer;
         border: none;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       }
 
       .preset-btn {
-        padding: 12px 18px;
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-        border: 2px solid #d1d5db;
-        border-radius: 10px;
+        padding: 11px 18px;
+        background: #2d3142;
+        border: 1px solid #3d4153;
+        border-radius: 6px;
         cursor: pointer;
-        transition: all 0.3s;
-        font-size: 14px;
-        font-weight: 600;
+        transition: all 0.15s ease;
+        font-size: 13px;
+        font-weight: 500;
         font-family: inherit;
+        color: #e2e8f0;
       }
 
       .preset-btn:hover {
-        background: linear-gradient(135deg, #e5e7eb, #d1d5db);
-        border-color: #9ca3af;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: #363a4d;
+        border-color: #4a4e63;
       }
 
-      .info-box {
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .error-message {
+        color: #ef4444;
+        font-size: 12px;
+        margin-top: 8px;
+        font-weight: 500;
+        display: none;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+
+      .status-message {
+        padding: 12px 16px;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 500;
+        font-size: 14px;
+        margin-top: 16px;
+        border: 1px solid;
+      }
+
+      .status-message.success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
+      .status-message.error {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+
+      .status-message.hidden {
+        display: none;
+      }
+
+      .info-section {
         background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        padding: 18px 20px;
+        border-radius: 8px;
         border-left: 4px solid #3b82f6;
-        padding: 18px;
-        border-radius: 12px;
-        margin-top: 25px;
+        border-top: 1px solid #93c5fd;
+        border-right: 1px solid #93c5fd;
+        border-bottom: 1px solid #93c5fd;
+        margin-top: 0;
       }
 
-      .info-box h3 {
+      .info-section h3 {
+        font-size: 15px;
         color: #1e40af;
-        margin-bottom: 8px;
-        font-size: 16px;
+        margin-bottom: 10px;
         font-weight: 700;
       }
 
-      .info-box p {
+      .info-section p {
+        font-size: 13px;
         color: #1e3a8a;
-        font-size: 14px;
-        line-height: 1.6;
+        line-height: 1.7;
+        margin-bottom: 0;
       }
 
-      .buttons {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+      .info-section strong {
+        color: #1e40af;
+        font-weight: 700;
       }
 
-      .buttons button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        font-size: 14px;
-        font-weight: 600;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .btn-flip {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: #fff;
-        box-shadow: 0 6px 14px rgba(99, 102, 241, 0.35);
-      }
-
-      .btn-flip:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.45);
-      }
-
-      .btn-flip:active {
-        transform: translateY(0);
-        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
-      }
-
-      .btn-flip i {
-        font-size: 15px;
-      }
-
-      @media (max-width: 1200px) {
+      @media (max-width: 600px) {
         .main-grid {
           grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto;
+        }
+
+        .canvas-container {
+          grid-column: 1;
+          grid-row: 1;
+        }
+
+        .info-panel {
+          grid-column: 1;
+          grid-row: 2;
+        }
+
+        .settings-panel {
+          grid-column: 1;
+          grid-row: 3;
         }
 
         h1 {
-          font-size: 2.5em;
+          font-size: 2em;
         }
       }
 
       @media (max-width: 768px) {
+        body {
+          padding: 24px 16px;
+        }
+
         h1 {
-          font-size: 2em;
+          font-size: 1.75em;
+          margin-bottom: 24px;
         }
 
         .panel {
-          padding: 20px;
+          padding: 24px;
+        }
+
+        .buttons {
+          grid-template-columns: 1fr;
+        }
+
+        .size-control {
+          flex-direction: column;
+        }
+
+        .size-control input[type="number"] {
+          width: 100%;
         }
       }
     </style>
   </head>
   <body>
     <div class="container">
+      <h1>Şahmat FEN Yükləyici</h1>
       <div class="main-grid">
         <div class="panel canvas-container">
           <canvas id="chessboard"></canvas>
-          <div class="buttons">
-            <button class="btn-primary" onclick="downloadImage()">
-              <i class="fa-solid fa-download"></i>
-              PNG Yüklə
-            </button>
 
+          <div class="buttons">
+            <button class="btn-primary" onclick="downloadPNG()">
+              <i class="fa-solid fa-download"></i>
+              PNG
+            </button>
+            <button class="btn-warning" onclick="downloadJPEG()">
+              <i class="fa-solid fa-download"></i>
+              JPEG
+            </button>
             <button class="btn-success" onclick="copyToClipboard()">
               <i class="fa-solid fa-copy"></i>
               Kopyala
             </button>
-
-            <button class="btn-flip" onclick="flipBoard()">
+            <button onclick="flipBoard()">
               <i class="fa-solid fa-rotate"></i>
-              Flip Board
+              Çevir
+            </button>
+            <button onclick="copyFEN()">
+              <i class="fa-solid fa-clipboard"></i>
+              FEN
             </button>
           </div>
+
+          <div id="statusMessage" class="status-message hidden"></div>
         </div>
 
-        <div class="panel">
+        <div class="panel settings-panel">
           <div class="form-group">
-            <label>FEN Kodu</label>
+            <label>FEN</label>
             <textarea
               id="fenInput"
-              oninput="drawBoard()"
-              placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-            >
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
-            >
+              oninput="onFENChange()"
+              placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+            ></textarea>
           </div>
 
           <div class="form-group">
@@ -358,14 +544,35 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             <select id="pieceStyle" onchange="drawBoard()">
               <option value="cburnett">CBurnett (Chess.com)</option>
               <option value="merida">Merida (Lichess)</option>
-              <option value="reillycraig">Reilly Craig (Diagram)</option>
-              <option value="pirouetti">Pirouetti (Modern)</option>
-              <option value="chessnut">Chessnut (3D Style)</option>
-              <option value="kosal">Kosal (Elegant)</option>
-              <option value="fresca">Fresca (Hand-drawn)</option>
-              <option value="tatiana">Tatiana (Premium)</option>
-              <option value="alpha">Alpha (Minimal)</option>
+              <option value="reillycraig">Reilly Craig</option>
+              <option value="pirouetti">Pirouetti</option>
+              <option value="chessnut">Chessnut</option>
+              <option value="kosal">Kosal</option>
+              <option value="fresca">Fresca</option>
+              <option value="tatiana">Tatiana</option>
+              <option value="alpha">Alpha</option>
+              <option value="letter">Letter (Simpl)</option>
+              <option value="cardinal">Cardinal</option>
+              <option value="gioco">Gioco</option>
+              <option value="icpieces">ICPieces</option>
             </select>
+          </div>
+
+          <div class="form-group">
+            <label>Görünüş Parametrləri</label>
+            <div class="checkbox-group">
+              <input
+                type="checkbox"
+                id="showCoords"
+                checked
+                onchange="drawBoard()"
+              />
+              <label for="showCoords">Koordinatları göstər</label>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="showBorder" onchange="drawBoard()" />
+              <label for="showBorder">Kənar çərçivə</label>
+            </div>
           </div>
 
           <div class="form-group">
@@ -373,11 +580,14 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             <div class="grid-2">
               <button
                 class="preset-btn"
-                onclick="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')"
+                onclick="setFEN('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')"
               >
                 Başlanğıc
               </button>
-              <button class="preset-btn" onclick="setFEN('8/8/8/8/8/8/8/8')">
+              <button
+                class="preset-btn"
+                onclick="setFEN('8/8/8/8/8/8/8/8 w - - 0 1')"
+              >
                 Boş Lövhə
               </button>
             </div>
@@ -385,7 +595,7 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
 
           <div class="form-group">
             <label>Lövhə Teması</label>
-            <div class="grid-2">
+            <div class="grid-3">
               <button class="preset-btn" onclick="applyTheme('classic')">
                 Klassik
               </button>
@@ -398,6 +608,12 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
               <button class="preset-btn" onclick="applyTheme('purple')">
                 Bənövşəyi
               </button>
+              <button class="preset-btn" onclick="applyTheme('wood')">
+                Taxta
+              </button>
+              <button class="preset-btn" onclick="applyTheme('marble')">
+                Mərmər
+              </button>
             </div>
           </div>
 
@@ -406,51 +622,89 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             <div class="grid-2">
               <div class="color-input">
                 <span>Açıq Xana</span>
+                <div
+                  class="color-picker-wrapper"
+                  onclick="document.getElementById('lightSquare').click()"
+                >
+                  <div
+                    class="color-preview"
+                    id="lightPreview"
+                    style="background: #f0d9b5"
+                  ></div>
+                  <div class="color-hex" id="lightHex">#F0D9B5</div>
+                </div>
                 <input
                   type="color"
                   id="lightSquare"
                   value="#f0d9b5"
-                  oninput="drawBoard()"
+                  oninput="updateColorPicker('light')"
                 />
               </div>
               <div class="color-input">
                 <span>Tünd Xana</span>
+                <div
+                  class="color-picker-wrapper"
+                  onclick="document.getElementById('darkSquare').click()"
+                >
+                  <div
+                    class="color-preview"
+                    id="darkPreview"
+                    style="background: #b58863"
+                  ></div>
+                  <div class="color-hex" id="darkHex">#B58863</div>
+                </div>
                 <input
                   type="color"
                   id="darkSquare"
                   value="#b58863"
-                  oninput="drawBoard()"
+                  oninput="updateColorPicker('dark')"
                 />
               </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label
-              >Lövhə Ölçüsü:
-              <span id="sizeValue" style="color: #667eea">400</span>px</label
-            >
-            <input
-              type="range"
-              id="boardSize"
-              min="200"
-              max="600"
-              value="400"
-              step="50"
-              oninput="updateSize()"
-            />
+            <label>Lövhə Ölçüsü (200-600px)</label>
+            <div class="size-control">
+              <input
+                type="range"
+                id="boardSize"
+                min="200"
+                max="600"
+                value="400"
+                step="10"
+                oninput="updateSizeFromSlider()"
+              />
+              <input
+                type="number"
+                id="customSize"
+                min="200"
+                max="600"
+                value="400"
+                oninput="updateSizeFromInput()"
+              />
+            </div>
+            <div id="sizeError" class="error-message"></div>
           </div>
 
-          <div class="info-box">
-            <h3>İstifadə Qaydaları</h3>
-            <p>
-              <strong>FEN formatı:</strong> Böyük hərflər ağ (K/Q/R/B/N/P),
-              kiçik hərflər qara. Rəqəmlər boş xanaları göstərir.
-            </p>
-            <p style="margin-top: 8px">
-              <strong>Keyfiyyət:</strong> 200-600px arası maksimum keyfiyyətlə
-              export edilir.
-            </p>
+          <div class="form-group">
+            <label>Export Keyfiyyəti</label>
+            <select id="exportQuality">
+              <option value="1">Standard (1x)</option>
+              <option value="2" selected>Yüksək (2x)</option>
+              <option value="3">Çox Yüksək (3x)</option>
+              <option value="4">Maksimum (4x)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Şəkil Adı</label>
+            <input
+              type="text"
+              id="fileName"
+              value="chess-position"
+              placeholder="şəkil-adı"
+            />
           </div>
         </div>
       </div>
@@ -459,16 +713,12 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
     <script>
       let flipped = false;
       let currentStyle = null;
+      let boardState = [];
+      let squareSize = 0;
 
       const canvas = document.getElementById("chessboard");
       const ctx = canvas.getContext("2d", { alpha: false });
 
-      function flipBoard() {
-        flipped = !flipped;
-        drawBoard();
-      }
-
-      // === REAL SVG STAUNTON FIQURLARI ===
       const pieceImages = {};
       const pieceMap = {
         K: "wK",
@@ -484,6 +734,28 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
         n: "bN",
         p: "bP",
       };
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.key === "c") {
+          e.preventDefault();
+          copyFEN();
+        }
+        if (e.ctrlKey && e.key === "v") {
+          e.preventDefault();
+          navigator.clipboard.readText().then((text) => {
+            document.getElementById("fenInput").value = text;
+            onFENChange();
+          });
+        }
+        if (e.key === "f" || e.key === "F") {
+          flipBoard();
+        }
+        if (e.key === "s" || e.key === "S") {
+          e.preventDefault();
+          downloadPNG();
+        }
+      });
 
       function getPieceBaseUrl(style) {
         return `https://lichess1.org/assets/piece/${style}/`;
@@ -503,8 +775,11 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             loaded++;
             if (loaded === total && callback) callback();
           };
+          img.onerror = () => {
+            loaded++;
+            if (loaded === total && callback) callback();
+          };
           img.src = `${baseUrl}${pieceMap[key]}.svg`;
-
           pieceImages[key] = img;
         });
       }
@@ -514,15 +789,18 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
         green: { light: "#ffffdd", dark: "#86a666" },
         blue: { light: "#dee3e6", dark: "#8ca2ad" },
         purple: { light: "#e8c9d0", dark: "#b08ba2" },
+        wood: { light: "#f0d0a0", dark: "#8b6f47" },
+        marble: { light: "#e8e8e8", dark: "#999999" },
       };
 
       function parseFEN(fenString) {
-        const rows = fenString.trim().split("/");
+        const parts = fenString.trim().split(/\s+/);
+        const position = parts[0];
 
+        const rows = position.split("/");
         if (rows.length !== 8) throw "FEN sətri 8 olmalıdır";
 
         const board = [];
-
         for (let row of rows) {
           let boardRow = [];
           for (let char of row) {
@@ -535,10 +813,16 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
           if (boardRow.length !== 8) throw "Hər sətirdə 8 xana olmalıdır";
           board.push(boardRow);
         }
+
         return board;
       }
 
       function drawBoard() {
+        const boardSizeBase = parseInt(
+          document.getElementById("boardSize").value
+        );
+        const showCoords = document.getElementById("showCoords").checked;
+        const showBorder = document.getElementById("showBorder").checked;
         const pieceStyle = document.getElementById("pieceStyle").value;
 
         if (currentStyle !== pieceStyle) {
@@ -547,10 +831,11 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
           return;
         }
 
-        const fen = document.getElementById("fenInput").value;
         const lightSquare = document.getElementById("lightSquare").value;
         const darkSquare = document.getElementById("darkSquare").value;
-        const boardSize = parseInt(document.getElementById("boardSize").value);
+
+        const borderSize = showBorder ? 8 : 0;
+        const boardSize = boardSizeBase + borderSize * 2;
 
         const pixelRatio = window.devicePixelRatio || 1;
         canvas.width = boardSize * pixelRatio;
@@ -560,10 +845,15 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(pixelRatio, pixelRatio);
 
-        const squareSize = boardSize / 8;
+        squareSize = boardSizeBase / 8;
+
+        if (showBorder) {
+          ctx.fillStyle = "#1e212e";
+          ctx.fillRect(0, 0, boardSize, boardSize);
+        }
 
         try {
-          const board = parseFEN(fen);
+          const board = boardState;
 
           for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -573,8 +863,8 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
               const drawCol = flipped ? 7 - col : col;
 
               ctx.fillRect(
-                drawCol * squareSize,
-                drawRow * squareSize,
+                drawCol * squareSize + borderSize,
+                drawRow * squareSize + borderSize,
                 squareSize,
                 squareSize
               );
@@ -583,10 +873,11 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
                 const piece = board[row][col];
                 const img = pieceImages[piece];
                 if (img && img.complete) {
+                  const center = getSquareCenter(row, col, borderSize);
                   ctx.drawImage(
                     img,
-                    drawCol * squareSize + squareSize * 0.05,
-                    drawRow * squareSize + squareSize * 0.05,
+                    center.x - squareSize * 0.45,
+                    center.y - squareSize * 0.45,
                     squareSize * 0.9,
                     squareSize * 0.9
                   );
@@ -595,74 +886,43 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             }
           }
 
-          saveState();
+          if (showCoords && squareSize >= 30) {
+            const fontSize = squareSize * 0.22;
+            const pad = squareSize * 0.08;
 
-          const fontSize = Math.max(8, Math.min(14, squareSize * 0.18));
-          ctx.font = `bold ${fontSize}px Arial`;
-          ctx.textAlign = "left";
-          ctx.textBaseline = "top";
-
-          const getBrightness = (hex) => {
-            const rgb = parseInt(hex.slice(1), 16);
-            const r = (rgb >> 16) & 0xff;
-            const g = (rgb >> 8) & 0xff;
-            const b = (rgb >> 0) & 0xff;
-            return (r * 299 + g * 587 + b * 114) / 1000;
-          };
-
-          for (let i = 0; i < 8; i++) {
-            const isLightSquareLeft = i % 2 === 0;
-            const bgColorLeft = isLightSquareLeft ? lightSquare : darkSquare;
-            const brightnessLeft = getBrightness(bgColorLeft);
-            ctx.fillStyle =
-              brightnessLeft > 128
-                ? "rgba(0,0,0,0.75)"
-                : "rgba(255,255,255,0.9)";
-            ctx.shadowColor =
-              brightnessLeft > 128
-                ? "rgba(255,255,255,0.6)"
-                : "rgba(0,0,0,0.6)";
-            ctx.shadowBlur = 1.5;
-            const rank = flipped ? i + 1 : 8 - i;
-            ctx.fillText(
-              rank,
-              squareSize * 0.05,
-              squareSize * i + squareSize * 0.05
-            );
-
-            const isLightSquareBottom = (7 + i) % 2 === 0;
-            const bgColorBottom = isLightSquareBottom
-              ? lightSquare
-              : darkSquare;
-            const brightnessBottom = getBrightness(bgColorBottom);
-            ctx.fillStyle =
-              brightnessBottom > 128
-                ? "rgba(0,0,0,0.75)"
-                : "rgba(255,255,255,0.9)";
-            ctx.shadowColor =
-              brightnessBottom > 128
-                ? "rgba(255,255,255,0.6)"
-                : "rgba(0,0,0,0.6)";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "bottom";
-            const file = flipped ? 7 - i : i;
-            ctx.fillText(
-              String.fromCharCode(97 + file),
-              squareSize * (i + 1) - squareSize * 0.05,
-              boardSize - squareSize * 0.05
-            );
+            ctx.font = `bold ${fontSize}px Arial`;
             ctx.textAlign = "left";
             ctx.textBaseline = "top";
-          }
+            ctx.shadowBlur = squareSize * 0.05;
 
-          ctx.shadowBlur = 0;
+            for (let i = 0; i < 8; i++) {
+              const rank = flipped ? i + 1 : 8 - i;
+              ctx.fillText(
+                rank,
+                pad + borderSize,
+                squareSize * i + pad + borderSize
+              );
+
+              const file = String.fromCharCode(97 + (flipped ? 7 - i : i));
+              ctx.textAlign = "right";
+              ctx.textBaseline = "bottom";
+              ctx.fillText(
+                file,
+                squareSize * (i + 1) - pad + borderSize,
+                boardSizeBase - pad + borderSize
+              );
+
+              ctx.textAlign = "left";
+              ctx.textBaseline = "top";
+            }
+
+            ctx.shadowBlur = 0;
+          }
         } catch (error) {
           ctx.fillStyle = "#ef4444";
           ctx.font = "bold 20px Arial";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.shadowColor = "rgba(0,0,0,0.3)";
-          ctx.shadowBlur = 3;
           ctx.fillText("FEN Xətası", boardSize / 2, boardSize / 2 - 15);
           ctx.font = "14px Arial";
           ctx.fillText(
@@ -670,90 +930,382 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             boardSize / 2,
             boardSize / 2 + 10
           );
-          ctx.shadowBlur = 0;
-          ctx.shadowColor = "transparent";
         }
+      }
+
+      function drawBoardToContext(ctxTarget) {
+        const boardSizeBase = parseInt(
+          document.getElementById("boardSize").value
+        );
+        const showCoords = document.getElementById("showCoords").checked;
+        const showBorder = document.getElementById("showBorder").checked;
+
+        const lightSquare = document.getElementById("lightSquare").value;
+        const darkSquare = document.getElementById("darkSquare").value;
+
+        const borderSize = showBorder ? 8 : 0;
+        const square = boardSizeBase / 8;
+        const fullSize = boardSizeBase + borderSize * 2;
+
+        if (showBorder) {
+          ctxTarget.fillStyle = "#1e212e";
+          ctxTarget.fillRect(0, 0, fullSize, fullSize);
+        }
+
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            const isLight = (row + col) % 2 === 0;
+            ctxTarget.fillStyle = isLight ? lightSquare : darkSquare;
+
+            const drawRow = flipped ? 7 - row : row;
+            const drawCol = flipped ? 7 - col : col;
+
+            const x = drawCol * square + borderSize;
+            const y = drawRow * square + borderSize;
+
+            ctxTarget.fillRect(x, y, square, square);
+
+            const piece = boardState[row]?.[col];
+            if (piece) {
+              const img = pieceImages[piece];
+              if (img && img.complete) {
+                ctxTarget.drawImage(
+                  img,
+                  x + square * 0.05,
+                  y + square * 0.05,
+                  square * 0.9,
+                  square * 0.9
+                );
+              }
+            }
+          }
+        }
+
+        if (showCoords) {
+          const fontSize = Math.max(10, square * 0.2);
+          ctxTarget.font = `bold ${fontSize}px Arial`;
+          ctxTarget.fillStyle = "rgba(0,0,0,0.8)";
+          ctxTarget.textBaseline = "top";
+
+          for (let i = 0; i < 8; i++) {
+            const rank = flipped ? i + 1 : 8 - i;
+            ctxTarget.fillText(
+              rank,
+              borderSize + square * 0.1,
+              borderSize + square * i + square * 0.1
+            );
+          }
+
+          ctxTarget.textBaseline = "bottom";
+          for (let i = 0; i < 8; i++) {
+            const file = String.fromCharCode(97 + (flipped ? 7 - i : i));
+            ctxTarget.fillText(
+              file,
+              borderSize + square * (i + 1) - square * 0.15,
+              borderSize + boardSizeBase - square * 0.1
+            );
+          }
+        }
+      }
+
+      function getSquareCenter(row, col, borderSize = 0) {
+        if (flipped) {
+          row = 7 - row;
+          col = 7 - col;
+        }
+        return {
+          x: col * squareSize + squareSize / 2 + borderSize,
+          y: row * squareSize + squareSize / 2 + borderSize,
+        };
+      }
+
+      function updateColorPicker(type) {
+        const input = document.getElementById(`${type}Square`);
+        const preview = document.getElementById(`${type}Preview`);
+        const hex = document.getElementById(`${type}Hex`);
+
+        const color = input.value.toUpperCase();
+        preview.style.background = color;
+        hex.textContent = color;
+
+        drawBoard();
+        saveState();
+      }
+
+      function flipBoard() {
+        flipped = !flipped;
+        drawBoard();
+        showStatus("Lövhə çevrildi", "success");
+      }
+
+      function updateSizeFromSlider() {
+        const size = parseInt(document.getElementById("boardSize").value);
+        document.getElementById("customSize").value = size;
+        hideError();
+        drawBoard();
+        saveState();
+      }
+
+      function updateSizeFromInput() {
+        const input = document.getElementById("customSize");
+        const slider = document.getElementById("boardSize");
+        const size = parseInt(input.value);
+
+        if (isNaN(size) || input.value === "") {
+          return;
+        }
+
+        if (size < 200 || size > 600) {
+          showError("Ölçü 200-600px arasında olmalıdır");
+          return;
+        }
+
+        hideError();
+        slider.value = size;
+        drawBoard();
+        saveState();
+      }
+
+      function showError(message) {
+        const errorDiv = document.getElementById("sizeError");
+        errorDiv.textContent = message;
+        errorDiv.classList.add("show");
+      }
+
+      function hideError() {
+        const errorDiv = document.getElementById("sizeError");
+        errorDiv.classList.remove("show");
       }
 
       function setFEN(fen) {
         document.getElementById("fenInput").value = fen;
+        boardState = parseFEN(fen);
         drawBoard();
+        saveState();
       }
 
       function applyTheme(themeName) {
         const theme = themes[themeName];
         document.getElementById("lightSquare").value = theme.light;
         document.getElementById("darkSquare").value = theme.dark;
+        updateColorPicker("light");
+        updateColorPicker("dark");
         drawBoard();
+        saveState();
       }
 
-      function updateSize() {
-        const size = document.getElementById("boardSize").value;
-        document.getElementById("sizeValue").textContent = size;
-        drawBoard();
+      function getFileName() {
+        const name =
+          document.getElementById("fileName").value || "chess-position";
+        return name.replace(/[^a-zA-Z0-9-_]/g, "-");
       }
 
-      function downloadImage() {
+      function downloadPNG() {
+        const notReady = Object.values(pieceImages).some(
+          (img) => !img.complete
+        );
+        if (notReady) {
+          showStatus("Fiqurlar yüklənir, bir az gözlə", "error");
+          return;
+        }
+        const quality = parseInt(
+          document.getElementById("exportQuality").value
+        );
+        const boardSizeBase = parseInt(
+          document.getElementById("boardSize").value
+        );
+        const showBorder = document.getElementById("showBorder").checked;
+        const borderSize = showBorder ? 8 : 0;
+
+        const exportSize = (boardSizeBase + borderSize * 2) * quality;
+
+        const exportCanvas = document.createElement("canvas");
+        const exportCtx = exportCanvas.getContext("2d");
+
+        exportCanvas.width = exportSize;
+        exportCanvas.height = exportSize;
+
+        exportCtx.scale(quality, quality);
+
+        drawBoardToContext(exportCtx, quality);
+
         const link = document.createElement("a");
-        link.download = "chess-position-hq.png";
-        link.href = canvas.toDataURL("image/png", 1.0);
+        link.download = `${getFileName()}.png`;
+        link.href = exportCanvas.toDataURL("image/png", 1.0);
         link.click();
+
+        showStatus("PNG yüksək keyfiyyətlə yükləndi", "success");
+      }
+
+      function downloadJPEG() {
+        const quality = parseInt(
+          document.getElementById("exportQuality").value
+        );
+        const size = parseInt(document.getElementById("boardSize").value);
+        const border = document.getElementById("showBorder").checked ? 8 : 0;
+
+        const exportCanvas = document.createElement("canvas");
+        const exportCtx = exportCanvas.getContext("2d");
+
+        exportCanvas.width = (size + border * 2) * quality;
+        exportCanvas.height = (size + border * 2) * quality;
+
+        exportCtx.scale(quality, quality);
+
+        exportCtx.fillStyle = "#ffffff";
+        exportCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+        drawBoardToContext(exportCtx);
+
+        const link = document.createElement("a");
+        link.download = `${getFileName()}.jpg`;
+        link.href = exportCanvas.toDataURL("image/jpeg", 0.95);
+        link.click();
+
+        showStatus("JPEG yüksək keyfiyyətlə yükləndi", "success");
       }
 
       async function copyToClipboard() {
         try {
+          const quality = parseInt(
+            document.getElementById("exportQuality").value
+          );
+          const baseSize = parseInt(document.getElementById("boardSize").value);
+          const border = document.getElementById("showBorder").checked ? 8 : 0;
+          const fullSize = baseSize + border * 2;
+
+          tempCanvas.width = fullSize * quality;
+          tempCanvas.height = fullSize * quality;
+
+          tempCtx.scale(quality, quality);
+          drawBoardToContext(tempCtx);
+
           const blob = await new Promise((resolve) =>
-            canvas.toBlob(resolve, "image/png", 1.0)
+            tempCanvas.toBlob(resolve, "image/png", 1.0)
           );
           await navigator.clipboard.write([
             new ClipboardItem({ "image/png": blob }),
           ]);
-          alert("Maksimum keyfiyyətdə kopyalandı!");
+          showStatus("Şəkil kopyalandı!", "success");
         } catch (err) {
-          alert("Kopyalama xətası! PNG Yüklə düyməsindən istifadə edin.");
+          showStatus("Kopyalama xətası!", "error");
+        }
+      }
+
+      async function copyFEN() {
+        try {
+          const fen = document.getElementById("fenInput").value;
+          await navigator.clipboard.writeText(fen);
+          showStatus("FEN kopyalandı!", "success");
+        } catch (err) {
+          showStatus("FEN kopyalama xətası!", "error");
+        }
+      }
+
+      function showStatus(message, type) {
+        const status = document.getElementById("statusMessage");
+        status.textContent = message;
+        status.className = `status-message ${type}`;
+        setTimeout(() => hideStatus(), 3000);
+      }
+
+      function hideStatus() {
+        document.getElementById("statusMessage").className =
+          "status-message hidden";
+      }
+
+      function onFENChange() {
+        try {
+          boardState = parseFEN(fenInput.value);
+          drawBoard();
+          saveState();
+        } catch (e) {
+          drawBoard();
         }
       }
 
       function saveState() {
-        localStorage.setItem("fen", document.getElementById("fenInput").value);
-        localStorage.setItem(
-          "style",
-          document.getElementById("pieceStyle").value
-        );
-        localStorage.setItem(
-          "light",
-          document.getElementById("lightSquare").value
-        );
-        localStorage.setItem(
-          "dark",
-          document.getElementById("darkSquare").value
-        );
-        localStorage.setItem(
-          "size",
-          document.getElementById("boardSize").value
-        );
+        try {
+          const sizeInput = document.getElementById("customSize");
+          const size = parseInt(sizeInput.value);
+
+          if (!isNaN(size) && size >= 200 && size <= 600) {
+            localStorage.setItem(
+              "fen",
+              document.getElementById("fenInput").value
+            );
+            localStorage.setItem(
+              "style",
+              document.getElementById("pieceStyle").value
+            );
+            localStorage.setItem(
+              "light",
+              document.getElementById("lightSquare").value
+            );
+            localStorage.setItem(
+              "dark",
+              document.getElementById("darkSquare").value
+            );
+            localStorage.setItem("size", size);
+            localStorage.setItem(
+              "showCoords",
+              document.getElementById("showCoords").checked
+            );
+            localStorage.setItem(
+              "showBorder",
+              document.getElementById("showBorder").checked
+            );
+            localStorage.setItem(
+              "quality",
+              document.getElementById("exportQuality").value
+            );
+            localStorage.setItem(
+              "fileName",
+              document.getElementById("fileName").value
+            );
+          }
+        } catch (e) {
+          console.error("Yadda saxlama xətası:", e);
+        }
       }
 
       function loadState() {
-        if (localStorage.getItem("fen"))
-          fenInput.value = localStorage.getItem("fen");
-
-        if (localStorage.getItem("style"))
-          pieceStyle.value = localStorage.getItem("style");
-
-        if (localStorage.getItem("light"))
-          lightSquare.value = localStorage.getItem("light");
-
-        if (localStorage.getItem("dark"))
-          darkSquare.value = localStorage.getItem("dark");
-
-        if (localStorage.getItem("size")) {
-          boardSize.value = localStorage.getItem("size");
-          sizeValue.textContent = boardSize.value;
+        try {
+          if (localStorage.getItem("fen"))
+            fenInput.value = localStorage.getItem("fen");
+          if (localStorage.getItem("style"))
+            pieceStyle.value = localStorage.getItem("style");
+          if (localStorage.getItem("light")) {
+            lightSquare.value = localStorage.getItem("light");
+            updateColorPicker("light");
+          }
+          if (localStorage.getItem("dark")) {
+            darkSquare.value = localStorage.getItem("dark");
+            updateColorPicker("dark");
+          }
+          if (localStorage.getItem("size")) {
+            const size = localStorage.getItem("size");
+            boardSize.value = size;
+            customSize.value = size;
+          }
+          if (localStorage.getItem("showCoords"))
+            showCoords.checked = localStorage.getItem("showCoords") === "true";
+          if (localStorage.getItem("showBorder"))
+            showBorder.checked = localStorage.getItem("showBorder") === "true";
+          if (localStorage.getItem("quality"))
+            exportQuality.value = localStorage.getItem("quality");
+          if (localStorage.getItem("fileName"))
+            fileName.value = localStorage.getItem("fileName");
+        } catch (e) {
+          console.error("Yükləmə xətası:", e);
         }
       }
 
       loadState();
+      boardState = parseFEN(
+        fenInput.value ||
+          "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+      );
       drawBoard();
     </script>
   </body>
