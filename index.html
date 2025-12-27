@@ -202,11 +202,14 @@
 
       input[type="number"]::-webkit-outer-spin-button,
       input[type="number"]::-webkit-inner-spin-button {
+        appearance: none;
         -webkit-appearance: none;
         margin: 0;
       }
 
       input[type="number"] {
+        appearance: textfield;
+        -webkit-appearance: textfield;
         -moz-appearance: textfield;
       }
 
@@ -311,11 +314,15 @@
         background: #2d3142;
         outline: none;
         cursor: pointer;
+        appearance: none;
         -webkit-appearance: none;
+        -moz-appearance: none;
       }
 
       input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
         -webkit-appearance: none;
+        -moz-appearance: none;
         width: 18px;
         height: 18px;
         border-radius: 50%;
@@ -326,14 +333,17 @@
 
       input[type="range"]::-webkit-slider-thumb:hover {
         background: #4489e0;
-      }
-
-      input[type="range"]::-moz-range-thumb {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #3b7dd6;
-        cursor: pointer;
+        input[type="range"]::-moz-range-thumb {
+          appearance: none;
+          -moz-appearance: none;
+          -webkit-appearance: none;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #3b7dd6;
+          cursor: pointer;
+          border: none;
+        }
         border: none;
       }
 
