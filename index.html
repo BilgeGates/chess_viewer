@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
     <title>Şahmat FEN Redaktoru</title>
     <style>
       * {
@@ -253,6 +258,45 @@
         line-height: 1.6;
       }
 
+      .buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .buttons button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-flip {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(99, 102, 241, 0.35);
+      }
+
+      .btn-flip:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.45);
+      }
+
+      .btn-flip:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+      }
+
+      .btn-flip i {
+        font-size: 15px;
+      }
+
       @media (max-width: 1200px) {
         .main-grid {
           grid-template-columns: 1fr;
@@ -281,10 +325,18 @@
           <canvas id="chessboard"></canvas>
           <div class="buttons">
             <button class="btn-primary" onclick="downloadImage()">
+              <i class="fa-solid fa-download"></i>
               PNG Yüklə
             </button>
+
             <button class="btn-success" onclick="copyToClipboard()">
+              <i class="fa-solid fa-copy"></i>
               Kopyala
+            </button>
+
+            <button class="btn-flip" onclick="flipBoard()">
+              <i class="fa-solid fa-rotate"></i>
+              Flip Board
             </button>
           </div>
         </div>
@@ -405,10 +457,16 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
     </div>
 
     <script>
+      let flipped = false;
       let currentStyle = null;
 
       const canvas = document.getElementById("chessboard");
       const ctx = canvas.getContext("2d", { alpha: false });
+
+      function flipBoard() {
+        flipped = !flipped;
+        drawBoard();
+      }
 
       // === REAL SVG STAUNTON FIQURLARI ===
       const pieceImages = {};
@@ -511,9 +569,12 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
             for (let col = 0; col < 8; col++) {
               const isLight = (row + col) % 2 === 0;
               ctx.fillStyle = isLight ? lightSquare : darkSquare;
+              const drawRow = flipped ? 7 - row : row;
+              const drawCol = flipped ? 7 - col : col;
+
               ctx.fillRect(
-                col * squareSize,
-                row * squareSize,
+                drawCol * squareSize,
+                drawRow * squareSize,
                 squareSize,
                 squareSize
               );
@@ -524,8 +585,8 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
                 if (img && img.complete) {
                   ctx.drawImage(
                     img,
-                    col * squareSize + squareSize * 0.05,
-                    row * squareSize + squareSize * 0.05,
+                    drawCol * squareSize + squareSize * 0.05,
+                    drawRow * squareSize + squareSize * 0.05,
                     squareSize * 0.9,
                     squareSize * 0.9
                   );
@@ -562,8 +623,9 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
                 ? "rgba(255,255,255,0.6)"
                 : "rgba(0,0,0,0.6)";
             ctx.shadowBlur = 1.5;
+            const rank = flipped ? i + 1 : 8 - i;
             ctx.fillText(
-              8 - i,
+              rank,
               squareSize * 0.05,
               squareSize * i + squareSize * 0.05
             );
@@ -583,8 +645,9 @@ rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR</textarea
                 : "rgba(0,0,0,0.6)";
             ctx.textAlign = "right";
             ctx.textBaseline = "bottom";
+            const file = flipped ? 7 - i : i;
             ctx.fillText(
-              String.fromCharCode(97 + i),
+              String.fromCharCode(97 + file),
               squareSize * (i + 1) - squareSize * 0.05,
               boardSize - squareSize * 0.05
             );
