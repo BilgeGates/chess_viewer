@@ -26,6 +26,16 @@ export const PIECE_SETS = [
   { id: "staunty", name: "Staunty" },
   { id: "leipzig", name: "Leipzig" },
   { id: "fantasy", name: "Fantasy" },
+  { id: "spatial", name: "Spatial" },
+  { id: "reillycraig", name: "Reilly Craig" },
+  { id: "california", name: "California" },
+  { id: "maestro", name: "Maestro" },
+  { id: "dubrovny", name: "Dubrovny" },
+  { id: "icpieces", name: "IC Pieces" },
+  { id: "mpchess", name: "MP Chess" },
+  { id: "pixel", name: "Pixel" },
+  { id: "riohacha", name: "Riohacha" },
+  { id: "horsey", name: "Horsey" },
 ];
 
 export const BOARD_THEMES = {

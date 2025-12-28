@@ -1,3 +1,6 @@
+/**
+ * Action buttons component
+ */
 const ActionButtons = ({
   onDownloadPNG,
   onDownloadJPEG,

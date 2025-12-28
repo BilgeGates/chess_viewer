@@ -45,9 +45,10 @@ const ChessBoard = React.forwardRef((props, ref) => {
       desynchronized: true,
     });
 
-    // Refined slim border
-    const borderSize =
-      showBorder || showCoords ? Math.max(20, boardSize / 20) : 0;
+    // Border space for coordinates when enabled
+    const borderSize = showCoords
+      ? Math.max(16, Math.min(22, boardSize / 25))
+      : 0;
     const totalSize = boardSize + borderSize * 2;
     const scale = 4;
 
@@ -64,9 +65,9 @@ const ChessBoard = React.forwardRef((props, ref) => {
 
     ctx.clearRect(0, 0, totalSize, totalSize);
 
-    // Draw border
+    // Draw border with refined darker wood texture
     if (showBorder) {
-      ctx.fillStyle = "#8b7355";
+      ctx.fillStyle = "#7a6652";
       ctx.fillRect(0, 0, totalSize, totalSize);
     }
 
@@ -131,7 +132,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
     <div className="relative">
       <canvas
         ref={canvasRef}
-        className="rounded-lg shadow-2xl transition-all duration-300"
+        className="transition-all duration-300"
         style={{
           imageRendering: "-webkit-optimize-contrast",
           maxWidth: "100%",
@@ -139,7 +140,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
         }}
       />
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 rounded-lg">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50">
           <div className="text-white text-sm">Loading pieces...</div>
         </div>
       )}

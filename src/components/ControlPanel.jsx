@@ -1,6 +1,8 @@
-import { PIECE_SETS } from "../data/pieces";
-import { BOARD_THEMES } from "../constants/chessConstants";
+import { BOARD_THEMES, PIECE_SETS } from "../constants/chessConstants";
 
+/**
+ * Control panel component
+ */
 const ControlPanel = (props) => {
   const {
     fen,
@@ -9,8 +11,6 @@ const ControlPanel = (props) => {
     setPieceStyle,
     showCoords,
     setShowCoords,
-    showBorder,
-    setShowBorder,
     lightSquare,
     setLightSquare,
     darkSquare,
@@ -75,17 +75,6 @@ const ControlPanel = (props) => {
             />
             <span className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors">
               Show Coordinates
-            </span>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer group">
-            <input
-              type="checkbox"
-              checked={showBorder}
-              onChange={(e) => setShowBorder(e.target.checked)}
-              className="w-5 h-5 cursor-pointer accent-blue-500"
-            />
-            <span className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors">
-              Show Border Frame
             </span>
           </label>
         </div>
