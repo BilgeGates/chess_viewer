@@ -32,10 +32,6 @@ const ControlPanel = ({
     setDarkSquare(themes[themeName].dark);
   };
 
-  const setPresetFEN = (newFen) => {
-    setFen(newFen);
-  };
-
   const themeNames = {
     classic: "Klassik",
     green: "Yaşıl",
@@ -48,7 +44,6 @@ const ControlPanel = ({
   return (
     <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
       <div className="space-y-6">
-        {/* FEN Input */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             FEN
@@ -61,7 +56,6 @@ const ControlPanel = ({
           />
         </div>
 
-        {/* Piece Style */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Fiqur Stili
@@ -83,7 +77,6 @@ const ControlPanel = ({
           </select>
         </div>
 
-        {/* Display Options */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Görünüş
@@ -94,7 +87,7 @@ const ControlPanel = ({
                 type="checkbox"
                 checked={showCoords}
                 onChange={(e) => setShowCoords(e.target.checked)}
-                className="w-4 h-4 cursor-pointer rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800"
+                className="w-4 h-4 cursor-pointer"
               />
               <span className="text-sm text-gray-300">Koordinatlar</span>
             </label>
@@ -103,14 +96,13 @@ const ControlPanel = ({
                 type="checkbox"
                 checked={showBorder}
                 onChange={(e) => setShowBorder(e.target.checked)}
-                className="w-4 h-4 cursor-pointer rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800"
+                className="w-4 h-4 cursor-pointer"
               />
-              <span className="text-sm text-gray-300">Kənar Çərçivə</span>
+              <span className="text-sm text-gray-300">Kənar çərçivə</span>
             </label>
           </div>
         </div>
 
-        {/* Preset Positions */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Hazır Pozisiyalar
@@ -118,24 +110,23 @@ const ControlPanel = ({
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() =>
-                setPresetFEN(
+                setFen(
                   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
                 )
               }
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition-colors duration-150"
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition"
             >
               Başlanğıc
             </button>
             <button
-              onClick={() => setPresetFEN("8/8/8/8/8/8/8/8 w - - 0 1")}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition-colors duration-150"
+              onClick={() => setFen("8/8/8/8/8/8/8/8 w - - 0 1")}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition"
             >
               Boş Lövhə
             </button>
           </div>
         </div>
 
-        {/* Themes */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Lövhə Teması
@@ -145,7 +136,7 @@ const ControlPanel = ({
               <button
                 key={theme}
                 onClick={() => applyTheme(theme)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition-colors duration-150"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition"
               >
                 {themeNames[theme]}
               </button>
@@ -153,20 +144,18 @@ const ControlPanel = ({
           </div>
         </div>
 
-        {/* Color Pickers */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Öz Rənglərini Seç
           </label>
           <div className="grid grid-cols-2 gap-3">
-            {/* Light Square */}
             <div>
               <span className="block text-xs text-gray-400 mb-2">
                 Açıq Xana
               </span>
               <div
                 onClick={() => document.getElementById("lightSquare").click()}
-                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition-colors duration-150"
+                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition"
               >
                 <div
                   className="w-11 h-11 rounded-lg border-2 border-white border-opacity-10 shadow-inner flex-shrink-0"
@@ -185,14 +174,13 @@ const ControlPanel = ({
               />
             </div>
 
-            {/* Dark Square */}
             <div>
               <span className="block text-xs text-gray-400 mb-2">
                 Tünd Xana
               </span>
               <div
                 onClick={() => document.getElementById("darkSquare").click()}
-                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition-colors duration-150"
+                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition"
               >
                 <div
                   className="w-11 h-11 rounded-lg border-2 border-white border-opacity-10 shadow-inner flex-shrink-0"
@@ -213,7 +201,6 @@ const ControlPanel = ({
           </div>
         </div>
 
-        {/* Board Size */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Lövhə Ölçüsü (200-600px)
@@ -226,7 +213,7 @@ const ControlPanel = ({
               step="10"
               value={boardSize}
               onChange={(e) => setBoardSize(parseInt(e.target.value))}
-              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
             />
             <input
               type="number"
@@ -234,29 +221,11 @@ const ControlPanel = ({
               max="600"
               value={boardSize}
               onChange={(e) => setBoardSize(parseInt(e.target.value))}
-              className="w-24 px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 text-center font-mono font-semibold focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-24 px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 text-center font-mono font-semibold focus:border-blue-500 focus:outline-none"
             />
           </div>
         </div>
 
-        {/* Export Quality */}
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Export Keyfiyyəti
-          </label>
-          <select
-            value={exportQuality}
-            onChange={(e) => setExportQuality(parseInt(e.target.value))}
-            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 cursor-pointer focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            <option value="1">Standard (1x)</option>
-            <option value="2">Yüksək (2x)</option>
-            <option value="3">Çox Yüksək (3x)</option>
-            <option value="4">Maksimum (4x)</option>
-          </select>
-        </div>
-
-        {/* File Name */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Şəkil Adı
@@ -265,8 +234,8 @@ const ControlPanel = ({
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder="şəkil-adı"
+            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
+            placeholder="chess-position"
           />
         </div>
       </div>

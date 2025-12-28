@@ -1,6 +1,5 @@
 import { parseFEN } from "./fenParser";
 import { createUltraQualityCanvas } from "./imageOptimizer";
-import { CANVAS_CONFIG } from "../constants/chessConstants";
 
 export const createExportCanvas = (config) => {
   const {
@@ -11,7 +10,6 @@ export const createExportCanvas = (config) => {
     darkSquare,
     flipped,
     fen,
-    exportQuality,
     pieceImages,
   } = config;
 
@@ -20,7 +18,6 @@ export const createExportCanvas = (config) => {
   }
 
   const board = parseFEN(fen);
-  const borderSize = showBorder ? CANVAS_CONFIG.BORDER_SIZE : 0;
 
   return createUltraQualityCanvas({
     boardSize,
@@ -31,8 +28,6 @@ export const createExportCanvas = (config) => {
     board,
     pieceImages,
     showCoords,
-    borderSize,
-    exportQuality,
   });
 };
 
@@ -69,7 +64,7 @@ export const downloadJPEG = (canvas, fileName) => {
         resolve();
       },
       "image/jpeg",
-      0.98 // Higher quality
+      0.98
     );
   });
 };
@@ -82,8 +77,15 @@ export const copyToClipboard = async (canvas) => {
   await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 };
 
-export const getFileSize = (canvas) => {
-  const bytes = canvas.width * canvas.height * 4; // RGBA
-  const mb = (bytes / (1024 * 1024)).toFixed(2);
-  return `${mb} MB`;
+export const getExportInfo = (boardSize, showBorder, showCoords) => {
+  const baseBorderSize = boardSize / 25;
+  const borderSize =
+    showBorder || showCoords ? Math.max(12, Math.min(20, baseBorderSize)) : 0;
+  const displaySize = boardSize + borderSize * 2;
+  const actualPixels = displaySize * 4;
+
+  return {
+    display: `${displaySize}×${displaySize}px`,
+    pixels: `${actualPixels}×${actualPixels} pixels`,
+  };
 };

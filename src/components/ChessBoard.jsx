@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { usePieceImages } from "../hooks/usePieceImages";
 import { useChessBoard } from "../hooks/useChessBoard";
-import { drawCoordinates } from "../utils/coordinateCalculations";
-import { CANVAS_CONFIG } from "../constants/chessConstants";
+import { drawCoordinatesOutside } from "../utils/coordinateCalculations";
 
 const ChessBoard = React.forwardRef(
   (
@@ -22,10 +21,10 @@ const ChessBoard = React.forwardRef(
     const { pieceImages } = usePieceImages(pieceStyle);
     const boardState = useChessBoard(fen);
 
-    // Expose pieceImages to parent via ref
     React.useImperativeHandle(ref, () => ({
       getPieceImages: () => pieceImages,
       getCanvas: () => canvasRef.current,
+      getBoardState: () => boardState,
     }));
 
     useEffect(() => {
@@ -34,14 +33,18 @@ const ChessBoard = React.forwardRef(
 
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d", {
-        alpha: false,
+        alpha: true,
         willReadFrequently: false,
         desynchronized: true,
       });
 
-      const borderSize = showBorder ? CANVAS_CONFIG.BORDER_SIZE : 0;
+      const baseBorderSize = boardSize / 20;
+      const borderSize =
+        showBorder || showCoords
+          ? Math.max(12, Math.min(15, baseBorderSize))
+          : 0;
       const totalSize = boardSize + borderSize * 2;
-      const scale = CANVAS_CONFIG.DISPLAY_SCALE;
+      const scale = 4;
 
       canvas.width = totalSize * scale;
       canvas.height = totalSize * scale;
@@ -54,13 +57,14 @@ const ChessBoard = React.forwardRef(
 
       const squareSize = boardSize / 8;
 
-      // Draw border
+      ctx.clearRect(0, 0, totalSize, totalSize);
+
       if (showBorder) {
-        ctx.fillStyle = "#1a1d29";
+        ctx.fillStyle = "#a67c52";
         ctx.fillRect(0, 0, totalSize, totalSize);
       }
 
-      // Draw squares
+      // Squares
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
           const isLight = (row + col) % 2 === 0;
@@ -77,7 +81,7 @@ const ChessBoard = React.forwardRef(
         }
       }
 
-      // Draw pieces
+      // Pieces
       for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
           const piece = boardState[row]?.[col];
@@ -101,9 +105,9 @@ const ChessBoard = React.forwardRef(
         }
       }
 
-      // Draw coordinates
+      // Coordinates
       if (showCoords) {
-        drawCoordinates(ctx, squareSize, borderSize, flipped);
+        drawCoordinatesOutside(ctx, squareSize, borderSize, flipped, boardSize);
       }
     }, [
       boardState,
@@ -119,11 +123,10 @@ const ChessBoard = React.forwardRef(
     return (
       <canvas
         ref={canvasRef}
-        className="rounded shadow-lg"
         style={{
           imageRendering: "-webkit-optimize-contrast",
-          WebkikitFontSmoothing: "antialiased",
-          MozOsxFontSmoothing: "grayscale",
+          maxWidth: "100%",
+          height: "auto",
         }}
       />
     );

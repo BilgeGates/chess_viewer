@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { PIECE_MAP } from "../constants/chessConstants";
+import { getCustomPieceUrl } from "../utils/customPieces";
 
 export const usePieceImages = (pieceStyle) => {
   const [pieceImages, setPieceImages] = useState({});
@@ -9,7 +10,6 @@ export const usePieceImages = (pieceStyle) => {
     setIsLoading(true);
 
     const loadPieces = () => {
-      const baseUrl = `https://lichess1.org/assets/piece/${pieceStyle}/`;
       const images = {};
       let loaded = 0;
       const total = Object.keys(PIECE_MAP).length;
@@ -34,7 +34,7 @@ export const usePieceImages = (pieceStyle) => {
           }
         };
 
-        img.src = `${baseUrl}${PIECE_MAP[key]}.svg`;
+        img.src = getCustomPieceUrl(key, pieceStyle);
         images[key] = img;
       });
     };

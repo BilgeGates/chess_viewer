@@ -1,7 +1,3 @@
-/**
- * Create ultra high-quality export canvas
- * Uses proper scaling and rerendering for maximum quality
- */
 export const createUltraQualityCanvas = ({
   boardSize,
   showBorder,
@@ -11,33 +7,39 @@ export const createUltraQualityCanvas = ({
   board,
   pieceImages,
   showCoords,
-  borderSize,
-  exportQuality,
 }) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d", {
-    alpha: false,
+    alpha: true, // Transparent background
     desynchronized: true,
     willReadFrequently: false,
   });
 
-  // CRITICAL: High multiplier for quality
-  const qualityMultiplier = 4 * exportQuality; // 4x base * user choice
-  const totalSize = boardSize + borderSize * 2;
+  // Dinamik border
+  const baseBorderSize = boardSize / 25;
+  const borderSize =
+    showBorder || showCoords ? Math.max(12, Math.min(20, baseBorderSize)) : 0;
+  const displaySize = boardSize + borderSize * 2;
 
-  canvas.width = totalSize * qualityMultiplier;
-  canvas.height = totalSize * qualityMultiplier;
+  const MAX_QUALITY = 4;
 
-  ctx.scale(qualityMultiplier, qualityMultiplier);
+  canvas.width = displaySize * MAX_QUALITY;
+  canvas.height = displaySize * MAX_QUALITY;
+
+  ctx.scale(MAX_QUALITY, MAX_QUALITY);
+
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
   const squareSize = boardSize / 8;
 
+  // Clear for transparency
+  ctx.clearRect(0, 0, displaySize, displaySize);
+
   // Border
   if (showBorder) {
-    ctx.fillStyle = "#1a1d29";
-    ctx.fillRect(0, 0, totalSize, totalSize);
+    ctx.fillStyle = "#a67c52";
+    ctx.fillRect(0, 0, displaySize, displaySize);
   }
 
   // Squares
@@ -57,7 +59,7 @@ export const createUltraQualityCanvas = ({
     }
   }
 
-  // Pieces - High quality redraw
+  // Pieces
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const piece = board[row]?.[col];
@@ -83,8 +85,8 @@ export const createUltraQualityCanvas = ({
 
   // Coordinates
   if (showCoords) {
-    const { drawCoordinates } = require("./coordinateCalculations");
-    drawCoordinates(ctx, squareSize, borderSize, flipped);
+    const { drawCoordinatesOutside } = require("./coordinateCalculations");
+    drawCoordinatesOutside(ctx, squareSize, borderSize, flipped, boardSize);
   }
 
   return canvas;

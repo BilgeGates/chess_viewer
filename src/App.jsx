@@ -8,7 +8,7 @@ import {
   downloadPNG,
   downloadJPEG,
   copyToClipboard,
-  getFileSize,
+  getExportInfo,
 } from "./utils/canvasExporter";
 
 function App() {
@@ -21,7 +21,6 @@ function App() {
   const [lightSquare, setLightSquare] = useState("#f0d9b5");
   const [darkSquare, setDarkSquare] = useState("#b58863");
   const [boardSize, setBoardSize] = useState(400);
-  const [exportQuality, setExportQuality] = useState(2);
   const [fileName, setFileName] = useState("chess-position");
   const [flipped, setFlipped] = useState(false);
   const [status, setStatus] = useState({ message: "", type: "" });
@@ -41,7 +40,6 @@ function App() {
     darkSquare,
     flipped,
     fen,
-    exportQuality,
     pieceImages: chessBoardRef.current?.getPieceImages(),
   });
 
@@ -51,10 +49,12 @@ function App() {
       if (!canvas) return showStatus("Canvas xətası", "error");
 
       await downloadPNG(canvas, fileName);
-      const size = getFileSize(canvas);
-      showStatus(`PNG yükləndi (${size})`, "success");
+
+      const info = getExportInfo(boardSize, showBorder, showCoords);
+      showStatus(`PNG: ${info.display} (${info.pixels})`, "success");
     } catch (err) {
-      showStatus("Yükləmə xətası!", "error");
+      console.error("PNG error:", err);
+      showStatus("PNG yükləmə xətası!", "error");
     }
   };
 
@@ -64,10 +64,12 @@ function App() {
       if (!canvas) return showStatus("Canvas xətası", "error");
 
       await downloadJPEG(canvas, fileName);
-      const size = getFileSize(canvas);
-      showStatus(`JPEG yükləndi (${size})`, "success");
+
+      const info = getExportInfo(boardSize, showBorder, showCoords);
+      showStatus(`JPEG: ${info.display} (${info.pixels})`, "success");
     } catch (err) {
-      showStatus("Yükləmə xətası!", "error");
+      console.error("JPEG error:", err);
+      showStatus("JPEG yükləmə xətası!", "error");
     }
   };
 
@@ -77,8 +79,11 @@ function App() {
       if (!canvas) return showStatus("Canvas xətası", "error");
 
       await copyToClipboard(canvas);
-      showStatus("Şəkil kopyalandı!", "success");
+
+      const info = getExportInfo(boardSize, showBorder, showCoords);
+      showStatus(`Kopyalandı: ${info.display}`, "success");
     } catch (err) {
+      console.error("Copy error:", err);
       showStatus("Kopyalama xətası!", "error");
     }
   };
@@ -93,6 +98,7 @@ function App() {
       await navigator.clipboard.writeText(fen);
       showStatus("FEN kopyalandı!", "success");
     } catch (err) {
+      console.error("FEN copy error:", err);
       showStatus("FEN xətası!", "error");
     }
   };
@@ -105,7 +111,6 @@ function App() {
         </h1>
 
         <div className="grid lg:grid-cols-[1fr_400px] gap-4 lg:gap-6">
-          {/* Board Section */}
           <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
             <div className="flex flex-col items-center gap-4">
               <ChessBoard
@@ -134,7 +139,6 @@ function App() {
             </div>
           </div>
 
-          {/* Control Panel */}
           <ControlPanel
             fen={fen}
             setFen={setFen}
@@ -150,8 +154,6 @@ function App() {
             setDarkSquare={setDarkSquare}
             boardSize={boardSize}
             setBoardSize={setBoardSize}
-            exportQuality={exportQuality}
-            setExportQuality={setExportQuality}
             fileName={fileName}
             setFileName={setFileName}
           />
