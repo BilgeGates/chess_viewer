@@ -13,38 +13,26 @@ export const PIECE_MAP = {
   p: "bP",
 };
 
-export const THEMES = {
-  classic: { light: "#f0d9b5", dark: "#b58863" },
-  green: { light: "#ffffdd", dark: "#86a666" },
-  blue: { light: "#dee3e6", dark: "#8ca2ad" },
-  purple: { light: "#e8c9d0", dark: "#b08ba2" },
-  wood: { light: "#f0d0a0", dark: "#8b6f47" },
-  marble: { light: "#e8e8e8", dark: "#999999" },
-};
-
-export const PIECE_STYLES = [
-  "cburnett",
-  "merida",
-  "reillycraig",
-  "pirouetti",
-  "chessnut",
-  "kosal",
-  "fresca",
-  "alpha",
-  "cardinal",
+export const PIECE_SETS = [
+  { id: "cburnett", name: "CBurnett (Classic)" },
+  { id: "merida", name: "Merida" },
+  { id: "alpha", name: "Alpha" },
+  { id: "pirouetti", name: "Pirouetti" },
+  { id: "chessnut", name: "Chessnut" },
+  { id: "kosal", name: "Kosal" },
+  { id: "fresca", name: "Fresca" },
+  { id: "cardinal", name: "Cardinal" },
+  { id: "companion", name: "Companion" },
+  { id: "staunty", name: "Staunty" },
+  { id: "leipzig", name: "Leipzig" },
+  { id: "fantasy", name: "Fantasy" },
 ];
 
-export const CANVAS_CONFIG = {
-  DISPLAY_SCALE: 4, // High quality display
-  MIN_BOARD_SIZE: 200,
-  MAX_BOARD_SIZE: 600,
-  BORDER_SIZE: 3,
+export const BOARD_THEMES = {
+  classic: { light: "#f0d9b5", dark: "#b58863", name: "Classic" },
+  green: { light: "#ffffdd", dark: "#86a666", name: "Green" },
+  blue: { light: "#dee3e6", dark: "#8ca2ad", name: "Blue" },
+  purple: { light: "#e8c9d0", dark: "#b08ba2", name: "Purple" },
+  wood: { light: "#f0d0a0", dark: "#8b6f47", name: "Wood" },
+  marble: { light: "#e8e8e8", dark: "#999999", name: "Marble" },
 };
-
-// PIXEL DENSITY OPTIONS
-export const EXPORT_QUALITY_OPTIONS = [
-  { value: 1, label: "Normal (1x)", description: "Sürətli, kiçik fayl" },
-  { value: 2, label: "Yüksək (2x)", description: "Tövsiyə edilir" },
-  { value: 3, label: "Ultra (3x)", description: "Professional" },
-  { value: 4, label: "Maximum (4x)", description: "Print keyfiyyəti" },
-];
