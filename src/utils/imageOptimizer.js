@@ -1,52 +1,72 @@
-export const createUltraQualityCanvas = ({
-  boardSize,
-  showBorder,
-  lightSquare,
-  darkSquare,
-  flipped,
-  board,
-  pieceImages,
-  showCoords,
-}) => {
+import { drawCoordinates } from "./coordinateCalculations";
+
+/**
+ * Create ultra high-quality export canvas optimized for professional publishing
+ * Uses 16x resolution multiplier for crystal-clear images suitable for print
+ * @param {Object} config - Export configuration object
+ * @returns {HTMLCanvasElement} High-resolution canvas ready for export
+ */
+export const createUltraQualityCanvas = (config) => {
+  const {
+    boardSize,
+    showBorder,
+    showCoords,
+    lightSquare,
+    darkSquare,
+    flipped,
+    board,
+    pieceImages,
+  } = config;
+
+  // Validate input
+  if (!board || !pieceImages || Object.keys(pieceImages).length === 0) {
+    return null;
+  }
+
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d", {
-    alpha: true, // Transparent background
-    desynchronized: true,
+    alpha: true,
+    desynchronized: false,
     willReadFrequently: false,
   });
 
-  // Dinamik border
-  const baseBorderSize = boardSize / 25;
+  // Calculate refined slim border (adaptive to board size)
   const borderSize =
-    showBorder || showCoords ? Math.max(12, Math.min(20, baseBorderSize)) : 0;
+    showBorder || showCoords ? Math.max(20, Math.min(30, boardSize / 18)) : 0;
   const displaySize = boardSize + borderSize * 2;
 
-  const MAX_QUALITY = 4;
+  // Ultra quality 16x multiplier for professional book-quality exports
+  // Example: 400px board → 6400x6400px actual resolution
+  const EXPORT_QUALITY = 16;
 
-  canvas.width = displaySize * MAX_QUALITY;
-  canvas.height = displaySize * MAX_QUALITY;
+  canvas.width = displaySize * EXPORT_QUALITY;
+  canvas.height = displaySize * EXPORT_QUALITY;
 
-  ctx.scale(MAX_QUALITY, MAX_QUALITY);
+  // Scale context for easier coordinate calculations
+  ctx.scale(EXPORT_QUALITY, EXPORT_QUALITY);
 
+  // Enable maximum quality rendering
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
   const squareSize = boardSize / 8;
 
-  // Clear for transparency
+  // Clear canvas with transparency
   ctx.clearRect(0, 0, displaySize, displaySize);
 
-  // Border
+  // Draw elegant wooden border frame if enabled
   if (showBorder) {
-    ctx.fillStyle = "#a67c52";
+    ctx.fillStyle = "#8b7355"; // Professional wood texture color
     ctx.fillRect(0, 0, displaySize, displaySize);
   }
 
-  // Squares
+  // Draw chess board squares
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const isLight = (row + col) % 2 === 0;
       ctx.fillStyle = isLight ? lightSquare : darkSquare;
+
+      // Apply board flip transformation
       const drawRow = flipped ? 7 - row : row;
       const drawCol = flipped ? 7 - col : col;
 
@@ -59,18 +79,24 @@ export const createUltraQualityCanvas = ({
     }
   }
 
-  // Pieces
+  // Draw chess pieces with maximum quality
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const piece = board[row]?.[col];
+
       if (piece && pieceImages[piece]) {
         const img = pieceImages[piece];
+
+        // Ensure image is fully loaded and valid
         if (img.complete && img.naturalWidth > 0) {
           const drawRow = flipped ? 7 - row : row;
           const drawCol = flipped ? 7 - col : col;
+
+          // Calculate centered position for piece
           const cx = drawCol * squareSize + borderSize + squareSize / 2;
           const cy = drawRow * squareSize + borderSize + squareSize / 2;
 
+          // Draw piece at 90% of square size for optimal visual balance
           ctx.drawImage(
             img,
             cx - squareSize * 0.45,
@@ -83,10 +109,9 @@ export const createUltraQualityCanvas = ({
     }
   }
 
-  // Coordinates
+  // Draw coordinate labels if enabled
   if (showCoords) {
-    const { drawCoordinatesOutside } = require("./coordinateCalculations");
-    drawCoordinatesOutside(ctx, squareSize, borderSize, flipped, boardSize);
+    drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize);
   }
 
   return canvas;
