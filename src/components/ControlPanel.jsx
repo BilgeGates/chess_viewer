@@ -1,111 +1,99 @@
-const ControlPanel = ({
-  fen,
-  setFen,
-  pieceStyle,
-  setPieceStyle,
-  showCoords,
-  setShowCoords,
-  showBorder,
-  setShowBorder,
-  lightSquare,
-  setLightSquare,
-  darkSquare,
-  setDarkSquare,
-  boardSize,
-  setBoardSize,
-  exportQuality,
-  setExportQuality,
-  fileName,
-  setFileName,
-}) => {
-  const themes = {
-    classic: { light: "#f0d9b5", dark: "#b58863" },
-    green: { light: "#ffffdd", dark: "#86a666" },
-    blue: { light: "#dee3e6", dark: "#8ca2ad" },
-    purple: { light: "#e8c9d0", dark: "#b08ba2" },
-    wood: { light: "#f0d0a0", dark: "#8b6f47" },
-    marble: { light: "#e8e8e8", dark: "#999999" },
-  };
+import { PIECE_SETS } from "../data/pieces";
+import { BOARD_THEMES } from "../constants/chessConstants";
 
-  const applyTheme = (themeName) => {
-    setLightSquare(themes[themeName].light);
-    setDarkSquare(themes[themeName].dark);
-  };
+const ControlPanel = (props) => {
+  const {
+    fen,
+    setFen,
+    pieceStyle,
+    setPieceStyle,
+    showCoords,
+    setShowCoords,
+    showBorder,
+    setShowBorder,
+    lightSquare,
+    setLightSquare,
+    darkSquare,
+    setDarkSquare,
+    boardSize,
+    setBoardSize,
+    fileName,
+    setFileName,
+  } = props;
 
-  const themeNames = {
-    classic: "Klassik",
-    green: "Yaşıl",
-    blue: "Mavi",
-    purple: "Bənövşəyi",
-    wood: "Taxta",
-    marble: "Mərmər",
+  const applyTheme = (themeKey) => {
+    const theme = BOARD_THEMES[themeKey];
+    setLightSquare(theme.light);
+    setDarkSquare(theme.dark);
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-8 border border-gray-700">
+    <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700/50 shadow-2xl">
       <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            FEN
+        {/* FEN Input */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-300">
+            FEN Notation
           </label>
           <textarea
             value={fen}
             onChange={(e) => setFen(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 font-mono resize-y min-h-[90px] focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-4 py-3 bg-gray-950/50 border border-gray-700 rounded-lg text-sm text-gray-200 font-mono resize-y min-h-[90px] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
             placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Fiqur Stili
+        {/* Piece Style */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-300">
+            Piece Style
           </label>
           <select
             value={pieceStyle}
             onChange={(e) => setPieceStyle(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 cursor-pointer focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full px-4 py-3 bg-gray-950/50 border border-gray-700 rounded-lg text-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all cursor-pointer"
           >
-            <option value="cburnett">CBurnett (Chess.com)</option>
-            <option value="merida">Merida (Lichess)</option>
-            <option value="reillycraig">Reilly Craig</option>
-            <option value="pirouetti">Pirouetti</option>
-            <option value="chessnut">Chessnut</option>
-            <option value="kosal">Kosal</option>
-            <option value="fresca">Fresca</option>
-            <option value="alpha">Alpha</option>
-            <option value="cardinal">Cardinal</option>
+            {PIECE_SETS.map((set) => (
+              <option key={set.id} value={set.id}>
+                {set.name}
+              </option>
+            ))}
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Görünüş
+        {/* Display Options */}
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-300 mb-3">
+            Display Options
           </label>
-          <div className="space-y-3">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showCoords}
-                onChange={(e) => setShowCoords(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <span className="text-sm text-gray-300">Koordinatlar</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showBorder}
-                onChange={(e) => setShowBorder(e.target.checked)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <span className="text-sm text-gray-300">Kənar çərçivə</span>
-            </label>
-          </div>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={showCoords}
+              onChange={(e) => setShowCoords(e.target.checked)}
+              className="w-5 h-5 cursor-pointer accent-blue-500"
+            />
+            <span className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors">
+              Show Coordinates
+            </span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={showBorder}
+              onChange={(e) => setShowBorder(e.target.checked)}
+              className="w-5 h-5 cursor-pointer accent-blue-500"
+            />
+            <span className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors">
+              Show Border Frame
+            </span>
+          </label>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Hazır Pozisiyalar
+        {/* Quick Positions */}
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-300">
+            Quick Positions
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -114,54 +102,56 @@ const ControlPanel = ({
                   "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
                 )
               }
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition"
+              className="px-4 py-2.5 bg-gray-950/50 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm text-gray-200 transition-all hover:border-gray-600"
             >
-              Başlanğıc
+              Starting Position
             </button>
             <button
               onClick={() => setFen("8/8/8/8/8/8/8/8 w - - 0 1")}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition"
+              className="px-4 py-2.5 bg-gray-950/50 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm text-gray-200 transition-all hover:border-gray-600"
             >
-              Boş Lövhə
+              Empty Board
             </button>
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Lövhə Teması
+        {/* Board Themes */}
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-300">
+            Board Theme
           </label>
           <div className="grid grid-cols-3 gap-3">
-            {Object.keys(themes).map((theme) => (
+            {Object.entries(BOARD_THEMES).map(([key, theme]) => (
               <button
-                key={theme}
-                onClick={() => applyTheme(theme)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-md text-sm text-gray-200 transition"
+                key={key}
+                onClick={() => applyTheme(key)}
+                className="px-4 py-2.5 bg-gray-950/50 hover:bg-gray-700 border border-gray-700 rounded-lg text-sm text-gray-200 transition-all hover:border-gray-600"
               >
-                {themeNames[theme]}
+                {theme.name}
               </button>
             ))}
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Öz Rənglərini Seç
+        {/* Custom Colors */}
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-300">
+            Custom Colors
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="block text-xs text-gray-400 mb-2">
-                Açıq Xana
+                Light Square
               </span>
               <div
                 onClick={() => document.getElementById("lightSquare").click()}
-                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition"
+                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-950/50 to-gray-900 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition-all group"
               >
                 <div
-                  className="w-11 h-11 rounded-lg border-2 border-white border-opacity-10 shadow-inner flex-shrink-0"
+                  className="w-10 h-10 rounded-lg border-2 border-white/10 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform"
                   style={{ background: lightSquare }}
                 />
-                <div className="text-sm font-bold text-gray-200 font-mono uppercase tracking-wide">
+                <div className="text-xs font-bold text-gray-300 font-mono uppercase tracking-wide">
                   {lightSquare.toUpperCase()}
                 </div>
               </div>
@@ -176,17 +166,17 @@ const ControlPanel = ({
 
             <div>
               <span className="block text-xs text-gray-400 mb-2">
-                Tünd Xana
+                Dark Square
               </span>
               <div
                 onClick={() => document.getElementById("darkSquare").click()}
-                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition"
+                className="flex items-center gap-3 p-3 bg-gradient-to-br from-gray-950/50 to-gray-900 border-2 border-gray-700 rounded-lg cursor-pointer hover:border-gray-600 transition-all group"
               >
                 <div
-                  className="w-11 h-11 rounded-lg border-2 border-white border-opacity-10 shadow-inner flex-shrink-0"
+                  className="w-10 h-10 rounded-lg border-2 border-white/10 shadow-inner flex-shrink-0 group-hover:scale-105 transition-transform"
                   style={{ background: darkSquare }}
                 />
-                <div className="text-sm font-bold text-gray-200 font-mono uppercase tracking-wide">
+                <div className="text-xs font-bold text-gray-300 font-mono uppercase tracking-wide">
                   {darkSquare.toUpperCase()}
                 </div>
               </div>
@@ -201,11 +191,12 @@ const ControlPanel = ({
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Lövhə Ölçüsü (200-600px)
+        {/* Board Size */}
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-300">
+            Board Size (200-600px)
           </label>
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-4 items-center">
             <input
               type="range"
               min="200"
@@ -213,7 +204,7 @@ const ControlPanel = ({
               step="10"
               value={boardSize}
               onChange={(e) => setBoardSize(parseInt(e.target.value))}
-              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+              className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
             <input
               type="number"
@@ -221,20 +212,21 @@ const ControlPanel = ({
               max="600"
               value={boardSize}
               onChange={(e) => setBoardSize(parseInt(e.target.value))}
-              className="w-24 px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 text-center font-mono font-semibold focus:border-blue-500 focus:outline-none"
+              className="w-24 px-3 py-2 bg-gray-950/50 border border-gray-700 rounded-lg text-sm text-gray-200 text-center font-mono font-semibold focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Şəkil Adı
+        {/* File Name */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-300">
+            Export File Name
           </label>
           <input
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-sm text-gray-200 focus:border-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-gray-950/50 border border-gray-700 rounded-lg text-sm text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
             placeholder="chess-position"
           />
         </div>
