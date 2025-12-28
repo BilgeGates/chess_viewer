@@ -52,10 +52,7 @@ function App() {
 
       await downloadPNG(canvas, fileName);
       const size = getFileSize(canvas);
-      showStatus(
-        `PNG: ${boardSize}×${boardSize}px, ${exportQuality}x, ${size}`,
-        "success"
-      );
+      showStatus(`PNG yükləndi (${size})`, "success");
     } catch (err) {
       showStatus("Yükləmə xətası!", "error");
     }
@@ -68,10 +65,7 @@ function App() {
 
       await downloadJPEG(canvas, fileName);
       const size = getFileSize(canvas);
-      showStatus(
-        `JPEG: ${boardSize}×${boardSize}px, ${exportQuality}x, ${size}`,
-        "success"
-      );
+      showStatus(`JPEG yükləndi (${size})`, "success");
     } catch (err) {
       showStatus("Yükləmə xətası!", "error");
     }
@@ -83,10 +77,7 @@ function App() {
       if (!canvas) return showStatus("Canvas xətası", "error");
 
       await copyToClipboard(canvas);
-      showStatus(
-        `Kopyalandı: ${boardSize}×${boardSize}px, ${exportQuality}x`,
-        "success"
-      );
+      showStatus("Şəkil kopyalandı!", "success");
     } catch (err) {
       showStatus("Kopyalama xətası!", "error");
     }
@@ -107,37 +98,43 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-200 p-10">
+    <div className="min-h-screen bg-gray-900 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-semibold text-white mb-8 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
           Şahmat FEN Yükləyici
         </h1>
 
-        <div className="grid lg:grid-cols-[1fr_420px] gap-5">
-          <div className="bg-gray-800 rounded-lg p-8 border border-gray-700 flex flex-col items-center gap-3">
-            <ChessBoard
-              ref={chessBoardRef}
-              fen={fen}
-              pieceStyle={pieceStyle}
-              showCoords={showCoords}
-              showBorder={showBorder}
-              lightSquare={lightSquare}
-              darkSquare={darkSquare}
-              boardSize={boardSize}
-              flipped={flipped}
-            />
+        <div className="grid lg:grid-cols-[1fr_400px] gap-4 lg:gap-6">
+          {/* Board Section */}
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+            <div className="flex flex-col items-center gap-4">
+              <ChessBoard
+                ref={chessBoardRef}
+                fen={fen}
+                pieceStyle={pieceStyle}
+                showCoords={showCoords}
+                showBorder={showBorder}
+                lightSquare={lightSquare}
+                darkSquare={darkSquare}
+                boardSize={boardSize}
+                flipped={flipped}
+              />
 
-            <ActionButtons
-              onDownloadPNG={handleDownloadPNG}
-              onDownloadJPEG={handleDownloadJPEG}
-              onCopyImage={handleCopyImage}
-              onFlip={handleFlip}
-              onCopyFEN={handleCopyFEN}
-            />
+              <ActionButtons
+                onDownloadPNG={handleDownloadPNG}
+                onDownloadJPEG={handleDownloadJPEG}
+                onCopyImage={handleCopyImage}
+                onFlip={handleFlip}
+                onCopyFEN={handleCopyFEN}
+              />
 
-            <StatusMessage message={status.message} type={status.type} />
+              {status.message && (
+                <StatusMessage message={status.message} type={status.type} />
+              )}
+            </div>
           </div>
 
+          {/* Control Panel */}
           <ControlPanel
             fen={fen}
             setFen={setFen}
