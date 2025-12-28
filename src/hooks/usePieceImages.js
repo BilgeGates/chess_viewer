@@ -1,45 +1,36 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PIECE_MAP } from "../constants/chessConstants";
-import { getCustomPieceUrl } from "../utils/customPieces";
 
+/**
+ * Load piece images for selected style
+ */
 export const usePieceImages = (pieceStyle) => {
   const [pieceImages, setPieceImages] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
+    const images = {};
+    let loaded = 0;
+    const total = Object.keys(PIECE_MAP).length;
 
-    const loadPieces = () => {
-      const images = {};
-      let loaded = 0;
-      const total = Object.keys(PIECE_MAP).length;
+    Object.entries(PIECE_MAP).forEach(([key, value]) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
 
-      Object.keys(PIECE_MAP).forEach((key) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
+      const onComplete = () => {
+        loaded++;
+        if (loaded === total) {
+          setPieceImages({ ...images });
+          setIsLoading(false);
+        }
+      };
 
-        img.onload = () => {
-          loaded++;
-          if (loaded === total) {
-            setPieceImages({ ...images });
-            setIsLoading(false);
-          }
-        };
-
-        img.onerror = () => {
-          loaded++;
-          if (loaded === total) {
-            setPieceImages({ ...images });
-            setIsLoading(false);
-          }
-        };
-
-        img.src = getCustomPieceUrl(key, pieceStyle);
-        images[key] = img;
-      });
-    };
-
-    loadPieces();
+      img.onload = onComplete;
+      img.onerror = onComplete;
+      img.src = `https://lichess1.org/assets/piece/${pieceStyle}/${value}.svg`;
+      images[key] = img;
+    });
   }, [pieceStyle]);
 
   return { pieceImages, isLoading };
