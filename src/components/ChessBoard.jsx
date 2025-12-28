@@ -67,7 +67,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
 
     // Draw border with refined darker wood texture
     if (showBorder) {
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#7a6652";
       ctx.fillRect(0, 0, totalSize, totalSize);
     }
 
