@@ -1,15 +1,14 @@
 /**
- * Parse FEN string into board state array
+ * Parse FEN notation into 8x8 board array
  */
 export const parseFEN = (fenString) => {
   try {
-    const parts = fenString.trim().split(/\s+/);
-    const position = parts[0];
+    const position = fenString.trim().split(/\s+/)[0];
     const rows = position.split("/");
     const board = [];
 
     for (let row of rows) {
-      let boardRow = [];
+      const boardRow = [];
       for (let char of row) {
         if (isNaN(char)) {
           boardRow.push(char);
@@ -20,8 +19,9 @@ export const parseFEN = (fenString) => {
       board.push(boardRow);
     }
     return board;
-  } catch (e) {
-    console.error("FEN parse error:", e);
-    return [];
+  } catch {
+    return Array(8)
+      .fill(null)
+      .map(() => Array(8).fill(""));
   }
 };
