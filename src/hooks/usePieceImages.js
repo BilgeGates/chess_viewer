@@ -1,0 +1,46 @@
+import { useState, useEffect } from "react";
+import { PIECE_MAP } from "../constants/chessConstants";
+
+export const usePieceImages = (pieceStyle) => {
+  const [pieceImages, setPieceImages] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    const loadPieces = () => {
+      const baseUrl = `https://lichess1.org/assets/piece/${pieceStyle}/`;
+      const images = {};
+      let loaded = 0;
+      const total = Object.keys(PIECE_MAP).length;
+
+      Object.keys(PIECE_MAP).forEach((key) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+
+        img.onload = () => {
+          loaded++;
+          if (loaded === total) {
+            setPieceImages({ ...images });
+            setIsLoading(false);
+          }
+        };
+
+        img.onerror = () => {
+          loaded++;
+          if (loaded === total) {
+            setPieceImages({ ...images });
+            setIsLoading(false);
+          }
+        };
+
+        img.src = `${baseUrl}${PIECE_MAP[key]}.svg`;
+        images[key] = img;
+      });
+    };
+
+    loadPieces();
+  }, [pieceStyle]);
+
+  return { pieceImages, isLoading };
+};
