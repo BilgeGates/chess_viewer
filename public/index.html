@@ -1,16 +1,26 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Chess FEN Exporter" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/chess-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Professional chess diagram generator with ultra-high quality export"
     />
-    <title>Chess FEN Exporter</title>
+    <meta
+      name="keywords"
+      content="chess, diagram, generator, export, PNG, JPEG, SVG"
+    />
+    <title>Chess Diagram Generator - Professional Quality</title>
   </head>
-  <body>
+  <body class="preload">
     <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+    <script>
+      window.addEventListener("load", () => {
+        document.body.classList.remove("preload");
+      });
+    </script>
   </body>
 </html>
