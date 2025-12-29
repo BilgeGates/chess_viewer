@@ -1,70 +1,160 @@
-# Getting Started with Create React App
+# ♟️ Professional Chess Diagram Generator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Ultra-high quality chess diagram generator with advanced export capabilities.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **27 Piece Sets** - Professional Lichess piece styles
+- **12 Board Themes** - Beautiful color schemes
+- **12 Famous Positions** - Historical chess games
+- **4 Export Quality Levels** - 8x, 16x, 24x, 32x
+- **Multiple Formats** - PNG, JPEG, SVG
+- **Batch Export** - Export multiple formats at once
+- **Smart Memory Management** - Prevents browser crashes
+- **Advanced Caching** - Fast piece loading
+- **Copy to Clipboard** - Quick sharing
+- **FEN Validation** - Error checking
+- **Random Positions** - Testing & fun
+- **Flip Board** - Black/White perspective
+- **Responsive Design** - Mobile friendly
 
-### `npm start`
+## 📦 Installation
+```bash
+# Clone repository
+git clone <repository-url>
+cd chess-diagram-generator
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Install dependencies
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Run development server
+npm run dev
 
-### `npm test`
+# Build for production
+npm run build
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🎯 Usage
 
-### `npm run build`
+### Basic Setup
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Select piece style from dropdown
+2. Choose board theme or custom colors
+3. Enter FEN notation or use famous positions
+4. Adjust board size (200-800px)
+5. Set export quality (8x-32x)
+6. Export or copy to clipboard
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Export Quality Guide
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Quality | Resolution | Use Case | File Size |
+|---------|-----------|----------|-----------|
+| 8x | 3200px | Web display | Small |
+| 16x | 6400px | Print (300 DPI) | Medium |
+| 24x | 9600px | Professional print | Large |
+| 32x | 12800px | Maximum quality | Very Large |
 
-### `npm run eject`
+### Memory Considerations
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Browser Limit**: 16,384px maximum canvas size
+- **Recommended**: Use 16x for most cases
+- **Large Boards**: System auto-adjusts quality
+- **Batch Export**: Adds delays to prevent crashes
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🛠️ Technical Details
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Technologies
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- React 18
+- Vite
+- TailwindCSS
+- Canvas API
+- SVG
 
-## Learn More
+### Key Components
+```
+src/
+├── components/
+│   ├── ChessBoard.jsx              # Main board renderer
+│   ├── ControlPanel.jsx            # Settings panel
+│   ├── ActionButtons.jsx           # Export buttons
+│   ├── LoadingComponents.jsx       # Progress UI
+│   └── NotificationContainer.jsx   # Toast messages
+├── hooks/
+│   ├── usePieceImages.js           # Image loading with cache
+│   └── useNotifications.js         # Toast system
+├── utils/
+│   ├── exportUtils.js              # Export handlers
+│   ├── imageOptimizer.js           # Canvas optimization
+│   ├── generateChessSVG.js         # SVG generator
+│   ├── advancedExport.js           # Progressive export
+│   ├── fenParser.js                # FEN validation
+│   └── coordinateCalculations.js   # Coordinates
+└── constants/
+    └── chessConstants.js           # Config & data
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Export Process
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. **Validation**: Check FEN and piece images
+2. **Canvas Creation**: Generate high-res canvas
+3. **Memory Check**: Validate against browser limits
+4. **Quality Adjustment**: Auto-scale if needed
+5. **Rendering**: Draw board, pieces, coordinates
+6. **Blob Creation**: Convert to image format
+7. **Download**: Trigger browser download
 
-### Code Splitting
+### Caching Strategy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **Piece Images**: Cached per style
+- **Retry Logic**: 3 attempts with delays
+- **Placeholder Fallback**: Shows on failure
+- **Memory Cleanup**: Automatic garbage collection
 
-### Analyzing the Bundle Size
+## 🐛 Troubleshooting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Pieces Not Loading
+```javascript
+// Check console for errors
+// Common fixes:
+1. Clear browser cache
+2. Try different piece style
+3. Check internet connection
+4. Disable ad blockers
+```
 
-### Making a Progressive Web App
+### Export Fails
+```javascript
+// Solutions:
+1. Reduce export quality
+2. Reduce board size
+3. Close other tabs
+4. Try different format (SVG is lightest)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Memory Issues
+```javascript
+// Best practices:
+1. Use recommended quality (16x)
+2. Export one at a time
+3. Close unused browser tabs
+4. Restart browser if needed
+```
 
-### Advanced Configuration
+## 📊 Performance Tips
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+1. **Cache**: Keep same piece style for speed
+2. **Quality**: Start with 16x, adjust if needed
+3. **Size**: 400px is optimal for most uses
+4. **Format**: PNG for quality, JPEG for size
+5. **Batch**: Export 2-3 formats maximum
 
-### Deployment
+## 🔧 Development
+```bash
+# Development mode
+npm start
+```
+## 🙏 Credits
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Lichess.org for piece images
+- Chess community for testing

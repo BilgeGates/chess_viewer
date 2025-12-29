@@ -1,10 +1,6 @@
+import { parseFEN } from "./fenParser";
 /**
- * Creates ultra high-quality chessboard canvas for export
- * FIXED 16x QUALITY - Reliable and powerful
- * Dark coordinates for print on white paper
- *
- * @param {Object} config - Export configuration
- * @returns {HTMLCanvasElement} Final high-quality canvas
+ * Create ultra high-quality canvas with MEMORY OPTIMIZATION
  */
 export const createUltraQualityCanvas = (config) => {
   const {
@@ -15,29 +11,44 @@ export const createUltraQualityCanvas = (config) => {
     flipped,
     fen,
     pieceImages,
+    exportQuality = 16,
   } = config;
 
-  // Parse FEN
-  const board = parseFEN(fen);
-
-  // Validate
-  if (!board || !pieceImages || Object.keys(pieceImages).length === 0) {
-    throw new Error("Invalid board or piece images");
+  // Validate inputs
+  if (!pieceImages || Object.keys(pieceImages).length === 0) {
+    throw new Error("Piece images not loaded");
   }
 
-  // Border calculation
+  const board = parseFEN(fen);
+
+  if (!board || board.length !== 8) {
+    throw new Error("Invalid FEN notation");
+  }
+
+  // Calculate dimensions
   const borderSize = showCoords
-    ? Math.max(16, Math.min(22, boardSize / 25))
+    ? Math.max(20, Math.min(30, boardSize / 20))
     : 0;
   const displaySize = boardSize + borderSize * 2;
 
-  // FIXED 16x QUALITY - Reliable supreme quality
-  const QUALITY = 16;
+  // SMART QUALITY SCALING - Prevent memory issues
+  let actualQuality = exportQuality;
+  const maxCanvasSize = 16384; // Browser limit
+  const projectedSize = displaySize * exportQuality;
 
-  // Create high-resolution canvas
+  if (projectedSize > maxCanvasSize) {
+    actualQuality = Math.floor(maxCanvasSize / displaySize);
+    console.warn(
+      `Quality reduced to ${actualQuality}x to prevent memory issues`
+    );
+  }
+
+  // Create canvas with optimized settings
   const canvas = document.createElement("canvas");
-  canvas.width = displaySize * QUALITY;
-  canvas.height = displaySize * QUALITY;
+  const finalSize = displaySize * actualQuality;
+
+  canvas.width = finalSize;
+  canvas.height = finalSize;
 
   const ctx = canvas.getContext("2d", {
     alpha: true,
@@ -45,7 +56,12 @@ export const createUltraQualityCanvas = (config) => {
     willReadFrequently: false,
   });
 
-  ctx.scale(QUALITY, QUALITY);
+  if (!ctx) {
+    throw new Error("Failed to get canvas context");
+  }
+
+  // Apply scaling
+  ctx.scale(actualQuality, actualQuality);
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
@@ -54,7 +70,7 @@ export const createUltraQualityCanvas = (config) => {
   // Clear canvas
   ctx.clearRect(0, 0, displaySize, displaySize);
 
-  // Draw squares
+  // Draw squares with perfect alignment
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       ctx.fillStyle = (row + col) % 2 === 0 ? lightSquare : darkSquare;
@@ -70,45 +86,61 @@ export const createUltraQualityCanvas = (config) => {
     }
   }
 
-  // Draw pieces
+  // Draw pieces with error checking
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const piece = board[row]?.[col];
+      if (!piece) continue;
+
       const img = pieceImages[piece];
 
-      if (img?.complete && img.naturalWidth > 0) {
-        const drawRow = flipped ? 7 - row : row;
-        const drawCol = flipped ? 7 - col : col;
-        const cx = drawCol * squareSize + borderSize + squareSize / 2;
-        const cy = drawRow * squareSize + borderSize + squareSize / 2;
+      if (!img) {
+        console.warn(`Missing image for piece: ${piece}`);
+        continue;
+      }
 
+      if (!img.complete || img.naturalWidth === 0) {
+        console.warn(`Image not loaded for piece: ${piece}`);
+        continue;
+      }
+
+      const drawRow = flipped ? 7 - row : row;
+      const drawCol = flipped ? 7 - col : col;
+      const cx = drawCol * squareSize + borderSize + squareSize / 2;
+      const cy = drawRow * squareSize + borderSize + squareSize / 2;
+
+      const pieceScale = 0.9;
+      const pieceSize = squareSize * pieceScale;
+
+      try {
         ctx.drawImage(
           img,
-          cx - squareSize * 0.45,
-          cy - squareSize * 0.45,
-          squareSize * 0.9,
-          squareSize * 0.9
+          cx - pieceSize / 2,
+          cy - pieceSize / 2,
+          pieceSize,
+          pieceSize
         );
+      } catch (err) {
+        console.error(`Failed to draw piece ${piece}:`, err);
       }
     }
   }
 
-  // Draw coordinates - DARK for print visibility
+  // Draw coordinates
   if (showCoords) {
-    const fontSize = boardSize * 0.03;
-    const fontSizePx = Math.round(Math.max(8, Math.min(17, fontSize)));
+    const fontSize = Math.round(Math.max(10, Math.min(20, boardSize * 0.032)));
 
     ctx.save();
-    ctx.font = `700 ${fontSizePx}px -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif`;
+    ctx.font = `700 ${fontSize}px system-ui, -apple-system, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    // DARK coordinates for white paper/print visibility
-    ctx.fillStyle = "#fffff"; // Dark slate - visible on white
+    // EXPORT ÜÇÜN QARA RƏNG
+    ctx.fillStyle = "#1a1a1a";
 
-    // Strong shadow for depth
-    ctx.shadowColor = "rgba(255, 255, 255, 0.3)";
-    ctx.shadowBlur = 1;
+    // Shadow for readability on white paper
+    ctx.shadowColor = "rgba(255, 255, 255, 0.4)";
+    ctx.shadowBlur = 1.5;
     ctx.shadowOffsetX = 0.5;
     ctx.shadowOffsetY = 0.5;
 
@@ -130,32 +162,5 @@ export const createUltraQualityCanvas = (config) => {
     ctx.restore();
   }
 
-  // Return full resolution canvas
   return canvas;
-};
-
-// parseFEN helper
-const parseFEN = (fenString) => {
-  try {
-    const position = fenString.trim().split(/\s+/)[0];
-    const rows = position.split("/");
-    const board = [];
-
-    for (let row of rows) {
-      const boardRow = [];
-      for (let char of row) {
-        if (isNaN(char)) {
-          boardRow.push(char);
-        } else {
-          boardRow.push(...Array(parseInt(char)).fill(""));
-        }
-      }
-      board.push(boardRow);
-    }
-    return board;
-  } catch {
-    return Array(8)
-      .fill(null)
-      .map(() => Array(8).fill(""));
-  }
 };
