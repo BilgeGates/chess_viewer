@@ -1,9 +1,13 @@
-// src/utils/fenParser.js
-
 /**
  * Parse FEN string into 2D board array
+ * Board is NORMALIZED to "white at bottom"
+ *
+ * board[row][col]
+ * row 0 -> rank 1
+ * row 7 -> rank 8
+ *
  * @param {string} fenString - FEN notation
- * @returns {Array} 2D array representing the board
+ * @returns {string[][]} 8x8 board array
  */
 export function parseFEN(fenString) {
   try {
@@ -20,17 +24,18 @@ export function parseFEN(fenString) {
 
     const board = [];
 
-    for (let row of rows) {
+    // FEN gives ranks from 8 -> 1 (top -> bottom)
+    for (const row of rows) {
       const boardRow = [];
 
-      for (let char of row) {
+      for (const char of row) {
         if (isNaN(char)) {
           if (!"pnbrqkPNBRQK".includes(char)) {
             throw new Error(`Invalid piece character: ${char}`);
           }
           boardRow.push(char);
         } else {
-          const emptySquares = parseInt(char);
+          const emptySquares = parseInt(char, 10);
           if (emptySquares < 1 || emptySquares > 8) {
             throw new Error(`Invalid empty square count: ${char}`);
           }
@@ -45,42 +50,43 @@ export function parseFEN(fenString) {
       board.push(boardRow);
     }
 
-    return board;
+    return board.reverse();
   } catch (error) {
     console.error("FEN parsing error:", error);
-    return Array(8)
-      .fill(null)
-      .map(() => Array(8).fill(""));
+
+    // Safe empty board fallback
+    return Array.from({ length: 8 }, () => Array(8).fill(""));
   }
 }
 
 /**
  * Validate FEN notation
  * @param {string} fen - FEN string to validate
- * @returns {boolean} Whether FEN is valid
+ * @returns {boolean}
  */
 export function validateFEN(fen) {
   try {
     if (!fen || typeof fen !== "string") return false;
 
-    const parts = fen.trim().split(/\s+/);
-    if (parts.length < 1) return false;
-
-    const position = parts[0];
+    const position = fen.trim().split(/\s+/)[0];
     const rows = position.split("/");
 
     if (rows.length !== 8) return false;
 
-    for (let row of rows) {
+    for (const row of rows) {
       let count = 0;
-      for (let char of row) {
+
+      for (const char of row) {
         if (isNaN(char)) {
           if (!"pnbrqkPNBRQK".includes(char)) return false;
           count++;
         } else {
-          count += parseInt(char);
+          const num = parseInt(char, 10);
+          if (num < 1 || num > 8) return false;
+          count += num;
         }
       }
+
       if (count !== 8) return false;
     }
 
@@ -91,42 +97,88 @@ export function validateFEN(fen) {
 }
 
 /**
- * Generate random chess position
- * @returns {string} Random valid FEN
+ * Get material statistics from FEN
+ * @param {string} fen
+ * @returns {object|null}
  */
-export function generateRandomPosition() {
-  const pieces = ["r", "n", "b", "q", "k", "p", "R", "N", "B", "Q", "K", "P"];
-  const rows = [];
+export function getPositionStats(fen) {
+  try {
+    const board = parseFEN(fen);
 
-  for (let i = 0; i < 8; i++) {
-    let row = "";
-    let emptyCount = 0;
+    const stats = {
+      white: {
+        pawns: 0,
+        knights: 0,
+        bishops: 0,
+        rooks: 0,
+        queens: 0,
+        kings: 0,
+      },
+      black: {
+        pawns: 0,
+        knights: 0,
+        bishops: 0,
+        rooks: 0,
+        queens: 0,
+        kings: 0,
+      },
+    };
 
-    for (let j = 0; j < 8; j++) {
-      if (Math.random() > 0.6) {
-        if (emptyCount > 0) {
-          row += emptyCount;
-          emptyCount = 0;
+    for (const row of board) {
+      for (const piece of row) {
+        if (!piece) continue;
+
+        const color = piece === piece.toUpperCase() ? "white" : "black";
+        const type = piece.toLowerCase();
+
+        switch (type) {
+          case "p":
+            stats[color].pawns++;
+            break;
+          case "n":
+            stats[color].knights++;
+            break;
+          case "b":
+            stats[color].bishops++;
+            break;
+          case "r":
+            stats[color].rooks++;
+            break;
+          case "q":
+            stats[color].queens++;
+            break;
+          case "k":
+            stats[color].kings++;
+            break;
+          default:
+            break;
         }
-        row += pieces[Math.floor(Math.random() * pieces.length)];
-      } else {
-        emptyCount++;
       }
     }
 
-    if (emptyCount > 0) {
-      row += emptyCount;
-    }
-
-    rows.push(row);
+    return stats;
+  } catch {
+    return null;
   }
-
-  return rows.join("/") + " w KQkq - 0 1";
 }
 
-// Default export for backward compatibility
-export default {
-  parseFEN,
-  validateFEN,
-  generateRandomPosition,
-};
+/**
+ * Check if FEN position is empty
+ * @param {string} fen
+ * @returns {boolean}
+ */
+export function isEmptyPosition(fen) {
+  try {
+    const board = parseFEN(fen);
+
+    for (const row of board) {
+      for (const piece of row) {
+        if (piece) return false;
+      }
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}

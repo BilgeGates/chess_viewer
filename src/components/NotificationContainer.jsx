@@ -1,140 +1,139 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Check, X, AlertTriangle, Info } from "lucide-react";
 
-export const NotificationContainer = ({ notifications, onRemove }) => {
+const NotificationContainer = ({ notifications, onRemove }) => {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => (
-        <Toast
-          key={notification.id}
-          notification={notification}
-          onRemove={() => onRemove(notification.id)}
-        />
-      ))}
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none">
+      <div className="flex flex-col items-center gap-2">
+        {notifications.map((notification) => (
+          <DynamicIsland
+            key={notification.id}
+            notification={notification}
+            onRemove={() => onRemove(notification.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
 
-const Toast = ({ notification, onRemove }) => {
-  const [isExiting, setIsExiting] = useState(false);
+const DynamicIsland = ({ notification, onRemove }) => {
+  const [phase, setPhase] = useState("compact");
 
   useEffect(() => {
-    if (notification.duration > 0) {
-      const timer = setTimeout(() => {
-        setIsExiting(true);
-        setTimeout(onRemove, 300);
-      }, notification.duration - 300);
+    // Compact -> Expanding -> Expanded -> Collapsing -> Compact -> Remove
+    const timeline = [
+      { phase: "compact", duration: 100 },
+      { phase: "expanding", duration: 300 },
+      { phase: "expanded", duration: notification.duration - 800 },
+      { phase: "collapsing", duration: 300 },
+      { phase: "compact", duration: 100 },
+    ];
 
-      return () => clearTimeout(timer);
-    }
+    let currentIndex = 0;
+    let timeoutId;
+
+    const runTimeline = () => {
+      if (currentIndex >= timeline.length) {
+        onRemove();
+        return;
+      }
+
+      const current = timeline[currentIndex];
+      setPhase(current.phase);
+
+      timeoutId = setTimeout(() => {
+        currentIndex++;
+        runTimeline();
+      }, current.duration);
+    };
+
+    runTimeline();
+
+    return () => clearTimeout(timeoutId);
   }, [notification.duration, onRemove]);
 
-  const typeStyles = {
-    success: "bg-green-600 border-green-500",
-    error: "bg-red-600 border-red-500",
-    warning: "bg-amber-600 border-amber-500",
-    info: "bg-blue-600 border-blue-500",
+  const getPhaseStyles = () => {
+    switch (phase) {
+      case "compact":
+        return "w-28 h-9 rounded-full";
+      case "expanding":
+        return "w-80 h-14 rounded-3xl";
+      case "expanded":
+        return "w-80 h-14 rounded-3xl";
+      case "collapsing":
+        return "w-28 h-9 rounded-full";
+      default:
+        return "w-28 h-9 rounded-full";
+    }
+  };
+
+  const typeColors = {
+    success: "bg-gradient-to-r from-emerald-500 to-green-600",
+    error: "bg-gradient-to-r from-red-500 to-rose-600",
+    warning: "bg-gradient-to-r from-amber-500 to-orange-600",
+    info: "bg-gradient-to-r from-blue-500 to-cyan-600",
   };
 
   const icons = {
-    success: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M5 13l4 4L19 7"
-        />
-      </svg>
-    ),
-    error: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M6 18L18 6M6 6l12 12"
-        />
-      </svg>
-    ),
-    warning: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-        />
-      </svg>
-    ),
-    info: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-    ),
+    success: <Check className="w-4 h-4" strokeWidth={3} />,
+    error: <X className="w-4 h-4" strokeWidth={3} />,
+    warning: <AlertTriangle className="w-4 h-4" strokeWidth={2.5} />,
+    info: <Info className="w-4 h-4" strokeWidth={2.5} />,
   };
+
+  const showContent = phase === "expanded" || phase === "expanding";
 
   return (
     <div
       className={`
-        ${typeStyles[notification.type]}
-        border-l-4 px-4 py-3 rounded-lg shadow-lg
-        flex items-center gap-3 min-w-[300px] max-w-md
-        transform transition-all duration-300 ease-out
-        ${
-          isExiting ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
-        }
+        ${getPhaseStyles()}
+        ${typeColors[notification.type]}
+        flex items-center justify-center gap-3 px-4
+        transition-all duration-300 ease-in-out
+        shadow-2xl
+        pointer-events-auto cursor-pointer
+        hover:scale-105 active:scale-95
+        backdrop-blur-xl
       `}
+      style={{
+        boxShadow:
+          "0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)",
+      }}
+      onClick={onRemove}
     >
-      <div className="text-white">{icons[notification.type]}</div>
-      <div className="flex-1 text-white text-sm font-medium">
-        {notification.message}
+      {/* Icon */}
+      <div className="text-white flex-shrink-0 flex items-center justify-center">
+        {icons[notification.type]}
       </div>
-      <button
-        onClick={() => {
-          setIsExiting(true);
-          setTimeout(onRemove, 300);
-        }}
-        className="text-white/80 hover:text-white transition-colors"
-      >
-        <svg
-          className="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
+
+      {/* Message */}
+      {showContent && (
+        <div className="flex-1 overflow-hidden">
+          <p className="text-white text-sm font-semibold tracking-tight truncate">
+            {notification.message}
+          </p>
+        </div>
+      )}
+
+      {/* Glow effect */}
+      {phase === "expanded" && (
+        <div
+          className="absolute inset-0 rounded-3xl opacity-30 blur-xl"
+          style={{
+            background:
+              notification.type === "success"
+                ? "rgba(16, 185, 129, 0.5)"
+                : notification.type === "error"
+                ? "rgba(239, 68, 68, 0.5)"
+                : notification.type === "warning"
+                ? "rgba(245, 158, 11, 0.5)"
+                : "rgba(59, 130, 246, 0.5)",
+          }}
+        />
+      )}
     </div>
   );
 };
+
+export default NotificationContainer;

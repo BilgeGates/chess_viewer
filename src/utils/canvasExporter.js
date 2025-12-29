@@ -1,138 +1,175 @@
 import { createUltraQualityCanvas } from "./imageOptimizer";
-import { generateChessSVG } from "./generateChessSVG";
 
 /**
- * Download PNG with proper error handling
+ * Cancellation flag
  */
-export const downloadPNG = async (config, fileName) => {
-  try {
-    const canvas = createUltraQualityCanvas(config);
+let isCancelled = false;
 
-    return new Promise((resolve, reject) => {
-      // Use higher quality settings
+/**
+ * Cancel current export
+ */
+export function cancelExport() {
+  isCancelled = true;
+}
+
+/**
+ * Reset cancellation
+ */
+export function resetCancellation() {
+  isCancelled = false;
+}
+
+/**
+ * Download PNG with proper cancellation
+ */
+export async function downloadPNG(config, fileName, onProgress) {
+  isCancelled = false;
+
+  try {
+    onProgress?.(10);
+
+    // Create canvas
+    const canvas = createUltraQualityCanvas(config);
+    if (isCancelled) throw new Error("Cancelled");
+
+    onProgress?.(30);
+
+    // Create blob - this is the actual work
+    const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
         (blob) => {
-          if (!blob) {
-            return reject(new Error("Failed to create PNG blob"));
+          if (isCancelled) {
+            reject(new Error("Cancelled"));
+            return;
           }
-
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `${fileName}.png`;
-
-          // Trigger download
-          document.body.appendChild(a);
-          a.click();
-
-          // Cleanup with delay to ensure download starts
-          setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            resolve();
-          }, 100);
+          if (!blob) {
+            reject(new Error("Failed to create PNG blob"));
+            return;
+          }
+          resolve(blob);
         },
         "image/png",
         1.0
       );
     });
+
+    if (isCancelled) throw new Error("Cancelled");
+
+    onProgress?.(70);
+
+    // Download
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${fileName}.png`;
+    document.body.appendChild(link);
+    link.click();
+
+    onProgress?.(100);
+
+    // Cleanup
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 100);
   } catch (error) {
-    console.error("PNG Export Error:", error);
+    if (error.message === "Cancelled") {
+      throw new Error("Export cancelled");
+    }
     throw new Error(`PNG export failed: ${error.message}`);
   }
-};
+}
 
 /**
- * Download JPEG with white background
+ * Download JPEG with proper cancellation
  */
-export const downloadJPEG = async (config, fileName) => {
-  try {
-    const canvas = createUltraQualityCanvas(config);
+export async function downloadJPEG(config, fileName, onProgress) {
+  isCancelled = false;
 
-    // Create temporary canvas with white background
+  try {
+    onProgress?.(10);
+
+    // Create canvas
+    const canvas = createUltraQualityCanvas(config);
+    if (isCancelled) throw new Error("Cancelled");
+
+    onProgress?.(20);
+
+    // Add white background
     const tempCanvas = document.createElement("canvas");
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
-
-    const ctx = tempCanvas.getContext("2d", {
-      alpha: false,
-      desynchronized: false,
-    });
-
-    // Fill white background
+    const ctx = tempCanvas.getContext("2d", { alpha: false });
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-    // Draw chess board on top
     ctx.drawImage(canvas, 0, 0);
 
-    return new Promise((resolve, reject) => {
+    if (isCancelled) throw new Error("Cancelled");
+    onProgress?.(40);
+
+    // Create blob
+    const blob = await new Promise((resolve, reject) => {
       tempCanvas.toBlob(
         (blob) => {
-          if (!blob) {
-            return reject(new Error("Failed to create JPEG blob"));
+          if (isCancelled) {
+            reject(new Error("Cancelled"));
+            return;
           }
-
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `${fileName}.jpg`;
-
-          document.body.appendChild(a);
-          a.click();
-
-          setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            resolve();
-          }, 100);
+          if (!blob) {
+            reject(new Error("Failed to create JPEG blob"));
+            return;
+          }
+          resolve(blob);
         },
         "image/jpeg",
         0.98
       );
     });
-  } catch (error) {
-    console.error("JPEG Export Error:", error);
-    throw new Error(`JPEG export failed: ${error.message}`);
-  }
-};
 
-/**
- * Download SVG - Vector format
- */
-export const downloadSVG = async (config, fileName) => {
-  try {
-    const svg = generateChessSVG(config);
+    if (isCancelled) throw new Error("Cancelled");
 
-    const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+    onProgress?.(70);
+
+    // Download
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${fileName}.svg`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${fileName}.jpg`;
+    document.body.appendChild(link);
+    link.click();
 
-    document.body.appendChild(a);
-    a.click();
+    onProgress?.(100);
 
+    // Cleanup
     setTimeout(() => {
-      document.body.removeChild(a);
+      document.body.removeChild(link);
       URL.revokeObjectURL(url);
     }, 100);
   } catch (error) {
-    console.error("SVG Export Error:", error);
-    throw new Error(`SVG export failed: ${error.message}`);
+    if (error.message === "Cancelled") {
+      throw new Error("Export cancelled");
+    }
+    throw new Error(`JPEG export failed: ${error.message}`);
   }
-};
+}
 
 /**
- * Copy image to clipboard
+ * Copy to clipboard
  */
-export const copyToClipboard = async (config) => {
+export async function copyToClipboard(config) {
+  isCancelled = false;
+
   try {
     const canvas = createUltraQualityCanvas(config);
+    if (isCancelled) throw new Error("Cancelled");
 
     const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
         (blob) => {
+          if (isCancelled) {
+            reject(new Error("Cancelled"));
+            return;
+          }
           if (!blob) reject(new Error("Failed to create blob"));
           else resolve(blob);
         },
@@ -141,43 +178,49 @@ export const copyToClipboard = async (config) => {
       );
     });
 
+    if (isCancelled) throw new Error("Cancelled");
     await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 
     return true;
   } catch (error) {
-    console.error("Clipboard Error:", error);
+    if (error.message === "Cancelled") {
+      throw new Error("Export cancelled");
+    }
     throw new Error(`Copy failed: ${error.message}`);
   }
-};
+}
 
 /**
- * Batch export multiple formats
+ * Batch export
  */
-export const batchExport = async (config, formats, fileName, onProgress) => {
+export async function batchExport(config, formats, fileName, onProgress) {
+  isCancelled = false;
   const total = formats.length;
   const results = { success: [], failed: [] };
 
   for (let i = 0; i < total; i++) {
+    if (isCancelled) throw new Error("Export cancelled");
+
     const format = formats[i];
+    const baseProgress = (i / total) * 100;
 
     try {
-      onProgress?.((i / total) * 100, format);
+      const updateProgress = (p) => {
+        const totalProgress = baseProgress + p / total;
+        onProgress?.(totalProgress, format);
+      };
 
       if (format === "png") {
-        await downloadPNG(config, fileName);
+        await downloadPNG(config, fileName, updateProgress);
         results.success.push("PNG");
       } else if (format === "jpeg") {
-        await downloadJPEG(config, fileName);
+        await downloadJPEG(config, fileName, updateProgress);
         results.success.push("JPEG");
-      } else if (format === "svg") {
-        await downloadSVG(config, fileName);
-        results.success.push("SVG");
       }
-
-      // Delay between downloads to prevent browser blocking
-      await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
-      console.error(`${format} export failed:`, error);
+      if (error.message === "Export cancelled") {
+        throw error;
+      }
       results.failed.push({ format, error: error.message });
     }
   }
@@ -191,4 +234,4 @@ export const batchExport = async (config, formats, fileName, onProgress) => {
   }
 
   return results;
-};
+}
