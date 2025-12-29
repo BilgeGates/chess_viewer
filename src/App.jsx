@@ -3,19 +3,20 @@ import ChessBoard from "./components/ChessBoard";
 import ControlPanel from "./components/ControlPanel";
 import ActionButtons from "./components/ActionButtons";
 import UserGuide from "./components/UserGuide";
-import { NotificationContainer } from "./components/NotificationContainer";
-import { ExportProgress } from "./components/LoadingComponents";
+import NotificationContainer from "./components/NotificationContainer";
+import { ExportProgress } from "./components/ExportProgress";
 import { useNotifications } from "./hooks/useNotifications";
 import {
   downloadPNG,
   downloadJPEG,
-  downloadSVG,
   copyToClipboard,
   batchExport,
+  cancelExport,
+  resetCancellation,
 } from "./utils/canvasExporter";
-import { generateRandomPosition } from "./utils/fenParser";
 
 const App = () => {
+  // Board state
   const [fen, setFen] = useState(
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
   );
@@ -24,17 +25,23 @@ const App = () => {
   const [lightSquare, setLightSquare] = useState("#f0d9b5");
   const [darkSquare, setDarkSquare] = useState("#b58863");
   const [boardSize, setBoardSize] = useState(400);
-  const [fileName, setFileName] = useState("chess-position");
   const [flipped, setFlipped] = useState(false);
+
+  // Export state
+  const [fileName, setFileName] = useState("chess-position");
   const [exportQuality, setExportQuality] = useState(16);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [currentFormat, setCurrentFormat] = useState(null);
+  const [realFileSize, setRealFileSize] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showProgress, setShowProgress] = useState(true);
 
   const boardRef = useRef(null);
-  const { notifications, success, error, removeNotification } =
+  const { notifications, success, error, info, removeNotification } =
     useNotifications();
 
+  // Get export configuration
   const getExportConfig = () => ({
     boardSize,
     showCoords,
@@ -46,108 +53,96 @@ const App = () => {
     exportQuality,
   });
 
+  // Handle PNG export
   const handleDownloadPNG = async () => {
     setIsExporting(true);
     setCurrentFormat("png");
     setExportProgress(0);
+    setRealFileSize(null);
+    setIsPaused(false);
+    setShowProgress(true);
+    resetCancellation();
 
     try {
-      setExportProgress(50);
-      await downloadPNG(getExportConfig(), fileName);
-      setExportProgress(100);
-      success("PNG exported successfully!");
+      await downloadPNG(getExportConfig(), fileName, (progress, size) => {
+        if (!isPaused) {
+          setExportProgress(progress);
+        }
+        if (size) setRealFileSize(size);
+      });
+      success("PNG exported successfully");
     } catch (err) {
-      error("PNG export failed: " + err.message);
+      if (err.message === "Export cancelled") {
+        info("Export cancelled");
+      } else {
+        error("PNG export failed: " + err.message);
+      }
       console.error(err);
     } finally {
       setTimeout(() => {
         setIsExporting(false);
         setCurrentFormat(null);
         setExportProgress(0);
-      }, 500);
+        setRealFileSize(null);
+        setIsPaused(false);
+      }, 300);
     }
   };
 
+  // Handle JPEG export
   const handleDownloadJPEG = async () => {
     setIsExporting(true);
     setCurrentFormat("jpeg");
     setExportProgress(0);
+    setRealFileSize(null);
+    setIsPaused(false);
+    setShowProgress(true);
+    resetCancellation();
 
     try {
-      setExportProgress(50);
-      await downloadJPEG(getExportConfig(), fileName);
-      setExportProgress(100);
-      success("JPEG exported successfully!");
+      await downloadJPEG(getExportConfig(), fileName, (progress, size) => {
+        if (!isPaused) {
+          setExportProgress(progress);
+        }
+        if (size) setRealFileSize(size);
+      });
+      success("JPEG exported successfully");
     } catch (err) {
-      error("JPEG export failed: " + err.message);
+      if (err.message === "Export cancelled") {
+        info("Export cancelled");
+      } else {
+        error("JPEG export failed: " + err.message);
+      }
       console.error(err);
     } finally {
       setTimeout(() => {
         setIsExporting(false);
         setCurrentFormat(null);
         setExportProgress(0);
-      }, 500);
+        setRealFileSize(null);
+        setIsPaused(false);
+      }, 300);
     }
   };
 
-  const handleDownloadSVG = async () => {
-    setIsExporting(true);
-    setCurrentFormat("svg");
-    setExportProgress(0);
-
-    try {
-      setExportProgress(50);
-      await downloadSVG(getExportConfig(), fileName);
-      setExportProgress(100);
-      success("SVG exported successfully!");
-    } catch (err) {
-      error("SVG export failed: " + err.message);
-      console.error(err);
-    } finally {
-      setTimeout(() => {
-        setIsExporting(false);
-        setCurrentFormat(null);
-        setExportProgress(0);
-      }, 500);
-    }
-  };
-
+  // Handle copy to clipboard
   const handleCopyImage = async () => {
     try {
       await copyToClipboard(getExportConfig());
-      success("Image copied to clipboard!");
+      success("Image copied to clipboard");
     } catch (err) {
       error("Copy failed: " + err.message);
       console.error(err);
     }
   };
 
-  const handleCopyFEN = async () => {
-    try {
-      await navigator.clipboard.writeText(fen);
-      success("FEN copied to clipboard!");
-    } catch (err) {
-      error("Failed to copy FEN");
-      console.error(err);
-    }
-  };
-
+  // Handle board flip
   const handleFlip = () => {
     setFlipped(!flipped);
-    success("Board flipped!");
+    success("Board flipped");
   };
 
-  const handleRandomPosition = () => {
-    try {
-      const randomFen = generateRandomPosition();
-      setFen(randomFen);
-      success("Random position generated!");
-    } catch (err) {
-      error("Failed to generate random position");
-      console.error(err);
-    }
-  };
-
+  // Handle batch export
   const handleBatchExport = async (formats) => {
     setIsExporting(true);
     setExportProgress(0);
@@ -162,7 +157,7 @@ const App = () => {
           setCurrentFormat(format);
         }
       );
-      success(`Exported ${formats.length} formats successfully!`);
+      success(`Exported ${formats.length} formats successfully`);
     } catch (err) {
       error("Batch export failed: " + err.message);
       console.error(err);
@@ -171,8 +166,36 @@ const App = () => {
         setIsExporting(false);
         setCurrentFormat(null);
         setExportProgress(0);
-      }, 500);
+      }, 300);
     }
+  };
+
+  // Handle cancel export
+  const handleCancelExport = () => {
+    cancelExport();
+    setIsExporting(false);
+    setCurrentFormat(null);
+    setExportProgress(0);
+    setRealFileSize(null);
+    setIsPaused(false);
+    setShowProgress(true);
+  };
+
+  // Handle close modal (hide only)
+  const handleCloseModal = () => {
+    setShowProgress(false);
+  };
+
+  // Handle pause
+  const handlePause = () => {
+    setIsPaused(true);
+    info("Export paused");
+  };
+
+  // Handle resume
+  const handleResume = () => {
+    setIsPaused(false);
+    info("Export resumed");
   };
 
   return (
@@ -190,7 +213,7 @@ const App = () => {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,1fr)_minmax(400px,600px)] gap-8 items-start">
-          {/* Left Side */}
+          {/* Left Side - Board & Actions */}
           <div className="flex flex-col items-center gap-6 w-full">
             <div className="w-full max-w-2xl">
               <ChessBoard
@@ -209,18 +232,15 @@ const App = () => {
               <ActionButtons
                 onDownloadPNG={handleDownloadPNG}
                 onDownloadJPEG={handleDownloadJPEG}
-                onDownloadSVG={handleDownloadSVG}
                 onCopyImage={handleCopyImage}
                 onFlip={handleFlip}
-                onCopyFEN={handleCopyFEN}
-                onRandomPosition={handleRandomPosition}
                 onBatchExport={handleBatchExport}
                 isExporting={isExporting}
               />
             </div>
           </div>
 
-          {/* Right Side */}
+          {/* Right Side - Controls */}
           <div className="w-full">
             <ControlPanel
               fen={fen}
@@ -239,26 +259,42 @@ const App = () => {
               setFileName={setFileName}
               exportQuality={exportQuality}
               setExportQuality={setExportQuality}
+              onNotification={(message, type) => {
+                if (type === "success") success(message);
+                else if (type === "error") error(message);
+                else if (type === "warning") info(message);
+              }}
             />
           </div>
         </div>
 
-        {/* User Guide - Yeni */}
+        {/* User Guide */}
         <div className="mt-8">
           <UserGuide />
         </div>
       </div>
 
+      {/* Notifications */}
       <NotificationContainer
         notifications={notifications}
         onRemove={removeNotification}
       />
 
-      <ExportProgress
-        isExporting={isExporting}
-        progress={exportProgress}
-        currentFormat={currentFormat}
-      />
+      {/* Export Progress */}
+      {showProgress && (
+        <ExportProgress
+          isExporting={isExporting}
+          progress={exportProgress}
+          currentFormat={currentFormat}
+          config={getExportConfig()}
+          realFileSize={realFileSize}
+          isPaused={isPaused}
+          onClose={handleCloseModal}
+          onPause={handlePause}
+          onResume={handleResume}
+          onCancel={handleCancelExport}
+        />
+      )}
     </div>
   );
 };

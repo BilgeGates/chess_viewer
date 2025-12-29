@@ -1,5 +1,3 @@
-// src/utils/coordinateCalculations.js
-
 /**
  * Calculate optimal font size based on board size
  */
@@ -47,9 +45,9 @@ export const drawCoordinates = (
   ctx.shadowOffsetX = 0.5;
   ctx.shadowOffsetY = 0.5;
 
-  // Rank numbers (1-8)
+  // Ranks (1–8)
   for (let i = 0; i < 8; i++) {
-    const rank = flipped ? i + 1 : 8 - i;
+    const rank = flipped ? 8 - i : i + 1;
     const yPos = borderSize + i * squareSize + squareSize / 2;
     ctx.fillText(rank.toString(), borderSize * 0.5, yPos);
   }

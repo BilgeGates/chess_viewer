@@ -1,5 +1,3 @@
-// src/hooks/usePieceImages.js
-
 import { useEffect, useState, useRef } from "react";
 import { PIECE_MAP } from "../constants/chessConstants";
 

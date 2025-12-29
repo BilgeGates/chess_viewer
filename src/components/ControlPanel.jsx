@@ -5,6 +5,7 @@ import {
   QUALITY_PRESETS,
 } from "../constants/chessConstants";
 import { validateFEN } from "../utils/fenParser";
+import { Copy, CheckCircle2 } from "lucide-react";
 
 const ControlPanel = (props) => {
   const {
@@ -40,18 +41,35 @@ const ControlPanel = (props) => {
       const isValid = validateFEN(fen);
       if (onNotification) {
         if (isValid) {
-          onNotification("✓ Valid FEN", "success");
+          onNotification("Valid FEN", "success");
         } else {
-          onNotification("✗ Invalid FEN", "error");
+          onNotification("Invalid FEN", "error");
         }
       } else {
-        alert(isValid ? "✓ Valid FEN" : "✗ Invalid FEN");
+        alert(isValid ? "Valid FEN" : "Invalid FEN");
       }
     } catch (err) {
       if (onNotification) {
-        onNotification("✗ Invalid FEN: " + err.message, "error");
+        onNotification("Invalid FEN: " + err.message, "error");
       } else {
-        alert("✗ Invalid FEN: " + err.message);
+        alert("Invalid FEN: " + err.message);
+      }
+    }
+  };
+
+  const handleCopyFEN = async () => {
+    try {
+      await navigator.clipboard.writeText(fen);
+      if (onNotification) {
+        onNotification("FEN copied to clipboard", "success");
+      } else {
+        alert("FEN copied to clipboard!");
+      }
+    } catch (err) {
+      if (onNotification) {
+        onNotification("Failed to copy FEN", "error");
+      } else {
+        alert("Failed to copy FEN");
       }
     }
   };
@@ -75,7 +93,7 @@ const ControlPanel = (props) => {
 
     if (isNaN(numValue)) {
       if (onNotification) {
-        onNotification("⚠️ Please enter a valid number", "warning");
+        onNotification("Please enter a valid number", "warning");
       }
       return;
     }
@@ -83,12 +101,12 @@ const ControlPanel = (props) => {
     // Apply limits
     if (numValue < 150) {
       if (onNotification) {
-        onNotification("⚠️ Minimum board size is 150px", "warning");
+        onNotification("Minimum board size is 150px", "warning");
       }
-      setBoardSize(200);
+      setBoardSize(150);
     } else if (numValue > 600) {
       if (onNotification) {
-        onNotification("⚠️ Maximum board size is 600px", "warning");
+        onNotification("Maximum board size is 600px", "warning");
       }
       setBoardSize(600);
     } else {
@@ -102,15 +120,15 @@ const ControlPanel = (props) => {
 
     // If empty or invalid on blur, reset to current or default
     if (value === "" || isNaN(numValue)) {
-      if (boardSize < 200 || boardSize > 600) {
+      if (boardSize < 150 || boardSize > 600) {
         setBoardSize(400); // Reset to default
       }
       return;
     }
 
     // Ensure valid range
-    if (numValue < 200) {
-      setBoardSize(200);
+    if (numValue < 150) {
+      setBoardSize(150);
     } else if (numValue > 600) {
       setBoardSize(600);
     }
@@ -120,23 +138,33 @@ const ControlPanel = (props) => {
     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700/50  space-y-6">
       {/* FEN Input */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-sm font-semibold text-gray-300">
-            FEN Notation
-          </label>
-          <button
-            onClick={handleValidate}
-            className="text-xs px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-md text-gray-300 transition-colors font-medium"
-          >
-            Validate
-          </button>
+        <label className="block text-sm font-semibold text-gray-300">
+          FEN Notation
+        </label>
+        <div className="relative">
+          <textarea
+            value={fen}
+            onChange={(e) => setFen(e.target.value)}
+            className="w-full px-4 py-3 pr-20 bg-gray-950/50 border border-gray-700 rounded-lg text-sm text-gray-200 font-mono resize-y min-h-[90px] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+            placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+          />
+          <div className="absolute top-2 right-2 flex gap-1">
+            <button
+              onClick={handleValidate}
+              className="p-2 bg-amber-600/90 hover:bg-amber-500 rounded-md text-white transition-all hover:scale-110 active:scale-95"
+              title="Validate FEN"
+            >
+              <CheckCircle2 className="w-3 h-3" strokeWidth={2.5} />
+            </button>
+            <button
+              onClick={handleCopyFEN}
+              className="p-2 bg-green-600/90 hover:bg-green-500 rounded-md text-white transition-all hover:scale-105 active:scale-95"
+              title="Copy FEN"
+            >
+              <Copy className="w-3 h-3" strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
-        <textarea
-          value={fen}
-          onChange={(e) => setFen(e.target.value)}
-          className="w-full px-4 py-3 bg-gray-950/50 border border-gray-700 rounded-lg text-sm text-gray-200 font-mono resize-y min-h-[90px] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
-          placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        />
       </div>
 
       {/* Famous Positions */}

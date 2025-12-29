@@ -95,6 +95,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
           if (img.complete && img.naturalWidth > 0) {
             const drawRow = flipped ? row : 7 - row;
             const drawCol = flipped ? 7 - col : col;
+
             const cx = drawCol * squareSize + borderSize + squareSize / 2;
             const cy = drawRow * squareSize + borderSize + squareSize / 2;
 
@@ -110,7 +111,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
       }
     }
 
-    // Draw coordinates - AĞ RƏNG
+    // Draw coordinates
     if (showCoords) {
       const fontSize = Math.round(Math.max(8, Math.min(14, boardSize * 0.028)));
 
@@ -124,17 +125,19 @@ const ChessBoard = React.forwardRef((props, ref) => {
       ctx.shadowOffsetX = 0.5;
       ctx.shadowOffsetY = 0.5;
 
-      // Ranks
-      for (let i = 0; i < 8; i++) {
-        const rank = flipped ? 8 - i : i + 1;
-        const yPos = borderSize + i * squareSize + squareSize / 2;
+      // Ranks (1-8 solda)
+      for (let row = 0; row < 8; row++) {
+        const rank = flipped ? row + 1 : 8 - row;
+        const drawRow = flipped ? row : 7 - row;
+        const yPos = borderSize + drawRow * squareSize + squareSize / 2;
         ctx.fillText(rank.toString(), borderSize * 0.5, yPos);
       }
 
-      // Files
-      for (let i = 0; i < 8; i++) {
-        const file = String.fromCharCode(97 + (flipped ? 7 - i : i));
-        const xPos = borderSize + i * squareSize + squareSize / 2;
+      // Files (a-h aşağıda)
+      for (let col = 0; col < 8; col++) {
+        const file = String.fromCharCode(97 + (flipped ? 7 - col : col));
+        const drawCol = flipped ? 7 - col : col;
+        const xPos = borderSize + drawCol * squareSize + squareSize / 2;
         const yPos = borderSize + 8 * squareSize + borderSize * 0.5;
         ctx.fillText(file, xPos, yPos);
       }

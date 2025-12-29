@@ -1,5 +1,3 @@
-// src/constants/chessConstants.js
-
 // Piece mapping for Lichess assets
 export const PIECE_MAP = {
   K: "wK",

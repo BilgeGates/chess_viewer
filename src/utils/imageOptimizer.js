@@ -1,6 +1,13 @@
 import { parseFEN } from "./fenParser";
+import { drawCoordinates } from "./coordinateCalculations";
+
 /**
- * Create ultra high-quality canvas with MEMORY OPTIMIZATION
+ * Creates ultra high-quality chessboard canvas for export
+ * Dynamic quality scaling based on export settings
+ * Optimized for both print and digital use
+ *
+ * @param {Object} config - Export configuration
+ * @returns {HTMLCanvasElement} Final high-quality canvas
  */
 export const createUltraQualityCanvas = (config) => {
   const {
@@ -11,44 +18,30 @@ export const createUltraQualityCanvas = (config) => {
     flipped,
     fen,
     pieceImages,
-    exportQuality = 16,
+    exportQuality = 16, // Default to 16x if not specified
   } = config;
 
-  // Validate inputs
-  if (!pieceImages || Object.keys(pieceImages).length === 0) {
-    throw new Error("Piece images not loaded");
-  }
-
+  // Parse FEN
   const board = parseFEN(fen);
 
-  if (!board || board.length !== 8) {
-    throw new Error("Invalid FEN notation");
+  // Validate
+  if (!board || !pieceImages || Object.keys(pieceImages).length === 0) {
+    throw new Error("Invalid board or piece images");
   }
 
-  // Calculate dimensions
+  // Border calculation - proportional to board size
   const borderSize = showCoords
     ? Math.max(20, Math.min(30, boardSize / 20))
     : 0;
   const displaySize = boardSize + borderSize * 2;
 
-  // SMART QUALITY SCALING - Prevent memory issues
-  let actualQuality = exportQuality;
-  const maxCanvasSize = 16384; // Browser limit
-  const projectedSize = displaySize * exportQuality;
+  // Use provided export quality (8x, 16x, 24x, or 32x)
+  const QUALITY = exportQuality;
 
-  if (projectedSize > maxCanvasSize) {
-    actualQuality = Math.floor(maxCanvasSize / displaySize);
-    console.warn(
-      `Quality reduced to ${actualQuality}x to prevent memory issues`
-    );
-  }
-
-  // Create canvas with optimized settings
+  // Create high-resolution canvas
   const canvas = document.createElement("canvas");
-  const finalSize = displaySize * actualQuality;
-
-  canvas.width = finalSize;
-  canvas.height = finalSize;
+  canvas.width = displaySize * QUALITY;
+  canvas.height = displaySize * QUALITY;
 
   const ctx = canvas.getContext("2d", {
     alpha: true,
@@ -56,21 +49,17 @@ export const createUltraQualityCanvas = (config) => {
     willReadFrequently: false,
   });
 
-  if (!ctx) {
-    throw new Error("Failed to get canvas context");
-  }
-
-  // Apply scaling
-  ctx.scale(actualQuality, actualQuality);
+  // Scale context
+  ctx.scale(QUALITY, QUALITY);
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
   const squareSize = boardSize / 8;
 
-  // Clear canvas
+  // Clear canvas with transparency
   ctx.clearRect(0, 0, displaySize, displaySize);
 
-  // Draw squares with perfect alignment
+  // Draw squares with anti-aliasing
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       ctx.fillStyle = (row + col) % 2 === 0 ? lightSquare : darkSquare;
@@ -86,81 +75,64 @@ export const createUltraQualityCanvas = (config) => {
     }
   }
 
-  // Draw pieces with error checking
+  // Draw pieces with optimal sizing
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const piece = board[row]?.[col];
-      if (!piece) continue;
-
       const img = pieceImages[piece];
 
-      if (!img) {
-        console.warn(`Missing image for piece: ${piece}`);
-        continue;
-      }
+      if (img?.complete && img.naturalWidth > 0) {
+        const drawRow = flipped ? 7 - row : row;
+        const drawCol = flipped ? 7 - col : col;
+        const cx = drawCol * squareSize + borderSize + squareSize / 2;
+        const cy = drawRow * squareSize + borderSize + squareSize / 2;
 
-      if (!img.complete || img.naturalWidth === 0) {
-        console.warn(`Image not loaded for piece: ${piece}`);
-        continue;
-      }
+        // Slightly larger pieces for better visibility
+        const pieceScale = 0.92;
 
-      const drawRow = flipped ? 7 - row : row;
-      const drawCol = flipped ? 7 - col : col;
-      const cx = drawCol * squareSize + borderSize + squareSize / 2;
-      const cy = drawRow * squareSize + borderSize + squareSize / 2;
-
-      const pieceScale = 0.9;
-      const pieceSize = squareSize * pieceScale;
-
-      try {
         ctx.drawImage(
           img,
-          cx - pieceSize / 2,
-          cy - pieceSize / 2,
-          pieceSize,
-          pieceSize
+          cx - squareSize * (pieceScale / 2),
+          cy - squareSize * (pieceScale / 2),
+          squareSize * pieceScale,
+          squareSize * pieceScale
         );
-      } catch (err) {
-        console.error(`Failed to draw piece ${piece}:`, err);
       }
     }
   }
 
-  // Draw coordinates
+  // Draw coordinates if enabled
   if (showCoords) {
-    const fontSize = Math.round(Math.max(10, Math.min(20, boardSize * 0.032)));
-
-    ctx.save();
-    ctx.font = `700 ${fontSize}px system-ui, -apple-system, sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    // EXPORT ÜÇÜN QARA RƏNG
-    ctx.fillStyle = "#1a1a1a";
-
-    // Shadow for readability on white paper
-    ctx.shadowColor = "rgba(255, 255, 255, 0.4)";
-    ctx.shadowBlur = 1.5;
-    ctx.shadowOffsetX = 0.5;
-    ctx.shadowOffsetY = 0.5;
-
-    // Ranks
-    for (let i = 0; i < 8; i++) {
-      const rank = flipped ? i + 1 : 8 - i;
-      const yPos = borderSize + i * squareSize + squareSize / 2;
-      ctx.fillText(rank.toString(), borderSize * 0.5, yPos);
-    }
-
-    // Files
-    for (let i = 0; i < 8; i++) {
-      const file = String.fromCharCode(97 + (flipped ? 7 - i : i));
-      const xPos = borderSize + i * squareSize + squareSize / 2;
-      const yPos = borderSize + 8 * squareSize + borderSize * 0.5;
-      ctx.fillText(file, xPos, yPos);
-    }
-
-    ctx.restore();
+    drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize, true);
   }
 
   return canvas;
+};
+
+// Optimize canvas for specific output format
+export const optimizeCanvasForFormat = (canvas, format) => {
+  const optimized = document.createElement("canvas");
+  optimized.width = canvas.width;
+  optimized.height = canvas.height;
+  const ctx = optimized.getContext("2d");
+
+  if (format === "jpeg" || format === "pdf") {
+    // Add white background for JPEG/PDF
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, optimized.width, optimized.height);
+  }
+
+  ctx.drawImage(canvas, 0, 0);
+  return optimized;
+};
+
+// Calculate optimal export dimensions
+export const calculateOptimalDimensions = (boardSize, format) => {
+  const maxSizes = {
+    png: 8192, // PNG max reasonable size
+    jpeg: 4096, // JPEG optimal max
+  };
+
+  const maxSize = maxSizes[format] || 4096;
+  return Math.min(boardSize, maxSize);
 };
