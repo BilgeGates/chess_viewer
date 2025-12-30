@@ -33,30 +33,21 @@ export const drawCoordinates = (
 
   ctx.fillStyle = forExport ? "#1a1a1a" : "#ffffff";
 
-  // Shadow for readability
-  if (forExport) {
-    ctx.shadowColor = "rgba(255, 255, 255, 0.4)";
-    ctx.shadowBlur = 1.5;
-  } else {
-    ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
-    ctx.shadowBlur = 2;
-  }
-
-  ctx.shadowOffsetX = 0.5;
-  ctx.shadowOffsetY = 0.5;
+  const offset = 1.9;
 
   // Ranks (1–8)
-  for (let i = 0; i < 8; i++) {
-    const rank = flipped ? 8 - i : i + 1;
-    const yPos = borderSize + i * squareSize + squareSize / 2;
-    ctx.fillText(rank.toString(), borderSize * 0.5, yPos);
+  for (let row = 0; row < 8; row++) {
+    const rank = flipped ? row + 1 : 8 - row;
+    const yPos = borderSize + row * squareSize + squareSize / 2;
+    // borderSize-ın mərkəzi - offset
+    ctx.fillText(rank.toString(), borderSize / 2 - offset, yPos);
   }
 
-  // File letters (a-h)
-  for (let i = 0; i < 8; i++) {
-    const file = String.fromCharCode(97 + (flipped ? 7 - i : i));
-    const xPos = borderSize + i * squareSize + squareSize / 2;
-    const yPos = borderSize + 8 * squareSize + borderSize * 0.5;
+  // Files (a-h)
+  for (let col = 0; col < 8; col++) {
+    const file = String.fromCharCode(97 + (flipped ? 7 - col : col));
+    const xPos = borderSize + col * squareSize + squareSize / 2;
+    const yPos = borderSize + 8 * squareSize + borderSize / 2 + offset;
     ctx.fillText(file, xPos, yPos);
   }
 

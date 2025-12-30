@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { usePieceImages } from "../hooks/usePieceImages";
 import { parseFEN } from "../utils/fenParser";
+import { drawCoordinates } from "../utils/coordinateCalculations";
 
 const ChessBoard = React.forwardRef((props, ref) => {
   const {
@@ -52,7 +53,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
     });
 
     const borderSize = showCoords
-      ? Math.max(12, Math.min(18, boardSize / 30))
+      ? Math.max(20, Math.min(40, boardSize / 30))
       : 0;
     const totalSize = boardSize + borderSize * 2;
     const scale = 4;
@@ -74,12 +75,13 @@ const ChessBoard = React.forwardRef((props, ref) => {
       for (let col = 0; col < 8; col++) {
         const isLight = (row + col) % 2 === 0;
         ctx.fillStyle = isLight ? lightSquare : darkSquare;
-        const drawRow = flipped ? row : 7 - row;
-        const drawCol = flipped ? 7 - col : col;
+
+        const displayRow = flipped ? 7 - row : row;
+        const displayCol = flipped ? 7 - col : col;
 
         ctx.fillRect(
-          drawCol * squareSize + borderSize,
-          drawRow * squareSize + borderSize,
+          displayCol * squareSize + borderSize,
+          displayRow * squareSize + borderSize,
           squareSize,
           squareSize
         );
@@ -93,11 +95,11 @@ const ChessBoard = React.forwardRef((props, ref) => {
         if (piece && pieceImages[piece]) {
           const img = pieceImages[piece];
           if (img.complete && img.naturalWidth > 0) {
-            const drawRow = flipped ? row : 7 - row;
-            const drawCol = flipped ? 7 - col : col;
+            const displayRow = flipped ? 7 - row : row;
+            const displayCol = flipped ? 7 - col : col;
 
-            const cx = drawCol * squareSize + borderSize + squareSize / 2;
-            const cy = drawRow * squareSize + borderSize + squareSize / 2;
+            const cx = displayCol * squareSize + borderSize + squareSize / 2;
+            const cy = displayRow * squareSize + borderSize + squareSize / 2;
 
             ctx.drawImage(
               img,
@@ -113,36 +115,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
 
     // Draw coordinates
     if (showCoords) {
-      const fontSize = Math.round(Math.max(8, Math.min(14, boardSize * 0.028)));
-
-      ctx.save();
-      ctx.font = `700 ${fontSize}px system-ui, -apple-system, sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "#ffffff";
-      ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
-      ctx.shadowBlur = 2.5;
-      ctx.shadowOffsetX = 0.5;
-      ctx.shadowOffsetY = 0.5;
-
-      // Ranks (1-8 solda)
-      for (let row = 0; row < 8; row++) {
-        const rank = flipped ? row + 1 : 8 - row;
-        const drawRow = flipped ? row : 7 - row;
-        const yPos = borderSize + drawRow * squareSize + squareSize / 2;
-        ctx.fillText(rank.toString(), borderSize * 0.5, yPos);
-      }
-
-      // Files (a-h aşağıda)
-      for (let col = 0; col < 8; col++) {
-        const file = String.fromCharCode(97 + (flipped ? 7 - col : col));
-        const drawCol = flipped ? 7 - col : col;
-        const xPos = borderSize + drawCol * squareSize + squareSize / 2;
-        const yPos = borderSize + 8 * squareSize + borderSize * 0.5;
-        ctx.fillText(file, xPos, yPos);
-      }
-
-      ctx.restore();
+      drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize, false);
     }
   }, [
     board,

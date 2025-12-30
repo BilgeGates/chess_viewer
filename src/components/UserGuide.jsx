@@ -18,7 +18,6 @@ import {
   FileText,
   Maximize2,
   Layers,
-  Settings,
 } from "lucide-react";
 
 const UserGuide = () => {
@@ -130,7 +129,7 @@ const UserGuide = () => {
               <h4 className="text-lg font-bold text-amber-400">File Formats</h4>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <FormatCard
                 icon={<FileText className="w-5 h-5" />}
                 format="PNG"
@@ -152,13 +151,6 @@ const UserGuide = () => {
                   "Fast loading",
                 ]}
                 cons={["No transparency", "Lossy compression"]}
-              />
-              <FormatCard
-                icon={<Settings className="w-5 h-5" />}
-                format="SVG"
-                color="purple"
-                pros={["Vector format", "Infinite scaling", "Tiny file size"]}
-                cons={["Limited browser support", "No raster effects"]}
               />
             </div>
           </div>

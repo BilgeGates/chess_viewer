@@ -18,7 +18,7 @@ export const createUltraQualityCanvas = (config) => {
     flipped,
     fen,
     pieceImages,
-    exportQuality = 16, // Default to 16x if not specified
+    exportQuality = 16,
   } = config;
 
   // Parse FEN
@@ -87,7 +87,6 @@ export const createUltraQualityCanvas = (config) => {
         const cx = drawCol * squareSize + borderSize + squareSize / 2;
         const cy = drawRow * squareSize + borderSize + squareSize / 2;
 
-        // Slightly larger pieces for better visibility
         const pieceScale = 0.92;
 
         ctx.drawImage(
@@ -101,7 +100,6 @@ export const createUltraQualityCanvas = (config) => {
     }
   }
 
-  // Draw coordinates if enabled
   if (showCoords) {
     drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize, true);
   }
@@ -114,7 +112,7 @@ export const optimizeCanvasForFormat = (canvas, format) => {
   const optimized = document.createElement("canvas");
   optimized.width = canvas.width;
   optimized.height = canvas.height;
-  const ctx = optimized.getContext("2d");
+  const ctx = optimized.getContext("2d", { alpha: format === "png" });
 
   if (format === "jpeg" || format === "pdf") {
     // Add white background for JPEG/PDF
@@ -129,8 +127,8 @@ export const optimizeCanvasForFormat = (canvas, format) => {
 // Calculate optimal export dimensions
 export const calculateOptimalDimensions = (boardSize, format) => {
   const maxSizes = {
-    png: 8192, // PNG max reasonable size
-    jpeg: 4096, // JPEG optimal max
+    png: 8192,
+    jpeg: 4096,
   };
 
   const maxSize = maxSizes[format] || 4096;

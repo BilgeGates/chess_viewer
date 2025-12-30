@@ -16,11 +16,10 @@ export const PIECE_MAP = {
 
 // Enhanced piece sets
 export const PIECE_SETS = [
-  { id: "cburnett", name: "Classic (CBurnett)" },
-  { id: "merida", name: "Merida" },
   { id: "alpha", name: "Alpha" },
   { id: "cardinal", name: "Cardinal" },
   { id: "california", name: "California" },
+  { id: "cburnett", name: "Classic (CBurnett)" },
   { id: "companion", name: "Companion" },
   { id: "dubrovny", name: "Dubrovny" },
   { id: "fantasy", name: "Fantasy" },
@@ -31,6 +30,7 @@ export const PIECE_SETS = [
   { id: "icpieces", name: "IC Pieces" },
   { id: "kosal", name: "Kosal" },
   { id: "leipzig", name: "Leipzig" },
+  { id: "merida", name: "Merida" },
   { id: "maestro", name: "Maestro" },
   { id: "pirouetti", name: "Pirouetti" },
   { id: "pixel", name: "Pixel" },
@@ -126,11 +126,3 @@ export const QUALITY_PRESETS = [
   { value: 24, label: "Ultra (24x)", description: "Professional" },
   { value: 32, label: "Maximum (32x)", description: "Largest files" },
 ];
-
-// Common board sizes
-export const BOARD_SIZE_PRESETS = {
-  small: 300,
-  medium: 400,
-  large: 500,
-  xlarge: 600,
-};
