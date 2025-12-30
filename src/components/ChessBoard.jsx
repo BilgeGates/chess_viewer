@@ -53,7 +53,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
     });
 
     const borderSize = showCoords
-      ? Math.max(20, Math.min(40, boardSize / 30))
+      ? Math.max(12, Math.min(18, boardSize / 30))
       : 0;
     const totalSize = boardSize + borderSize * 2;
     const scale = 4;
@@ -71,11 +71,14 @@ const ChessBoard = React.forwardRef((props, ref) => {
     ctx.clearRect(0, 0, totalSize, totalSize);
 
     // Draw squares
+    // board[0] = rank 8 (yuxarı), board[7] = rank 1 (aşağı)
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const isLight = (row + col) % 2 === 0;
         ctx.fillStyle = isLight ? lightSquare : darkSquare;
 
+        // flipped=false: board[0] yuxarıda görünür (rank 8)
+        // flipped=true: board[0] aşağıda görünür (rank 8)
         const displayRow = flipped ? 7 - row : row;
         const displayCol = flipped ? 7 - col : col;
 
@@ -129,13 +132,16 @@ const ChessBoard = React.forwardRef((props, ref) => {
   ]);
 
   return (
-    <div className="relative inline-block w-full max-w-full">
+    <div className="relative inline-block w-full max-w-full m-0 p-0">
       <canvas
         ref={canvasRef}
-        className="transition-all duration-300 w-full h-auto"
+        className="transition-all duration-300 w-full h-auto m-0 p-0"
         style={{
           display: "block",
           imageRendering: "-webkit-optimize-contrast",
+          margin: 0,
+          padding: 0,
+          verticalAlign: "top",
         }}
       />
       {isLoading && (
