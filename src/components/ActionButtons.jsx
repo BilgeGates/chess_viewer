@@ -34,7 +34,7 @@ const ActionButtons = ({
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4 w-full max-w-2xl bg-red-500">
+    <div className="space-y-3 sm:space-y-4 w-full max-w-2xl">
       {/* Primary Actions */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <button

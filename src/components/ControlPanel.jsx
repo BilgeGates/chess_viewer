@@ -36,7 +36,6 @@ const ControlPanel = (props) => {
   } = props;
 
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
 
   const selectedSet = PIECE_SETS.find((p) => p.id === pieceStyle);
