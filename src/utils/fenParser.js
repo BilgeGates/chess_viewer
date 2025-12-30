@@ -1,10 +1,12 @@
 /**
  * Parse FEN string into 2D board array
- * Board is NORMALIZED to "white at bottom"
  *
- * board[row][col]
- * row 0 -> rank 1
- * row 7 -> rank 8
+ * CHESS STANDARD FORMAT:
+ * board[0][0] = a8 (top-left, rank 8)
+ * board[7][7] = h1 (bottom-right, rank 1)
+ *
+ * FEN reads from rank 8 down to rank 1
+ * This matches the natural board representation
  *
  * @param {string} fenString - FEN notation
  * @returns {string[][]} 8x8 board array
@@ -25,6 +27,7 @@ export function parseFEN(fenString) {
     const board = [];
 
     // FEN gives ranks from 8 -> 1 (top -> bottom)
+    // Keep this natural order - DO NOT REVERSE
     for (const row of rows) {
       const boardRow = [];
 
@@ -50,7 +53,8 @@ export function parseFEN(fenString) {
       board.push(boardRow);
     }
 
-    return board.reverse();
+    // Return in natural FEN order: board[0] = rank 8, board[7] = rank 1
+    return board;
   } catch (error) {
     console.error("FEN parsing error:", error);
 

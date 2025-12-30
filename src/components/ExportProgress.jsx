@@ -17,28 +17,27 @@ export const ExportProgress = ({
 }) => {
   const [displayProgress, setDisplayProgress] = useState(0);
 
-  // Quick smooth animation
+  // Smooth progress animation
   useEffect(() => {
     if (!isExporting || isPaused) {
       return;
     }
 
-    // Fast sync with actual progress
     const interval = setInterval(() => {
       setDisplayProgress((prev) => {
         if (prev >= progress) return progress;
 
         const diff = progress - prev;
-        const increment = Math.max(3, Math.min(15, diff / 2));
+        const increment = Math.max(2, Math.min(10, diff / 3));
 
         return Math.min(progress, prev + increment);
       });
-    }, 30);
+    }, 50);
 
     return () => clearInterval(interval);
   }, [progress, isExporting, isPaused]);
 
-  // Reset when not exporting
+  // Reset on export complete
   useEffect(() => {
     if (!isExporting) {
       setDisplayProgress(0);
@@ -51,33 +50,36 @@ export const ExportProgress = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-gray-850 to-gray-900 border border-gray-700/50 rounded-2xl p-8 shadow-2xl max-w-xl w-full relative">
-        {/* Close Button (only hides modal) */}
+      <div className="bg-gradient-to-br from-gray-850 to-gray-900 border border-gray-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl max-w-xl w-full relative animate-fadeIn">
+        {/* Close Button */}
         {onClose && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 hover:bg-gray-800 rounded-lg transition-colors group"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 hover:bg-gray-800 rounded-lg transition-colors group"
             title="Hide modal"
           >
             <X
-              className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 group-hover:text-white transition-colors"
               strokeWidth={2}
             />
           </button>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center w-14 h-14 bg-blue-500/15 rounded-xl border border-blue-500/20">
-              <FileImage className="w-7 h-7 text-blue-400" strokeWidth={2} />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-blue-500/15 rounded-xl border border-blue-500/20">
+              <FileImage
+                className="w-6 h-6 sm:w-7 sm:h-7 text-blue-400"
+                strokeWidth={2}
+              />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-white mb-1">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-1">
                 Exporting {format.toUpperCase()}
               </h3>
-              <p className="text-sm text-gray-400">
-                {isPaused ? "Paused" : "Creating high-quality image"}
+              <p className="text-xs sm:text-sm text-gray-400">
+                {isPaused ? "⏸ Paused" : "Creating high-quality image"}
               </p>
             </div>
           </div>
@@ -112,17 +114,17 @@ export const ExportProgress = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3">
             {/* Pause/Resume Button */}
             {onPause && onResume && (
               <button
                 onClick={isPaused ? onResume : onPause}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white font-semibold text-sm"
+                className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white font-semibold text-xs sm:text-sm"
               >
                 {isPaused ? (
                   <>
                     <Play
-                      className="w-4 h-4"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                       strokeWidth={2.5}
                       fill="currentColor"
                     />
@@ -130,7 +132,10 @@ export const ExportProgress = ({
                   </>
                 ) : (
                   <>
-                    <Pause className="w-4 h-4" strokeWidth={2.5} />
+                    <Pause
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                      strokeWidth={2.5}
+                    />
                     <span>Pause</span>
                   </>
                 )}
@@ -141,9 +146,12 @@ export const ExportProgress = ({
             {onCancel && (
               <button
                 onClick={onCancel}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-500 rounded-lg transition-colors text-white font-semibold text-sm"
+                className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-red-600 hover:bg-red-500 rounded-lg transition-colors text-white font-semibold text-xs sm:text-sm"
               >
-                <XCircle className="w-4 h-4" strokeWidth={2.5} />
+                <XCircle
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                  strokeWidth={2.5}
+                />
                 <span>Cancel</span>
               </button>
             )}

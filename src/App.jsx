@@ -12,7 +12,8 @@ import {
   copyToClipboard,
   batchExport,
   cancelExport,
-  resetCancellation,
+  pauseExport,
+  resumeExport,
 } from "./utils/canvasExporter";
 
 const App = () => {
@@ -33,7 +34,6 @@ const App = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [currentFormat, setCurrentFormat] = useState(null);
-  const [realFileSize, setRealFileSize] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const [showProgress, setShowProgress] = useState(true);
 
@@ -58,17 +58,12 @@ const App = () => {
     setIsExporting(true);
     setCurrentFormat("png");
     setExportProgress(0);
-    setRealFileSize(null);
     setIsPaused(false);
     setShowProgress(true);
-    resetCancellation();
 
     try {
-      await downloadPNG(getExportConfig(), fileName, (progress, size) => {
-        if (!isPaused) {
-          setExportProgress(progress);
-        }
-        if (size) setRealFileSize(size);
+      await downloadPNG(getExportConfig(), fileName, (progress) => {
+        setExportProgress(progress);
       });
       success("PNG exported successfully");
     } catch (err) {
@@ -83,7 +78,6 @@ const App = () => {
         setIsExporting(false);
         setCurrentFormat(null);
         setExportProgress(0);
-        setRealFileSize(null);
         setIsPaused(false);
       }, 300);
     }
@@ -94,17 +88,12 @@ const App = () => {
     setIsExporting(true);
     setCurrentFormat("jpeg");
     setExportProgress(0);
-    setRealFileSize(null);
     setIsPaused(false);
     setShowProgress(true);
-    resetCancellation();
 
     try {
-      await downloadJPEG(getExportConfig(), fileName, (progress, size) => {
-        if (!isPaused) {
-          setExportProgress(progress);
-        }
-        if (size) setRealFileSize(size);
+      await downloadJPEG(getExportConfig(), fileName, (progress) => {
+        setExportProgress(progress);
       });
       success("JPEG exported successfully");
     } catch (err) {
@@ -119,7 +108,6 @@ const App = () => {
         setIsExporting(false);
         setCurrentFormat(null);
         setExportProgress(0);
-        setRealFileSize(null);
         setIsPaused(false);
       }, 300);
     }
@@ -146,6 +134,8 @@ const App = () => {
   const handleBatchExport = async (formats) => {
     setIsExporting(true);
     setExportProgress(0);
+    setIsPaused(false);
+    setShowProgress(true);
 
     try {
       await batchExport(
@@ -159,13 +149,18 @@ const App = () => {
       );
       success(`Exported ${formats.length} formats successfully`);
     } catch (err) {
-      error("Batch export failed: " + err.message);
+      if (err.message === "Export cancelled") {
+        info("Export cancelled");
+      } else {
+        error("Batch export failed: " + err.message);
+      }
       console.error(err);
     } finally {
       setTimeout(() => {
         setIsExporting(false);
         setCurrentFormat(null);
         setExportProgress(0);
+        setIsPaused(false);
       }, 300);
     }
   };
@@ -176,9 +171,9 @@ const App = () => {
     setIsExporting(false);
     setCurrentFormat(null);
     setExportProgress(0);
-    setRealFileSize(null);
     setIsPaused(false);
     setShowProgress(true);
+    info("Export cancelled");
   };
 
   // Handle close modal (hide only)
@@ -188,33 +183,33 @@ const App = () => {
 
   // Handle pause
   const handlePause = () => {
+    pauseExport();
     setIsPaused(true);
-    info("Export paused");
   };
 
   // Handle resume
   const handleResume = () => {
+    resumeExport();
     setIsPaused(false);
-    info("Export resumed");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8 px-4 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-6 sm:py-8 px-3 sm:px-4 overflow-x-hidden">
       <div className="max-w-[1600px] mx-auto w-full">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent px-2">
             Chess Diagram Generator
           </h1>
-          <p className="text-gray-400 text-base sm:text-lg">
+          <p className="text-gray-400 text-sm sm:text-base lg:text-lg px-4">
             Create professional chess diagrams with ultra-high quality export
           </p>
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,1fr)_minmax(400px,600px)] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(280px,1fr)_minmax(380px,580px)] xl:grid-cols-[minmax(320px,1fr)_minmax(420px,620px)] gap-4 sm:gap-6 lg:gap-8 items-start">
           {/* Left Side - Board & Actions */}
-          <div className="flex flex-col items-center gap-6 w-full">
+          <div className="flex flex-col items-center gap-4 sm:gap-6 w-full order-2 lg:order-1">
             <div className="w-full max-w-2xl">
               <ChessBoard
                 ref={boardRef}
@@ -241,7 +236,7 @@ const App = () => {
           </div>
 
           {/* Right Side - Controls */}
-          <div className="w-full">
+          <div className="w-full order-1 lg:order-2">
             <ControlPanel
               fen={fen}
               setFen={setFen}
@@ -269,7 +264,7 @@ const App = () => {
         </div>
 
         {/* User Guide */}
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <UserGuide />
         </div>
       </div>
@@ -287,7 +282,6 @@ const App = () => {
           progress={exportProgress}
           currentFormat={currentFormat}
           config={getExportConfig()}
-          realFileSize={realFileSize}
           isPaused={isPaused}
           onClose={handleCloseModal}
           onPause={handlePause}
