@@ -1,53 +1,52 @@
-/**
- * Calculate optimal font size based on board size
- */
-export const getCoordinateFontSize = (boardSize) => {
-  const calculatedSize = boardSize * 0.032;
-  const size = Math.round(Math.max(10, Math.min(20, calculatedSize)));
+export const getCoordinateParams = (boardSize) => {
+  const fontSize = Math.max(10, Math.min(20, Math.round(boardSize * 0.035)));
+
+  const borderSize = Math.max(20, Math.min(35, Math.round(boardSize * 0.06)));
 
   return {
-    size,
-    weight: 700,
+    fontSize,
+    borderSize,
+    fontWeight: 600,
+    offset: borderSize * 0.4,
   };
 };
 
 /**
- * Draw coordinate labels on canvas
  * @param {boolean} forExport - True for export (black), false for display (white)
  */
 export const drawCoordinates = (
   ctx,
   squareSize,
-  borderSize,
+  params,
   flipped,
   boardSize,
   forExport = false
 ) => {
-  const { size: fontSize, weight: fontWeight } =
-    getCoordinateFontSize(boardSize);
+  const { fontSize, fontWeight, borderSize, offset } = params;
 
   ctx.save();
-  ctx.font = `${fontWeight} ${fontSize}px system-ui, -apple-system, sans-serif`;
+  ctx.font = `${fontWeight} ${fontSize}px Inter, system-ui, sans-serif`;
+  ctx.fillStyle = forExport ? "#1a1a1a" : "#e8e8e8";
+
+  // Ranks (1-8)
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-
-  ctx.fillStyle = forExport ? "#1a1a1a" : "#ffffff";
-
-  const offset = 1.9;
-
-  // Ranks (1–8)
   for (let row = 0; row < 8; row++) {
     const rank = flipped ? row + 1 : 8 - row;
     const yPos = borderSize + row * squareSize + squareSize / 2;
-    // borderSize-ın mərkəzi - offset
-    ctx.fillText(rank.toString(), borderSize / 2 - offset, yPos);
+    const xPos = offset;
+
+    ctx.fillText(rank.toString(), xPos, yPos);
   }
 
   // Files (a-h)
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
   for (let col = 0; col < 8; col++) {
     const file = String.fromCharCode(97 + (flipped ? 7 - col : col));
     const xPos = borderSize + col * squareSize + squareSize / 2;
-    const yPos = borderSize + 8 * squareSize + borderSize / 2 + offset;
+    const yPos = boardSize + borderSize + offset * (3 / 2);
+
     ctx.fillText(file, xPos, yPos);
   }
 

@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { usePieceImages } from "../hooks/usePieceImages";
 import { parseFEN } from "../utils/fenParser";
-import { drawCoordinates } from "../utils/coordinateCalculations";
+import {
+  drawCoordinates,
+  getCoordinateParams,
+} from "../utils/coordinateCalculations";
 
 const ChessBoard = React.forwardRef((props, ref) => {
   const {
@@ -52,9 +55,10 @@ const ChessBoard = React.forwardRef((props, ref) => {
       desynchronized: true,
     });
 
-    const borderSize = showCoords
-      ? Math.max(20, Math.min(40, boardSize / 30))
-      : 0;
+    const coordParams = showCoords
+      ? getCoordinateParams(boardSize)
+      : { borderSize: 0 };
+    const borderSize = showCoords ? coordParams.borderSize : 0;
     const totalSize = boardSize + borderSize * 2;
     const scale = 4;
 
@@ -88,7 +92,6 @@ const ChessBoard = React.forwardRef((props, ref) => {
       }
     }
 
-    // Draw pieces
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         const piece = board[row]?.[col];
@@ -113,9 +116,8 @@ const ChessBoard = React.forwardRef((props, ref) => {
       }
     }
 
-    // Draw coordinates
     if (showCoords) {
-      drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize, false);
+      drawCoordinates(ctx, squareSize, coordParams, flipped, boardSize, false);
     }
   }, [
     board,
