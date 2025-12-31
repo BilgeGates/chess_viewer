@@ -116,62 +116,51 @@ const ControlPanel = (props) => {
     }
 
     const numValue = parseInt(value);
-
-    if (isNaN(numValue)) {
-      return;
+    if (!isNaN(numValue)) {
+      setBoardSize(numValue);
     }
-
-    setBoardSize(numValue);
   };
 
   const handleNumberInputKeyDown = (e) => {
     if (e.key === "Enter") {
-      const numValue = parseInt(boardSize);
-
-      if (boardSize === "" || isNaN(numValue)) {
-        onNotification?.("Please enter a valid number", "error");
-        setBoardSize(400);
-        return;
-      }
-
-      if (numValue < 150) {
-        onNotification?.("Minimum board size is 150px", "error");
-        e.target.blur();
-        return;
-      }
-
-      if (numValue > 600) {
-        onNotification?.("Maximum board size is 600px", "error");
-        e.target.blur();
-        return;
-      }
-
-      onNotification?.(`Board size set to ${numValue}px`, "success");
+      e.preventDefault();
+      applyBoardSize();
       e.target.blur();
     }
   };
 
-  const handleNumberInputBlur = () => {
+  const applyBoardSize = () => {
     const numValue = parseInt(boardSize);
 
     if (boardSize === "" || isNaN(numValue)) {
-      const previousValid =
-        typeof boardSize === "number" && boardSize >= 150 && boardSize <= 600
-          ? boardSize
-          : 400;
-      setBoardSize(previousValid);
+      setBoardSize(400);
+      onNotification?.("Board size reset to 400px", "info");
       return;
     }
 
-    if (numValue < 150 || numValue > 600) {
-      const previousValid = 400;
-      setBoardSize(previousValid);
+    if (numValue < 150) {
+      setBoardSize(150);
+      onNotification?.("Minimum board size is 150px", "error");
+      return;
     }
+
+    if (numValue > 600) {
+      setBoardSize(600);
+      onNotification?.("Maximum board size is 600px", "error");
+      return;
+    }
+
+    onNotification?.(`Board size set to ${numValue}px`, "success");
+  };
+
+  const handleNumberInputBlur = () => {
+    applyBoardSize();
   };
 
   const getBoardSizeValidation = () => {
-    if (boardSize === "" || isNaN(boardSize)) return "neutral";
+    if (boardSize === "") return "neutral";
     const numValue = parseInt(boardSize);
+    if (isNaN(numValue)) return "neutral";
     if (numValue >= 150 && numValue <= 600) return "valid";
     return "invalid";
   };
@@ -189,26 +178,26 @@ const ControlPanel = (props) => {
           <textarea
             value={fen}
             onChange={(e) => setFen(e.target.value)}
-            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-16 sm:pr-20 bg-gray-950/50 border border-gray-700 rounded-lg text-xs sm:text-sm text-gray-200 font-mono resize-y min-h-[80px] sm:min-h-[90px] focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-16 sm:pr-20 bg-gray-950/50 rounded-lg text-xs sm:text-sm text-gray-200 font-mono resize-none min-h-[80px] sm:min-h-[90px] focus:outline-none focus:ring-0 focus-visible:outline-none transition-all outline-none"
             placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
           />
           <div className="absolute top-2 right-2 flex gap-1">
             <button
               onClick={handleValidate}
-              className="p-1.5 sm:p-2 bg-amber-600/90 hover:bg-amber-500 rounded-md text-white transition-all hover:scale-110 active:scale-95"
+              className="p-1.5 sm:p-2 bg-amber-600/90 hover:bg-amber-500 rounded-md text-white transition-all"
               title="Validate FEN"
             >
               <CheckCircle2
-                className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+                className="w-2 h-2 sm:w-3 sm:h-3"
                 strokeWidth={2.5}
               />
             </button>
             <button
               onClick={handleCopyFEN}
-              className="p-1.5 sm:p-2 bg-green-600/90 hover:bg-green-500 rounded-md text-white transition-all hover:scale-105 active:scale-95"
+              className="p-1.5 sm:p-2 bg-green-600/90 hover:bg-green-500 rounded-md text-white transition-all"
               title="Copy FEN"
             >
-              <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={2.5} />
+              <Copy className="w-2 h-2 sm:w-3 sm:h-3" strokeWidth={2.5} />
             </button>
           </div>
         </div>
@@ -216,18 +205,19 @@ const ControlPanel = (props) => {
 
       {/* Famous Positions */}
       <div className="space-y-3">
-        <label className="block text-sm font-semibold text-gray-300">
+        <div className="block text-sm font-semibold text-gray-300">
           Famous Positions
-        </label>
+        </div>
         <div className="grid grid-cols-2 gap-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 custom-scrollbar">
           {Object.entries(FAMOUS_POSITIONS).map(([key, pos]) => (
             <button
               key={key}
               onClick={() => setFen(pos.fen)}
-              className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-950/50 hover:bg-gray-700 border border-gray-700 rounded-lg text-xs text-gray-200 transition-all hover:border-gray-600 text-left hover:shadow-md"
+              className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-950/50 outline-none rounded-lg text-gray-200 transition-colors duration-300 ease-in-out
+ text-left hover:text-blue-400 text-sm"
               title={pos.description}
             >
-              <div className="font-medium truncate">{pos.name}</div>
+              <span className="font-semibold">{pos.name}</span>
             </button>
           ))}
         </div>
@@ -254,7 +244,10 @@ const ControlPanel = (props) => {
   `}
           >
             {!isOpen && selectedSet ? (
-              <span className="font-semibold" onClick={() => setIsOpen(true)}>
+              <span
+                className="font-semibold hover:text-blue-400"
+                onClick={() => setIsOpen(true)}
+              >
                 {selectedSet.name}
               </span>
             ) : (
@@ -309,7 +302,7 @@ const ControlPanel = (props) => {
               </li>
             )}
 
-            {displaySets.map((set, index) => {
+            {displaySets.map((set) => {
               const isSelected = set.id === pieceStyle;
 
               return (
@@ -347,8 +340,6 @@ input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }         
 
-
-          /* Custom Scrollbar - Ultra Thin */
           .piece-select-pro::-webkit-scrollbar {
             width: 3px;
           }
@@ -368,8 +359,6 @@ input[type="search"]::-webkit-search-results-decoration {
           .piece-select-pro::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
           }
-
-          
         `,
           }}
         />
@@ -380,14 +369,14 @@ input[type="search"]::-webkit-search-results-decoration {
         <label className="block text-sm font-semibold text-gray-300 mb-3">
           Display Options
         </label>
-        <label className="flex items-center gap-3 cursor-pointer group p-2 rounded-lg hover:bg-gray-700/30 transition-colors">
+        <label className="flex items-center gap-3 cursor-pointer group p-2 rounded-xl transition-colors">
           <input
             type="checkbox"
             checked={showCoords}
             onChange={(e) => setShowCoords(e.target.checked)}
-            className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer accent-blue-500"
+            className="w-4 h-4 sm:w-5 sm:h-5 cursor-pointer accent-emerald-500"
           />
-          <span className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors">
+          <span className="text-sm font-semibold text-gray-200 hover:text-blue-400 transition-colors">
             Show Coordinates
           </span>
         </label>
@@ -403,7 +392,7 @@ input[type="search"]::-webkit-search-results-decoration {
             <button
               key={key}
               onClick={() => applyTheme(key)}
-              className="group relative px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-950/50 hover:bg-gray-700 border border-gray-700 rounded-lg text-xs text-gray-200 transition-all hover:border-gray-600 overflow-hidden hover:shadow-md"
+              className="group relative px-2.5 sm:px-3 py-1.5 sm:py-2 bg-gray-950/50 rounded-lg text-xs text-gray-200 transition-all overflow-hidden"
             >
               <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity flex">
                 <div
@@ -491,9 +480,9 @@ input[type="search"]::-webkit-search-results-decoration {
             min="150"
             max="600"
             step="50"
-            value={boardSize}
+            value={boardSize || 400}
             onChange={(e) => handleRangeChange(e.target.value)}
-            className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
           <input
             type="number"
@@ -504,6 +493,7 @@ input[type="search"]::-webkit-search-results-decoration {
             onChange={handleNumberInputChange}
             onKeyDown={handleNumberInputKeyDown}
             onBlur={handleNumberInputBlur}
+            placeholder="400"
             className={`w-16 sm:w-20 px-2 py-1.5 rounded-lg text-xs sm:text-sm text-gray-200 text-center font-mono font-semibold focus:outline-none transition-all ${
               validation === "valid"
                 ? "bg-green-950/50 border border-green-500 shadow-md shadow-green-500/40 focus:ring-2 focus:ring-green-500/40"
