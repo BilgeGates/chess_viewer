@@ -1,6 +1,5 @@
-export const getCoordinateParams = (boardSize) => {
+export const getCoordinateParams = (boardSize, exportQuality = 1) => {
   const fontSize = Math.max(10, Math.min(20, Math.round(boardSize * 0.035)));
-
   const borderSize = Math.max(20, Math.min(35, Math.round(boardSize * 0.06)));
 
   return {
@@ -17,12 +16,14 @@ export const getCoordinateParams = (boardSize) => {
 export const drawCoordinates = (
   ctx,
   squareSize,
-  params,
+  borderSize,
   flipped,
   boardSize,
   forExport = false
 ) => {
-  const { fontSize, fontWeight, borderSize, offset } = params;
+  const fontSize = Math.max(10, Math.min(20, Math.round(boardSize * 0.035)));
+  const fontWeight = 600;
+  const offset = borderSize * 0.4;
 
   ctx.save();
   ctx.font = `${fontWeight} ${fontSize}px Inter, system-ui, sans-serif`;

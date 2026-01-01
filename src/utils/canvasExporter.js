@@ -1,4 +1,8 @@
-import { createUltraQualityCanvas } from "./imageOptimizer";
+import {
+  createUltraQualityCanvas,
+  calculateExportSize,
+  getMaxCanvasSize,
+} from "./imageOptimizer";
 
 /**
  * Export state management
@@ -75,6 +79,34 @@ async function simulateProgress(onProgress, start, end, duration) {
 
     await new Promise((resolve) => setTimeout(resolve, stepDuration));
   }
+}
+
+export function getExportInfo(config) {
+  const { boardSize, showCoords, exportQuality } = config;
+  const exportSize = calculateExportSize(boardSize, showCoords, exportQuality);
+  const maxSize = getMaxCanvasSize();
+
+  return {
+    displaySize: exportSize.displaySize,
+    exportWidth: exportSize.width,
+    exportHeight: exportSize.height,
+    requestedQuality: exportQuality,
+    actualQuality: exportSize.actualQuality,
+    maxCanvasSize: maxSize,
+    willBeReduced: exportSize.actualQuality < exportQuality,
+    fileSizeEstimate: estimateFileSize(exportSize.width, exportSize.height),
+  };
+}
+
+function estimateFileSize(width, height) {
+  const pixels = width * height;
+  const pngSize = (pixels * 3) / 1024 / 1024; // ~3 bytes per pixel for PNG
+  const jpegSize = pngSize * 0.15; // JPEG ~15% of PNG
+
+  return {
+    png: `${pngSize.toFixed(1)} MB`,
+    jpeg: `${jpegSize.toFixed(1)} MB`,
+  };
 }
 
 /**
