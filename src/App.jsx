@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import ChessBoard from "./components/ChessBoard";
 import ControlPanel from "./components/ControlPanel";
 import ActionButtons from "./components/ActionButtons";
@@ -6,6 +6,7 @@ import UserGuide from "./components/UserGuide";
 import NotificationContainer from "./components/NotificationContainer";
 import { ExportProgress } from "./components/ExportProgress";
 import { useNotifications } from "./hooks/useNotifications";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import {
   downloadPNG,
   downloadJPEG,
@@ -17,27 +18,51 @@ import {
 } from "./utils/canvasExporter";
 
 const App = () => {
-  // Board state
-  const [fen, setFen] = useState(
+  // Board state - ALL PERSISTED
+  const [fen, setFen] = useLocalStorage(
+    "chess-fen",
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
   );
-  const [pieceStyle, setPieceStyle] = useState("cburnett");
-  const [showCoords, setShowCoords] = useState(true);
-  const [lightSquare, setLightSquare] = useState("#f0d9b5");
-  const [darkSquare, setDarkSquare] = useState("#b58863");
-  const [boardSize, setBoardSize] = useState(400);
-  const [flipped, setFlipped] = useState(false);
+  const [pieceStyle, setPieceStyle] = useLocalStorage(
+    "chess-piece-style",
+    "cburnett"
+  );
+  const [showCoords, setShowCoords] = useLocalStorage(
+    "chess-show-coords",
+    true
+  );
+  const [lightSquare, setLightSquare] = useLocalStorage(
+    "chess-light-square",
+    "#f0d9b5"
+  );
+  const [darkSquare, setDarkSquare] = useLocalStorage(
+    "chess-dark-square",
+    "#b58863"
+  );
+  const [boardSize, setBoardSize] = useLocalStorage("chess-board-size", 400);
+  const [flipped, setFlipped] = useLocalStorage("chess-flipped", false);
 
-  // Export state
-  const [fileName, setFileName] = useState("chess-position");
-  const [exportQuality, setExportQuality] = useState(16);
+  // Export state - PERSISTED
+  const [fileName, setFileName] = useLocalStorage(
+    "chess-file-name",
+    "chess-position"
+  );
+  const [exportQuality, setExportQuality] = useLocalStorage(
+    "chess-export-quality",
+    16
+  );
+
+  // Temporary state (not persisted)
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [currentFormat, setCurrentFormat] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const [showProgress, setShowProgress] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const boardRef = useRef(null);
+  const addToFavoritesRef = useRef(null);
+
   const { notifications, success, error, info, removeNotification } =
     useNotifications();
 
@@ -193,6 +218,13 @@ const App = () => {
     setIsPaused(false);
   };
 
+  // Callback to handle favorite from ActionButtons
+  const handleAddToFavorites = useCallback(() => {
+    if (addToFavoritesRef.current) {
+      addToFavoritesRef.current();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-6 sm:py-8 px-3 sm:px-4 overflow-x-hidden">
       <div className="max-w-[1600px] mx-auto w-full">
@@ -230,7 +262,10 @@ const App = () => {
                 onCopyImage={handleCopyImage}
                 onFlip={handleFlip}
                 onBatchExport={handleBatchExport}
+                onAddToFavorites={handleAddToFavorites}
                 isExporting={isExporting}
+                currentFen={fen}
+                isFavorite={isFavorite}
               />
             </div>
           </div>
@@ -254,6 +289,8 @@ const App = () => {
               setFileName={setFileName}
               exportQuality={exportQuality}
               setExportQuality={setExportQuality}
+              addToFavoritesRef={addToFavoritesRef}
+              onFavoriteStatusChange={setIsFavorite}
               onNotification={(message, type) => {
                 if (type === "success") success(message);
                 else if (type === "error") error(message);

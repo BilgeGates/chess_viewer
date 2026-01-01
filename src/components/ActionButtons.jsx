@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Download, Image, Copy, Heart, RefreshCcw } from "lucide-react";
 
 const ActionButtons = ({
   onDownloadPNG,
@@ -6,7 +7,10 @@ const ActionButtons = ({
   onCopyImage,
   onFlip,
   onBatchExport,
+  onAddToFavorites,
   isExporting,
+  currentFen,
+  isFavorite,
 }) => {
   const [showBatchMenu, setShowBatchMenu] = useState(false);
   const [selectedFormats, setSelectedFormats] = useState({
@@ -42,19 +46,10 @@ const ActionButtons = ({
           disabled={isExporting}
           className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <svg
+          <Download
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-            />
-          </svg>
+            strokeWidth={2.5}
+          />
           <span>PNG</span>
         </button>
 
@@ -63,19 +58,10 @@ const ActionButtons = ({
           disabled={isExporting}
           className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-amber-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <svg
+          <Download
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-            />
-          </svg>
+            strokeWidth={2.5}
+          />
           <span>JPEG</span>
         </button>
 
@@ -84,19 +70,10 @@ const ActionButtons = ({
           disabled={isExporting}
           className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-indigo-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <svg
+          <Image
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
+            strokeWidth={2.5}
+          />
           <span>Batch</span>
         </button>
       </div>
@@ -135,26 +112,40 @@ const ActionButtons = ({
       )}
 
       {/* Secondary Actions */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <button
           onClick={onCopyImage}
           disabled={isExporting}
           className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-green-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <svg
+          <Copy
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-            />
-          </svg>
+            strokeWidth={2.5}
+          />
           <span>Copy</span>
+        </button>
+
+        <button
+          onClick={onAddToFavorites}
+          disabled={isExporting}
+          className={`group px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${
+            isFavorite
+              ? "bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 active:scale-95 hover:shadow-red-500/50"
+              : "bg-gradient-to-br from-pink-600 to-pink-700 hover:from-pink-500 hover:to-pink-600 active:scale-95 hover:shadow-pink-500/50"
+          }`}
+        >
+          <Heart
+            className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300 ${
+              isFavorite
+                ? "fill-current scale-110"
+                : "group-hover:scale-110 group-hover:fill-current"
+            }`}
+            strokeWidth={2.5}
+          />
+          <span className="hidden sm:inline">
+            {isFavorite ? "Saved" : "Save"}
+          </span>
+          <span className="sm:hidden">★</span>
         </button>
 
         <button
@@ -162,19 +153,10 @@ const ActionButtons = ({
           disabled={isExporting}
           className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-gray-200 transition-all duration-200 shadow-lg flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <svg
+          <RefreshCcw
             className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:rotate-180 transition-transform duration-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
+            strokeWidth={2.5}
+          />
           <span>Flip</span>
         </button>
       </div>
