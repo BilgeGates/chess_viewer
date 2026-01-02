@@ -1,10 +1,6 @@
 /**
  * Parse FEN string into 2D board array
  *
- * CHESS STANDARD FORMAT:
- * board[0][0] = a8 (top-left, rank 8)
- * board[7][7] = h1 (bottom-right, rank 1)
- *
  * FEN reads from rank 8 down to rank 1
  * This matches the natural board representation
  *

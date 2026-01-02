@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { parseFEN } from "../utils/fenParser";
+import { parseFEN } from "../utils";
 
 export const useChessBoard = (fen) => {
   const [boardState, setBoardState] = useState([]);

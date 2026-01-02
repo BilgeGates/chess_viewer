@@ -1,5 +1,4 @@
-import { parseFEN } from "./fenParser";
-import { drawCoordinates } from "./coordinateCalculations";
+import { drawCoordinates, parseFEN } from "./";
 
 /**
  * Brauzerin maksimum canvas ölçüsünü hesablayır

@@ -1,5 +1,3 @@
-// src/components/UserGuide.jsx
-
 import { useState } from "react";
 import {
   Info,

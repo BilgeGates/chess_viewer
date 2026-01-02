@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { usePieceImages } from "../hooks/usePieceImages";
-import { parseFEN } from "../utils/fenParser";
-import { drawCoordinates } from "../utils/coordinateCalculations";
+import { usePieceImages } from "../hooks";
+import { parseFEN, drawCoordinates } from "../utils";
 
 const ChessBoard = React.forwardRef((props, ref) => {
   const {
