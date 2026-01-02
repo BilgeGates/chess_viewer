@@ -1,6 +1,6 @@
 import React from "react";
-import { parseFEN } from "../utils/fenParser";
-import { usePieceImages } from "../hooks/usePieceImages";
+import { parseFEN } from "../utils";
+import { usePieceImages } from "../hooks";
 
 const MiniChessPreview = ({
   fen,

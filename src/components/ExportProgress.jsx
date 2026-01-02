@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 /**
  * Export Progress Modal with Pause/Resume and Cancel
  */
-export const ExportProgress = ({
+const ExportProgress = ({
   isExporting,
   progress,
   currentFormat,
@@ -169,3 +169,5 @@ export const ExportProgress = ({
     </div>
   );
 };
+
+export default ExportProgress;

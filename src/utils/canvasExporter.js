@@ -2,7 +2,7 @@ import {
   createUltraQualityCanvas,
   calculateExportSize,
   getMaxCanvasSize,
-} from "./imageOptimizer";
+} from "./";
 
 /**
  * Export state management

@@ -145,7 +145,7 @@ const ActionButtons = ({
           <span className="hidden sm:inline">
             {isFavorite ? "Saved" : "Save"}
           </span>
-          <span className="sm:hidden">★</span>
+          <span className="sm:hidden">Saved</span>
         </button>
 
         <button

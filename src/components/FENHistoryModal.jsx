@@ -1,6 +1,6 @@
 import React from "react";
 import { History, Clock, Trash2, X, Heart } from "lucide-react";
-import MiniChessPreview from "./MiniChessPreview";
+import { MiniChessPreview } from "./";
 
 const FENHistoryModal = ({
   isOpen,

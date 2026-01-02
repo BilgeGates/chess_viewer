@@ -1,4 +1,4 @@
-import { createUltraQualityCanvas } from "./imageOptimizer";
+import { createUltraQualityCanvas } from "./";
 
 /**
  * PROGRESSIVE DOWNLOAD STRATEGY
