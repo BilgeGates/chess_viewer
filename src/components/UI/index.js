@@ -1,10 +1,13 @@
-export { default as Modal } from "./Modal";
-export { default as Button } from "./Button";
-export { default as Input } from "./Input";
-export { default as Select } from "./Select";
-export { default as Card } from "./Card";
-export { default as Badge } from "./Badge";
-export { default as Checkbox } from "./Checkbox";
-export { default as SearchableSelect } from "./SearchableSelect";
-export { default as RangeSlider } from "./RangeSlider";
-export { default as ColorPicker } from "./ColorPicker/ColorPicker";
+// UI components main exports
+
+// Re-export base components
+export * from "./base";
+
+// Re-export color picker
+export * from "./color-picker";
+
+// Export other UI components
+export { default as ActionButtons } from "./ActionButtons";
+export { default as ExportProgress } from "./ExportProgress";
+export { default as NotificationContainer } from "./NotificationContainer";
+export { default as UserGuide } from "./UserGuide";
