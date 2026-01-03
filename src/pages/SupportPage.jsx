@@ -140,7 +140,7 @@ const SupportPage = () => {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-12 text-center bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-2xl p-8">
+        {/* <div className="mt-12 text-center bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-2xl p-8">
           <h3 className="text-2xl font-bold text-white mb-3">
             Still need help?
           </h3>
@@ -150,13 +150,13 @@ const SupportPage = () => {
           </p>
 
           <a
-            href="mailto:support@chessdiagram.com"
+            href="mailto:"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-colors"
           >
             <Mail className="w-5 h-5" />
             Contact Support
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );

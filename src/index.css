@@ -1,5 +1,3 @@
-/* src/index.css */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,7 +28,6 @@ code {
     monospace;
 }
 
-/* Prevent horizontal overflow */
 #root {
   overflow-x: hidden;
   width: 100%;
@@ -118,31 +115,6 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]::-moz-range-thumb:hover {
   transform: scale(1.2);
   box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.1);
-}
-
-/* Color input styling */
-input[type="color"] {
-  -webkit-appearance: none;
-  border: none;
-  width: 100%;
-  height: 50px;
-  cursor: pointer;
-  border-radius: 8px;
-}
-
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-  border-radius: 8px;
-}
-
-input[type="color"]::-webkit-color-swatch {
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-}
-
-input[type="color"]::-moz-color-swatch {
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
 }
 
 /* Smooth transitions */

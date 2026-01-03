@@ -1,17 +1,17 @@
 // Piece mapping for Lichess assets
 export const PIECE_MAP = {
-  K: "wK",
-  Q: "wQ",
-  R: "wR",
-  B: "wB",
-  N: "wN",
-  P: "wP",
-  k: "bK",
-  q: "bQ",
-  r: "bR",
-  b: "bB",
-  n: "bN",
-  p: "bP",
+  wK: "wK",
+  wQ: "wQ",
+  wR: "wR",
+  wB: "wB",
+  wN: "wN",
+  wP: "wP",
+  bK: "bK",
+  bQ: "bQ",
+  bR: "bR",
+  bB: "bB",
+  bN: "bN",
+  bP: "bP",
 };
 
 // Enhanced piece sets

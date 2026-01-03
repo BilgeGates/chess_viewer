@@ -1,9 +1,13 @@
-export { default as ActionButtons } from "./ActionButtons";
-export { default as ChessBoard } from "./ChessBoard";
-export { default as ControlPanel } from "./ControlPanel/ControlPanel";
-export { default as ExportProgress } from "./ExportProgress";
-export { default as FENHistoryModal } from "./FENHistoryModal";
-export { default as MiniChessPreview } from "./MiniChessPreview";
-export { default as Navbar } from "./Navbar";
-export { default as NotificationContainer } from "./NotificationContainer";
-export { default as UserGuide } from "./UserGuide";
+// Main components exports - Central hub
+
+// Board components
+export * from "./board";
+
+// Control panel components
+export * from "./controls";
+
+// UI components
+export * from "./UI";
+
+// Layout components
+export * from "./layouts";
