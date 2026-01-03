@@ -501,7 +501,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 👨‍💻 **Author**
 
-Created with ❤️ by [Khatai Huseynzada]
+Created with by Khatai Huseynzada
 
 - GitHub: [BilgeGates](https://github.com/BilgeGatese)
 
@@ -520,7 +520,7 @@ Created with ❤️ by [Khatai Huseynzada]
 
 Need help? Have questions?
 
-- 🐛 Issues: [GitHub Issues](https://github.com/BilgeGates/chess-viewer/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues)
 
 ---
 
