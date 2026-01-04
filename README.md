@@ -1,15 +1,33 @@
+<<<<<<< HEAD
 <h1 align='center'> ♟️ Chess Diagram Generator</h1>
+=======
+<h1 align="center">♟️ Chess Diagram Generator</h1>
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 
 <div align="center">
 
 **Professional chess position visualizer with ultra-HD export capabilities**
 
+<<<<<<< HEAD
 [![React](https://img.shields.io/badge/React-19.2.3-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 [Live Demo](https://chess-diagram-generator.vercel.app) · [Report Bug](https://github.com/BilgeGates/chess_viewer/issues) · [Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
+=======
+[![React](https://img.shields.io/badge/React-18%2B_(Built_with_19.x)-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Backend](https://img.shields.io/badge/backend-none-success?style=flat-square)](#)
+[![Privacy](https://img.shields.io/badge/privacy-local--only-blue?style=flat-square)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
+[Live Demo](https://chess-diagram-generator.vercel.app) ·
+[Report Bug](https://github.com/BilgeGates/chess_viewer/issues) ·
+[Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
+
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 
 </div>
 
@@ -24,13 +42,21 @@
 - [Project Structure](#-project-structure)
 - [Technology Stack](#-technology-stack)
 - [Browser Support](#-browser-support)
+<<<<<<< HEAD
 - [Contributing](#-contributing)
+=======
+- [Release Strategy](#-release-strategy)
+- [Security & Privacy](#-security--privacy)
+- [Contributing](#-contributing)
+- [FAQ](#faq)
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 - [License](#-license)
 
 ---
 
 ## 🌟 Overview
 
+<<<<<<< HEAD
 Chess Diagram Generator is a cutting-edge web application designed for chess enthusiasts, coaches, authors, and content creators. Built with modern React and optimized for performance, it offers professional-grade chess diagram generation with unprecedented customization options. 
 
 ### Why Choose Chess Diagram Generator?
@@ -41,11 +67,16 @@ Chess Diagram Generator is a cutting-edge web application designed for chess ent
 - 📱 **Responsive by design** – Works on desktop and tablet browsers
 - 🔒 **Privacy-focused** – No backend, no tracking, fully client-side
 - 🖼️ **High-resolution exports** – Suitable for articles, books, and presentations
+=======
+Chess Diagram Generator is a modern web application for creating **high-quality chess diagrams** from FEN notation.  
+It is built for chess players, coaches, authors, streamers, and developers who need **fast, precise, and customizable** board visuals.
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 
 ---
 
 ## ✨ Features
 
+<<<<<<< HEAD
 ### 🖼️ Ultra-HD Export System
 <table>
 <tr>
@@ -117,6 +148,22 @@ Chess Diagram Generator is a cutting-edge web application designed for chess ent
 - **Piece Sets**: CBurnett, Merida, Alpha, Cardinal, Chess7, Companion, Dubrovny, Fantasy, Fresca, Gioco, Governor, Horsey, ICPieces, Kosal, Leipzig, Letter, Libra, Maestro, Pirouetti, Pixel, ReillyCraig, Riohacha, Shapes, Spatial, Staunty, Tatiana
 
 </details>
+=======
+- Full FEN notation support with validation  
+- Multi-FEN input (up to 10 positions)  
+- Ultra-HD PNG & JPEG export (up to 12,800×12,800px)  
+- Batch export & clipboard copy  
+- 27+ professional piece sets  
+- Advanced color picker & themes  
+- Favorites, history & famous positions  
+- Board flip & coordinates  
+
+---
+
+## 🖼️ Demo & Screenshots
+
+> **Live demo:** https://chess-diagram-generator.vercel.app
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 
 ---
 
@@ -125,8 +172,13 @@ Chess Diagram Generator is a cutting-edge web application designed for chess ent
 ### Prerequisites
 
 ```bash
+<<<<<<< HEAD
 Node.js >= 16.x
 npm >= 8.x (or yarn >= 1.22.x)
+=======
+Node.js >= 16
+npm >= 8
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 ```
 
 ### Installation
@@ -317,6 +369,7 @@ chess_viewer/
 <table>
 <tr>
 <td align="center" width="20%">
+<<<<<<< HEAD
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="50" height="50"/><br>
 <b>React 19.2.3</b><br>
 <sub>UI Framework</sub>
@@ -425,6 +478,162 @@ git push origin feature/amazing-feature
 
 ---
 
+=======
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="50"/><br>
+  <b>React (18+ compatible, built with 19.x)</b><br>
+  <sub>UI Framework</sub>
+</td>
+
+<td align="center" width="20%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="50"/><br>
+  <b>JavaScript ES6+</b><br>
+  <sub>Language</sub>
+</td>
+
+<td align="center" width="20%">
+  <img src="https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/tailwindcss.svg" width="50"/><br>
+  <b>Tailwind CSS 3.3.5</b><br>
+  <sub>Styling</sub>
+</td>
+
+<td align="center" width="20%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="50"/><br>
+  <b>HTML5 Canvas</b><br>
+  <sub>Rendering</sub>
+</td>
+
+<td align="center" width="20%">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="50"/><br>
+  <b>Node.js 16+</b><br>
+  <sub>Runtime</sub>
+</td>
+</tr>
+</table>
+
+
+### Performance Stack
+
+- **Rendering**: HTML5 Canvas (GPU-accelerated)
+- **Optimization**: React.memo, useCallback, useMemo
+- **Storage**: localStorage (browser native)
+- **Deployment**: Vercel (Edge + CDN)
+
+---
+
+## 🌐 Browser Support
+
+<div align="center">
+
+| Browser | Version | Status |
+|---------|---------|--------|
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="20"/> Chrome | 90+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="20"/> Firefox | 88+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/safari/safari-original.svg" width="20"/> Safari | 14+ | ✅ Full Support |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge.svg" width="20"/> Edge | 90+ | ✅ Full Support |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera.svg" width="20"/> Opera | 76+ | ✅ Full Support |
+
+</div>
+
+### Required Browser Features
+
+- HTML5 Canvas API
+- ES6+ JavaScript
+- CSS Grid & Flexbox
+- Clipboard API (optional)
+- localStorage (optional)
+
+
+---
+
+## 🏷️ Release Strategy
+
+This project follows **semantic versioning**, with each release introducing clearly scoped and production-ready features.
+
+### Current Releases
+
+- **v1.0.0** – Initial public release  
+  Core chess diagram generator with standard FEN input, board rendering, basic customization, and PNG/JPEG export.
+
+- **v2.0.0** – High-resolution export system  
+  Ultra-HD export support (up to 32×), improved canvas rendering, export quality controls, and performance optimizations.
+
+- **v3.0.0** – Workflow features & usability  
+  Favorites management, position history, famous positions library, board controls, and general UX improvements.
+
+- **v3.5.0** – Advanced FEN workflows & customization  
+  Multi-FEN input (up to 10 positions), pagination with live previews, advanced color picker, extended theme customization, and UI refinements.
+
+### 🔮 Planned Future Releases
+
+- **v4.0.0** – SVG export format support  
+  Scalable Vector Graphics export for print-ready, resolution-independent chess diagrams.
+
+- **v4.1.0** – Open folder support  
+  Select an output directory for batch exports to streamline bulk workflows.
+
+- **v4.1.5** – Design and visual refinements  
+  Visual polish, layout adjustments, and overall user experience enhancements.
+
+> Version numbers and feature scope may evolve based on technical constraints and community feedback.
+
+---
+
+## 🔐 Security & Privacy
+
+This project follows a **privacy-first, zero-backend architecture**.  
+All functionality runs entirely in the user's browser with no external data flow.
+
+### 🔒 Security Highlights
+
+- ✅ No server-side data storage
+- ✅ Client-side processing only
+- ✅ No cookies, trackers, or fingerprinting
+- ✅ No third-party analytics or telemetry
+- ✅ No user data is collected, stored, or transmitted
+
+### 🧠 Threat Model
+
+- No authentication or user accounts
+- No sensitive or personal data processed
+- No external APIs or background requests
+- Attack surface limited to static client-side execution only
+
+### 🛡️ Data Safety Guarantee
+
+> Chess Diagram Generator will **never** upload, sync, or share your data.  
+> All positions, exports, favorites, and settings remain local to your device.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRİBUTİNG.md) for detailed guidelines.
+
+### Quick Contribution Guide
+
+```bash
+# 1. Fork the repository
+# 2. Create your feature branch
+git checkout -b feature/amazing-feature
+
+# 3. Commit your changes
+git commit -m 'Add amazing feature'
+
+# 4. Push to the branch
+git push origin feature/amazing-feature
+
+# 5. Open a Pull Request
+```
+
+### Contributors
+
+<a href="https://github.com/BilgeGates/chess_viewer/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=BilgeGates/chess_viewer" />
+</a>
+
+---
+
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 ## 📝 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
@@ -478,15 +687,24 @@ This project wouldn't be possible without these amazing resources:
 <table>
 <tr>
 <td align="center" width="25%">
+<<<<<<< HEAD
 <img src="https://lichess.org/assets/logo/lichess.svg" width="100"/><br>
 <b>Lichess</b><br>
 <sub>Lichess piece SVGs</sub>
 </td>
+=======
+<img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/lichess.svg" width="100"/><br>
+<b>Lichess</b><br>
+<sub>Lichess piece SVGs</sub>
+</td>
+  
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 <td align="center" width="25%">
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="100"/><br>
 <b>React Team</b><br>
 <sub>Amazing framework</sub>
 </td>
+<<<<<<< HEAD
 <td align="center" width="25%">
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="100"/><br>
 <b>Tailwind Labs</b><br>
@@ -497,6 +715,21 @@ This project wouldn't be possible without these amazing resources:
 <b>Lucide Icons</b><br>
 <sub>Icon library</sub>
 </td>
+=======
+  
+<td align="center" width="25%">
+  <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/tailwindcss.svg" width="100"/><br>
+  <b>Tailwind Labs</b><br>
+  <sub>Beautiful utilities</sub>
+</td>
+
+<td align="center" width="25%">
+  <img src="https://lucide.dev/logo.light.svg" /><br>
+  <b>Lucide Icons</b><br>
+  <sub>Icon library</sub>
+</td>
+
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
 </tr>
 </table>
 
@@ -518,6 +751,7 @@ This project wouldn't be possible without these amazing resources:
 | 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/chess_viewer/discussions) | 1-3 days |
 
 </div>
+<<<<<<< HEAD
 
 ### FAQ
 
@@ -578,3 +812,48 @@ This project is designed with a **privacy-first, zero-backend architecture**.
 ---
 
 **© 2025-2026 Khatai Huseynzada. Licensed under MIT.**
+=======
+
+---
+
+## FAQ
+
+<details>
+<summary><b>How do I report a bug?</b></summary>
+
+1. Check if the issue already exists in [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues)
+2. If not, create a new issue with:
+   - Clear description of the problem
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Screenshots (if applicable)
+   - Browser and OS information
+</details>
+
+<details>
+<summary><b>Can I use this commercially?</b></summary>
+
+Yes! This project is MIT licensed, which means you can use it for commercial purposes.  
+Just include the license notice in your project.
+</details>
+
+<details>
+<summary><b>How do I add a new piece set?</b></summary>
+
+1. Add piece images to `/public/pieces/[set-name]/`
+2. Update `PIECE_SETS` in `src/constants/chessConstants.js`
+3. Submit a pull request with your changes
+</details>
+
+<details>
+<summary><b>Can I export to SVG format?</b></summary>
+
+Currently only PNG and JPEG are supported.  
+SVG export is planned for version **4.0.0**.  
+You can track progress in [Issue #1](https://github.com/BilgeGates/chess_viewer/issues/1).
+</details>
+
+---
+
+**© 2026 Khatai Huseynzada. Licensed under MIT.**
+>>>>>>> 4b6b3f25aced9a5621df21de028f40ded19e9e82
