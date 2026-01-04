@@ -252,6 +252,7 @@ chess_viewer/
 ├── 📄 ARCHITECTURE.md
 ├── 📄 SECURITY.md
 ├── 📄 CODE_OF_CONDUCT.md
+├── 📄 FAQ.md
 └── 📄 LICENSE
 ```
 

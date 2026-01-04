@@ -195,6 +195,7 @@ chess_viewer/
 ├── 📄 ARCHITECTURE.md
 ├── 📄 SECURITY.md
 ├── 📄 CODE_OF_CONDUCT.md
+├── 📄 FAQ.md
 └── 📄 LICENSE
 ```
 
@@ -512,11 +513,11 @@ exportCanvas.toBlob((blob) => {
 ### Resolution Scaling
 
 | Scale | Resolution | Use Case |
-|-------|-----------|----------|
-| 4×    | 3200×3200 | Web thumbnails |
-| 8×    | 6400×6400 | Social media |
-| 16×   | 12800×12800 | Print (300 DPI) |
-| 32×   | 25600×25600 | Large posters |
+|-------|-------------|----------       |
+| 8×    | 3200×3200   | Web thumbnails  |
+| 16×   | 6400×6400   | Social media    |
+| 24x   | 9600×9600   | Print (300 DPI) |
+| 32×   | 12800×12800 | Large posters   |
 
 ---
 
