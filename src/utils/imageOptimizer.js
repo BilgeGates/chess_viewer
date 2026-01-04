@@ -230,6 +230,10 @@ export const createUltraQualityCanvas = async (config) => {
   ctx.clearRect(0, 0, displaySize, displaySize);
   console.log("Canvas cleared with transparent background");
 
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(borderSize - 1, borderSize - 1, boardSize + 2, boardSize + 2);
+
   // Draw squares
   console.log("Drawing squares...");
   for (let row = 0; row < 8; row++) {
