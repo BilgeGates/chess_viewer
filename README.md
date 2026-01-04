@@ -249,6 +249,9 @@ chess_viewer/
 ├── 📄 vercel.json                 # Vercel deployment config
 ├── 📄 README.md
 ├── 📄 CONTRIBUTING.md
+├── 📄 ARCHITECTURE.md
+├── 📄 SECURITY.md
+├── 📄 CODE_OF_CONDUCT.md
 └── 📄 LICENSE
 ```
 
