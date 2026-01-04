@@ -492,7 +492,7 @@ If your question isn't answered here:
 
 4. **Contact the developer:**
    - Via GitHub profile
-   - Email: [your-email@example.com]
+   - Email: [darkdeveloperassistant@gmail.com]
 
 ---
 
