@@ -20,6 +20,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Fixed an issue where chess pieces were missing or incorrectly rendered in exported images (PNG/JPEG)
 - Resolved piece rendering edge cases in high-resolution exports
 - Fixed various rendering and display issues
+- Fixed JPEG export background rendering issue
+- Resolved responsive layout issues on small screens
 
 ### 🎨 UI / Visual Improvements
 - Increased coordinate font size and applied a bolder font weight for better readability
