@@ -226,14 +226,9 @@ export const createUltraQualityCanvas = async (config) => {
 
   const squareSize = boardSize / 8;
 
-  // Clear canvas with white background
+  // Clear canvas - fully transparent background
   ctx.clearRect(0, 0, displaySize, displaySize);
-  console.log("Canvas cleared");
-
-  // Draw board border
-  ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(borderSize - 1, borderSize - 1, boardSize + 2, boardSize + 2);
+  console.log("Canvas cleared with transparent background");
 
   // Draw squares
   console.log("Drawing squares...");
@@ -313,10 +308,18 @@ export const createUltraQualityCanvas = async (config) => {
 
   console.log(`Pieces drawn: ${drawnCount}, skipped: ${skippedCount}`);
 
-  // Draw coordinates
+  // Draw coordinates - black color for export
   if (showCoords) {
     console.log("Drawing coordinates...");
-    drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize, true);
+    drawCoordinates(
+      ctx,
+      squareSize,
+      borderSize,
+      flipped,
+      boardSize,
+      true,
+      false
+    );
     console.log("Coordinates drawn");
   }
 

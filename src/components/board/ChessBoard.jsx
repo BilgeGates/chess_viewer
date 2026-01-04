@@ -76,18 +76,8 @@ const ChessBoard = React.forwardRef((props, ref) => {
 
     const squareSize = boardSize / 8;
 
-    // Clear canvas with white background
+    // Clear canvas - fully transparent background
     ctx.clearRect(0, 0, totalSize, totalSize);
-
-    // Draw board border
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(
-      borderSize - 1,
-      borderSize - 1,
-      boardSize + 2,
-      boardSize + 2
-    );
 
     // Draw squares
     for (let row = 0; row < 8; row++) {
@@ -128,7 +118,6 @@ const ChessBoard = React.forwardRef((props, ref) => {
             const cx = displayCol * squareSize + borderSize + squareSize / 2;
             const cy = displayRow * squareSize + borderSize + squareSize / 2;
 
-            // Increased piece size from 0.9 to 1.0 (fills entire square)
             ctx.drawImage(
               img,
               cx - squareSize * 0.5,
@@ -143,7 +132,15 @@ const ChessBoard = React.forwardRef((props, ref) => {
 
     // Draw coordinates
     if (showCoords) {
-      drawCoordinates(ctx, squareSize, borderSize, flipped, boardSize, false);
+      drawCoordinates(
+        ctx,
+        squareSize,
+        borderSize,
+        flipped,
+        boardSize,
+        false,
+        true
+      ); // isExport=false, displayWhite=true
     }
   }, [
     fen,
@@ -154,6 +151,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
     boardSize,
     flipped,
     isLoading,
+    board,
   ]);
 
   return (
@@ -164,6 +162,7 @@ const ChessBoard = React.forwardRef((props, ref) => {
         style={{
           display: "block",
           imageRendering: "-webkit-optimize-contrast",
+          background: "transparent",
         }}
       />
       {isLoading && (

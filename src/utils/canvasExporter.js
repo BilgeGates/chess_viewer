@@ -100,8 +100,8 @@ export function getExportInfo(config) {
 
 function estimateFileSize(width, height) {
   const pixels = width * height;
-  const pngSize = (pixels * 3) / 1024 / 1024; // ~3 bytes per pixel for PNG
-  const jpegSize = pngSize * 0.15; // JPEG ~15% of PNG
+  const pngSize = (pixels * 3) / 1024 / 1024;
+  const jpegSize = pngSize * 0.1;
 
   return {
     png: `${pngSize.toFixed(1)} MB`,
@@ -110,26 +110,84 @@ function estimateFileSize(width, height) {
 }
 
 /**
- * Download PNG with proper cancellation and pause
+ * Validate config before export
+ */
+function validateExportConfig(config) {
+  console.log("\n🔍 VALIDATING EXPORT CONFIG...");
+
+  const errors = [];
+
+  if (!config) {
+    errors.push("Config is null or undefined");
+  } else {
+    if (!config.boardSize || config.boardSize < 100) {
+      errors.push(`Invalid boardSize: ${config.boardSize}`);
+    }
+
+    if (!config.fen) {
+      errors.push("FEN is missing");
+    }
+
+    if (!config.lightSquare || !config.darkSquare) {
+      errors.push("Square colors are missing");
+    }
+
+    if (!config.pieceImages) {
+      errors.push("pieceImages is null or undefined");
+    } else if (typeof config.pieceImages !== "object") {
+      errors.push(`pieceImages is not an object: ${typeof config.pieceImages}`);
+    } else if (Object.keys(config.pieceImages).length === 0) {
+      errors.push("pieceImages is empty");
+    }
+  }
+
+  if (errors.length > 0) {
+    console.error("❌ CONFIG VALIDATION FAILED:");
+    errors.forEach((err) => console.error("   -", err));
+    throw new Error("Invalid export config: " + errors.join(", "));
+  }
+
+  console.log("✅ Config validation passed");
+  console.log("   boardSize:", config.boardSize);
+  console.log("   fen:", config.fen);
+  console.log("   pieceImages count:", Object.keys(config.pieceImages).length);
+}
+
+/**
+ * Download PNG with comprehensive error handling
  */
 export async function downloadPNG(config, fileName, onProgress) {
   resetExportState();
 
   try {
-    console.log("🚀 Starting PNG export...");
-    console.log("📦 Config:", config);
-    console.log("🖼️ pieceImages:", Object.keys(config.pieceImages || {}));
+    console.log("\n🚀 ========== PNG EXPORT START ==========");
+    console.log("📦 Input config:", {
+      fileName,
+      boardSize: config?.boardSize,
+      exportQuality: config?.exportQuality,
+      pieceImagesExists: !!config?.pieceImages,
+      pieceImagesCount: Object.keys(config?.pieceImages || {}).length,
+    });
+
+    // Validate config
+    validateExportConfig(config);
 
     onProgress?.(5);
     await simulateProgress(onProgress, 5, 15, 300);
 
-    // Create canvas - ✅ await əlavə edildi
+    // Create canvas
     await waitWhilePaused();
     checkCancellation();
 
-    console.log("🎨 Creating canvas...");
+    console.log("\n🎨 Creating ultra quality canvas...");
     const canvas = await createUltraQualityCanvas(config);
-    console.log("✅ Canvas created:", canvas.width, "x", canvas.height);
+
+    if (!canvas) {
+      throw new Error("Canvas creation returned null");
+    }
+
+    console.log("✅ Canvas created successfully:");
+    console.log("   Size:", canvas.width, "x", canvas.height);
 
     onProgress?.(30);
     await simulateProgress(onProgress, 30, 50, 400);
@@ -138,24 +196,35 @@ export async function downloadPNG(config, fileName, onProgress) {
     await waitWhilePaused();
     checkCancellation();
 
-    console.log("💾 Creating blob...");
+    console.log("\n💾 Creating PNG blob...");
     const blob = await new Promise((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          if (exportState.cancelled) {
-            reject(new Error("Export cancelled"));
-            return;
-          }
-          if (!blob) {
-            reject(new Error("Failed to create PNG blob"));
-            return;
-          }
-          console.log("✅ Blob created, size:", blob.size);
-          resolve(blob);
-        },
-        "image/png",
-        1.0
-      );
+      try {
+        canvas.toBlob(
+          (blob) => {
+            if (exportState.cancelled) {
+              reject(new Error("Export cancelled"));
+              return;
+            }
+            if (!blob) {
+              reject(
+                new Error(
+                  "Canvas.toBlob returned null - browser may not support this feature"
+                )
+              );
+              return;
+            }
+            console.log("✅ Blob created:");
+            console.log("   Size:", (blob.size / 1024 / 1024).toFixed(2), "MB");
+            console.log("   Type:", blob.type);
+            resolve(blob);
+          },
+          "image/png",
+          1.0
+        );
+      } catch (err) {
+        console.error("❌ toBlob error:", err);
+        reject(err);
+      }
     });
 
     await simulateProgress(onProgress, 50, 80, 300);
@@ -163,7 +232,7 @@ export async function downloadPNG(config, fileName, onProgress) {
     checkCancellation();
 
     // Download
-    console.log("⬇️ Starting download...");
+    console.log("\n⬇️ Initiating download...");
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -172,15 +241,22 @@ export async function downloadPNG(config, fileName, onProgress) {
     link.click();
 
     onProgress?.(100);
-    console.log("✅ PNG export complete!");
+    console.log("✅ PNG download initiated successfully!");
+    console.log("✅ ========== PNG EXPORT COMPLETE ==========\n");
 
     // Cleanup
     setTimeout(() => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      console.log("🧹 Cleanup complete");
     }, 100);
   } catch (error) {
-    console.error("❌ PNG export error:", error);
+    console.error("\n❌ ========== PNG EXPORT FAILED ==========");
+    console.error("Error type:", error.constructor.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    console.error("==========================================\n");
+
     if (error.message === "Export cancelled") {
       throw new Error("Export cancelled");
     }
@@ -189,58 +265,131 @@ export async function downloadPNG(config, fileName, onProgress) {
 }
 
 /**
- * Download JPEG with proper cancellation and pause
+ * Download JPEG with comprehensive error handling
  */
 export async function downloadJPEG(config, fileName, onProgress) {
   resetExportState();
 
   try {
+    console.log("\n🚀 ========== JPEG EXPORT START ==========");
+
+    // Validate config
+    validateExportConfig(config);
+
+    // Calculate export size for cropping calculations
+    const exportSize = calculateExportSize(
+      config.boardSize,
+      config.showCoords,
+      config.exportQuality || 16
+    );
+
     onProgress?.(5);
     await simulateProgress(onProgress, 5, 15, 300);
 
-    // Create canvas - ✅ await əlavə edildi
+    // Create canvas
     await waitWhilePaused();
     checkCancellation();
+
+    console.log("\n🎨 Creating ultra quality canvas...");
     const canvas = await createUltraQualityCanvas(config);
+
+    if (!canvas) {
+      throw new Error("Canvas creation returned null");
+    }
+
+    console.log("✅ Canvas created:", canvas.width, "x", canvas.height);
 
     onProgress?.(25);
     await simulateProgress(onProgress, 25, 35, 300);
 
-    // Add white background
+    // Add white background for JPEG - only left and bottom borders
     await waitWhilePaused();
     checkCancellation();
 
+    console.log("\n🎨 Converting to JPEG format...");
+
+    // Calculate border size
+    const borderSize = config.showCoords
+      ? Math.max(20, Math.min(30, config.boardSize / 20))
+      : 0;
+
+    // New canvas dimensions (remove top and right borders)
+    const newWidth = canvas.width - borderSize * exportSize.actualQuality;
+    const newHeight = canvas.height - borderSize * exportSize.actualQuality;
+
     const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
-    const ctx = tempCanvas.getContext("2d", { alpha: false });
+    tempCanvas.width = newWidth;
+    tempCanvas.height = newHeight;
+    const ctx = tempCanvas.getContext("2d", {
+      alpha: false, // JPEG doesn't support transparency
+      desynchronized: false,
+      willReadFrequently: false,
+    });
+
+    if (!ctx) {
+      throw new Error("Failed to get 2D context for JPEG conversion");
+    }
+
+    // Fill white background
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-    ctx.drawImage(canvas, 0, 0);
+    ctx.fillRect(0, 0, newWidth, newHeight);
+
+    // Copy canvas but crop top and right borders
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    // Source: skip top border (0, borderSize), crop width and height
+    // Destination: draw at (0, 0)
+    ctx.drawImage(
+      canvas,
+      0, // sx: start from left edge
+      borderSize * exportSize.actualQuality, // sy: skip top border
+      newWidth, // sWidth: crop right border
+      newHeight, // sHeight: crop top border
+      0, // dx
+      0, // dy
+      newWidth, // dWidth
+      newHeight // dHeight
+    );
+
+    console.log("✅ JPEG canvas ready (cropped top & right borders)");
 
     onProgress?.(45);
     await simulateProgress(onProgress, 45, 60, 400);
 
-    // Create blob
+    // Create JPEG blob
     await waitWhilePaused();
     checkCancellation();
 
+    console.log("\n💾 Creating JPEG blob (quality: 1.0)...");
     const blob = await new Promise((resolve, reject) => {
-      tempCanvas.toBlob(
-        (blob) => {
-          if (exportState.cancelled) {
-            reject(new Error("Export cancelled"));
-            return;
-          }
-          if (!blob) {
-            reject(new Error("Failed to create JPEG blob"));
-            return;
-          }
-          resolve(blob);
-        },
-        "image/jpeg",
-        0.98
-      );
+      try {
+        tempCanvas.toBlob(
+          (blob) => {
+            if (exportState.cancelled) {
+              reject(new Error("Export cancelled"));
+              return;
+            }
+            if (!blob) {
+              reject(
+                new Error(
+                  "Canvas.toBlob returned null - browser may not support JPEG export"
+                )
+              );
+              return;
+            }
+            console.log("✅ JPEG blob created:");
+            console.log("   Size:", (blob.size / 1024 / 1024).toFixed(2), "MB");
+            console.log("   Type:", blob.type);
+            resolve(blob);
+          },
+          "image/jpeg",
+          1.0
+        );
+      } catch (err) {
+        console.error("❌ toBlob error:", err);
+        reject(err);
+      }
     });
 
     await simulateProgress(onProgress, 60, 85, 300);
@@ -248,6 +397,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
     checkCancellation();
 
     // Download
+    console.log("\n⬇️ Initiating download...");
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -256,13 +406,22 @@ export async function downloadJPEG(config, fileName, onProgress) {
     link.click();
 
     onProgress?.(100);
+    console.log("✅ JPEG download initiated successfully!");
+    console.log("✅ ========== JPEG EXPORT COMPLETE ==========\n");
 
     // Cleanup
     setTimeout(() => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      console.log("🧹 Cleanup complete");
     }, 100);
   } catch (error) {
+    console.error("\n❌ ========== JPEG EXPORT FAILED ==========");
+    console.error("Error type:", error.constructor.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    console.error("===========================================\n");
+
     if (error.message === "Export cancelled") {
       throw new Error("Export cancelled");
     }
@@ -277,10 +436,21 @@ export async function copyToClipboard(config) {
   resetExportState();
 
   try {
-    // ✅ await əlavə edildi
+    console.log("\n🚀 ========== CLIPBOARD COPY START ==========");
+
+    // Validate config
+    validateExportConfig(config);
+
+    console.log("\n🎨 Creating canvas...");
     const canvas = await createUltraQualityCanvas(config);
+
+    if (!canvas) {
+      throw new Error("Canvas creation returned null");
+    }
+
     checkCancellation();
 
+    console.log("\n💾 Creating blob for clipboard...");
     const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
         (blob) => {
@@ -288,8 +458,11 @@ export async function copyToClipboard(config) {
             reject(new Error("Export cancelled"));
             return;
           }
-          if (!blob) reject(new Error("Failed to create blob"));
-          else resolve(blob);
+          if (!blob) {
+            reject(new Error("Failed to create blob for clipboard"));
+          } else {
+            resolve(blob);
+          }
         },
         "image/png",
         1.0
@@ -297,10 +470,18 @@ export async function copyToClipboard(config) {
     });
 
     checkCancellation();
+
+    console.log("\n📋 Writing to clipboard...");
     await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 
+    console.log("✅ Copied to clipboard successfully!");
+    console.log("✅ ========== CLIPBOARD COPY COMPLETE ==========\n");
     return true;
   } catch (error) {
+    console.error("\n❌ ========== CLIPBOARD COPY FAILED ==========");
+    console.error("Error:", error.message);
+    console.error("=============================================\n");
+
     if (error.message === "Export cancelled") {
       throw new Error("Export cancelled");
     }
@@ -313,14 +494,28 @@ export async function copyToClipboard(config) {
  */
 export async function batchExport(config, formats, fileName, onProgress) {
   resetExportState();
+
+  console.log("\n🚀 ========== BATCH EXPORT START ==========");
+  console.log("Formats:", formats);
+
+  // Validate config once for all exports
+  validateExportConfig(config);
+
   const total = formats.length;
   const results = { success: [], failed: [] };
 
   for (let i = 0; i < total; i++) {
-    if (exportState.cancelled) throw new Error("Export cancelled");
+    if (exportState.cancelled) {
+      console.log("❌ Batch export cancelled");
+      throw new Error("Export cancelled");
+    }
 
     const format = formats[i];
     const baseProgress = (i / total) * 100;
+
+    console.log(
+      `\n📦 Exporting format ${i + 1}/${total}: ${format.toUpperCase()}`
+    );
 
     try {
       const updateProgress = (p) => {
@@ -335,7 +530,11 @@ export async function batchExport(config, formats, fileName, onProgress) {
         await downloadJPEG(config, fileName, updateProgress);
         results.success.push("JPEG");
       }
+
+      console.log(`✅ ${format.toUpperCase()} export successful`);
     } catch (error) {
+      console.error(`❌ ${format.toUpperCase()} export failed:`, error.message);
+
       if (error.message === "Export cancelled") {
         throw error;
       }
@@ -344,6 +543,13 @@ export async function batchExport(config, formats, fileName, onProgress) {
   }
 
   onProgress?.(100, null);
+
+  console.log("\n📊 BATCH EXPORT SUMMARY:");
+  console.log("   Success:", results.success.join(", "));
+  if (results.failed.length > 0) {
+    console.log("   Failed:", results.failed.map((f) => f.format).join(", "));
+  }
+  console.log("✅ ========== BATCH EXPORT COMPLETE ==========\n");
 
   if (results.failed.length > 0) {
     throw new Error(
