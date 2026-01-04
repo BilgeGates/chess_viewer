@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v3.5.1] – 2026-01-04
+
+### 🐛 Bug Fixes
+- Fixed an issue where chess pieces were missing or incorrectly rendered in exported images (PNG/JPEG).
+
+### 🎨 UI / Visual Improvements
+- Increased coordinate font size and applied a bolder font weight for better readability.
+- Enlarged chess pieces on the board for improved visual clarity.
+- Added a subtle border around the chessboard to improve separation and contrast.
+
 ## [v3.5.0] - 2026-01-03
 
 ### Improvements
