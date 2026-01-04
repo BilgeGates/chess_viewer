@@ -248,6 +248,7 @@ chess_viewer/
 ├── 📄 package-lock.json
 ├── 📄 vercel.json                 # Vercel deployment config
 ├── 📄 README.md
+├── 📄 CONTRIBUTING.md
 └── 📄 LICENSE
 ```
 
