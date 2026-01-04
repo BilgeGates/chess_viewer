@@ -313,7 +313,8 @@ export async function downloadJPEG(config, fileName, onProgress) {
       ? Math.max(20, Math.min(30, config.boardSize / 20))
       : 0;
 
-    // New canvas dimensions (remove top and right borders)
+    // New canvas dimensions - keep the board + left and bottom borders only
+    // Remove top and right coordinate areas, but keep the board's black border
     const newWidth = canvas.width - borderSize * exportSize.actualQuality;
     const newHeight = canvas.height - borderSize * exportSize.actualQuality;
 
@@ -334,25 +335,28 @@ export async function downloadJPEG(config, fileName, onProgress) {
     ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, newWidth, newHeight);
 
-    // Copy canvas but crop top and right borders
+    // Copy canvas but crop top and right coordinate areas
+    // The board's black border will remain intact
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
 
-    // Source: skip top border (0, borderSize), crop width and height
-    // Destination: draw at (0, 0)
+    // Source: start from (0, borderSize) to skip top coordinates
+    // Width and height: crop to remove right coordinates
     ctx.drawImage(
       canvas,
-      0, // sx: start from left edge
-      borderSize * exportSize.actualQuality, // sy: skip top border
-      newWidth, // sWidth: crop right border
-      newHeight, // sHeight: crop top border
-      0, // dx
-      0, // dy
-      newWidth, // dWidth
-      newHeight // dHeight
+      0, // sx: start from left edge (includes left border with coordinates)
+      borderSize * exportSize.actualQuality, // sy: skip top coordinate area
+      newWidth, // sWidth: take everything except right coordinate area
+      newHeight, // sHeight: take everything except top coordinate area
+      0, // dx: draw at origin
+      0, // dy: draw at origin
+      newWidth, // dWidth: full destination width
+      newHeight // dHeight: full destination height
     );
 
-    console.log("✅ JPEG canvas ready (cropped top & right borders)");
+    console.log(
+      "✅ JPEG canvas ready (cropped top & right coordinate areas, board border intact)"
+    );
 
     onProgress?.(45);
     await simulateProgress(onProgress, 45, 60, 400);
