@@ -21,8 +21,8 @@ export const drawCoordinates = (
   boardSize,
   forExport = false
 ) => {
-  const fontSize = Math.max(10, Math.min(20, Math.round(boardSize * 0.035)));
-  const fontWeight = 600;
+  const fontSize = Math.max(10, Math.min(20, Math.round(boardSize * 0.04)));
+  const fontWeight = 700;
   const offset = borderSize * 0.4;
 
   ctx.save();
