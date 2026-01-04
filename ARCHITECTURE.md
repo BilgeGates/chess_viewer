@@ -1,4 +1,4 @@
-# 🏗️ Chess Viewer - Architecture Documentation
+# 🏗️ Chess Diagram Generator - Architecture Documentation
 
 ## 📋 Table of Contents
 - [Project Overview](#project-overview)
