@@ -227,8 +227,7 @@ export const createUltraQualityCanvas = async (config) => {
   const squareSize = boardSize / 8;
 
   // Clear canvas with white background
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, displaySize, displaySize);
+  ctx.clearRect(0, 0, displaySize, displaySize);
   console.log("Canvas cleared");
 
   // Draw board border
