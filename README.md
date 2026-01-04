@@ -24,15 +24,15 @@
 
 - [Overview](#-overview)
 - [Features](#-features)
-- [Demo & Screenshots](#-demo--screenshots)
+- [Demo Screenshots](#-demo--screenshots)
 - [Quick Start](#-quick-start)
 - [Project Structure](#-project-structure)
 - [Technology Stack](#-technology-stack)
 - [Browser Support](#-browser-support)
 - [Release Strategy](#-release-strategy)
-- [Security & Privacy](#-security--privacy)
+- [Security Privacy](#-security--privacy)
 - [Contributing](#-contributing)
-- [FAQ](#faq)
+- [FAQ](#-faq)
 - [License](#-license)
 
 ---
@@ -57,7 +57,7 @@ It is built for chess players, coaches, authors, streamers, and developers who n
 
 ---
 
-## 🖼️ Demo & Screenshots
+## 🖼 Demo & Screenshots
 
 > **Live demo:** https://chess-diagram-generator.vercel.app
 
@@ -326,7 +326,7 @@ chess_viewer/
 
 ---
 
-## 🏷️ Release Strategy
+## 🏷 Release Strategy
 
 This project follows **semantic versioning**, with each release introducing clearly scoped and production-ready features.
 
