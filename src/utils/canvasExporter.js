@@ -116,13 +116,20 @@ export async function downloadPNG(config, fileName, onProgress) {
   resetExportState();
 
   try {
+    console.log("🚀 Starting PNG export...");
+    console.log("📦 Config:", config);
+    console.log("🖼️ pieceImages:", Object.keys(config.pieceImages || {}));
+
     onProgress?.(5);
     await simulateProgress(onProgress, 5, 15, 300);
 
-    // Create canvas
+    // Create canvas - ✅ await əlavə edildi
     await waitWhilePaused();
     checkCancellation();
-    const canvas = createUltraQualityCanvas(config);
+
+    console.log("🎨 Creating canvas...");
+    const canvas = await createUltraQualityCanvas(config);
+    console.log("✅ Canvas created:", canvas.width, "x", canvas.height);
 
     onProgress?.(30);
     await simulateProgress(onProgress, 30, 50, 400);
@@ -131,6 +138,7 @@ export async function downloadPNG(config, fileName, onProgress) {
     await waitWhilePaused();
     checkCancellation();
 
+    console.log("💾 Creating blob...");
     const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
         (blob) => {
@@ -142,6 +150,7 @@ export async function downloadPNG(config, fileName, onProgress) {
             reject(new Error("Failed to create PNG blob"));
             return;
           }
+          console.log("✅ Blob created, size:", blob.size);
           resolve(blob);
         },
         "image/png",
@@ -154,6 +163,7 @@ export async function downloadPNG(config, fileName, onProgress) {
     checkCancellation();
 
     // Download
+    console.log("⬇️ Starting download...");
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -162,6 +172,7 @@ export async function downloadPNG(config, fileName, onProgress) {
     link.click();
 
     onProgress?.(100);
+    console.log("✅ PNG export complete!");
 
     // Cleanup
     setTimeout(() => {
@@ -169,6 +180,7 @@ export async function downloadPNG(config, fileName, onProgress) {
       URL.revokeObjectURL(url);
     }, 100);
   } catch (error) {
+    console.error("❌ PNG export error:", error);
     if (error.message === "Export cancelled") {
       throw new Error("Export cancelled");
     }
@@ -186,10 +198,10 @@ export async function downloadJPEG(config, fileName, onProgress) {
     onProgress?.(5);
     await simulateProgress(onProgress, 5, 15, 300);
 
-    // Create canvas
+    // Create canvas - ✅ await əlavə edildi
     await waitWhilePaused();
     checkCancellation();
-    const canvas = createUltraQualityCanvas(config);
+    const canvas = await createUltraQualityCanvas(config);
 
     onProgress?.(25);
     await simulateProgress(onProgress, 25, 35, 300);
@@ -265,7 +277,8 @@ export async function copyToClipboard(config) {
   resetExportState();
 
   try {
-    const canvas = createUltraQualityCanvas(config);
+    // ✅ await əlavə edildi
+    const canvas = await createUltraQualityCanvas(config);
     checkCancellation();
 
     const blob = await new Promise((resolve, reject) => {
