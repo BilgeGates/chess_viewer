@@ -1,532 +1,580 @@
-# ♟️ Chess Diagram Generator
+<h1 align='center'> ♟️ Chess Diagram Generator</h1>
 
-> **Professional chess position visualizer with ultra-HD export capabilities**
+<div align="center">
 
-A modern, browser-based chess diagram generator designed for chess enthusiasts, coaches, authors, and content creators. Generate publication-quality chess diagrams with full FEN support, 20+ piece styles, and export up to 32x quality (12,800px × 12,800px).
+**Professional chess position visualizer with ultra-HD export capabilities**
 
-[![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://reactjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-19.2.3-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
----
+[Live Demo](https://chess-diagram-generator.vercel.app) · [Report Bug](https://github.com/BilgeGates/chess_viewer/issues) · [Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
 
-## 🎯 **Key Features**
-
-### 🖼️ **Ultra-HD Export**
-- **4x to 32x quality** export (up to 12,800px × 12,800px)
-- **PNG & JPEG** formats with optimized compression
-- **Batch export** multiple formats simultaneously
-- **Copy to clipboard** for instant sharing
-
-### ♟️ **Chess Features**
-- **Full FEN support** - Forsyth-Edwards Notation compatible
-- **20+ piece styles** - Professional sets from Lichess
-- **Board customization** - Custom colors with advanced color picker
-- **Coordinates** - Toggle file/rank labels (a-h, 1-8)
-- **Board flip** - View from black's perspective
-- **Famous positions** - Pre-loaded classical positions
-
-### 🎨 **Advanced Customization**
-- **12 preset board themes** (Brown, Blue, Green, Wood, etc.)
-- **Custom color picker** with HSL/RGB/HEX support
-- **8 color palettes** (Basic, Grays, Warm, Cool, Nature, etc.)
-- **Live preview** - Real-time board updates
-- **Responsive design** - Works on all devices
-
-### 💾 **Smart Storage**
-- **FEN history** - Auto-save recent positions
-- **Favorites system** - Star important positions
-- **Cloud sync** - Persistent storage across sessions
-- **Local-first** - Privacy-focused, no server uploads
+</div>
 
 ---
 
-## 🚀 **Quick Start**
+## 📖 Table of Contents
+
+- [Overview](#-overview)
+- [Features](#-features)
+- [Demo & Screenshots](#-demo--screenshots)
+- [Quick Start](#-quick-start)
+- [Project Structure](#-project-structure)
+- [Technology Stack](#-technology-stack)
+- [Browser Support](#-browser-support)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## 🌟 Overview
+
+Chess Diagram Generator is a cutting-edge web application designed for chess enthusiasts, coaches, authors, and content creators. Built with modern React and optimized for performance, it offers professional-grade chess diagram generation with unprecedented customization options. 
+
+### Why Choose Chess Diagram Generator?
+
+- 🎯 **Straightforward UX** – Clean interface focused on productivity
+- 🚀 **High-performance rendering** – Optimized Canvas-based board drawing
+- 🎨 **Extensive customization** – Multiple piece sets, themes, and export controls
+- 📱 **Responsive by design** – Works on desktop and tablet browsers
+- 🔒 **Privacy-focused** – No backend, no tracking, fully client-side
+- 🖼️ **High-resolution exports** – Suitable for articles, books, and presentations
+
+---
+
+## ✨ Features
+
+### 🖼️ Ultra-HD Export System
+<table>
+<tr>
+<td width="50%">
+
+**Export Capabilities**
+- 8x to 32x quality multipliers
+- PNG (lossless) & JPEG (optimized)
+- Batch export multiple formats
+- One-click clipboard copy
+- Real-time preview updates
+
+</td>
+<td width="50%">
+
+**Resolution Options**
+- **8x**: 3,200×3,200px (~1MB)
+- **16x**: 6,400×6,400px (~3MB) ⭐
+- **24x**: 9,600×9,600px (~5MB)
+- **32x**: 12,800×12,800px (~6MB+)
+
+</td>
+</tr>
+</table>
+
+### ♟️ Advanced Chess Features
+
+```plaintext
+### Key Features
+- Full FEN notation support with real-time validation
+- Advanced FEN input (up to 10 positions with pagination)
+- 27+ professional chess piece sets
+- Custom board themes and color presets
+- Coordinate system (a–h, 1–8)
+- Board flip (White / Black perspective)
+- Position history and favorites
+- Famous chess positions library
+- Batch processing and multi-export support
+```
+
+## 🖼️ Demo & Screenshots
+
+> Live demo: https://chess-diagram-generator.vercel.app
+
+![Board Preview](./public/screenshots.jpg)
+
+
+### 🎨 Customization Engine
+
+<details>
+<summary><b>Color System (Click to expand)</b></summary>
+
+- **12 Preset Themes**: Brown, Blue, Green, Wood, Purple, Red, Gray, Marble, Pink, Turquoise, Custom Light, Custom Dark
+- **Advanced Color Picker**:
+  - HSL/RGB/HEX input modes
+  - 8 curated color palettes (Basic, Grays, Warm, Cool, Nature, Sunset, Ocean, Royal)
+  - HSV canvas picker with 360° hue slider
+  - Live contrast ratio calculation
+  - Random color generation
+
+</details>
+
+<details>
+<summary><b>Board Customization (Click to expand)</b></summary>
+
+- **Size Control**: 150px - 600px with live preview
+- **Coordinates**: Toggle file (a-h) and rank (1-8) labels
+- **Orientation**: View from White or Black perspective
+- **Piece Sets**: CBurnett, Merida, Alpha, Cardinal, Chess7, Companion, Dubrovny, Fantasy, Fresca, Gioco, Governor, Horsey, ICPieces, Kosal, Leipzig, Letter, Libra, Maestro, Pirouetti, Pixel, ReillyCraig, Riohacha, Shapes, Spatial, Staunty, Tatiana
+
+</details>
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
+
 ```bash
 Node.js >= 16.x
-npm >= 8.x
+npm >= 8.x (or yarn >= 1.22.x)
 ```
 
 ### Installation
+
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/chess-diagram-generator.git
+git clone https://github.com/BilgeGates/chess_viewer.git
 
 # Navigate to project directory
-cd chess-diagram-generator
+cd chess_viewer
 
 # Install dependencies
 npm install
+# or
+yarn install
 
 # Start development server
 npm start
+# or
+yarn start
 ```
 
-The app will open at [http://localhost:3000](http://localhost:3000)
+The application will automatically open at [http://localhost:3000](http://localhost:3000)
 
-### Build for Production
+### Production Build
+
 ```bash
+# Create optimized production build
 npm run build
-```
 
+# Preview production build locally
+npm run preview
+
+# Deploy to Vercel (requires Vercel CLI)
+vercel --prod
+```
 ---
 
-## 📁 **Project Structure**
+## 📁 Project Structure
+
+<details>
+<summary><b>Complete File Tree (Click to expand)</b></summary>
 
 ```
-chessviewer/
+chess_viewer/
 │
-├── src/
+├── 📂 public/
+│   ├── index.html
+│
+├── 📂 src/
 │   │
-│   ├── components/                  
+│   ├── 📂 components/
 │   │   │
-│   │   ├── board/                              
-│   │   │   ├── BoardSquare.jsx                 
-│   │   │   ├── BoardGrid.jsx                  
-│   │   │   ├── ChessBoard.jsx                
-│   │   │   ├── MiniChessPreview.jsx            
+│   │   ├── 📂 board/              # Chess Board Rendering
+│   │   │   ├── BoardSquare.jsx    # Single square component (memoized)
+│   │   │   ├── BoardGrid.jsx      # 8×8 grid layout
+│   │   │   ├── ChessBoard.jsx     # Main board with Canvas rendering
+│   │   │   ├── MiniChessPreview.jsx # Thumbnail for history
 │   │   │   └── index.js
 │   │   │
-│   │   ├── controls/                           
-│   │   │   ├── atoms/
-│   │   │   │   ├── FENInputField.jsx           
-│   │   │   │   ├── FamousPositionButton.jsx    
+│   │   ├── 📂 controls/           # Control Panel System
+│   │   │   │
+│   │   │   ├── 📂 atoms/          # Atomic components
+│   │   │   │   ├── FENInputField.jsx
+│   │   │   │   ├── FamousPositionButton.jsx
 │   │   │   │   └── index.js
 │   │   │   │
-│   │   │   ├── ControlPanel.jsx                
-│   │   │   ├── BoardSizeControl.jsx          
-│   │   │   ├── DisplayOptions.jsx              
-│   │   │   ├── ExportSettings.jsx             
-│   │   │   ├── FENInput.jsx                   
-│   │   │   ├── PieceSelector.jsx               
-│   │   │   ├── ThemeSelector.jsx            
-│   │   │   │
-│   │   │   ├── modals/
-│   │   │   │   ├── AdvancedFENInputModal.jsx  
-│   │   │   │   ├── ExportSettingsModal.jsx     
-│   │   │   │   ├── FENHistoryModal.jsx         
-│   │   │   │   ├── ThemeModal.jsx          
+│   │   │   ├── 📂 modals/         # Modal dialogs
+│   │   │   │   ├── AdvancedFENInputModal.jsx
+│   │   │   │   ├── ExportSettingsModal.jsx
+│   │   │   │   ├── FENHistoryModal.jsx
+│   │   │   │   ├── ThemeModal.jsx
 │   │   │   │   └── index.js
 │   │   │   │
+│   │   │   ├── ControlPanel.jsx   # Main control container
+│   │   │   ├── BoardSizeControl.jsx
+│   │   │   ├── DisplayOptions.jsx
+│   │   │   ├── ExportSettings.jsx
+│   │   │   ├── FENInput.jsx
+│   │   │   ├── PieceSelector.jsx
+│   │   │   ├── ThemeSelector.jsx
 │   │   │   └── index.js
 │   │   │
-│   │   ├── ui/                                
+│   │   ├── 📂 ui/                 # Reusable UI Components
 │   │   │   │
-│   │   │   ├── base/                          
-│   │   │   │   ├── Badge.jsx                  
-│   │   │   │   ├── Button.jsx                  
-│   │   │   │   ├── Card.jsx                   
-│   │   │   │   ├── Checkbox.jsx             
-│   │   │   │   ├── Input.jsx                 
-│   │   │   │   ├── Modal.jsx                   
-│   │   │   │   ├── Select.jsx                 
-│   │   │   │   ├── SearchableSelect.jsx       
-│   │   │   │   ├── RangeSlider.jsx            
+│   │   │   ├── 📂 base/           # Base components
+│   │   │   │   ├── Badge.jsx
+│   │   │   │   ├── Button.jsx
+│   │   │   │   ├── Card.jsx
+│   │   │   │   ├── Checkbox.jsx
+│   │   │   │   ├── Input.jsx
+│   │   │   │   ├── Modal.jsx
+│   │   │   │   ├── Select.jsx
+│   │   │   │   ├── SearchableSelect.jsx
+│   │   │   │   ├── RangeSlider.jsx
 │   │   │   │   └── index.js
 │   │   │   │
-│   │   │   ├── color-picker/                  
-│   │   │   │   ├── ColorPicker.jsx             
-│   │   │   │   ├── PickerModal.jsx            
+│   │   │   ├── 📂 color-picker/   # Advanced color picker
 │   │   │   │   │
-│   │   │   │   ├── parts/                    
-│   │   │   │   │   ├── ColorCanvas.jsx        
-│   │   │   │   │   ├── ColorInput.jsx          
-│   │   │   │   │   ├── ColorPalettes.jsx      
-│   │   │   │   │   ├── ColorSwatch.jsx         
-│   │   │   │   │   ├── HueSlider.jsx           
-│   │   │   │   │   ├── PrimaryActions.jsx      
-│   │   │   │   │   ├── SelectedPreview.jsx   
-│   │   │   │   │   ├── ThemePresetCard.jsx     
+│   │   │   │   ├── 📂 parts/      # Picker components
+│   │   │   │   │   ├── ColorCanvas.jsx
+│   │   │   │   │   ├── ColorInput.jsx
+│   │   │   │   │   ├── ColorPalettes.jsx
+│   │   │   │   │   ├── ColorSwatch.jsx
+│   │   │   │   │   ├── HueSlider.jsx
+│   │   │   │   │   ├── PrimaryActions.jsx
+│   │   │   │   │   ├── SelectedPreview.jsx
+│   │   │   │   │   ├── ThemePresetCard.jsx
 │   │   │   │   │   └── index.js
 │   │   │   │   │
-│   │   │   │   ├── views/                     
-│   │   │   │   │   ├── ThemeMainView.jsx      
-│   │   │   │   │   ├── ThemeAdvancedPickerView.jsx  
-│   │   │   │   │   ├── ThemeSettingsView.jsx   
+│   │   │   │   ├── 📂 views/      # Picker views
+│   │   │   │   │   ├── ThemeMainView.jsx
+│   │   │   │   │   ├── ThemeAdvancedPickerView.jsx
+│   │   │   │   │   ├── ThemeSettingsView.jsx
 │   │   │   │   │   └── index.js
 │   │   │   │   │
+│   │   │   │   ├── ColorPicker.jsx
+│   │   │   │   ├── PickerModal.jsx
 │   │   │   │   └── index.js
 │   │   │   │
-│   │   │   ├── ActionButtons.jsx               
-│   │   │   ├── ExportProgress.jsx              
-│   │   │   ├── NotificationContainer.jsx       
-│   │   │   ├── UserGuide.jsx                  
+│   │   │   ├── ActionButtons.jsx
+│   │   │   ├── ExportProgress.jsx
+│   │   │   ├── NotificationContainer.jsx
+│   │   │   ├── UserGuide.jsx
 │   │   │   └── index.js
 │   │   │
-│   │   └── layout/                           
-│   │       ├── Navbar.jsx                      
-│   │       ├── Footer.jsx                      
+│   │   └── 📂 layout/             # Layout components
+│   │       ├── Navbar.jsx
+│   │       ├── Footer.jsx
 │   │       └── index.js
 │   │
-│   ├── pages/                                
-│   │   ├── HomePage.jsx                       
-│   │   ├── AboutPage.jsx                      
-│   │   ├── DownloadPage.jsx                    
-│   │   ├── SupportPage.jsx                   
+│   ├── 📂 pages/                  # Application pages
+│   │   ├── HomePage.jsx
+│   │   ├── AboutPage.jsx
+│   │   ├── DownloadPage.jsx
+│   │   ├── SupportPage.jsx
 │   │   └── index.js
 │   │
-│   ├── hooks/                                  
-│   │   ├── useChessBoard.js                   
-│   │   ├── usePieceImages.js                   
-│   │   ├── useFENHistory.js                    
-│   │   ├── useTheme.js                         
-│   │   ├── useNotifications.js                
-│   │   ├── useLocalStorage.js                  
-│   │   ├── useColorState.js                    
-│   │   ├── useColorConversion.js               
-│   │   ├── useCanvasPicker.js                  
-│   │   ├── useOutsideClick.js                  
+│   ├── 📂 hooks/                  # Custom React hooks
+│   │   ├── useChessBoard.js       # FEN parsing & validation
+│   │   ├── usePieceImages.js      # Image loading & caching
+│   │   ├── useFENHistory.js       # History management
+│   │   ├── useTheme.js            # Theme state
+│   │   ├── useNotifications.js    # Toast system
+│   │   ├── useLocalStorage.js     # Persistent storage
+│   │   ├── useColorState.js       # Color picker state
+│   │   ├── useColorConversion.js  # Color utilities
+│   │   ├── useCanvasPicker.js     # Canvas interactions
+│   │   ├── useOutsideClick.js     # Click outside detection
 │   │   └── index.js
 │   │
-│   ├── utils/                                 
-│   │   ├── fenParser.js                        
-│   │   ├── colorUtils.js                       
-│   │   ├── coordinateCalculations.js           
-│   │   ├── canvasExporter.js                   
-│   │   ├── imageOptimizer.js                  
+│   ├── 📂 utils/                  # Utility functions
+│   │   ├── fenParser.js           # FEN validation & parsing
+│   │   ├── colorUtils.js          # Color conversions
+│   │   ├── coordinateCalculations.js # Board coordinates
+│   │   ├── canvasExporter.js      # Export logic
+│   │   ├── imageOptimizer.js      # Canvas optimization
 │   │   └── index.js
 │   │
-│   ├── constants/                              
-│   │   └── chessConstants.js                   
+│   ├── 📂 constants/              # Application constants
+│   │   ├── chessConstants.js      # Piece sets, themes, positions
+│   │   └── index.js
 │   │
-│   ├── routes/                                 
-│   │   └── Router.jsx                         
+│   ├── 📂 routes/                 # Routing configuration
+│   │   └── Router.jsx
 │   │
-│   ├── App.jsx                                 
-│   ├── index.css                               
-│   └── index.js                                
+│   ├── App.jsx                    # Root component
+│   ├── index.js                   # Entry point
+│   └── index.css                  # Global styles
 │
-├── .env
-├── .gitignore
-├── postcss.config.js
-├── tailwind.config.js
-├── package.json
-├── package-lock.json
-├── vercel.json
-└── README.md
+├── 📄 .env                        # Environment variables
+├── 📄 .gitignore
+├── 📄 postcss.config.js
+├── 📄 tailwind.config.js
+├── 📄 package.json
+├── 📄 package-lock.json
+├── 📄 vercel.json                 # Vercel deployment config
+├── 📄 README.md
+└── 📄 LICENSE
 ```
 
----
+</details>
 
-## 📂 **Detailed Folder Descriptions**
+## 🛠️ Technology Stack
 
-### **📁 components/** - React Component Library
+### Core Technologies
 
-#### **♟️ board/** - Chess Board Components
-- `BoardSquare.jsx` - Single memoized square (re-renders only when piece/color changes)
-- `BoardGrid.jsx` - 64-square grid renderer with optimized rendering
-- `ChessBoard.jsx` - Main board with HTML5 Canvas, handles FEN parsing and piece rendering
-- `MiniChessPreview.jsx` - Thumbnail preview for FEN history modal
+<table>
+<tr>
+<td align="center" width="20%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="50" height="50"/><br>
+<b>React 19.2.3</b><br>
+<sub>UI Framework</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="50" height="50"/><br>
+<b>JavaScript ES6+</b><br>
+<sub>Language</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="50" height="50"/><br>
+<b>Tailwind CSS 3.3.5</b><br>
+<sub>Styling</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" width="50" height="50"/><br>
+<b>HTML5 Canvas</b><br>
+<sub>Rendering</sub>
+</td>
+<td align="center" width="20%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="50" height="50"/><br>
+<b>Node.js 16+</b><br>
+<sub>Runtime</sub>
+</td>
+</tr>
+</table>
 
-#### **🎛️ controls/** - Control Panel System
-- `ControlPanel.jsx` - Main container orchestrating all controls
-- `FENInput.jsx` - FEN textarea with paste/copy buttons and validation
-- `BoardSizeControl.jsx` - Slider (150-600px) + numeric input with live validation
-- `DisplayOptions.jsx` - Checkbox group for coordinates toggle
-- `PieceSelector.jsx` - Searchable dropdown with 20+ piece styles
-- `ThemeSelector.jsx` - Opens theme modal for color customization
-- `ExportSettings.jsx` - Opens export quality modal (4x-32x)
+### Libraries & Tools
 
-**controls/atoms/** - Atomic building blocks
-- `FENInputField.jsx` - Pure textarea component
-- `FamousPositionButton.jsx` - Single position button (memoized)
-
-**controls/modals/** - Modal dialogs
-- `AdvancedFENInputModal.jsx` - Batch FEN processor (up to 10 positions)
-- `FENHistoryModal.jsx` - Browse, favorite, and delete saved positions
-- `ThemeModal.jsx` - 3-tab theme editor (Main/Advanced/Settings)
-- `ExportSettingsModal.jsx` - Export quality and filename configuration
-
-#### **🎨 ui/** - Reusable UI Library
-
-**ui/base/** - Atomic design system
-- All components memoized with `React.memo`
-- `SearchableSelect.jsx` - Dropdown with search + keyboard navigation
-- Consistent API across all components
-
-**ui/color-picker/** - Advanced color picker system
-- `ColorPicker.jsx` - Main component with HEX/RGB input
-- `PickerModal.jsx` - Multi-view modal (Main/Palettes/Settings)
-
-**ui/color-picker/parts/** - Picker building blocks
-- `ColorCanvas.jsx` - HSV 2D gradient canvas
-- `ColorSwatch.jsx` - Single color button (memoized)
-- `ColorPalettes.jsx` - 8 pre-defined palettes (Basic, Warm, Cool, etc.)
-- `HueSlider.jsx` - 360° hue selector with live preview
-- `ThemePresetCard.jsx` - Theme card with hover preview
-
-**ui/color-picker/views/** - Picker views
-- `ThemeMainView.jsx` - Preset themes + current colors display
-- `ThemeAdvancedPickerView.jsx` - Full picker with canvas + palettes
-- `ThemeSettingsView.jsx` - 10 toggleable settings
-
-**Other UI Components:**
-- `ActionButtons.jsx` - Export buttons (PNG/JPEG/Batch/Copy/Flip)
-- `ExportProgress.jsx` - Progress modal with pause/resume/cancel
-- `NotificationContainer.jsx` - Toast notification system
-- `UserGuide.jsx` - Collapsible help guide
-
-#### **🏗️ layout/** - Layout Components
-- `Navbar.jsx` - Responsive navigation (desktop: sidebar, mobile: bottom sheet)
-- `Footer.jsx` - Footer with links
-
----
-
-### **📁 pages/** - Application Pages
-- `HomePage.jsx` - Main diagram creator with board + controls
-- `AboutPage.jsx` - Features, technology, and use cases
-- `DownloadPage.jsx` - Web app vs desktop options
-- `SupportPage.jsx` - FAQ + contact information
-
----
-
-### **📁 hooks/** - Custom React Hooks
-
-| Hook | Purpose | Features |
-|------|---------|----------|
-| `useChessBoard.js` | Parse FEN → 8x8 board array | Validates FEN, memoized parsing |
-| `usePieceImages.js` | Load & cache piece images | Progressive loading, retry logic, caching |
-| `useFENHistory.js` | Manage FEN history | Auto-save, favorites, cloud sync |
-| `useTheme.js` | Theme state management | Preset themes, custom colors, persistence |
-| `useNotifications.js` | Toast notifications | 4 types (success/error/warning/info), auto-dismiss |
-| `useLocalStorage.js` | Persistent storage | localStorage wrapper with JSON parsing |
-| `useColorState.js` | Color picker state | HSL/RGB/HEX conversions, palette state |
-| `useColorConversion.js` | Color utilities | HEX ↔ RGB ↔ HSL ↔ HSV conversions |
-| `useCanvasPicker.js` | Canvas picker logic | Click detection, color extraction |
-| `useOutsideClick.js` | Click outside handler | Close modals on outside click |
-
----
-
-### **📁 utils/** - Utility Functions
-
-| File | Purpose | Key Functions |
-|------|---------|---------------|
-| `fenParser.js` | FEN operations | `validateFEN()`, `parseFEN()`, `getPositionStats()` |
-| `colorUtils.js` | Color conversions | `hexToRgb()`, `rgbToHsl()`, `getContrastRatio()` |
-| `coordinateCalculations.js` | Board coordinates | `drawCoordinates()`, `getCoordinateParams()` |
-| `canvasExporter.js` | Export logic | `downloadPNG()`, `downloadJPEG()`, `copyToClipboard()` |
-| `imageOptimizer.js` | Canvas optimization | `createUltraQualityCanvas()`, `calculateExportSize()` |
-
----
-
-### **📁 constants/** - Application Constants
-- `chessConstants.js` - Piece sets (20+), board themes (12), famous positions, quality presets
-
----
-
-### **📁 routes/** - Routing
-- `Router.jsx` - React Router v6 configuration (4 routes: /, /about, /download, /support)
-
----
-
-## 🏗️ **Architecture**
-
-### **Atomic Design Pattern**
-
-This project follows **Atomic Design** principles for component architecture:
-
-| Level | Symbol | Description | Examples |
-|-------|--------|-------------|----------|
-| **Atoms** | ⚛️ | Pure, reusable components | `Button`, `Input`, `ColorSwatch` |
-| **Molecules** | 🧬 | Atom combinations | `SearchableSelect`, `ColorPalettes` |
-| **Organisms** | 🔬 | Complex components | `ChessBoard`, `ThemeModal`, `ControlPanel` |
-| **Templates** | 🏗️ | Page layouts | `Navbar`, `Footer` |
-| **Pages** | 📄 | Full pages | `HomePage`, `AboutPage` |
-
-### **State Management**
-
-- **Local State**: React `useState` for component-level state
-- **Persistent State**: Custom `useLocalStorage` hook
-- **Cloud Storage**: `window.storage` API for cross-session sync
-- **Global State**: Context-free architecture with prop drilling optimization
-
-### **Performance Optimizations**
-
-✅ **React.memo** - All atoms/molecules memoized  
-✅ **useCallback** - Event handlers optimized  
-✅ **useMemo** - Expensive calculations cached  
-✅ **Code splitting** - Dynamic imports ready  
-✅ **Image caching** - Piece images cached in memory  
-✅ **Canvas optimization** - High-DPI rendering with quality scaling  
-
----
-
-## 🎨 **Color Picker System**
-
-Advanced color picker with **8 palettes** and **HSL/RGB/HEX** support:
-
-### Features:
-- 🎨 **8 Color Palettes**: Basic, Grays, Warm, Cool, Nature, Sunset, Ocean, Royal
-- 🌈 **HSV Canvas Picker**: 2D saturation/lightness selector
-- 🔄 **Hue Slider**: 360° color wheel
-- 📋 **Quick Actions**: Random, Reset, Copy
-- 💾 **Preset Themes**: 12 pre-configured board themes
-- ⚙️ **Settings**: Animation toggles, display options
-
----
-
-## 🖼️ **Export System**
-
-### Quality Levels:
-| Quality | Resolution | File Size | Use Case |
-|---------|-----------|-----------|----------|
-| **8x** | 3,200px × 3,200px | ~86KB - 1MB | Web & Social Media |
-| **16x** | 6,400px × 6,400px | ~255KB - 3MB | Print & Presentations ⭐ |
-| **24x** | 9,600px × 9,600px | ~506KB - 6MB | Professional Print |
-| **32x** | 12,800px × 12,800px | ~837KB - 6MB+ | Maximum Quality |
-
-### Export Features:
-- ✅ **PNG** - Lossless, transparent background
-- ✅ **JPEG** - Compressed, smaller file size
-- ✅ **Batch Export** - Multiple formats at once
-- ✅ **Copy to Clipboard** - Instant sharing
-- ✅ **Progress Tracking** - Pause/Resume/Cancel support
-
----
-
-## 🧩 **FEN Notation Support**
-
-Full **Forsyth-Edwards Notation (FEN)** compatibility:
-
-### Features:
-- ✅ **Validation** - Real-time FEN syntax checking
-- ✅ **History** - Auto-save recent positions
-- ✅ **Favorites** - Star important positions
-- ✅ **Batch Input** - Advanced FEN modal (up to 10 positions)
-- ✅ **Famous Positions** - Pre-loaded classical games
-
-### Example FEN:
-```
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+```json
+{
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.11.0",
+    "canvg": "^4.0.3",
+    "lucide-react": "^0.562.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5"
+  }
+}
 ```
 
----
+### Performance Stack
 
-## 🎮 **Usage Guide**
-
-### Basic Workflow:
-1. **Enter FEN** - Type or paste FEN notation
-2. **Customize** - Choose piece style, colors, size
-3. **Preview** - Real-time board updates
-4. **Export** - Download PNG/JPEG or copy to clipboard
-
-### Advanced Features:
-- **Batch FEN Input** - Process multiple positions
-- **Custom Themes** - Create unique color schemes
-- **History Browser** - Review and reuse past positions
-- **Quality Presets** - Optimize for web or print
+- **Rendering**: HTML5 Canvas (GPU-accelerated)
+- **Optimization**: React.memo, useCallback, useMemo
+- **Storage**: localStorage + window.storage API
+- **Deployment**: Vercel Edge Network (CDN)
 
 ---
 
-## 🔧 **Technologies Used**
+## 🌐 Browser Support
 
-### Core:
-- **React 18.x** - UI framework
-- **React Router 6.x** - Client-side routing
-- **Tailwind CSS 3.x** - Utility-first styling
+<div align="center">
 
-### Libraries:
-- **Lucide React** - Icon library
-- **HTML5 Canvas** - Board rendering
-- **localStorage API** - Persistent storage
-- **Clipboard API** - Copy functionality
+| Browser | Version | Status |
+|---------|---------|--------|
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="20"/> Chrome | 90+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="20"/> Firefox | 88+ | ✅ Full Support |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/safari/safari-original.svg" width="20"/> Safari | 14+ | ✅ Full Support |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge.svg" width="20"/> Edge | 90+ | ✅ Full Support |
+| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera.svg" width="20"/> Opera | 76+ | ✅ Full Support |
 
-### Tools:
-- **PostCSS** - CSS processing
-- **Vercel** - Deployment platform
-- **ESLint** - Code linting
+</div>
 
----
+### Required Browser Features
 
-## 📊 **Performance Metrics**
-
-### Optimization Results:
-- ⚡ **Initial Load**: < 2s
-- 🖼️ **Image Loading**: Progressive with caching
-- 🎨 **Re-render Optimization**: Only changed components update
-- 💾 **Bundle Size**: Optimized code splitting
-- 🚀 **Lighthouse Score**: 90+ Performance
+- HTML5 Canvas API
+- ES6+ JavaScript
+- CSS Grid & Flexbox
+- Clipboard API (optional)
+- localStorage (optional)
 
 ---
 
-## 🌐 **Browser Support**
+## 🤝 Contributing
 
-| Browser | Version | Support |
-|---------|---------|---------|
-| Chrome | 90+ | ✅ Full |
-| Firefox | 88+ | ✅ Full |
-| Safari | 14+ | ✅ Full |
-| Edge | 90+ | ✅ Full |
-| Opera | 76+ | ✅ Full |
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
----
+### Quick Contribution Guide
 
-## 🔒 **Privacy & Security**
+```bash
+# 1. Fork the repository
+# 2. Create your feature branch
+git checkout -b feature/amazing-feature
 
-### Privacy-First Design:
-- ✅ **No Server Uploads** - All processing happens locally
-- ✅ **No Tracking** - No analytics or user tracking
-- ✅ **Local Storage Only** - Data stays in your browser
-- ✅ **Open Source** - Transparent codebase
+# 3. Commit your changes
+git commit -m 'Add amazing feature'
 
----
+# 4. Push to the branch
+git push origin feature/amazing-feature
 
-## 🤝 **Contributing**
+# 5. Open a Pull Request
+```
 
-Contributions are welcome! Please follow these steps:
+### Contributors
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Coding Standards:
-- ✅ Follow **Atomic Design** principles
-- ✅ Use **React.memo** for performance
-- ✅ Write **descriptive comments**
-- ✅ Follow **Tailwind CSS** conventions
-- ✅ Test on **multiple browsers**
+<a href="https://github.com/BilgeGates/chess_viewer/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=BilgeGates/chess_viewer" />
+</a>
 
 ---
 
-## 📝 **License**
+## 📝 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
+```
+MIT License
+
+Copyright (c) 2026 Khatai Huseynzada
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ---
 
-## 👨‍💻 **Author**
+## 👨‍💻 Author
 
-Created with by Khatai Huseynzada
+<div align="center">
 
-- GitHub: [BilgeGates](https://github.com/BilgeGatese)
+### Khatai Huseynzada
 
----
+**Front-End Web Developer | Open Source Contributor**
 
-## 🙏 **Acknowledgments**
+[![GitHub](https://img.shields.io/badge/GitHub-BilgeGates-181717?style=for-the-badge&logo=github)](https://github.com/BilgeGates)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/khatai-huseynzada)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:darkdeveloperassistant@gmail.com)
 
-- **Lichess** - Piece images and piece sets
-- **React Community** - Amazing ecosystem
-- **Tailwind CSS** - Beautiful utility classes
-- **Lucide Icons** - Clean icon library
-
----
-
-## 📧 **Support**
-
-Need help? Have questions?
-
-- 🐛 Issues: [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues)
+</div>
 
 ---
 
-## 🗺️ **Roadmap**
+## 🙏 Acknowledgments
 
-### Planned Features:
-- [ ] **Animation** - Animate piece movements
-- [ ] **Dark Mode** - Full dark theme support
-- [ ] **Multi-language** - i18n support
+This project wouldn't be possible without these amazing resources:
 
+<table>
+<tr>
+<td align="center" width="25%">
+<img src="https://lichess.org/assets/logo/lichess.svg" width="100"/><br>
+<b>Lichess</b><br>
+<sub>Lichess piece SVGs</sub>
+</td>
+<td align="center" width="25%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="100"/><br>
+<b>React Team</b><br>
+<sub>Amazing framework</sub>
+</td>
+<td align="center" width="25%">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" width="100"/><br>
+<b>Tailwind Labs</b><br>
+<sub>Beautiful utilities</sub>
+</td>
+<td align="center" width="25%">
+<img src="https://lucide.dev/logo.light.svg" width="100"/><br>
+<b>Lucide Icons</b><br>
+<sub>Icon library</sub>
+</td>
+</tr>
+</table>
+
+### Special Thanks
+
+- **Lichess.org** - Inspiration and FEN notation standards
+- **Vercel** - Hosting and deployment platform
+---
+
+## 📧 Support & Contact
+
+### Get Help
+
+<div align="center">
+
+| Channel | Link | Response Time |
+|---------|------|---------------|
+| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues) | 24-48 hours |
+| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/chess_viewer/discussions) | 1-3 days |
+
+</div>
+
+### FAQ
+
+<details>
+<summary><b>How do I report a bug?</b></summary>
+
+1. Check if the issue already exists in [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues)
+2. If not, create a new issue with:
+   - Clear description of the problem
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Screenshots (if applicable)
+   - Browser and OS information
+</details>
+
+<details>
+<summary><b>Can I use this commercially?</b></summary>
+
+Yes! This project is MIT licensed, which means you can use it for commercial purposes. Just include the license notice in your project.
+</details>
+
+<details>
+<summary><b>How do I add a new piece set?</b></summary>
+
+1. Add piece images to `/public/pieces/[set-name]/`
+2. Update `PIECE_SETS` in `src/constants/chessConstants.js`
+3. Submit a pull request with your changes
+</details>
+
+<details>
+
+<details>
+<summary><b>Can I export to SVG format?</b></summary>
+
+Currently only PNG and JPEG are supported. SVG export is planned for version 4.0.0 You can track progress in [Issue #1](https://github.com/BilgeGates/chess_viewer/issues/1).
+</details>
+
+---
+
+## 🔐 Security & Privacy
+
+This project is designed with a **privacy-first, zero-backend architecture**.
+
+### Security Highlights
+
+- ✅ No server-side data storage  
+- ✅ All FEN parsing and rendering performed locally in the browser  
+- ✅ No cookies, trackers, or fingerprinting  
+- ✅ No third-party analytics or external requests during usage  
+- ✅ No user data is collected, stored, or transmitted  
+
+### Threat Model
+
+- The application does **not** authenticate users
+- No sensitive information is processed
+- Attack surface is limited to client-side rendering only
+
+---
+
+**© 2025-2026 Khatai Huseynzada. Licensed under MIT.**
