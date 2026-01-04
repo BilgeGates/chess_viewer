@@ -226,9 +226,15 @@ export const createUltraQualityCanvas = async (config) => {
 
   const squareSize = boardSize / 8;
 
-  // Clear canvas
-  ctx.clearRect(0, 0, displaySize, displaySize);
+  // Clear canvas with white background
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, displaySize, displaySize);
   console.log("Canvas cleared");
+
+  // Draw board border
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(borderSize - 1, borderSize - 1, boardSize + 2, boardSize + 2);
 
   // Draw squares
   console.log("Drawing squares...");
@@ -288,7 +294,7 @@ export const createUltraQualityCanvas = async (config) => {
       const cx = drawCol * squareSize + borderSize + squareSize / 2;
       const cy = drawRow * squareSize + borderSize + squareSize / 2;
 
-      const pieceScale = 0.92;
+      const pieceScale = 1.0;
 
       try {
         ctx.drawImage(
