@@ -17,7 +17,7 @@
 
 ## 🎯 Project Overview
 
-Chess Viewer is a React-based single-page application (SPA) that renders chess positions from FEN notation and exports them as high-quality images. The architecture prioritizes performance, modularity, and extensibility.
+Chess Diagram Generator is a React-based single-page application (SPA) that renders chess positions from FEN notation and exports them as high-quality images. The architecture prioritizes performance, modularity, and extensibility.
 
 **Core Principles:**
 - Component-based architecture
@@ -46,7 +46,7 @@ Chess Viewer is a React-based single-page application (SPA) that renders chess p
 
 ### APIs & Browser Features
 - **HTML5 Canvas API** - Board and piece rendering
-- **File System API** - Image download
+- Blob & URL APIs - Image export and download
 - **LocalStorage API** - Settings persistence (optional)
 
 ### Package Manager
@@ -675,3 +675,4 @@ When proposing architectural changes:
 ---
 
 **Last Updated:** January 2026  
+**Maintained by:** @BilgeGates
