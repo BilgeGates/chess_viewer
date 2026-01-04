@@ -11,7 +11,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-[Live Demo](https://chess-diagram-generator.vercel.app) ·
+[Live Demo](https://chess-viewer-site.vercel.app) ·
 [Report Bug](https://github.com/BilgeGates/chess_viewer/issues) ·
 [Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
 
@@ -59,7 +59,7 @@ It is built for chess players, coaches, authors, streamers, and developers who n
 
 ## 🖼 Demo & Screenshots
 
-> **Live demo:** https://chess-diagram-generator.vercel.app
+> **Live demo:** https://chess-viewer-site.vercel.app
 
 ---
 
