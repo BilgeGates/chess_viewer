@@ -1,0 +1,5 @@
+{
+  "*.{js,jsx}": ["eslint --fix", "prettier --write"],
+  "*.{json,md,css,scss}": ["prettier --write"],
+  "*.{png,jpg,jpeg,gif,svg}": ["echo 'Checking image files...'"]
+}
