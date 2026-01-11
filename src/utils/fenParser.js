@@ -9,12 +9,12 @@
  */
 export function parseFEN(fenString) {
   try {
-    if (!fenString || typeof fenString !== "string") {
-      throw new Error("Invalid FEN string");
+    if (!fenString || typeof fenString !== 'string') {
+      throw new Error('Invalid FEN string');
     }
 
     const position = fenString.trim().split(/\s+/)[0];
-    const rows = position.split("/");
+    const rows = position.split('/');
 
     if (rows.length !== 8) {
       throw new Error(`Invalid FEN: expected 8 ranks, got ${rows.length}`);
@@ -29,7 +29,7 @@ export function parseFEN(fenString) {
 
       for (const char of row) {
         if (isNaN(char)) {
-          if (!"pnbrqkPNBRQK".includes(char)) {
+          if (!'pnbrqkPNBRQK'.includes(char)) {
             throw new Error(`Invalid piece character: ${char}`);
           }
           boardRow.push(char);
@@ -38,7 +38,7 @@ export function parseFEN(fenString) {
           if (emptySquares < 1 || emptySquares > 8) {
             throw new Error(`Invalid empty square count: ${char}`);
           }
-          boardRow.push(...Array(emptySquares).fill(""));
+          boardRow.push(...Array(emptySquares).fill(''));
         }
       }
 
@@ -52,10 +52,10 @@ export function parseFEN(fenString) {
     // Return in natural FEN order: board[0] = rank 8, board[7] = rank 1
     return board;
   } catch (error) {
-    console.error("FEN parsing error:", error);
+    console.error('FEN parsing error:', error);
 
     // Safe empty board fallback
-    return Array.from({ length: 8 }, () => Array(8).fill(""));
+    return Array.from({ length: 8 }, () => Array(8).fill(''));
   }
 }
 
@@ -66,10 +66,10 @@ export function parseFEN(fenString) {
  */
 export function validateFEN(fen) {
   try {
-    if (!fen || typeof fen !== "string") return false;
+    if (!fen || typeof fen !== 'string') return false;
 
     const position = fen.trim().split(/\s+/)[0];
-    const rows = position.split("/");
+    const rows = position.split('/');
 
     if (rows.length !== 8) return false;
 
@@ -78,7 +78,7 @@ export function validateFEN(fen) {
 
       for (const char of row) {
         if (isNaN(char)) {
-          if (!"pnbrqkPNBRQK".includes(char)) return false;
+          if (!'pnbrqkPNBRQK'.includes(char)) return false;
           count++;
         } else {
           const num = parseInt(char, 10);
@@ -112,7 +112,7 @@ export function getPositionStats(fen) {
         bishops: 0,
         rooks: 0,
         queens: 0,
-        kings: 0,
+        kings: 0
       },
       black: {
         pawns: 0,
@@ -120,34 +120,34 @@ export function getPositionStats(fen) {
         bishops: 0,
         rooks: 0,
         queens: 0,
-        kings: 0,
-      },
+        kings: 0
+      }
     };
 
     for (const row of board) {
       for (const piece of row) {
         if (!piece) continue;
 
-        const color = piece === piece.toUpperCase() ? "white" : "black";
+        const color = piece === piece.toUpperCase() ? 'white' : 'black';
         const type = piece.toLowerCase();
 
         switch (type) {
-          case "p":
+          case 'p':
             stats[color].pawns++;
             break;
-          case "n":
+          case 'n':
             stats[color].knights++;
             break;
-          case "b":
+          case 'b':
             stats[color].bishops++;
             break;
-          case "r":
+          case 'r':
             stats[color].rooks++;
             break;
-          case "q":
+          case 'q':
             stats[color].queens++;
             break;
-          case "k":
+          case 'k':
             stats[color].kings++;
             break;
           default:
