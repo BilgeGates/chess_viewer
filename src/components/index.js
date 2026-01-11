@@ -1,13 +1,11 @@
-// Main components exports - Central hub
-
 // Board components
-export * from "./board";
+export * from './board';
 
 // Control panel components
-export * from "./controls";
+export * from './controls';
 
 // UI components
-export * from "./UI";
+export * from './UI';
 
 // Layout components
-export * from "./layouts";
+export * from './layouts';
