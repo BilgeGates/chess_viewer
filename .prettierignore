@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Production
+dist
+build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Coverage
+coverage
+
+# Env files
+.env
+.env.local
+.env.production.local
+.env.test.local
+
+# Editor directories
+.vscode
+.idea
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Vercel
+.vercel
+
+# Other
+*.min.js
+*.min.css
