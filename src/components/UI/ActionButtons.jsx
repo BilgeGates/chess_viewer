@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Download, Image, Copy, Heart, RefreshCcw } from "lucide-react";
+import React, { useState } from 'react';
+import { Download, Image, Copy, Heart, RefreshCcw } from 'lucide-react';
 
 const ActionButtons = React.memo(
   ({
@@ -10,13 +10,12 @@ const ActionButtons = React.memo(
     onBatchExport,
     onAddToFavorites,
     isExporting,
-    currentFen,
-    isFavorite,
+    isFavorite
   }) => {
     const [showBatchMenu, setShowBatchMenu] = useState(false);
     const [selectedFormats, setSelectedFormats] = useState({
       png: true,
-      jpeg: false,
+      jpeg: false
     });
 
     const toggleFormat = (format) => {
@@ -28,7 +27,7 @@ const ActionButtons = React.memo(
         (key) => selectedFormats[key]
       );
       if (formats.length === 0) {
-        alert("Please select at least one format");
+        alert('Please select at least one format');
         return;
       }
       onBatchExport(formats);
@@ -42,7 +41,7 @@ const ActionButtons = React.memo(
           <button
             onClick={onDownloadPNG}
             disabled={isExporting}
-            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Download
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
@@ -54,7 +53,7 @@ const ActionButtons = React.memo(
           <button
             onClick={onDownloadJPEG}
             disabled={isExporting}
-            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-amber-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Download
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
@@ -66,7 +65,7 @@ const ActionButtons = React.memo(
           <button
             onClick={() => setShowBatchMenu(!showBatchMenu)}
             disabled={isExporting}
-            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-indigo-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Image
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
@@ -114,7 +113,7 @@ const ActionButtons = React.memo(
           <button
             onClick={onCopyImage}
             disabled={isExporting}
-            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg hover:shadow-green-500/50 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 active:scale-95 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Copy
               className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform"
@@ -126,22 +125,18 @@ const ActionButtons = React.memo(
           <button
             onClick={onAddToFavorites}
             disabled={isExporting}
-            className={`group px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-white transition-all duration-200 shadow-lg flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${
-              isFavorite
-                ? "bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 active:scale-95 hover:shadow-red-500/50"
-                : "bg-gradient-to-br from-pink-600 to-pink-700 hover:from-pink-500 hover:to-pink-600 active:scale-95 hover:shadow-pink-500/50"
-            }`}
+            className="group px-3 sm:px-5 py-2.5 sm:py-3.5 rounded-lg text-xs sm:text-sm font-semibold text-white bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 active:scale-95 transition-all duration-200 flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             <Heart
               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300 ${
                 isFavorite
-                  ? "fill-current scale-110"
-                  : "group-hover:scale-110 group-hover:fill-current"
+                  ? 'fill-current scale-110'
+                  : 'group-hover:scale-110 group-hover:fill-current'
               }`}
               strokeWidth={2.5}
             />
             <span className="hidden sm:inline">
-              {isFavorite ? "Saved" : "Save"}
+              {isFavorite ? 'Remove favorites' : 'Save'}
             </span>
             <span className="sm:hidden">Saved</span>
           </button>
@@ -163,6 +158,6 @@ const ActionButtons = React.memo(
   }
 );
 
-ActionButtons.displayName = "ActionButtons";
+ActionButtons.displayName = 'ActionButtons';
 
 export default ActionButtons;
