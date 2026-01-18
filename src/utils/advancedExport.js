@@ -1,10 +1,11 @@
-import { createUltraQualityCanvas } from "./";
+import { createUltraQualityCanvas } from './';
+import { logger } from './logger';
 
 /**
  * PROGRESSIVE DOWNLOAD STRATEGY
  * Breaks large canvases into chunks to prevent memory issues
  */
-export const progressiveExport = async (config, fileName, format = "png") => {
+export const progressiveExport = async (config, fileName, format = 'png') => {
   const canvas = createSmartCanvas(config);
 
   // For very large exports, use chunked approach
@@ -28,7 +29,7 @@ const createSmartCanvas = (config) => {
   if (projectedSize > maxSafeSize) {
     const safeQuality = Math.floor(maxSafeSize / (config.boardSize + 60));
     adjustedConfig.exportQuality = Math.max(8, safeQuality);
-    console.warn(
+    logger.warn(
       `Quality adjusted to ${adjustedConfig.exportQuality}x for stability`
     );
   }
@@ -42,14 +43,14 @@ const createSmartCanvas = (config) => {
 const chunkedExport = async (canvas, fileName, format) => {
   // This would split canvas into tiles and reassemble
   // For now, we'll just scale down
-  console.warn("Image too large, scaling down...");
+  logger.warn('Image too large, scaling down...');
 
   const scale = 0.5;
-  const smallerCanvas = document.createElement("canvas");
+  const smallerCanvas = document.createElement('canvas');
   smallerCanvas.width = canvas.width * scale;
   smallerCanvas.height = canvas.height * scale;
 
-  const ctx = smallerCanvas.getContext("2d");
+  const ctx = smallerCanvas.getContext('2d');
   ctx.drawImage(canvas, 0, 0, smallerCanvas.width, smallerCanvas.height);
 
   return await standardExport(smallerCanvas, fileName, format);
@@ -59,9 +60,9 @@ const chunkedExport = async (canvas, fileName, format) => {
  * Standard export method
  */
 const standardExport = async (canvas, fileName, format) => {
-  const mimeType = format === "jpeg" ? "image/jpeg" : "image/png";
-  const extension = format === "jpeg" ? "jpg" : "png";
-  const quality = format === "jpeg" ? 0.98 : 1.0;
+  const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+  const extension = format === 'jpeg' ? 'jpg' : 'png';
+  const quality = format === 'jpeg' ? 0.98 : 1.0;
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(
@@ -71,7 +72,7 @@ const standardExport = async (canvas, fileName, format) => {
         }
 
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
+        const a = document.createElement('a');
         a.href = url;
         a.download = `${fileName}.${extension}`;
 
