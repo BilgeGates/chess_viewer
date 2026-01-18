@@ -53,6 +53,7 @@ const getBaselineFromCenter = (centerY, metrics) =>
  * @param {number} boardSize - Total board size in pixels
  * @param {boolean} forExport - True for export (black), false for display (white)
  * @param {boolean} displayWhite - True for white text, false for black
+ * @param {number} boardStartY - Y position where board starts (default: borderSize for display, 0 for export)
  */
 export const drawCoordinates = (
   ctx,
@@ -61,13 +62,18 @@ export const drawCoordinates = (
   flipped,
   boardSize,
   forExport = false,
-  displayWhite = true
+  displayWhite = true,
+  boardStartY = null
 ) => {
   const { fontSize, fontWeight } = getCoordinateParams(boardSize);
 
   // Use provided borderSize or calculate if not provided
   const effectiveBorder =
     borderSize ?? getCoordinateParams(boardSize).borderSize;
+
+  // Board Y position: for export starts at 0, for display starts at borderSize
+  const boardY =
+    boardStartY !== null ? boardStartY : forExport ? 0 : effectiveBorder;
 
   ctx.save();
 
@@ -89,8 +95,10 @@ export const drawCoordinates = (
     // Calculate rank number based on flip state
     const rank = flipped ? row + 1 : 8 - row;
 
-    // Y position: center of each square
-    const centerY = getCellCenter(effectiveBorder, squareSize, row);
+    // Y position: center of each square (using boardY for correct positioning)
+    const squareTop = boardY + row * squareSize;
+    const squareBottom = boardY + (row + 1) * squareSize;
+    const centerY = Math.round((squareTop + squareBottom) / 2);
     const yPos = getBaselineFromCenter(centerY, rankMetrics);
 
     // X position: center of left border (50% ensures horizontal centering)
@@ -110,9 +118,10 @@ export const drawCoordinates = (
     // X position: center of each square
     const xPos = getCellCenter(effectiveBorder, squareSize, col);
 
-    // Y position: center of bottom border (50% ensures vertical centering)
+    // Y position: below board, using boardY for correct calculation
+    // Board ends at boardY + boardSize, then center in remaining borderSize
     const bottomCenter = Math.round(
-      effectiveBorder + boardSize + effectiveBorder * 0.5
+      boardY + boardSize + effectiveBorder * 0.55
     );
     const yPos = getBaselineFromCenter(bottomCenter, fileMetrics);
 

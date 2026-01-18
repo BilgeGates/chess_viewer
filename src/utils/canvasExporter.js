@@ -112,6 +112,7 @@ function estimateFileSize(width, height) {
 
 /**
  * Validate config before export
+ * Note: boardSize is now in CENTIMETERS, not pixels
  */
 function validateExportConfig(config) {
   const errors = [];
@@ -119,10 +120,9 @@ function validateExportConfig(config) {
   if (!config) {
     errors.push('Config is null or undefined');
   } else {
-    if (!config.boardSize || config.boardSize < 100) {
-      errors.push(
-        `Invalid boardSize: ${config.boardSize} (minimum 100px for 4cm)`
-      );
+    // boardSize is in centimeters now (minimum 1cm, typical: 4cm, 6cm, 8cm)
+    if (!config.boardSize || config.boardSize < 1) {
+      errors.push(`Invalid boardSize: ${config.boardSize}cm (minimum 1cm)`);
     }
 
     if (!config.fen) {

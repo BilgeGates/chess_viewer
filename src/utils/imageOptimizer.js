@@ -2,6 +2,27 @@ import { drawCoordinates, parseFEN, getCoordinateParams } from './';
 import { logger } from './logger';
 
 /**
+ * Print DPI constant - standard for high-quality printing
+ * At 300 DPI: 1 cm = 300 / 2.54 ≈ 118.11 pixels
+ */
+export const PRINT_DPI = 300;
+export const CM_TO_PIXELS = PRINT_DPI / 2.54; // ~118.11 pixels per cm
+
+/**
+ * Convert centimeters to pixels for print at 300 DPI
+ * @param {number} cm - Size in centimeters
+ * @returns {number} - Size in pixels at 300 DPI
+ */
+export const cmToPixels = (cm) => Math.round(cm * CM_TO_PIXELS);
+
+/**
+ * Convert pixels to centimeters
+ * @param {number} pixels - Size in pixels
+ * @returns {number} - Size in centimeters at 300 DPI
+ */
+export const pixelsToCm = (pixels) => pixels / CM_TO_PIXELS;
+
+/**
  * Get maximum canvas size supported by browser
  */
 export const getMaxCanvasSize = () => {
@@ -25,53 +46,76 @@ export const getMaxCanvasSize = () => {
 
 /**
  * Calculate optimal quality for export
+ *
+ * @param {number} boardSizeCm - Board size in centimeters (e.g., 4 for 4cm)
+ * @param {boolean} showCoords - Whether to show coordinates
+ * @param {number} requestedQuality - Requested quality multiplier (default 1)
+ * @returns {number} - Optimal quality that fits within browser limits
  */
 export const calculateOptimalQuality = (
-  boardSize,
+  boardSizeCm,
   showCoords,
-  requestedQuality = 16
+  requestedQuality = 1
 ) => {
   const maxCanvasSize = getMaxCanvasSize();
-  const borderSize = showCoords ? getCoordinateParams(boardSize).borderSize : 0;
-  const displaySize = boardSize + borderSize * 2;
 
-  const projectedSize = displaySize * requestedQuality;
+  // Convert cm to pixels at 300 DPI for print quality
+  const boardSizePixels = cmToPixels(boardSizeCm);
+
+  const params = getCoordinateParams(boardSizePixels);
+  const borderSize = showCoords ? params.borderSize : 0;
+
+  // Total dimensions: borderSize (left) + board + borderSize (bottom)
+  const maxDimension = boardSizePixels + borderSize;
+
+  // Check if requested quality fits
+  const projectedSize = maxDimension * requestedQuality;
 
   if (projectedSize <= maxCanvasSize) {
     return requestedQuality;
   }
 
-  const maxQuality = Math.floor(maxCanvasSize / displaySize);
+  const maxQuality = Math.floor(maxCanvasSize / maxDimension);
   return Math.max(1, maxQuality);
 };
 
 /**
- * Calculate export size with NO QUALITY LOSS
- * Returns ACTUAL render dimensions - preserves every pixel
+ * Calculate export size for print-quality output
+ *
+ * @param {number} boardSizeCm - Board size in centimeters (e.g., 4, 6, 8)
+ * @param {boolean} showCoords - Whether to show coordinates
+ * @param {number} exportQuality - Quality multiplier
+ * @returns {Object} - Export dimensions and metadata
  */
-export const calculateExportSize = (boardSize, showCoords, exportQuality) => {
-  // Get exact border size (integer pixels)
-  const borderSize = showCoords ? getCoordinateParams(boardSize).borderSize : 0;
+export const calculateExportSize = (boardSizeCm, showCoords, exportQuality) => {
+  // Convert cm to pixels at 300 DPI
+  const boardSizePixels = cmToPixels(boardSizeCm);
 
-  // Total display size (base size + borders)
-  const displaySize = boardSize + borderSize * 2;
+  const params = getCoordinateParams(boardSizePixels);
+  const borderSize = showCoords ? params.borderSize : 0;
 
-  // Calculate optimal quality (may be reduced if canvas size limit exceeded)
+  // Canvas dimensions:
+  // Width: borderSize (left) + board
+  // Height: board + borderSize (bottom)
+  const canvasWidth = borderSize + boardSizePixels;
+  const canvasHeight = boardSizePixels + borderSize;
+
   const optimalQuality = calculateOptimalQuality(
-    boardSize,
+    boardSizeCm,
     showCoords,
     exportQuality
   );
 
-  // Return EXACT pixel dimensions - NO ROUNDING
-  // Final canvas will be displaySize * optimalQuality
   return {
-    width: displaySize * optimalQuality,
-    height: displaySize * optimalQuality,
+    width: Math.round(canvasWidth * optimalQuality),
+    height: Math.round(canvasHeight * optimalQuality),
     actualQuality: optimalQuality,
-    displaySize: displaySize,
-    baseSize: boardSize,
-    borderSize: borderSize
+    displayWidth: canvasWidth,
+    displayHeight: canvasHeight,
+    baseSize: boardSizePixels,
+    baseSizeCm: boardSizeCm,
+    borderSize,
+    dpi: PRINT_DPI
   };
 };
 
@@ -88,30 +132,34 @@ const getPieceKey = (fenPiece) => {
 };
 
 /**
- * Creates ultra high-quality chessboard canvas for export
+ * Creates ultra high-quality chessboard canvas for PRINT export
  *
- * CRITICAL EXPORT LOGIC:
- * - boardSize = base visual size in pixels (e.g., 400px for ~10.6cm at 96 DPI)
- * - exportQuality = resolution multiplier (1x, 2x, 4x, 8x, 16x, 32x)
- * - Final canvas = displaySize × exportQuality
- * - Visual dimensions stay CONSTANT, only pixel density increases
- * - Example: 4cm board = ~151px base, 16x quality = 2,416px output (same visual size, higher DPI)
+ * CRITICAL EXPORT LOGIC for PRINT:
+ * - boardSizeCm = physical size in centimeters (e.g., 4 for 4cm print)
+ * - At 300 DPI: 4cm = 472 pixels, 6cm = 709 pixels, 8cm = 945 pixels
+ * - exportQuality = additional resolution multiplier (default 1, already high res)
+ *
+ * @param {Object} config - Export configuration
+ * @param {number} config.boardSize - Board size in CENTIMETERS (e.g., 4, 6, 8)
  */
 export const createUltraQualityCanvas = async (config) => {
   const {
-    boardSize,
+    boardSize: boardSizeCm, // This is in CENTIMETERS
     showCoords,
     lightSquare,
     darkSquare,
     flipped,
     fen,
     pieceImages,
-    exportQuality = 16
+    exportQuality = 1 // For print at 300 DPI, quality=1 is sufficient
   } = config;
 
+  // Convert cm to pixels at 300 DPI
+  const boardSizePixels = cmToPixels(boardSizeCm);
+
   // Validate inputs
-  if (!boardSize || boardSize < 100) {
-    throw new Error('Invalid board size');
+  if (!boardSizeCm || boardSizeCm < 1) {
+    throw new Error(`Invalid board size: ${boardSizeCm}cm (minimum 1cm)`);
   }
 
   if (!lightSquare || !darkSquare) {
@@ -164,33 +212,28 @@ export const createUltraQualityCanvas = async (config) => {
 
   await Promise.all(imageLoadPromises);
 
-  // Calculate sizes with pixel-perfect precision
-  // Border size must be an integer
-  const borderSize = showCoords ? getCoordinateParams(boardSize).borderSize : 0;
+  // Calculate sizes with pixel-perfect precision at 300 DPI
+  const params = getCoordinateParams(boardSizePixels);
+  const borderSize = showCoords ? params.borderSize : 0;
 
-  // Display size is board + 2 borders (left/right or top/bottom)
-  const displaySize = boardSize + borderSize * 2;
+  // Canvas dimensions:
+  // Width: borderSize (left for 1-8) + board
+  // Height: board + borderSize (bottom for a-h)
+  const canvasWidth = borderSize + boardSizePixels;
+  const canvasHeight = boardSizePixels + borderSize;
 
   // Calculate optimal quality (may be capped by browser limits)
   const optimalQuality = calculateOptimalQuality(
-    boardSize,
+    boardSizeCm,
     showCoords,
     exportQuality
   );
 
-  // CRITICAL: Final canvas dimensions must be EXACT multiples
-  // NO ROUNDING - displaySize * optimalQuality must be precise
-  const fullResWidth = displaySize * optimalQuality;
-  const fullResHeight = displaySize * optimalQuality;
+  // Final canvas dimensions
+  const fullResWidth = Math.round(canvasWidth * optimalQuality);
+  const fullResHeight = Math.round(canvasHeight * optimalQuality);
 
-  // Validate dimensions are integers (no sub-pixel rendering)
-  if (!Number.isInteger(fullResWidth) || !Number.isInteger(fullResHeight)) {
-    logger.warn(
-      `Non-integer canvas dimensions: ${fullResWidth}x${fullResHeight}`
-    );
-  }
-
-  // Create FULL RESOLUTION canvas - NO DOWNSCALING
+  // Create canvas
   const canvas = document.createElement('canvas');
   canvas.width = fullResWidth;
   canvas.height = fullResHeight;
@@ -206,13 +249,19 @@ export const createUltraQualityCanvas = async (config) => {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  const squareSize = boardSize / 8;
+  const squareSize = boardSizePixels / 8;
+
+  // Board position:
+  // X: borderSize (space for 1-8 on the left)
+  // Y: 0 (board starts at top, a-h coordinates below)
+  const boardX = borderSize;
+  const boardY = 0;
 
   const getSquareBounds = (rowIndex, colIndex) => {
-    const x0 = Math.round(borderSize + colIndex * squareSize);
-    const x1 = Math.round(borderSize + (colIndex + 1) * squareSize);
-    const y0 = Math.round(borderSize + rowIndex * squareSize);
-    const y1 = Math.round(borderSize + (rowIndex + 1) * squareSize);
+    const x0 = Math.round(boardX + colIndex * squareSize);
+    const x1 = Math.round(boardX + (colIndex + 1) * squareSize);
+    const y0 = Math.round(boardY + rowIndex * squareSize);
+    const y1 = Math.round(boardY + (rowIndex + 1) * squareSize);
 
     return {
       x: x0,
@@ -225,14 +274,18 @@ export const createUltraQualityCanvas = async (config) => {
   };
 
   // Clear with transparent background
-  ctx.clearRect(0, 0, displaySize, displaySize);
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  // Draw crisp 1px border around the board
-  // Use 0.5 offset for pixel-perfect 1px line rendering
+  // Draw board border (slightly thicker for visibility)
   ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 1;
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.rect(borderSize - 0.5, borderSize - 0.5, boardSize + 1, boardSize + 1);
+  ctx.rect(
+    boardX - 0.5,
+    boardY - 0.5,
+    boardSizePixels + 1,
+    boardSizePixels + 1
+  );
   ctx.stroke();
 
   // Draw squares with pixel-perfect alignment
@@ -290,7 +343,7 @@ export const createUltraQualityCanvas = async (config) => {
       squareSize,
       borderSize,
       flipped,
-      boardSize,
+      boardSizePixels,
       true,
       false
     );

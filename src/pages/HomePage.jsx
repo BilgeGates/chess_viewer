@@ -72,30 +72,19 @@ const HomePage = () => {
 
   // Memoized export config
   const getExportConfig = useCallback(() => {
-    // Base size for display/export (in pixels at 1x)
-    // Convert cm to pixels at standard web resolution (96 DPI = 37.795 px/cm)
-    // This gives us the BASE visual size, exportQuality handles resolution
-    const baseDisplayPx = Math.round(boardSize * 37.795); // 96 DPI web standard
-
+    // boardSize is in centimeters (4, 6, 8, etc.)
+    // Export functions will convert cm to pixels at 300 DPI for print quality
     return {
-      boardSize: baseDisplayPx, // Base pixel size for visual dimensions
+      boardSize: boardSize, // In centimeters - will be converted to 300 DPI pixels
       showCoords,
       lightSquare,
       darkSquare,
       flipped,
       fen,
       pieceImages: boardRef.current?.getPieceImages() || {},
-      exportQuality: exportQuality // Multiplier for resolution (DPI), not visual size
+      exportQuality: 2 // Slightly higher for better print quality
     };
-  }, [
-    boardSize,
-    showCoords,
-    lightSquare,
-    darkSquare,
-    flipped,
-    fen,
-    exportQuality
-  ]);
+  }, [boardSize, showCoords, lightSquare, darkSquare, flipped, fen]);
 
   // Export handlers
   const handleDownloadPNG = useCallback(async () => {
