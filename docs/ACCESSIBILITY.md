@@ -94,12 +94,12 @@ Based on `package.json`:
    - No C for toggle coordinates
    - No T for theme selector
 
-2. **ARIA Attributes**
-   - No `aria-label` on buttons
-   - No `aria-describedby`
-   - No `role` attributes
-   - No `aria-live` regions
-   - No `aria-modal` on dialogs
+2. **ARIA Attributes (Partial)**
+   - ✅ Basic `aria-label` on some buttons (v3.5.2)
+   - ✅ `aria-modal` on Modal component (v3.5.2)
+   - ✅ `role="dialog"` on modals (v3.5.2)
+   - ❌ No `aria-describedby`
+   - ❌ No `aria-live` regions
 
 3. **Screen Reader Support**
    - No text description for canvas board
@@ -107,11 +107,11 @@ Based on `package.json`:
    - No FEN position descriptions
    - No export status announcements
 
-4. **Focus Management**
-   - No focus trap in modals
-   - No focus restoration after modal close
-   - No skip-to-content link
-   - No custom focus styles (browser default only)
+4. **Focus Management (Partial)**
+   - ✅ Focus trap in Modal component (v3.5.2)
+   - ✅ Focus restoration after modal close (v3.5.2)
+   - ❌ No skip-to-content link
+   - ✅ Basic focus-visible styles on Button (v3.5.2)
 
 5. **Accessibility Testing**
    - No automated testing setup
@@ -247,12 +247,14 @@ Based on `package.json`:
 ✅ Responsive layout  
 ✅ Works on mobile and desktop  
 ✅ Color customization helps some users  
+✅ Basic ARIA labels on buttons and modals (v3.5.2)
+✅ Focus trap in modals (v3.5.2)
+✅ Error boundary for graceful failures (v3.5.2)
 
 ### What Doesn't Work
 ❌ Canvas board is completely inaccessible  
-❌ No screen reader support  
+❌ No screen reader support for board  
 ❌ No keyboard shortcuts  
-❌ No ARIA labels  
 ❌ No accessibility testing  
 ❌ No WCAG compliance  
 
@@ -303,10 +305,10 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
 
 ---
 
-**Last Updated:** January 12, 2026  
-**Status:** ⚠️ Minimal accessibility - NOT WCAG compliant  
-**Accessibility Level:** Basic browser defaults only  
-**Contact:** [darkdeveloperassistant@gmail.com](mailto:darkdeveloperassistant@gmail.com)
+**Last Updated:** January 18, 2026  
+**Status:** ⚠️ Limited accessibility - NOT WCAG compliant  
+**Recent Improvements (v3.5.2):** Basic ARIA labels, focus trap in modals
+**Accessibility Level:** Partial - some ARIA attributes added
 
 ---
 
