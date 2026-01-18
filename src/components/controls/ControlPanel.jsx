@@ -1,19 +1,26 @@
-import { memo, useImperativeHandle, useState, useCallback } from "react";
-import { FAMOUS_POSITIONS } from "../../constants/chessConstants";
-import { useFENHistory, useTheme } from "../../hooks";
-import { FENInputField, FamousPositionButton } from "./atoms";
-import PieceSelector from "./PieceSelector";
-import BoardSizeControl from "./BoardSizeControl";
-import DisplayOptions from "./DisplayOptions";
-import ExportSettings from "./ExportSettings";
-import ThemeSelector from "./ThemeSelector";
+import {
+  memo,
+  useImperativeHandle,
+  useState,
+  useCallback,
+  useRef,
+  useEffect
+} from 'react';
+import { FAMOUS_POSITIONS } from '../../constants/chessConstants';
+import { useFENHistory, useTheme } from '../../hooks';
+import { FENInputField, FamousPositionButton } from './atoms';
+import PieceSelector from './PieceSelector';
+import BoardSizeControl from './BoardSizeControl';
+import DisplayOptions from './DisplayOptions';
+import ExportSettings from './ExportSettings';
+import ThemeSelector from './ThemeSelector';
 import {
   FENHistoryModal,
   ThemeModal,
   ExportSettingsModal,
-  AdvancedFENInputModal,
-} from "./modals";
-import { History } from "lucide-react";
+  AdvancedFENInputModal
+} from './modals';
+import { History } from 'lucide-react';
 
 /**
  * Control Panel
@@ -39,7 +46,7 @@ const ControlPanel = memo((props) => {
     lightSquare: initialLightSquare,
     darkSquare: initialDarkSquare,
     setLightSquare: parentSetLightSquare,
-    setDarkSquare: parentSetDarkSquare,
+    setDarkSquare: parentSetDarkSquare
   } = props;
 
   // Local state for modals
@@ -47,13 +54,23 @@ const ControlPanel = memo((props) => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [showAdvancedModal, setShowAdvancedModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [fenError] = useState("");
+  const [fenError] = useState('');
+  const copyTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const timeout = copyTimeoutRef.current;
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, []);
 
   // Theme hook
   const theme = useTheme({
     onNotification,
     initialLight: initialLightSquare,
-    initialDark: initialDarkSquare,
+    initialDark: initialDarkSquare
   });
 
   // FEN history hook
@@ -62,7 +79,7 @@ const ControlPanel = memo((props) => {
     toggleFavorite,
     deleteHistory,
     clearHistory,
-    addCurrentToFavorites,
+    addCurrentToFavorites
   } = useFENHistory(fen, onFavoriteStatusChange);
 
   // Callbacks
@@ -93,10 +110,13 @@ const ControlPanel = memo((props) => {
     try {
       await navigator.clipboard.writeText(fen);
       setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-      onNotification?.("FEN copied to clipboard", "success");
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+      copyTimeoutRef.current = setTimeout(() => setCopySuccess(false), 2000);
+      onNotification?.('FEN copied to clipboard', 'success');
     } catch (err) {
-      onNotification?.("Failed to copy FEN", "error");
+      onNotification?.('Failed to copy FEN', 'error');
     }
   }, [fen, onNotification]);
 
@@ -105,10 +125,10 @@ const ControlPanel = memo((props) => {
       const text = await navigator.clipboard.readText();
       if (text && text.trim()) {
         setFen(text.trim());
-        onNotification?.("FEN pasted successfully", "success");
+        onNotification?.('FEN pasted successfully', 'success');
       }
     } catch (err) {
-      onNotification?.("Failed to paste from clipboard", "error");
+      onNotification?.('Failed to paste from clipboard', 'error');
     }
   }, [setFen, onNotification]);
 
@@ -188,7 +208,8 @@ const ControlPanel = memo((props) => {
       </div>
 
       {/* Custom Scrollbar Styles */}
-      <style jsx>{`
+      <style>
+        {`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
@@ -203,7 +224,8 @@ const ControlPanel = memo((props) => {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
         }
-      `}</style>
+      `}
+      </style>
 
       {/* Modals - Only render when open */}
       {isHistoryOpen && (
@@ -258,6 +280,6 @@ const ControlPanel = memo((props) => {
   );
 });
 
-ControlPanel.displayName = "ControlPanel";
+ControlPanel.displayName = 'ControlPanel';
 
 export default ControlPanel;

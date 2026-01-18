@@ -1,128 +1,103 @@
-import { useState, useEffect } from "react";
-import { Input } from "../UI";
+import { useState, useEffect, useMemo } from 'react';
+import { Input } from '../UI';
 
 const BoardSizeControl = ({ boardSize, setBoardSize }) => {
   const [boardSizeInput, setBoardSizeInput] = useState(boardSize);
-  const [boardSizeError, setBoardSizeError] = useState("");
+  const [boardSizeError, setBoardSizeError] = useState('');
+  const [selectedPreset, setSelectedPreset] = useState(null);
+
+  const presets = useMemo(
+    () => [
+      { label: '4×4', value: 4 },
+      { label: '6×6', value: 6 },
+      { label: '8×8', value: 8 }
+    ],
+    []
+  );
 
   useEffect(() => {
     setBoardSizeInput(boardSize);
-  }, [boardSize]);
+    // Check if current size matches a preset
+    const matchingPreset = presets.find((p) => p.value === boardSize);
+    setSelectedPreset(matchingPreset ? matchingPreset.value : null);
+  }, [boardSize, presets]);
 
-  const handleRangeChange = (e) => {
-    const numValue = parseInt(e.target.value);
-    if (!isNaN(numValue)) {
-      setBoardSizeInput(numValue);
-      setBoardSize(numValue);
-      setBoardSizeError("");
-    }
+  const handlePresetClick = (value) => {
+    setSelectedPreset(value);
+    setBoardSize(value);
+    setBoardSizeInput(value);
+    setBoardSizeError('');
   };
 
-  const handleNumberInputChange = (e) => {
+  const handleCustomInputChange = (e) => {
     const value = e.target.value;
+    setSelectedPreset(null);
 
-    if (value === "") {
-      setBoardSizeInput("");
-      setBoardSizeError("");
+    if (value === '') {
+      setBoardSizeInput('');
+      setBoardSizeError('');
       return;
     }
 
-    const numValue = parseInt(value);
+    // Check for non-numeric characters
+    if (!/^\d*\.?\d*$/.test(value)) {
+      setBoardSizeInput(value);
+      setBoardSizeError('Zəhmət olmasa yalnız rəqəm daxil edin');
+      return;
+    }
+
+    const numValue = parseFloat(value);
     if (!isNaN(numValue)) {
       setBoardSizeInput(numValue);
 
-      if (numValue < 150) {
-        setBoardSizeError("Minimum size is 150px");
-      } else if (numValue > 600) {
-        setBoardSizeError("Maximum size is 600px");
+      if (numValue < 4) {
+        setBoardSizeError('Minimum ölçü 4 sm-dir');
+      } else if (numValue > 16) {
+        setBoardSizeError('Maksimum ölçü 16 sm-dir');
       } else {
-        setBoardSizeError("");
+        setBoardSizeError('');
+        setBoardSize(numValue);
       }
     }
   };
 
-  const applyBoardSize = () => {
-    const numValue = parseInt(boardSizeInput);
-
-    if (boardSizeInput === "" || isNaN(numValue)) {
-      setBoardSize(400);
-      setBoardSizeInput(400);
-      setBoardSizeError("");
-      return;
-    }
-
-    if (numValue < 150) {
-      setBoardSize(150);
-      setBoardSizeInput(150);
-      setBoardSizeError("Minimum size is 150px");
-      return;
-    }
-
-    if (numValue > 600) {
-      setBoardSize(600);
-      setBoardSizeInput(600);
-      setBoardSizeError("Maximum size is 600px");
-      return;
-    }
-
-    setBoardSize(numValue);
-    setBoardSizeInput(numValue);
-    setBoardSizeError("");
-  };
-
-  const getBoardSizeValidation = () => {
-    if (boardSizeInput === "") return "neutral";
-    const numValue = parseInt(boardSizeInput);
-    if (isNaN(numValue)) return "neutral";
-    if (numValue >= 150 && numValue <= 600) return "valid";
-    return "invalid";
-  };
-
-  const validation = getBoardSizeValidation();
-
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-semibold text-gray-300">
-          Board Size
-        </label>
+      <label className="text-sm font-medium text-gray-200">Board Size</label>
+
+      <div className="flex gap-2">
+        {presets.map((preset) => (
+          <button
+            key={preset.value}
+            onClick={() => handlePresetClick(preset.value)}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+              selectedPreset === preset.value
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            {preset.label}
+          </button>
+        ))}
       </div>
-      <div className="flex gap-2 sm:gap-3 items-center">
-        <input
-          type="range"
-          min="150"
-          max="600"
-          step="50"
-          value={boardSize || 400}
-          onChange={handleRangeChange}
-          className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-        />
-        <input
-          type="number"
-          min="150"
-          max="600"
-          step="1"
+
+      <div className="space-y-1">
+        <label className="text-xs text-gray-400">Custom Size</label>
+        <Input
           value={boardSizeInput}
-          onChange={handleNumberInputChange}
+          onChange={handleCustomInputChange}
+          placeholder="Ölçü daxil edin (4-16 sm)"
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === 'Enter') {
               e.preventDefault();
-              applyBoardSize();
               e.target.blur();
             }
           }}
-          onBlur={applyBoardSize}
-          placeholder="400"
-          className={`w-16 sm:w-20 px-2 py-1.5 rounded-lg text-xs sm:text-sm text-gray-200 text-center font-mono font-semibold focus:outline-none transition-all ${
-            validation === "valid"
-              ? "bg-green-950/50 border border-green-500 shadow-md shadow-green-500/40 focus:ring-2 focus:ring-green-500/40"
-              : validation === "invalid"
-              ? "bg-red-950/50 border border-red-500 shadow-md shadow-red-500/40 focus:ring-2 focus:ring-red-500/40"
-              : "bg-gray-950/50 border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
-          }`}
         />
+        {boardSizeError && (
+          <p className="text-xs text-red-400">{boardSizeError}</p>
+        )}
       </div>
-      {boardSizeError && <Input error={boardSizeError} className="hidden" />}
     </div>
   );
 };
