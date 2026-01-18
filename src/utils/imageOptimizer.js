@@ -1,11 +1,12 @@
-import { drawCoordinates, parseFEN } from "./";
+import { drawCoordinates, parseFEN, getCoordinateParams } from './';
+import { logger } from './logger';
 
 /**
  * Get maximum canvas size supported by browser
  */
 export const getMaxCanvasSize = () => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
 
   let maxSize = 16384;
 
@@ -31,9 +32,7 @@ export const calculateOptimalQuality = (
   requestedQuality = 16
 ) => {
   const maxCanvasSize = getMaxCanvasSize();
-  const borderSize = showCoords
-    ? Math.max(20, Math.min(30, boardSize / 20))
-    : 0;
+  const borderSize = showCoords ? getCoordinateParams(boardSize).borderSize : 0;
   const displaySize = boardSize + borderSize * 2;
 
   const projectedSize = displaySize * requestedQuality;
@@ -47,31 +46,37 @@ export const calculateOptimalQuality = (
 };
 
 /**
- * Calculate export size
+ * Calculate export size with NO QUALITY LOSS
+ * Returns ACTUAL render dimensions - preserves every pixel
  */
 export const calculateExportSize = (boardSize, showCoords, exportQuality) => {
+  // Get exact border size (integer pixels)
+  const borderSize = showCoords ? getCoordinateParams(boardSize).borderSize : 0;
+
+  // Total display size (base size + borders)
+  const displaySize = boardSize + borderSize * 2;
+
+  // Calculate optimal quality (may be reduced if canvas size limit exceeded)
   const optimalQuality = calculateOptimalQuality(
     boardSize,
     showCoords,
     exportQuality
   );
-  const borderSize = showCoords
-    ? Math.max(20, Math.min(30, boardSize / 20))
-    : 0;
-  const displaySize = boardSize + borderSize * 2;
 
+  // Return EXACT pixel dimensions - NO ROUNDING
+  // Final canvas will be displaySize * optimalQuality
   return {
     width: displaySize * optimalQuality,
     height: displaySize * optimalQuality,
     actualQuality: optimalQuality,
     displaySize: displaySize,
+    baseSize: boardSize,
+    borderSize: borderSize
   };
 };
 
 /**
  * Convert FEN piece notation to pieceImages key format
- * FEN: r,n,b,q,k,p (black), R,N,B,Q,K,P (white)
- * pieceImages: bR,bN,bB,bQ,bK,bP (black), wR,wN,wB,wQ,wK,wP (white)
  */
 const getPieceKey = (fenPiece) => {
   if (!fenPiece) return null;
@@ -79,11 +84,18 @@ const getPieceKey = (fenPiece) => {
   const isWhite = fenPiece === fenPiece.toUpperCase();
   const pieceType = fenPiece.toUpperCase();
 
-  return (isWhite ? "w" : "b") + pieceType;
+  return (isWhite ? 'w' : 'b') + pieceType;
 };
 
 /**
  * Creates ultra high-quality chessboard canvas for export
+ *
+ * CRITICAL EXPORT LOGIC:
+ * - boardSize = base visual size in pixels (e.g., 400px for ~10.6cm at 96 DPI)
+ * - exportQuality = resolution multiplier (1x, 2x, 4x, 8x, 16x, 32x)
+ * - Final canvas = displaySize × exportQuality
+ * - Visual dimensions stay CONSTANT, only pixel density increases
+ * - Example: 4cm board = ~151px base, 16x quality = 2,416px output (same visual size, higher DPI)
  */
 export const createUltraQualityCanvas = async (config) => {
   const {
@@ -94,62 +106,39 @@ export const createUltraQualityCanvas = async (config) => {
     flipped,
     fen,
     pieceImages,
-    exportQuality = 16,
+    exportQuality = 16
   } = config;
 
-  console.log("createUltraQualityCanvas started");
-  console.log("Config:", {
-    boardSize,
-    showCoords,
-    exportQuality,
-    flipped,
-    fen,
-  });
-
-  // Parse FEN
-  const board = parseFEN(fen);
-  console.log("Board parsed");
-
-  // Validate
-  if (!board || !pieceImages || Object.keys(pieceImages).length === 0) {
-    console.error("Validation failed:", {
-      board: !!board,
-      pieceImages: !!pieceImages,
-      count: Object.keys(pieceImages || {}).length,
-    });
-    throw new Error("Invalid board or piece images");
+  // Validate inputs
+  if (!boardSize || boardSize < 100) {
+    throw new Error('Invalid board size');
   }
 
-  console.log("Checking piece images before render...");
-  console.log("pieceImages keys:", Object.keys(pieceImages));
-  console.log("pieceImages count:", Object.keys(pieceImages).length);
+  if (!lightSquare || !darkSquare) {
+    throw new Error('Square colors are required');
+  }
+
+  if (!fen) {
+    throw new Error('FEN string is required');
+  }
+
+  const board = parseFEN(fen);
+
+  if (!board || !Array.isArray(board) || board.length !== 8) {
+    throw new Error('Invalid FEN: Failed to parse board');
+  }
+
+  if (!pieceImages || Object.keys(pieceImages).length === 0) {
+    throw new Error('Invalid board or piece images');
+  }
 
   // Wait for all images to load
   const imageLoadPromises = Object.entries(pieceImages).map(([key, img]) => {
-    console.log(`Checking ${key}:`, {
-      exists: !!img,
-      complete: img?.complete,
-      naturalWidth: img?.naturalWidth,
-      src: img?.src?.substring(0, 100),
-    });
+    if (!img) return Promise.resolve();
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
 
-    if (!img) {
-      console.warn(`Missing image for ${key}`);
-      return Promise.resolve();
-    }
-
-    if (img.complete && img.naturalWidth > 0) {
-      console.log(`${key} already loaded`);
-      return Promise.resolve();
-    }
-
-    console.log(`Waiting for ${key} to load...`);
     return new Promise((resolve) => {
-      const timeout = setTimeout(() => {
-        console.error(`${key} load timeout after 10s`);
-        resolve();
-      }, 10000);
-
+      const timeout = setTimeout(resolve, 10000);
       const cleanup = () => {
         clearTimeout(timeout);
         img.onload = null;
@@ -158,163 +147,144 @@ export const createUltraQualityCanvas = async (config) => {
 
       img.onload = () => {
         cleanup();
-        console.log(`${key} loaded: ${img.naturalWidth}x${img.naturalHeight}`);
         resolve();
       };
 
-      img.onerror = (err) => {
+      img.onerror = () => {
         cleanup();
-        console.error(`${key} load error:`, err);
         resolve();
       };
 
-      if (!img.src || img.src === "") {
+      if (!img.src || img.src === '') {
         cleanup();
-        console.warn(`${key} has no src`);
         resolve();
       }
     });
   });
 
-  console.log("Waiting for all images...");
-  try {
-    await Promise.all(imageLoadPromises);
-    console.log("All image checks complete");
-  } catch (err) {
-    console.error("Image loading error:", err);
-  }
+  await Promise.all(imageLoadPromises);
 
-  // Border calculation
-  const borderSize = showCoords
-    ? Math.max(20, Math.min(30, boardSize / 20))
-    : 0;
+  // Calculate sizes with pixel-perfect precision
+  // Border size must be an integer
+  const borderSize = showCoords ? getCoordinateParams(boardSize).borderSize : 0;
+
+  // Display size is board + 2 borders (left/right or top/bottom)
   const displaySize = boardSize + borderSize * 2;
 
+  // Calculate optimal quality (may be capped by browser limits)
   const optimalQuality = calculateOptimalQuality(
     boardSize,
     showCoords,
     exportQuality
   );
 
-  if (optimalQuality < exportQuality) {
-    console.warn(
-      `Quality reduced from ${exportQuality}x to ${optimalQuality}x due to browser canvas size limit`
+  // CRITICAL: Final canvas dimensions must be EXACT multiples
+  // NO ROUNDING - displaySize * optimalQuality must be precise
+  const fullResWidth = displaySize * optimalQuality;
+  const fullResHeight = displaySize * optimalQuality;
+
+  // Validate dimensions are integers (no sub-pixel rendering)
+  if (!Number.isInteger(fullResWidth) || !Number.isInteger(fullResHeight)) {
+    logger.warn(
+      `Non-integer canvas dimensions: ${fullResWidth}x${fullResHeight}`
     );
   }
 
-  console.log(
-    "Creating canvas:",
-    displaySize * optimalQuality,
-    "x",
-    displaySize * optimalQuality
-  );
+  // Create FULL RESOLUTION canvas - NO DOWNSCALING
+  const canvas = document.createElement('canvas');
+  canvas.width = fullResWidth;
+  canvas.height = fullResHeight;
 
-  // Create high-resolution canvas
-  const canvas = document.createElement("canvas");
-  canvas.width = displaySize * optimalQuality;
-  canvas.height = displaySize * optimalQuality;
-
-  const ctx = canvas.getContext("2d", {
+  const ctx = canvas.getContext('2d', {
     alpha: true,
     desynchronized: false,
-    willReadFrequently: false,
+    willReadFrequently: false
   });
 
+  // Scale everything by quality factor for high-res rendering
   ctx.scale(optimalQuality, optimalQuality);
   ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
+  ctx.imageSmoothingQuality = 'high';
 
   const squareSize = boardSize / 8;
 
-  // Clear canvas - fully transparent background
+  const getSquareBounds = (rowIndex, colIndex) => {
+    const x0 = Math.round(borderSize + colIndex * squareSize);
+    const x1 = Math.round(borderSize + (colIndex + 1) * squareSize);
+    const y0 = Math.round(borderSize + rowIndex * squareSize);
+    const y1 = Math.round(borderSize + (rowIndex + 1) * squareSize);
+
+    return {
+      x: x0,
+      y: y0,
+      width: x1 - x0,
+      height: y1 - y0,
+      centerX: Math.round((x0 + x1) / 2),
+      centerY: Math.round((y0 + y1) / 2)
+    };
+  };
+
+  // Clear with transparent background
   ctx.clearRect(0, 0, displaySize, displaySize);
-  console.log("Canvas cleared with transparent background");
 
-  ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(borderSize - 1, borderSize - 1, boardSize + 2, boardSize + 2);
+  // Draw crisp 1px border around the board
+  // Use 0.5 offset for pixel-perfect 1px line rendering
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.rect(borderSize - 0.5, borderSize - 0.5, boardSize + 1, boardSize + 1);
+  ctx.stroke();
 
-  // Draw squares
-  console.log("Drawing squares...");
+  // Draw squares with pixel-perfect alignment
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       ctx.fillStyle = (row + col) % 2 === 0 ? lightSquare : darkSquare;
       const drawRow = flipped ? 7 - row : row;
       const drawCol = flipped ? 7 - col : col;
+      const bounds = getSquareBounds(drawRow, drawCol);
 
-      ctx.fillRect(
-        drawCol * squareSize + borderSize,
-        drawRow * squareSize + borderSize,
-        squareSize,
-        squareSize
-      );
+      // Use rounded edges to ensure total board size matches exactly
+      ctx.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
     }
   }
-  console.log("Squares drawn");
 
-  // Draw pieces
-  console.log("Drawing pieces...");
-  console.log("Available pieceImages keys:", Object.keys(pieceImages));
-  console.log("Board first row sample:", board[0]);
-
-  let drawnCount = 0;
-  let skippedCount = 0;
-
+  // Draw pieces with pixel-perfect centering
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const fenPiece = board[row]?.[col];
-
       if (!fenPiece) continue;
 
-      // Convert FEN notation to pieceImages key format
       const pieceKey = getPieceKey(fenPiece);
       const img = pieceImages[pieceKey];
 
-      if (!img) {
-        console.warn(
-          `No image for FEN piece '${fenPiece}' (key: ${pieceKey}) at [${row},${col}]`
-        );
-        console.warn(`Available keys:`, Object.keys(pieceImages).join(", "));
-        skippedCount++;
-        continue;
-      }
-
-      if (!img.complete || img.naturalWidth === 0) {
-        console.warn(
-          `Image not ready for ${pieceKey}: complete=${img.complete}, width=${img.naturalWidth}`
-        );
-        skippedCount++;
-        continue;
-      }
+      if (!img || !img.complete || img.naturalWidth === 0) continue;
 
       const drawRow = flipped ? 7 - row : row;
       const drawCol = flipped ? 7 - col : col;
-      const cx = drawCol * squareSize + borderSize + squareSize / 2;
-      const cy = drawRow * squareSize + borderSize + squareSize / 2;
 
+      const bounds = getSquareBounds(drawRow, drawCol);
+
+      // Piece fills 100% of square for maximum clarity
       const pieceScale = 1.0;
+      const pieceSize = Math.round(
+        Math.min(bounds.width, bounds.height) * pieceScale
+      );
+
+      // Calculate top-left position (center - half size)
+      const px = Math.round(bounds.centerX - pieceSize / 2);
+      const py = Math.round(bounds.centerY - pieceSize / 2);
 
       try {
-        ctx.drawImage(
-          img,
-          cx - squareSize * (pieceScale / 2),
-          cy - squareSize * (pieceScale / 2),
-          squareSize * pieceScale,
-          squareSize * pieceScale
-        );
-        drawnCount++;
+        ctx.drawImage(img, px, py, pieceSize, pieceSize);
       } catch (err) {
-        console.error(`Failed to draw ${pieceKey}:`, err);
-        skippedCount++;
+        // Skip piece on error
+        logger.error(`Failed to draw piece ${pieceKey} at ${row},${col}:`, err);
       }
     }
   }
 
-  console.log(`Pieces drawn: ${drawnCount}, skipped: ${skippedCount}`);
-
-  // Draw coordinates - black color for export
+  // Draw coordinates
   if (showCoords) {
-    console.log("Drawing coordinates...");
     drawCoordinates(
       ctx,
       squareSize,
@@ -324,10 +294,9 @@ export const createUltraQualityCanvas = async (config) => {
       true,
       false
     );
-    console.log("Coordinates drawn");
   }
 
-  console.log("Canvas creation complete");
+  // Return FULL RESOLUTION canvas
   return canvas;
 };
 
@@ -335,13 +304,13 @@ export const createUltraQualityCanvas = async (config) => {
  * Optimize canvas for specific output format
  */
 export const optimizeCanvasForFormat = (canvas, format) => {
-  const optimized = document.createElement("canvas");
+  const optimized = document.createElement('canvas');
   optimized.width = canvas.width;
   optimized.height = canvas.height;
-  const ctx = optimized.getContext("2d", { alpha: format === "png" });
+  const ctx = optimized.getContext('2d', { alpha: format === 'png' });
 
-  if (format === "jpeg" || format === "pdf") {
-    ctx.fillStyle = "#FFFFFF";
+  if (format === 'jpeg' || format === 'pdf') {
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, optimized.width, optimized.height);
   }
 

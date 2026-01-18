@@ -1,7 +1,8 @@
 import {
   createUltraQualityCanvas,
   calculateExportSize,
-  getMaxCanvasSize
+  getMaxCanvasSize,
+  sanitizeFileName
 } from './';
 
 /**
@@ -154,6 +155,7 @@ export async function downloadPNG(config, fileName, onProgress) {
 
   try {
     validateExportConfig(config);
+    const safeFileName = sanitizeFileName(fileName);
 
     onProgress?.(5);
     await simulateProgress(onProgress, 5, 15, 300);
@@ -206,14 +208,17 @@ export async function downloadPNG(config, fileName, onProgress) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${fileName}.png`;
+    link.download = `${safeFileName}.png`;
     document.body.appendChild(link);
     link.click();
 
     onProgress?.(100);
 
+    // Ensure cleanup happens
     setTimeout(() => {
-      document.body.removeChild(link);
+      if (document.body.contains(link)) {
+        document.body.removeChild(link);
+      }
       URL.revokeObjectURL(url);
     }, 100);
   } catch (error) {
@@ -221,6 +226,9 @@ export async function downloadPNG(config, fileName, onProgress) {
       throw new Error('Export cancelled');
     }
     throw new Error(`PNG export failed: ${error.message}`);
+  } finally {
+    // Force cleanup in case of errors
+    resetExportState();
   }
 }
 
@@ -232,6 +240,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
 
   try {
     validateExportConfig(config);
+    const safeFileName = sanitizeFileName(fileName);
 
     onProgress?.(5);
     await simulateProgress(onProgress, 5, 15, 300);
@@ -299,7 +308,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
             resolve(blob);
           },
           'image/jpeg',
-          0.85
+          0.98 // 98% quality for professional use - virtually lossless
         );
       } catch (err) {
         reject(err);
@@ -313,21 +322,30 @@ export async function downloadJPEG(config, fileName, onProgress) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${fileName}.jpg`;
+    link.download = `${safeFileName}.jpg`;
     document.body.appendChild(link);
     link.click();
 
     onProgress?.(100);
 
+    // Ensure cleanup happens
     setTimeout(() => {
-      document.body.removeChild(link);
+      if (document.body.contains(link)) {
+        document.body.removeChild(link);
+      }
       URL.revokeObjectURL(url);
+      // Clean up temporary canvas
+      tempCanvas.width = 0;
+      tempCanvas.height = 0;
     }, 100);
   } catch (error) {
     if (error.message === 'Export cancelled') {
       throw new Error('Export cancelled');
     }
     throw new Error(`JPEG export failed: ${error.message}`);
+  } finally {
+    // Force cleanup in case of errors
+    resetExportState();
   }
 }
 
@@ -336,11 +354,12 @@ export async function downloadJPEG(config, fileName, onProgress) {
  */
 export async function copyToClipboard(config) {
   resetExportState();
+  let canvas = null;
 
   try {
     validateExportConfig(config);
 
-    const canvas = await createUltraQualityCanvas(config);
+    canvas = await createUltraQualityCanvas(config);
 
     if (!canvas) {
       throw new Error('Canvas creation returned null');
@@ -376,6 +395,13 @@ export async function copyToClipboard(config) {
       throw new Error('Export cancelled');
     }
     throw new Error(`Copy failed: ${error.message}`);
+  } finally {
+    // Clean up canvas
+    if (canvas) {
+      canvas.width = 0;
+      canvas.height = 0;
+    }
+    resetExportState();
   }
 }
 

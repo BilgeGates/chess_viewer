@@ -14,7 +14,7 @@ export const hexToRgb = (hex) => {
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
+        b: parseInt(result[3], 16)
       }
     : null;
 };
@@ -32,13 +32,13 @@ export const rgbToHex = (r, g, b) => {
   b = Math.max(0, Math.min(255, Math.round(b)));
 
   return (
-    "#" +
+    '#' +
     [r, g, b]
       .map((x) => {
         const hex = x.toString(16);
-        return hex.length === 1 ? "0" + hex : hex;
+        return hex.length === 1 ? '0' + hex : hex;
       })
-      .join("")
+      .join('')
   );
 };
 
@@ -66,7 +66,6 @@ export const rgbToHsl = (r, g, b) => {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
-    // eslint-disable-next-line default-case
     switch (max) {
       case r:
         h = (g - b) / d + (g < b ? 6 : 0);
@@ -77,6 +76,9 @@ export const rgbToHsl = (r, g, b) => {
       case b:
         h = (r - g) / d + 4;
         break;
+      default:
+        h = 0;
+        break;
     }
     h /= 6;
   }
@@ -84,7 +86,7 @@ export const rgbToHsl = (r, g, b) => {
   return {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
-    l: Math.round(l * 100),
+    l: Math.round(l * 100)
   };
 };
 
@@ -125,7 +127,7 @@ export const hslToRgb = (h, s, l) => {
   return {
     r: Math.round(r * 255),
     g: Math.round(g * 255),
-    b: Math.round(b * 255),
+    b: Math.round(b * 255)
   };
 };
 
@@ -149,7 +151,6 @@ export const rgbToHsv = (r, g, b) => {
   let h = 0;
 
   if (max !== min) {
-    // eslint-disable-next-line default-case
     switch (max) {
       case r:
         h = (g - b) / d + (g < b ? 6 : 0);
@@ -160,6 +161,9 @@ export const rgbToHsv = (r, g, b) => {
       case b:
         h = (r - g) / d + 4;
         break;
+      default:
+        h = 0;
+        break;
     }
     h /= 6;
   }
@@ -167,7 +171,7 @@ export const rgbToHsv = (r, g, b) => {
   return {
     h: Math.round(h * 360),
     s: Math.round(s * 100),
-    v: Math.round(v * 100),
+    v: Math.round(v * 100)
   };
 };
 
@@ -190,7 +194,6 @@ export const hsvToRgb = (h, s, v) => {
   const q = v * (1 - f * s);
   const t = v * (1 - (1 - f) * s);
 
-  // eslint-disable-next-line default-case
   switch (i % 6) {
     case 0:
       [r, g, b] = [v, t, p];
@@ -210,12 +213,15 @@ export const hsvToRgb = (h, s, v) => {
     case 5:
       [r, g, b] = [v, p, q];
       break;
+    default:
+      [r, g, b] = [v, v, v];
+      break;
   }
 
   return {
     r: Math.round(r * 255),
     g: Math.round(g * 255),
-    b: Math.round(b * 255),
+    b: Math.round(b * 255)
   };
 };
 
@@ -311,9 +317,9 @@ export const getContrastRatio = (hex1, hex2) => {
  * @param {string} level - 'AA' or 'AAA'
  * @returns {boolean} - Whether contrast is sufficient
  */
-export const hasGoodContrast = (hex1, hex2, level = "AA") => {
+export const hasGoodContrast = (hex1, hex2, level = 'AA') => {
   const ratio = getContrastRatio(hex1, hex2);
-  const minRatio = level === "AAA" ? 7 : 4.5;
+  const minRatio = level === 'AAA' ? 7 : 4.5;
   return ratio >= minRatio;
 };
 
@@ -389,10 +395,10 @@ export const getTriadic = (hex) => {
  */
 export const randomColor = () => {
   return (
-    "#" +
+    '#' +
     Math.floor(Math.random() * 16777215)
       .toString(16)
-      .padStart(6, "0")
+      .padStart(6, '0')
   );
 };
 
@@ -411,10 +417,10 @@ export const isValidHex = (hex) => {
  * @returns {string} - Normalized hex color
  */
 export const normalizeHex = (color) => {
-  if (!color) return "#000000";
+  if (!color) return '#000000';
   let hex = color.trim();
-  if (!hex.startsWith("#")) hex = "#" + hex;
-  if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return "#000000";
+  if (!hex.startsWith('#')) hex = '#' + hex;
+  if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return '#000000';
   return hex.toUpperCase();
 };
 
@@ -444,23 +450,23 @@ export const mixColors = (hex1, hex2, ratio = 0.5) => {
  */
 export const getColorName = (hex) => {
   const rgb = hexToRgb(hex);
-  if (!rgb) return "Unknown";
+  if (!rgb) return 'Unknown';
 
   const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
 
-  if (hsl.l < 10) return "Black";
-  if (hsl.l > 90) return "White";
+  if (hsl.l < 10) return 'Black';
+  if (hsl.l > 90) return 'White';
   if (hsl.s < 10) return `Gray`;
 
   const hue = hsl.h;
-  if (hue < 15 || hue >= 345) return "Red";
-  if (hue < 45) return "Orange";
-  if (hue < 75) return "Yellow";
-  if (hue < 165) return "Green";
-  if (hue < 195) return "Cyan";
-  if (hue < 255) return "Blue";
-  if (hue < 285) return "Purple";
-  if (hue < 345) return "Pink";
+  if (hue < 15 || hue >= 345) return 'Red';
+  if (hue < 45) return 'Orange';
+  if (hue < 75) return 'Yellow';
+  if (hue < 165) return 'Green';
+  if (hue < 195) return 'Cyan';
+  if (hue < 255) return 'Blue';
+  if (hue < 285) return 'Purple';
+  if (hue < 345) return 'Pink';
 
-  return "Color";
+  return 'Color';
 };

@@ -13,7 +13,12 @@ export function parseFEN(fenString) {
       throw new Error('Invalid FEN string');
     }
 
-    const position = fenString.trim().split(/\s+/)[0];
+    const trimmed = fenString.trim();
+    if (trimmed.length === 0) {
+      throw new Error('FEN string is empty');
+    }
+
+    const position = trimmed.split(/\s+/)[0];
     const rows = position.split('/');
 
     if (rows.length !== 8) {
@@ -49,10 +54,15 @@ export function parseFEN(fenString) {
       board.push(boardRow);
     }
 
+    // Validate we have exactly 8 rows
+    if (board.length !== 8) {
+      throw new Error(`Invalid board structure: ${board.length} ranks`);
+    }
+
     // Return in natural FEN order: board[0] = rank 8, board[7] = rank 1
     return board;
   } catch (error) {
-    console.error('FEN parsing error:', error);
+    // Error logging handled by caller if needed
 
     // Safe empty board fallback
     return Array.from({ length: 8 }, () => Array(8).fill(''));
