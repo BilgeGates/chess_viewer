@@ -137,7 +137,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Initial Release
 - FEN notation support with validation
 - Canvas-based board renderer
-- 27+ piece sets
+- 23 piece sets
 - Board flip and coordinate toggle
 - PNG/JPEG export (400px-1600px)
 - React 19.x + Tailwind CSS

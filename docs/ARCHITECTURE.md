@@ -27,7 +27,7 @@ A React-based web application that renders chess positions from FEN notation and
 ## Technology Stack
 
 ### Frontend
-- **React 18** - UI library
+- **React 19.x** - UI library
 - **React Hooks** - useState, useEffect, useCallback, useMemo, useRef
 
 ### Styling

@@ -50,7 +50,7 @@ It is built for chess players, coaches, authors, streamers, and developers who n
 - Multi-FEN input (up to 10 positions)  
 - Ultra-HD PNG & JPEG export (up to 12,800×12,800px)  
 - Batch export & clipboard copy  
-- 27+ professional piece sets  
+- 23 professional piece sets  
 - Advanced color picker & themes  
 - Favorites, history & famous positions  
 - Board flip & coordinates  
