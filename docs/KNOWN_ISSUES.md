@@ -107,6 +107,57 @@ area: 163.84 MP     ✅ Under area limit
 
 ---
 
+### 4. Multi-FEN Preview Shows Empty Board
+
+**Issue:** When using the Multi-FEN/Gallery feature with some positions, the preview thumbnails may render as empty boards instead of showing the actual position.
+
+**Impact:** Users cannot preview positions before batch export.
+
+**Affected Versions:** v3.5.0+  
+**Browsers:** All  
+**Reported:** 2026-01-18  
+**Status:** 🟡 Open - Investigating
+
+**Steps to Reproduce:**
+1. Open Advanced FEN Input modal
+2. Enable Multi-FEN/Gallery mode
+3. Enter multiple FEN positions
+4. Some preview thumbnails may show empty boards
+
+**Workaround:**
+- Click on individual positions to verify
+- Use single-FEN mode for critical exports
+
+**Planned Fix:** v3.6.0
+
+---
+
+### 5. ThemeModal Color Picker Visual Glitch
+
+**Issue:** In the Theme settings modal, when using the advanced color picker, the color gradient canvas occasionally displays incorrectly or shows visual artifacts.
+
+**Impact:** Difficult to select precise colors in advanced picker mode.
+
+**Affected Versions:** v3.5.0+  
+**Browsers:** All (more common on Firefox)  
+**Reported:** 2026-01-18  
+**Status:** 🟡 Open - Investigating
+
+**Steps to Reproduce:**
+1. Open Theme settings
+2. Click on a color to open advanced picker
+3. Move mouse rapidly across the color gradient
+4. Canvas may show visual glitches
+
+**Workaround:**
+- Use preset colors instead
+- Enter hex values directly
+- Move mouse slowly in picker
+
+**Planned Fix:** v3.6.0
+
+---
+
 ## Low Priority Issues
 
 ### 1. FEN History Limit Not Visible
