@@ -466,7 +466,7 @@ export const getColorName = (hex) => {
   if (hue < 195) return 'Cyan';
   if (hue < 255) return 'Blue';
   if (hue < 285) return 'Purple';
-  if (hue < 345) return 'Pink';
+  return 'Pink';
 
   return 'Color';
 };
