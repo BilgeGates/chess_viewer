@@ -1,12 +1,12 @@
-import { useState, useRef, useCallback, useMemo } from "react";
-import ChessBoard from "../components/board/ChessBoard";
-import ControlPanel from "../components/controls/ControlPanel";
+import { useState, useRef, useCallback, useMemo } from 'react';
+import ChessBoard from '../components/board/ChessBoard';
+import ControlPanel from '../components/controls/ControlPanel';
 import {
   ActionButtons,
   NotificationContainer,
-  ExportProgress,
-} from "../components/UI";
-import { useNotifications, useLocalStorage } from "../hooks";
+  ExportProgress
+} from '../components/UI';
+import { useNotifications, useLocalStorage } from '../hooks';
 import {
   downloadPNG,
   downloadJPEG,
@@ -14,8 +14,8 @@ import {
   batchExport,
   cancelExport,
   pauseExport,
-  resumeExport,
-} from "../utils/canvasExporter";
+  resumeExport
+} from '../utils/canvasExporter';
 
 /**
  * Home Page
@@ -24,33 +24,33 @@ import {
 const HomePage = () => {
   // Persistent state
   const [fen, setFen] = useLocalStorage(
-    "chess-fen",
-    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    'chess-fen',
+    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
   );
   const [pieceStyle, setPieceStyle] = useLocalStorage(
-    "chess-piece-style",
-    "cburnett"
+    'chess-piece-style',
+    'cburnett'
   );
   const [showCoords, setShowCoords] = useLocalStorage(
-    "chess-show-coords",
+    'chess-show-coords',
     true
   );
   const [lightSquare, setLightSquare] = useLocalStorage(
-    "chess-light-square",
-    "#f0d9b5"
+    'chess-light-square',
+    '#f0d9b5'
   );
   const [darkSquare, setDarkSquare] = useLocalStorage(
-    "chess-dark-square",
-    "#b58863"
+    'chess-dark-square',
+    '#b58863'
   );
-  const [boardSize, setBoardSize] = useLocalStorage("chess-board-size", 400);
-  const [flipped, setFlipped] = useLocalStorage("chess-flipped", false);
+  const [boardSize, setBoardSize] = useLocalStorage('chess-board-size', 4);
+  const [flipped, setFlipped] = useLocalStorage('chess-flipped', false);
   const [fileName, setFileName] = useLocalStorage(
-    "chess-file-name",
-    "chess-position"
+    'chess-file-name',
+    'chess-position'
   );
   const [exportQuality, setExportQuality] = useLocalStorage(
-    "chess-export-quality",
+    'chess-export-quality',
     16
   );
 
@@ -71,44 +71,48 @@ const HomePage = () => {
     useNotifications();
 
   // Memoized export config
-  const getExportConfig = useCallback(
-    () => ({
-      boardSize,
+  const getExportConfig = useCallback(() => {
+    // Base size for display/export (in pixels at 1x)
+    // Convert cm to pixels at standard web resolution (96 DPI = 37.795 px/cm)
+    // This gives us the BASE visual size, exportQuality handles resolution
+    const baseDisplayPx = Math.round(boardSize * 37.795); // 96 DPI web standard
+
+    return {
+      boardSize: baseDisplayPx, // Base pixel size for visual dimensions
       showCoords,
       lightSquare,
       darkSquare,
       flipped,
       fen,
       pieceImages: boardRef.current?.getPieceImages() || {},
-      exportQuality,
-    }),
-    [
-      boardSize,
-      showCoords,
-      lightSquare,
-      darkSquare,
-      flipped,
-      fen,
-      exportQuality,
-    ]
-  );
+      exportQuality: exportQuality // Multiplier for resolution (DPI), not visual size
+    };
+  }, [
+    boardSize,
+    showCoords,
+    lightSquare,
+    darkSquare,
+    flipped,
+    fen,
+    exportQuality
+  ]);
 
   // Export handlers
   const handleDownloadPNG = useCallback(async () => {
     setIsExporting(true);
-    setCurrentFormat("png");
+    setCurrentFormat('png');
     setExportProgress(0);
     setIsPaused(false);
     setShowProgress(true);
 
     try {
       await downloadPNG(getExportConfig(), fileName, setExportProgress);
-      success("PNG exported successfully");
+      success('PNG exported successfully');
     } catch (err) {
-      if (err.message === "Export cancelled") {
-        info("Export cancelled");
+      if (err.message === 'Export cancelled') {
+        info('Export cancelled');
       } else {
-        error("PNG export failed: " + err.message);
+        error('PNG export failed: ' + err.message);
       }
     } finally {
       setTimeout(() => {
@@ -122,19 +126,19 @@ const HomePage = () => {
 
   const handleDownloadJPEG = useCallback(async () => {
     setIsExporting(true);
-    setCurrentFormat("jpeg");
+    setCurrentFormat('jpeg');
     setExportProgress(0);
     setIsPaused(false);
     setShowProgress(true);
 
     try {
       await downloadJPEG(getExportConfig(), fileName, setExportProgress);
-      success("JPEG exported successfully");
+      success('JPEG exported successfully');
     } catch (err) {
-      if (err.message === "Export cancelled") {
-        info("Export cancelled");
+      if (err.message === 'Export cancelled') {
+        info('Export cancelled');
       } else {
-        error("JPEG export failed: " + err.message);
+        error('JPEG export failed: ' + err.message);
       }
     } finally {
       setTimeout(() => {
@@ -149,16 +153,16 @@ const HomePage = () => {
   const handleCopyImage = useCallback(async () => {
     try {
       await copyToClipboard(getExportConfig());
-      success("Image copied to clipboard");
+      success('Image copied to clipboard');
     } catch (err) {
-      error("Copy failed: " + err.message);
+      error('Copy failed: ' + err.message);
     }
   }, [getExportConfig, success, error]);
 
   const handleFlip = useCallback(() => {
-    setFlipped(!flipped);
-    success("Board flipped");
-  }, [flipped, success]);
+    setFlipped((prev) => !prev);
+    success('Board flipped');
+  }, [setFlipped, success]);
 
   const handleBatchExport = useCallback(
     async (formats) => {
@@ -179,10 +183,10 @@ const HomePage = () => {
         );
         success(`Exported ${formats.length} formats successfully`);
       } catch (err) {
-        if (err.message === "Export cancelled") {
-          info("Export cancelled");
+        if (err.message === 'Export cancelled') {
+          info('Export cancelled');
         } else {
-          error("Batch export failed: " + err.message);
+          error('Batch export failed: ' + err.message);
         }
       } finally {
         setTimeout(() => {
@@ -203,7 +207,7 @@ const HomePage = () => {
     setExportProgress(0);
     setIsPaused(false);
     setShowProgress(true);
-    info("Export cancelled");
+    info('Export cancelled');
   }, [info]);
 
   const handlePause = useCallback(() => {
@@ -228,12 +232,12 @@ const HomePage = () => {
       fen,
       pieceStyle,
       showCoords,
-      boardSize,
+      boardSize: 400, // Fixed display size for website
       lightSquare,
       darkSquare,
-      flipped,
+      flipped
     }),
-    [fen, pieceStyle, showCoords, boardSize, lightSquare, darkSquare, flipped]
+    [fen, pieceStyle, showCoords, lightSquare, darkSquare, flipped]
   );
 
   return (
@@ -241,7 +245,7 @@ const HomePage = () => {
       <div className="max-w-[1600px] mx-auto w-full">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 items-start">
           {/* Control Panel - Mobile First, Desktop Right */}
-          <div className="w-full lg:w-[380px] xl:w-[420px] order-1 lg:order-2">
+          <div className="w-full lg:w-[380px] xl:w-[520px] order-1 lg:order-2">
             <ControlPanel
               fen={fen}
               setFen={setFen}
@@ -262,9 +266,9 @@ const HomePage = () => {
               addToFavoritesRef={addToFavoritesRef}
               onFavoriteStatusChange={setIsFavorite}
               onNotification={(message, type) => {
-                if (type === "success") success(message);
-                else if (type === "error") error(message);
-                else if (type === "warning") info(message);
+                if (type === 'success') success(message);
+                else if (type === 'error') error(message);
+                else if (type === 'warning') info(message);
               }}
             />
           </div>
