@@ -1,38 +1,36 @@
-# 📤 Export Pipeline Documentation
+# Export Pipeline Documentation
 
-Complete technical documentation for the Chess Diagram Generator export system.
+Technical documentation for the export system.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Export Formats](#-export-formats)
-- [Export Pipeline Architecture](#-export-pipeline-architecture)
-- [Quality Settings](#-quality-settings)
-- [Resolution Scaling](#-resolution-scaling)
-- [Canvas Rendering](#-canvas-rendering)
-- [Image Optimization](#-image-optimization)
-- [Batch Export](#-batch-export)
-- [Error Handling](#-error-handling)
-- [Performance Considerations](#-performance-considerations)
-- [Browser Compatibility](#-browser-compatibility)
-- [API Reference](#-api-reference)
+- [Overview](#overview)
+- [Export Formats](#export-formats)
+- [Export Pipeline Architecture](#export-pipeline-architecture)
+- [Quality Settings](#quality-settings)
+- [Resolution Scaling](#resolution-scaling)
+- [Canvas Rendering](#canvas-rendering)
+- [Image Optimization](#image-optimization)
+- [Batch Export](#batch-export)
+- [Error Handling](#error-handling)
+- [Performance Considerations](#performance-considerations)
+- [Browser Compatibility](#browser-compatibility)
+- [API Reference](#api-reference)
 
 ---
 
 ## Overview
 
-The export system is responsible for converting the interactive chess board into high-quality static images. It supports multiple formats, resolutions, and quality settings while maintaining optimal performance.
+The export system converts the canvas-based chess board into static images.
 
-### Key Features
-- ✅ PNG and JPEG export formats
-- ✅ Ultra-HD export up to 12,800×12,800px (32× scale)
-- ✅ Quality presets (Low, Medium, High, Ultra)
-- ✅ Batch export for multiple positions
-- ✅ Clipboard copy support
-- ✅ Real-time progress tracking
-- ✅ Memory-efficient rendering
+### Features
+- PNG and JPEG export formats
+- Export up to 12,800×12,800px (32× scale)
+- Quality presets (Low, Medium, High, Ultra)
+- Batch export for multiple positions
+- Clipboard copy support
 
 ---
 

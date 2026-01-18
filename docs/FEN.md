@@ -1,23 +1,23 @@
-# ♟️ FEN Notation Guide
+# FEN Notation Guide
 
-Complete guide to Forsyth-Edwards Notation (FEN) for chess positions.
+Guide to Forsyth-Edwards Notation (FEN) for chess positions.
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [What is FEN?](#-what-is-fen)
-- [FEN Structure](#-fen-structure)
-- [Piece Placement](#-piece-placement)
-- [Active Color](#-active-color)
-- [Castling Rights](#-castling-rights)
-- [En Passant](#-en-passant)
-- [Move Counters](#-move-counters)
-- [Examples](#-examples)
-- [Validation Rules](#-validation-rules)
-- [Common Positions](#-common-positions)
-- [Parser Implementation](#-parser-implementation)
-- [Troubleshooting](#-troubleshooting)
+- [What is FEN?](#what-is-fen)
+- [FEN Structure](#fen-structure)
+- [Piece Placement](#piece-placement)
+- [Active Color](#active-color)
+- [Castling Rights](#castling-rights)
+- [En Passant](#en-passant)
+- [Move Counters](#move-counters)
+- [Examples](#examples)
+- [Validation Rules](#validation-rules)
+- [Common Positions](#common-positions)
+- [Parser Implementation](#parser-implementation)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -25,17 +25,17 @@ Complete guide to Forsyth-Edwards Notation (FEN) for chess positions.
 
 **Forsyth-Edwards Notation (FEN)** is a standard notation for describing a particular board position in chess.
 
-### Why FEN?
-- ✅ Compact representation of board state
-- ✅ Human-readable and machine-parsable
-- ✅ Industry standard (used by chess engines, databases)
-- ✅ Easy to copy/paste and share
-- ✅ Contains all information needed to reconstruct position
+### Purpose
+- Compact representation of board state
+- Human-readable and machine-parsable
+- Industry standard (used by chess engines, databases)
+- Easy to copy/paste and share
+- Contains all information needed to reconstruct position
 
 ### History
-- Created by Scottish newspaper journalist **David Forsyth** (19th century)
+- Created by Scottish journalist **David Forsyth** (19th century)
 - Extended by **Steven J. Edwards** for computer use (1990s)
-- Now the universal standard for chess position notation
+- Universal standard for chess position notation
 
 ---
 
