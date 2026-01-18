@@ -1,6 +1,6 @@
-import { QUALITY_PRESETS } from "../../../constants/chessConstants";
-import { Modal, Button, Input } from "../../UI";
-import { Settings } from "lucide-react";
+import { QUALITY_PRESETS } from '../../../constants/chessConstants';
+import { Modal, Button, Input } from '../../UI';
+import { Settings } from 'lucide-react';
 
 const ExportSettingsModal = ({
   isOpen,
@@ -8,7 +8,7 @@ const ExportSettingsModal = ({
   fileName,
   setFileName,
   exportQuality,
-  setExportQuality,
+  setExportQuality
 }) => {
   return (
     <Modal
@@ -33,8 +33,8 @@ const ExportSettingsModal = ({
                 onClick={() => setExportQuality(preset.value)}
                 className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   exportQuality === preset.value
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                    : "bg-gray-950/50 text-gray-300 hover:bg-gray-700"
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                    : 'bg-gray-950/50 text-gray-300 hover:bg-gray-700'
                 }`}
                 title={preset.description}
               >
@@ -49,11 +49,11 @@ const ExportSettingsModal = ({
           label="File Name"
           value={fileName}
           onChange={(e) => setFileName(e.target.value)}
-          placeholder="chess-position"
+          placeholder="board"
         />
         <p className="text-xs text-gray-400 -mt-2">
           <strong className="text-gray-300 font-mono">
-            {fileName || "chess-position"}
+            {fileName || 'board'}
           </strong>
           .png or .jpeg
         </p>
