@@ -26,7 +26,9 @@ Used in hooks for:
 - Export callbacks
 
 ### Code Splitting
-Modals use React.lazy:
+**Not implemented.** Modals are imported synchronously.
+
+Future improvement: Use React.lazy for modals:
 - ThemeModal
 - FENHistoryModal
 - ExportSettingsModal
