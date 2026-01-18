@@ -1,199 +1,395 @@
-<h1 align="center">♟️ Chess Diagram Generator</h1>
+# Chess Diagram Generator<h1 align="center">♟️ Chess Diagram Generator</h1>
 
-<div align="center">
 
-**Professional chess position visualizer with ultra-HD export capabilities**
 
-[![React](https://img.shields.io/badge/React-18%2B_(Built_with_19.x)-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+A browser-based tool for creating chess position images from FEN notation.<div align="center">
+
+
+
+[![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)**Professional chess position visualizer with ultra-HD export capabilities**
+
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Backend](https://img.shields.io/badge/backend-none-success?style=flat-square)](#)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)[![React](https://img.shields.io/badge/React-18%2B_(Built_with_19.x)-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+
+[Live Demo](https://chess-viewer-site.vercel.app) · [Report Bug](https://github.com/BilgeGates/chess_viewer/issues) · [Request Feature](https://github.com/BilgeGates/chess_viewer/issues)[![Backend](https://img.shields.io/badge/backend-none-success?style=flat-square)](#)
+
 [![Privacy](https://img.shields.io/badge/privacy-local--only-blue?style=flat-square)](#)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+---[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
+## Table of Contents
+
 [Live Demo](https://chess-viewer-site.vercel.app) ·
-[Report Bug](https://github.com/BilgeGates/chess_viewer/issues) ·
-[Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
+
+- [Overview](#overview)[Report Bug](https://github.com/BilgeGates/chess_viewer/issues) ·
+
+- [Features](#features)[Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
+
+- [Quick Start](#quick-start)
+
+- [Project Structure](#project-structure)
+
+- [Technology Stack](#technology-stack)</div>
+
+- [Browser Support](#browser-support)
+
+- [Known Limitations](#known-limitations)---
+
+- [Contributing](#contributing)
+
+- [License](#license)## 📖 Table of Contents
 
 
-</div>
 
----
+---- [Overview](#-overview)
 
-## 📖 Table of Contents
-
-- [Overview](#-overview)
 - [Features](#-features)
-- [Demo Screenshots](#-demo--screenshots)
+
+## Overview- [Demo Screenshots](#-demo--screenshots)
+
 - [Quick Start](#-quick-start)
-- [Project Structure](#-project-structure)
+
+Chess Diagram Generator creates chess board images from FEN notation. It runs entirely in the browser with no backend.- [Project Structure](#-project-structure)
+
 - [Technology Stack](#-technology-stack)
-- [Browser Support](#-browser-support)
-- [Release Strategy](#-release-strategy)
-- [Security Privacy](#-security--privacy)
-- [Contributing](#-contributing)
-- [FAQ](#-faq)
+
+**Use cases:**- [Browser Support](#-browser-support)
+
+- Chess content creators needing board images- [Release Strategy](#-release-strategy)
+
+- Authors writing chess books or articles- [Security Privacy](#-security--privacy)
+
+- Coaches preparing training materials- [Contributing](#-contributing)
+
+- Developers needing chess diagrams- [FAQ](#-faq)
+
 - [License](#-license)
 
 ---
 
+---
+
+## Features
+
 ## 🌟 Overview
 
-Chess Diagram Generator is a modern web application for creating **high-quality chess diagrams** from FEN notation.  
-It is built for chess players, coaches, authors, streamers, and developers who need **fast, precise, and customizable** board visuals.
+- FEN notation parsing and validation
 
----
+- PNG and JPEG export (up to 12,800×12,800px)Chess Diagram Generator is a modern web application for creating **high-quality chess diagrams** from FEN notation.  
 
-## ✨ Features
+- 23 piece setsIt is built for chess players, coaches, authors, streamers, and developers who need **fast, precise, and customizable** board visuals.
 
-- Full FEN notation support with validation  
+- 12 board themes
+
+- Custom color picker---
+
+- Board flip and coordinate toggle
+
+- Position history and favorites (localStorage)## ✨ Features
+
+- Multi-FEN input (up to 10 positions)
+
+- Batch export- Full FEN notation support with validation  
+
 - Multi-FEN input (up to 10 positions)  
-- Ultra-HD PNG & JPEG export (up to 12,800×12,800px)  
+
+---- Ultra-HD PNG & JPEG export (up to 12,800×12,800px)  
+
 - Batch export & clipboard copy  
-- 23 professional piece sets  
+
+## Quick Start- 23 professional piece sets  
+
 - Advanced color picker & themes  
-- Favorites, history & famous positions  
+
+### Prerequisites- Favorites, history & famous positions  
+
 - Board flip & coordinates  
 
----
+- Node.js 16+
 
-## 🖼 Demo & Screenshots
+- npm 8+---
 
-> **Live demo:** https://chess-viewer-site.vercel.app
 
----
 
-## 🚀 Quick Start
+### Installation## 🖼 Demo & Screenshots
+
+
+
+```bash> **Live demo:** https://chess-viewer-site.vercel.app
+
+git clone https://github.com/BilgeGates/chess_viewer.git
+
+cd chess_viewer---
+
+npm install
+
+npm start## 🚀 Quick Start
+
+```
 
 ### Prerequisites
 
+Opens at [http://localhost:3000](http://localhost:3000)
+
 ```bash
-Node.js >= 16
+
+### Production BuildNode.js >= 16
+
 npm >= 8
-```
 
-### Installation
+```bash```
 
-```bash
-# Clone the repository
-git clone https://github.com/BilgeGates/chess_viewer.git
-
-# Navigate to project directory
-cd chess_viewer
-
-# Install dependencies
-npm install
-# or
-yarn install
-
-# Start development server
-npm start
-# or
-yarn start
-```
-
-The application will automatically open at [http://localhost:3000](http://localhost:3000)
-
-### Production Build
-
-```bash
-# Create optimized production build
 npm run build
 
-# Preview production build locally
+```### Installation
+
+
+
+---```bash
+
+# Clone the repository
+
+## Project Structuregit clone https://github.com/BilgeGates/chess_viewer.git
+
+
+
+```# Navigate to project directory
+
+chess_viewer/cd chess_viewer
+
+├── public/
+
+│   └── index.html# Install dependencies
+
+├── src/npm install
+
+│   ├── components/# or
+
+│   │   ├── board/           # Chess board renderingyarn install
+
+│   │   ├── controls/        # Control panel, modals
+
+│   │   ├── UI/              # Reusable UI components# Start development server
+
+│   │   └── layouts/         # Navbar, Footernpm start
+
+│   ├── pages/               # Route pages# or
+
+│   ├── hooks/               # Custom React hooksyarn start
+
+│   ├── utils/               # Utility functions```
+
+│   ├── constants/           # App constants
+
+│   ├── routes/              # Router configThe application will automatically open at [http://localhost:3000](http://localhost:3000)
+
+│   ├── App.jsx
+
+│   └── index.js### Production Build
+
+├── docs/                    # Documentation
+
+├── package.json```bash
+
+└── README.md# Create optimized production build
+
+```npm run build
+
+
+
+---# Preview production build locally
+
 npm run preview
 
-# Deploy to Vercel (requires Vercel CLI)
-vercel --prod
-```
----
+## Technology Stack
 
-## 📁 Project Structure
+# Deploy to Vercel (requires Vercel CLI)
+
+| Technology | Purpose |vercel --prod
+
+|------------|---------|```
+
+| React 19.x | UI framework |---
+
+| Tailwind CSS 3.3.5 | Styling |
+
+| HTML5 Canvas | Board rendering |## 📁 Project Structure
+
+| localStorage | Data persistence |
 
 <details>
-<summary><b>Complete File Tree (Click to expand)</b></summary>
 
-```
+---<summary><b>Complete File Tree (Click to expand)</b></summary>
+
+
+
+## Browser Support```
+
 chess_viewer/
-│
-├── 📂 public/
-│   ├── index.html
-│
-├── 📂 src/
-│   │
+
+| Browser | Minimum Version |│
+
+|---------|-----------------|├── 📂 public/
+
+| Chrome | 90+ |│   ├── index.html
+
+| Firefox | 88+ |│
+
+| Safari | 14+ |├── 📂 src/
+
+| Edge | 90+ |│   │
+
 │   ├── 📂 components/
-│   │   │
+
+**Required features:** HTML5 Canvas, ES6+ JavaScript│   │   │
+
 │   │   ├── 📂 board/              # Chess Board Rendering
-│   │   │   ├── BoardSquare.jsx    # Single square component (memoized)
+
+---│   │   │   ├── BoardSquare.jsx    # Single square component (memoized)
+
 │   │   │   ├── BoardGrid.jsx      # 8×8 grid layout
-│   │   │   ├── ChessBoard.jsx     # Main board with Canvas rendering
+
+## Known Limitations│   │   │   ├── ChessBoard.jsx     # Main board with Canvas rendering
+
 │   │   │   ├── MiniChessPreview.jsx # Thumbnail for history
-│   │   │   └── index.js
-│   │   │
-│   │   ├── 📂 controls/           # Control Panel System
-│   │   │   │
-│   │   │   ├── 📂 atoms/          # Atomic components
+
+- **No offline support** - Piece images loaded from CDN│   │   │   └── index.js
+
+- **No SVG export** - PNG/JPEG only│   │   │
+
+- **Canvas not accessible** - Screen readers cannot read board│   │   ├── 📂 controls/           # Control Panel System
+
+- **Safari export limits** - Large exports may fail on Safari/iOS│   │   │   │
+
+- **No keyboard shortcuts**│   │   │   ├── 📂 atoms/          # Atomic components
+
 │   │   │   │   ├── FENInputField.jsx
-│   │   │   │   ├── FamousPositionButton.jsx
+
+See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) for details.│   │   │   │   ├── FamousPositionButton.jsx
+
 │   │   │   │   └── index.js
-│   │   │   │
+
+---│   │   │   │
+
 │   │   │   ├── 📂 modals/         # Modal dialogs
-│   │   │   │   ├── AdvancedFENInputModal.jsx
+
+## Security and Privacy│   │   │   │   ├── AdvancedFENInputModal.jsx
+
 │   │   │   │   ├── ExportSettingsModal.jsx
-│   │   │   │   ├── FENHistoryModal.jsx
-│   │   │   │   ├── ThemeModal.jsx
-│   │   │   │   └── index.js
-│   │   │   │
-│   │   │   ├── ControlPanel.jsx   # Main control container
+
+- No backend server│   │   │   │   ├── FENHistoryModal.jsx
+
+- No data collection│   │   │   │   ├── ThemeModal.jsx
+
+- No cookies or tracking│   │   │   │   └── index.js
+
+- All processing in browser│   │   │   │
+
+- Data stays on your device│   │   │   ├── ControlPanel.jsx   # Main control container
+
 │   │   │   ├── BoardSizeControl.jsx
-│   │   │   ├── DisplayOptions.jsx
+
+---│   │   │   ├── DisplayOptions.jsx
+
 │   │   │   ├── ExportSettings.jsx
-│   │   │   ├── FENInput.jsx
+
+## Contributing│   │   │   ├── FENInput.jsx
+
 │   │   │   ├── PieceSelector.jsx
-│   │   │   ├── ThemeSelector.jsx
+
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).│   │   │   ├── ThemeSelector.jsx
+
 │   │   │   └── index.js
-│   │   │
-│   │   ├── 📂 ui/                 # Reusable UI Components
-│   │   │   │
-│   │   │   ├── 📂 base/           # Base components
-│   │   │   │   ├── Badge.jsx
-│   │   │   │   ├── Button.jsx
+
+```bash│   │   │
+
+git checkout -b feature/your-feature│   │   ├── 📂 ui/                 # Reusable UI Components
+
+git commit -m 'Add feature'│   │   │   │
+
+git push origin feature/your-feature│   │   │   ├── 📂 base/           # Base components
+
+# Open Pull Request│   │   │   │   ├── Badge.jsx
+
+```│   │   │   │   ├── Button.jsx
+
 │   │   │   │   ├── Card.jsx
-│   │   │   │   ├── Checkbox.jsx
+
+---│   │   │   │   ├── Checkbox.jsx
+
 │   │   │   │   ├── Input.jsx
-│   │   │   │   ├── Modal.jsx
+
+## Documentation│   │   │   │   ├── Modal.jsx
+
 │   │   │   │   ├── Select.jsx
-│   │   │   │   ├── SearchableSelect.jsx
-│   │   │   │   ├── RangeSlider.jsx
-│   │   │   │   └── index.js
-│   │   │   │
+
+- [Architecture](docs/ARCHITECTURE.md)│   │   │   │   ├── SearchableSelect.jsx
+
+- [Changelog](docs/CHANGELOG.md)│   │   │   │   ├── RangeSlider.jsx
+
+- [Known Issues](docs/KNOWN_ISSUES.md)│   │   │   │   └── index.js
+
+- [FAQ](docs/FAQ.md)│   │   │   │
+
 │   │   │   ├── 📂 color-picker/   # Advanced color picker
-│   │   │   │   │
+
+---│   │   │   │   │
+
 │   │   │   │   ├── 📂 parts/      # Picker components
-│   │   │   │   │   ├── ColorCanvas.jsx
+
+## License│   │   │   │   │   ├── ColorCanvas.jsx
+
 │   │   │   │   │   ├── ColorInput.jsx
-│   │   │   │   │   ├── ColorPalettes.jsx
+
+MIT License - see [LICENSE](LICENSE)│   │   │   │   │   ├── ColorPalettes.jsx
+
 │   │   │   │   │   ├── ColorSwatch.jsx
-│   │   │   │   │   ├── HueSlider.jsx
+
+---│   │   │   │   │   ├── HueSlider.jsx
+
 │   │   │   │   │   ├── PrimaryActions.jsx
-│   │   │   │   │   ├── SelectedPreview.jsx
+
+## Author│   │   │   │   │   ├── SelectedPreview.jsx
+
 │   │   │   │   │   ├── ThemePresetCard.jsx
-│   │   │   │   │   └── index.js
+
+**Khatai Huseynzada**│   │   │   │   │   └── index.js
+
 │   │   │   │   │
-│   │   │   │   ├── 📂 views/      # Picker views
-│   │   │   │   │   ├── ThemeMainView.jsx
+
+- GitHub: [@BilgeGates](https://github.com/BilgeGates)│   │   │   │   ├── 📂 views/      # Picker views
+
+- Email: darkdeveloperassistant@gmail.com│   │   │   │   │   ├── ThemeMainView.jsx
+
 │   │   │   │   │   ├── ThemeAdvancedPickerView.jsx
-│   │   │   │   │   ├── ThemeSettingsView.jsx
+
+---│   │   │   │   │   ├── ThemeSettingsView.jsx
+
 │   │   │   │   │   └── index.js
-│   │   │   │   │
+
+## Acknowledgments│   │   │   │   │
+
 │   │   │   │   ├── ColorPicker.jsx
-│   │   │   │   ├── PickerModal.jsx
-│   │   │   │   └── index.js
-│   │   │   │
+
+- [Lichess](https://lichess.org) - Piece SVGs│   │   │   │   ├── PickerModal.jsx
+
+- [Tailwind CSS](https://tailwindcss.com)│   │   │   │   └── index.js
+
+- [Lucide Icons](https://lucide.dev)│   │   │   │
+
 │   │   │   ├── ActionButtons.jsx
-│   │   │   ├── ExportProgress.jsx
+
+---│   │   │   ├── ExportProgress.jsx
+
 │   │   │   ├── NotificationContainer.jsx
-│   │   │   ├── UserGuide.jsx
+
+© 2026 Khatai Huseynzada. MIT License.│   │   │   ├── UserGuide.jsx
+
 │   │   │   └── index.js
 │   │   │
 │   │   └── 📂 layout/             # Layout components
