@@ -18,7 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Fixed
 
 #### Console & Logging
-- Replaced 74 console.log/error statements with logger utility (dev-only output)
+- Replaced console.log/error statements with logger utility (dev-only output)
 
 #### Memory & Performance
 - Added setTimeout cleanup refs in AdvancedFENInputModal and other components

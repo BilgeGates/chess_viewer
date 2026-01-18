@@ -420,17 +420,15 @@ exportCanvas.toBlob((blob) => {
    - `useMemo` for expensive calculations
    - `useCallback` for event handlers
 
-2. **Canvas Optimization**
+2. **Canvas Rendering**
    - Only redraw when state changes
-   - Use `requestAnimationFrame` for smooth updates
    - Clear canvas efficiently: `clearRect()`
 
 3. **Image Preloading**
    - Preload all piece images on mount
    - Cache loaded images in memory
 
-4. **Debouncing**
-   - FEN validation debounced (300ms)
+4. **UI Responsiveness**
    - Export button disabled during processing
 
 5. **Lazy Rendering**

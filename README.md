@@ -299,7 +299,7 @@ chess_viewer/
 
 ### Performance Stack
 
-- **Rendering**: HTML5 Canvas (GPU-accelerated)
+- **Rendering**: HTML5 Canvas
 - **Optimization**: React.memo, useCallback, useMemo
 - **Storage**: localStorage (browser native)
 - **Deployment**: Vercel (Edge + CDN)

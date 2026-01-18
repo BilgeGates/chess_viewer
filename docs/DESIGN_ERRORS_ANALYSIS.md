@@ -23,7 +23,7 @@ Identified design issues and their resolution status.
 
 ### 1. Production Console Logs
 
-**Problem:** 74 console.log statements in production code.
+**Problem:** Multiple console.log statements in production code.
 
 **Fix Applied (v3.5.2):**
 - Created `src/utils/logger.js` - dev-only logging utility
@@ -76,7 +76,7 @@ useEffect(() => {
 
 ### 4. Accessibility Issues (Partial Fix)
 
-**Problem:** Only 5 ARIA labels in entire codebase.
+**Problem:** Very few ARIA labels in codebase.
 
 **Fix Applied (v3.5.2):**
 - Modal: Added `role="dialog"`, `aria-modal`, `aria-labelledby`, focus trap
