@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from 'react';
+import { logger } from '../utils/logger';
 
 /**
  * useTheme - Advanced theme management hook with persistence
@@ -6,12 +7,12 @@ import { useState, useEffect, useCallback } from "react";
  */
 export const useTheme = ({
   onNotification,
-  initialLight = "#f0d9b5",
-  initialDark = "#b58863",
+  initialLight = '#f0d9b5',
+  initialDark = '#b58863'
 } = {}) => {
   const [lightSquare, setLightSquare] = useState(initialLight);
   const [darkSquare, setDarkSquare] = useState(initialDark);
-  const [currentTheme, setCurrentTheme] = useState("custom");
+  const [currentTheme, setCurrentTheme] = useState('custom');
   const [themeHistory, setThemeHistory] = useState([]);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
 
@@ -21,37 +22,37 @@ export const useTheme = ({
       try {
         // Try cloud storage first
         if (window.storage) {
-          const result = await window.storage.get("chess-theme");
+          const result = await window.storage.get('chess-theme');
           if (result && result.value) {
             const saved = JSON.parse(result.value);
             setLightSquare(saved.light || initialLight);
             setDarkSquare(saved.dark || initialDark);
-            setCurrentTheme(saved.name || "custom");
+            setCurrentTheme(saved.name || 'custom');
             return;
           }
         }
 
         // Fallback to localStorage
-        const localTheme = window.localStorage.getItem("chess-theme");
+        const localTheme = window.localStorage.getItem('chess-theme');
         if (localTheme) {
           const saved = JSON.parse(localTheme);
           setLightSquare(saved.light || initialLight);
           setDarkSquare(saved.dark || initialDark);
-          setCurrentTheme(saved.name || "custom");
+          setCurrentTheme(saved.name || 'custom');
         }
       } catch (err) {
-        console.error("Failed to load theme:", err);
+        logger.error('Failed to load theme:', err);
       }
     };
 
     const loadHistory = () => {
       try {
-        const historyData = window.localStorage.getItem("theme-history");
+        const historyData = window.localStorage.getItem('theme-history');
         if (historyData) {
           setThemeHistory(JSON.parse(historyData));
         }
       } catch (err) {
-        console.error("Failed to load theme history:", err);
+        logger.error('Failed to load theme history:', err);
       }
     };
 
@@ -66,21 +67,21 @@ export const useTheme = ({
         light: lightSquare,
         dark: darkSquare,
         name: currentTheme,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
 
       const jsonData = JSON.stringify(themeData);
 
       try {
         // Save to localStorage
-        window.localStorage.setItem("chess-theme", jsonData);
+        window.localStorage.setItem('chess-theme', jsonData);
 
         // Save to cloud storage if available
         if (window.storage) {
-          await window.storage.set("chess-theme", jsonData);
+          await window.storage.set('chess-theme', jsonData);
         }
       } catch (err) {
-        console.error("Failed to save theme:", err);
+        logger.error('Failed to save theme:', err);
       }
     };
 
@@ -110,25 +111,25 @@ export const useTheme = ({
         name: themeData.name || themeKey,
         light: themeData.light,
         dark: themeData.dark,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
 
       const updatedHistory = [
         newHistoryItem,
         ...themeHistory.filter(
           (h) => h.light !== themeData.light || h.dark !== themeData.dark
-        ),
+        )
       ].slice(0, 10);
 
       setThemeHistory(updatedHistory);
 
       try {
         window.localStorage.setItem(
-          "theme-history",
+          'theme-history',
           JSON.stringify(updatedHistory)
         );
       } catch (err) {
-        console.error("Failed to save theme history:", err);
+        logger.error('Failed to save theme history:', err);
       }
     },
     [themeHistory]
@@ -136,7 +137,7 @@ export const useTheme = ({
 
   // Apply custom colors
   const applyCustomTheme = useCallback(
-    (light, dark, name = "Custom") => {
+    (light, dark, name = 'Custom') => {
       setLightSquare(light);
       setDarkSquare(dark);
       setCurrentTheme(name);
@@ -147,23 +148,23 @@ export const useTheme = ({
         name,
         light,
         dark,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
 
       const updatedHistory = [
         newHistoryItem,
-        ...themeHistory.filter((h) => h.light !== light || h.dark !== dark),
+        ...themeHistory.filter((h) => h.light !== light || h.dark !== dark)
       ].slice(0, 10);
 
       setThemeHistory(updatedHistory);
 
       try {
         window.localStorage.setItem(
-          "theme-history",
+          'theme-history',
           JSON.stringify(updatedHistory)
         );
       } catch (err) {
-        console.error("Failed to save theme history:", err);
+        logger.error('Failed to save theme history:', err);
       }
     },
     [themeHistory]
@@ -173,7 +174,7 @@ export const useTheme = ({
   const resetTheme = useCallback(() => {
     setLightSquare(initialLight);
     setDarkSquare(initialDark);
-    setCurrentTheme("brown");
+    setCurrentTheme('brown');
   }, [initialLight, initialDark]);
 
   // Get contrast ratio for accessibility
@@ -209,7 +210,7 @@ export const useTheme = ({
     const r = 255 - ((num >> 16) & 0xff);
     const g = 255 - ((num >> 8) & 0xff);
     const b = 255 - (num & 0xff);
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }, []);
 
   // Lighten/Darken color
@@ -219,16 +220,16 @@ export const useTheme = ({
     const R = Math.min(255, Math.max(0, ((num >> 16) & 0xff) + amt));
     const G = Math.min(255, Math.max(0, ((num >> 8) & 0xff) + amt));
     const B = Math.min(255, Math.max(0, (num & 0xff) + amt));
-    return "#" + ((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1);
+    return '#' + ((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1);
   }, []);
 
   // Clear theme history
   const clearThemeHistory = useCallback(() => {
     setThemeHistory([]);
     try {
-      window.localStorage.removeItem("theme-history");
+      window.localStorage.removeItem('theme-history');
     } catch (err) {
-      console.error("Failed to clear theme history:", err);
+      logger.error('Failed to clear theme history:', err);
     }
   }, []);
 
@@ -239,7 +240,7 @@ export const useTheme = ({
       light: lightSquare,
       dark: darkSquare,
       contrastRatio: getContrastRatio(lightSquare, darkSquare),
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
   }, [currentTheme, lightSquare, darkSquare, getContrastRatio]);
 
@@ -247,13 +248,13 @@ export const useTheme = ({
   const importTheme = useCallback(
     (themeData) => {
       if (!themeData || !themeData.light || !themeData.dark) {
-        throw new Error("Invalid theme data");
+        throw new Error('Invalid theme data');
       }
 
       applyCustomTheme(
         themeData.light,
         themeData.dark,
-        themeData.name || "Imported"
+        themeData.name || 'Imported'
       );
     },
     [applyCustomTheme]
@@ -287,7 +288,7 @@ export const useTheme = ({
     getContrastRatio,
     hasGoodContrast,
     generateComplementary,
-    adjustBrightness,
+    adjustBrightness
   };
 };
 
@@ -299,12 +300,12 @@ export const useThemePresets = () => {
 
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem("custom-theme-presets");
+      const saved = window.localStorage.getItem('custom-theme-presets');
       if (saved) {
         setCustomPresets(JSON.parse(saved));
       }
     } catch (err) {
-      console.error("Failed to load custom presets:", err);
+      logger.error('Failed to load custom presets:', err);
     }
   }, []);
 
@@ -315,7 +316,7 @@ export const useThemePresets = () => {
         name,
         light,
         dark,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
 
       const updated = [...customPresets, newPreset];
@@ -323,11 +324,11 @@ export const useThemePresets = () => {
 
       try {
         window.localStorage.setItem(
-          "custom-theme-presets",
+          'custom-theme-presets',
           JSON.stringify(updated)
         );
       } catch (err) {
-        console.error("Failed to save preset:", err);
+        logger.error('Failed to save preset:', err);
       }
     },
     [customPresets]
@@ -340,11 +341,11 @@ export const useThemePresets = () => {
 
       try {
         window.localStorage.setItem(
-          "custom-theme-presets",
+          'custom-theme-presets',
           JSON.stringify(updated)
         );
       } catch (err) {
-        console.error("Failed to delete preset:", err);
+        logger.error('Failed to delete preset:', err);
       }
     },
     [customPresets]
@@ -353,9 +354,9 @@ export const useThemePresets = () => {
   const clearPresets = useCallback(() => {
     setCustomPresets([]);
     try {
-      window.localStorage.removeItem("custom-theme-presets");
+      window.localStorage.removeItem('custom-theme-presets');
     } catch (err) {
-      console.error("Failed to clear presets:", err);
+      logger.error('Failed to clear presets:', err);
     }
   }, []);
 
@@ -363,7 +364,7 @@ export const useThemePresets = () => {
     customPresets,
     savePreset,
     deletePreset,
-    clearPresets,
+    clearPresets
   };
 };
 

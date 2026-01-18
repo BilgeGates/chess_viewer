@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
+import { logger } from '../utils/logger';
 
 export const useLocalStorage = (key, initialValue) => {
   // State to store our value
   const [storedValue, setStoredValue] = useState(() => {
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return initialValue;
     }
 
@@ -13,7 +14,7 @@ export const useLocalStorage = (key, initialValue) => {
       // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.error(`Error loading ${key} from localStorage:`, error);
+      logger.error(`Error loading ${key} from localStorage:`, error);
       return initialValue;
     }
   });
@@ -30,11 +31,36 @@ export const useLocalStorage = (key, initialValue) => {
       setStoredValue(valueToStore);
 
       // Save to local storage
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        } catch (storageError) {
+          // Handle quota exceeded error gracefully
+          if (storageError.name === 'QuotaExceededError') {
+            logger.warn(
+              `localStorage quota exceeded for key: ${key}. Clearing old data.`
+            );
+            // Try to clear some space by removing old items
+            try {
+              const keys = Object.keys(window.localStorage);
+              if (keys.length > 0) {
+                window.localStorage.removeItem(keys[0]);
+                // Retry once after clearing
+                window.localStorage.setItem(key, JSON.stringify(valueToStore));
+              }
+            } catch (retryError) {
+              logger.error(
+                `Failed to save ${key} even after cleanup:`,
+                retryError
+              );
+            }
+          } else {
+            throw storageError;
+          }
+        }
       }
     } catch (error) {
-      console.error(`Error saving ${key} to localStorage:`, error);
+      logger.error(`Error saving ${key} to localStorage:`, error);
     }
   };
 
@@ -72,7 +98,7 @@ export const useHybridStorage = (
           setStoredValue(JSON.parse(item));
         }
       } catch (error) {
-        console.error(`Error loading ${key}:`, error);
+        logger.error(`Error loading ${key}:`, error);
       }
 
       setIsLoading(false);
@@ -91,14 +117,32 @@ export const useHybridStorage = (
 
       const jsonValue = JSON.stringify(valueToStore);
 
-      // Save to both localStorage and cloud storage
-      window.localStorage.setItem(key, jsonValue);
+      // Save to localStorage with quota handling
+      try {
+        window.localStorage.setItem(key, jsonValue);
+      } catch (storageError) {
+        if (storageError.name === 'QuotaExceededError') {
+          logger.warn(`localStorage quota exceeded for key: ${key}`);
+          // Try to clear some space
+          const keys = Object.keys(window.localStorage);
+          if (keys.length > 0) {
+            window.localStorage.removeItem(keys[0]);
+            window.localStorage.setItem(key, jsonValue);
+          }
+        } else {
+          throw storageError;
+        }
+      }
 
       if (useCloudStorage && window.storage) {
-        await window.storage.set(key, jsonValue);
+        try {
+          await window.storage.set(key, jsonValue);
+        } catch (cloudError) {
+          logger.warn(`Cloud storage failed for key: ${key}`, cloudError);
+        }
       }
     } catch (error) {
-      console.error(`Error saving ${key}:`, error);
+      logger.error(`Error saving ${key}:`, error);
     }
   };
 

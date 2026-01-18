@@ -1,6 +1,7 @@
 // src/hooks/useFENHistory.js
-import { useState, useEffect } from "react";
-import { validateFEN } from "../utils";
+import { useState, useEffect } from 'react';
+import { validateFEN } from '../utils';
+import { logger } from '../utils/logger';
 
 export const useFENHistory = (fen, onFavoriteStatusChange) => {
   const [fenHistory, setFenHistory] = useState([]);
@@ -9,22 +10,22 @@ export const useFENHistory = (fen, onFavoriteStatusChange) => {
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const result = await window.storage.get("fen-history");
+        const result = await window.storage.get('fen-history');
         if (result && result.value) {
           setFenHistory(JSON.parse(result.value));
           return;
         }
       } catch (err) {
-        console.log("Cloud storage not available");
+        logger.log('Cloud storage not available');
       }
 
       try {
-        const localData = window.localStorage.getItem("fen-history");
+        const localData = window.localStorage.getItem('fen-history');
         if (localData) {
           setFenHistory(JSON.parse(localData));
         }
       } catch (err) {
-        console.error("Failed to load history:", err);
+        logger.error('Failed to load history:', err);
       }
     };
     loadHistory();
@@ -35,40 +36,45 @@ export const useFENHistory = (fen, onFavoriteStatusChange) => {
     const saveToHistory = async () => {
       if (!validateFEN(fen)) return;
 
-      const existingItem = fenHistory.find((h) => h.fen === fen);
+      setFenHistory((prevHistory) => {
+        const existingItem = prevHistory.find((h) => h.fen === fen);
 
-      let updatedHistory;
-      if (existingItem) {
-        updatedHistory = [
-          { ...existingItem, timestamp: Date.now() },
-          ...fenHistory.filter((h) => h.fen !== fen),
-        ].slice(0, 50);
-      } else {
-        const newEntry = {
-          id: Date.now(),
-          fen: fen,
-          timestamp: Date.now(),
-          isFavorite: false,
-        };
-        updatedHistory = [newEntry, ...fenHistory].slice(0, 50);
-      }
-
-      setFenHistory(updatedHistory);
-      const jsonData = JSON.stringify(updatedHistory);
-
-      try {
-        window.localStorage.setItem("fen-history", jsonData);
-        if (window.storage) {
-          await window.storage.set("fen-history", jsonData);
+        let updatedHistory;
+        if (existingItem) {
+          updatedHistory = [
+            { ...existingItem, timestamp: Date.now() },
+            ...prevHistory.filter((h) => h.fen !== fen)
+          ].slice(0, 50);
+        } else {
+          const newEntry = {
+            id: Date.now(),
+            fen: fen,
+            timestamp: Date.now(),
+            isFavorite: false
+          };
+          updatedHistory = [newEntry, ...prevHistory].slice(0, 50);
         }
-      } catch (err) {
-        console.error("Failed to save history:", err);
-      }
+
+        // Save to storage asynchronously
+        const jsonData = JSON.stringify(updatedHistory);
+        try {
+          window.localStorage.setItem('fen-history', jsonData);
+          if (window.storage) {
+            window.storage.set('fen-history', jsonData).catch((err) => {
+              logger.error('Failed to save to cloud storage:', err);
+            });
+          }
+        } catch (err) {
+          logger.error('Failed to save history:', err);
+        }
+
+        return updatedHistory;
+      });
     };
 
     const timeoutId = setTimeout(saveToHistory, 1000);
     return () => clearTimeout(timeoutId);
-  }, [fen, fenHistory]);
+  }, [fen]);
 
   // Check if current FEN is favorite
   useEffect(() => {
@@ -84,12 +90,12 @@ export const useFENHistory = (fen, onFavoriteStatusChange) => {
     const jsonData = JSON.stringify(updated);
 
     try {
-      window.localStorage.setItem("fen-history", jsonData);
+      window.localStorage.setItem('fen-history', jsonData);
       if (window.storage) {
-        await window.storage.set("fen-history", jsonData);
+        await window.storage.set('fen-history', jsonData);
       }
     } catch (err) {
-      console.error("Failed to update favorite:", err);
+      logger.error('Failed to update favorite:', err);
     }
   };
 
@@ -99,30 +105,30 @@ export const useFENHistory = (fen, onFavoriteStatusChange) => {
     const jsonData = JSON.stringify(updated);
 
     try {
-      window.localStorage.setItem("fen-history", jsonData);
+      window.localStorage.setItem('fen-history', jsonData);
       if (window.storage) {
-        await window.storage.set("fen-history", jsonData);
+        await window.storage.set('fen-history', jsonData);
       }
     } catch (err) {
-      console.error("Failed to delete:", err);
+      logger.error('Failed to delete:', err);
     }
   };
 
   const clearHistory = async () => {
     setFenHistory([]);
     try {
-      window.localStorage.removeItem("fen-history");
+      window.localStorage.removeItem('fen-history');
       if (window.storage) {
-        await window.storage.delete("fen-history");
+        await window.storage.delete('fen-history');
       }
     } catch (err) {
-      console.error("Failed to clear:", err);
+      logger.error('Failed to clear:', err);
     }
   };
 
   const addCurrentToFavorites = async (currentFen, onNotification) => {
     if (!validateFEN(currentFen)) {
-      onNotification?.("Invalid FEN - cannot add to favorites", "error");
+      onNotification?.('Invalid FEN - cannot add to favorites', 'error');
       return;
     }
 
@@ -137,30 +143,30 @@ export const useFENHistory = (fen, onFavoriteStatusChange) => {
       );
       const isFav = !existingItem.isFavorite;
       onNotification?.(
-        isFav ? "Added to favorites" : "Removed from favorites",
-        "success"
+        isFav ? 'Added to favorites' : 'Removed from favorites',
+        'success'
       );
     } else {
       const newEntry = {
         id: Date.now(),
         fen: currentFen,
         timestamp: Date.now(),
-        isFavorite: true,
+        isFavorite: true
       };
       updatedHistory = [newEntry, ...fenHistory].slice(0, 50);
-      onNotification?.("Added to favorites ★", "success");
+      onNotification?.('Added to favorites ★', 'success');
     }
 
     setFenHistory(updatedHistory);
     const jsonData = JSON.stringify(updatedHistory);
 
     try {
-      window.localStorage.setItem("fen-history", jsonData);
+      window.localStorage.setItem('fen-history', jsonData);
       if (window.storage) {
-        await window.storage.set("fen-history", jsonData);
+        await window.storage.set('fen-history', jsonData);
       }
     } catch (err) {
-      console.error("Failed to save favorite:", err);
+      logger.error('Failed to save favorite:', err);
     }
   };
 
@@ -169,6 +175,6 @@ export const useFENHistory = (fen, onFavoriteStatusChange) => {
     toggleFavorite,
     deleteHistory,
     clearHistory,
-    addCurrentToFavorites,
+    addCurrentToFavorites
   };
 };

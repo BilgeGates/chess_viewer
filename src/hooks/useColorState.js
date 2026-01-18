@@ -1,11 +1,21 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { logger } from '../utils/logger';
 
 export const useColorState = (initialValue) => {
   const [hexInput, setHexInput] = useState(initialValue);
   const [tempColor, setTempColor] = useState(initialValue);
-  const [copiedText, setCopiedText] = useState("");
-  const [activePalette, setActivePalette] = useState("basic");
+  const [copiedText, setCopiedText] = useState('');
+  const [activePalette, setActivePalette] = useState('basic');
   const [isOpen, setIsOpen] = useState(false);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleColorSelect = useCallback((color) => {
     setTempColor(color);
@@ -14,10 +24,10 @@ export const useColorState = (initialValue) => {
 
   const handleRandom = useCallback(() => {
     const randomColor =
-      "#" +
+      '#' +
       Math.floor(Math.random() * 16777215)
         .toString(16)
-        .padStart(6, "0");
+        .padStart(6, '0');
     setTempColor(randomColor);
     setHexInput(randomColor);
   }, []);
@@ -31,9 +41,12 @@ export const useColorState = (initialValue) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedText(text);
-      setTimeout(() => setCopiedText(""), 2000);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => setCopiedText(''), 2000);
     } catch (err) {
-      console.error("Failed to copy:", err);
+      logger.error('Failed to copy:', err);
     }
   }, []);
 
@@ -59,6 +72,6 @@ export const useColorState = (initialValue) => {
     handleReset,
     handleCopy,
     toggleOpen,
-    closeModal,
+    closeModal
   };
 };
