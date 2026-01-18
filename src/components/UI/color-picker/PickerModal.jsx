@@ -1,10 +1,6 @@
-import { useState } from "react";
-import {
-  ThemeMainView,
-  ThemeAdvancedPickerView,
-  ThemeSettingsView,
-} from "./views";
-import { X, ArrowLeft } from "lucide-react";
+import { useState } from 'react';
+import { ThemeSettingsView } from './views';
+import { X, ArrowLeft } from 'lucide-react';
 
 /**
  * Multi-view modal with navigation
@@ -25,25 +21,25 @@ const PickerModal = ({
   onCopy,
   onApply,
   getCurrentHue,
-  getRgbValues,
+  getRgbValues
 }) => {
-  const [activeView, setActiveView] = useState("main");
+  const [activeView, setActiveView] = useState('main');
 
   if (!isOpen) return null;
 
   const viewConfig = {
     main: {
-      title: "Advanced Color Picker",
-      gradient: "from-blue-600/10 to-purple-600/10",
+      title: 'Advanced Color Picker',
+      gradient: 'from-blue-600/10 to-purple-600/10'
     },
     palettes: {
-      title: "Color Palettes",
-      gradient: "from-purple-600/10 to-pink-600/10",
+      title: 'Color Palettes',
+      gradient: 'from-purple-600/10 to-pink-600/10'
     },
     settings: {
-      title: "Settings",
-      gradient: "from-blue-600/10 to-cyan-600/10",
-    },
+      title: 'Settings',
+      gradient: 'from-blue-600/10 to-cyan-600/10'
+    }
   };
 
   const currentView = viewConfig[activeView];
@@ -53,16 +49,16 @@ const PickerModal = ({
       <div
         className={`flex items-center gap-3 p-4 border-b border-gray-700/50 bg-gradient-to-r ${currentView.gradient}`}
       >
-        {activeView !== "main" && (
+        {activeView !== 'main' && (
           <button
-            onClick={() => setActiveView("main")}
+            onClick={() => setActiveView('main')}
             className="p-1.5 hover:bg-gray-800/80 rounded-lg transition-all"
           >
             <ArrowLeft className="w-5 h-5 text-gray-300" />
           </button>
         )}
         <div className="flex items-center gap-2 flex-1">
-          {activeView === "main" && (
+          {activeView === 'main' && (
             <div
               className="w-8 h-8 rounded-lg border-2 border-gray-700 shadow-lg"
               style={{ background: tempColor }}
@@ -81,7 +77,7 @@ const PickerModal = ({
       </div>
 
       {/* Main View - kept as is from your original code */}
-      {activeView === "main" && (
+      {activeView === 'main' && (
         <div className="p-5 space-y-4">
           {/* Canvas */}
           <div className="relative group">
@@ -119,7 +115,7 @@ const PickerModal = ({
               className="hue-slider w-full h-4 rounded-full appearance-none cursor-pointer"
               style={{
                 background:
-                  "linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)",
+                  'linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)'
               }}
             />
           </div>
@@ -142,7 +138,7 @@ const PickerModal = ({
               onClick={onCopy}
               className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 border border-green-500/50 rounded-lg text-green-300 text-xs font-semibold transition-all active:scale-95"
             >
-              {copiedText === tempColor ? "Copied!" : "Copy"}
+              {copiedText === tempColor ? 'Copied!' : 'Copy'}
             </button>
           </div>
 
@@ -171,8 +167,8 @@ const PickerModal = ({
         </div>
       )}
 
-      {activeView === "palettes" && <div className="p-5">Palettes View</div>}
-      {activeView === "settings" && <ThemeSettingsView />}
+      {activeView === 'palettes' && <div className="p-5">Palettes View</div>}
+      {activeView === 'settings' && <ThemeSettingsView />}
     </div>
   );
 };

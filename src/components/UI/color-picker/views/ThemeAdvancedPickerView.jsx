@@ -33,11 +33,8 @@ const ThemeAdvancedPickerView = React.memo(
     useEffect(() => {
       setTempColor(currentValue);
     }, [currentValue, activeSquare]);
-    useEffect(() => {
-      drawColorPicker();
-    }, [tempColor]);
 
-    const drawColorPicker = () => {
+    const drawColorPicker = useCallback(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -57,11 +54,11 @@ const ThemeAdvancedPickerView = React.memo(
       gradientV.addColorStop(1, 'rgba(0, 0, 0, 1)');
       ctx.fillStyle = gradientV;
       ctx.fillRect(0, 0, width, height);
-    };
+    }, [tempColor]);
 
     useEffect(() => {
       drawColorPicker();
-    }, [tempColor]);
+    }, [drawColorPicker]);
 
     const handleCanvasClick = useCallback((e) => {
       const canvas = canvasRef.current;
