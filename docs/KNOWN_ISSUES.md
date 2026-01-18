@@ -48,7 +48,6 @@ Currently tracking **0** high priority issues.
 - Consider using "View as Grid" mode when implemented (v4.0)
 
 **Related:**
-- Issue #XX
 - [ACCESSIBILITY.md](ACCESSIBILITY.md)
 
 ---
@@ -483,34 +482,7 @@ RangeError: Invalid array length
 
 ## Issue Statistics
 
-### By Priority
-
-| Priority | Open | Closed | Total |
-|----------|------|--------|-------|
-| Critical | 0 | 5 | 5 |
-| High | 0 | 12 | 12 |
-| Medium | 3 | 8 | 11 |
-| Low | 3 | 15 | 18 |
-| **Total** | **6** | **40** | **46** |
-
-### By Category
-
-| Category | Count |
-|----------|-------|
-| Performance | 1 |
-| Accessibility | 1 |
-| UI/UX | 2 |
-| Export | 1 |
-| Browser Compatibility | 1 |
-
-### Resolution Time
-
-| Priority | Avg. Time |
-|----------|-----------|
-| Critical | < 24 hours |
-| High | 2-5 days |
-| Medium | 1-2 weeks |
-| Low | 4-8 weeks |
+Statistics are not actively tracked. See sections above for current open issues.
 
 ---
 
@@ -588,7 +560,7 @@ Found a bug? Want to fix it?
 
 ---
 
-**Last Updated:** January 5, 2026  
+**Last Updated:** January 18, 2026  
 **Version:** 3.5.2 
 **Maintainer:** [@BilgeGates](https://github.com/BilgeGates)
 
