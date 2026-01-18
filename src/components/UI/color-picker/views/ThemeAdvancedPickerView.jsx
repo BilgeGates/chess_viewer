@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from "../../../../utils";
-import { Check, RotateCcw, Palette, Copy } from "lucide-react";
-import ColorPalettes from "../parts/ColorPalettes";
-import ColorCanvas from "../parts/ColorCanvas";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '../../../../utils';
+import { Check, RotateCcw, Palette, Copy } from 'lucide-react';
+import ColorPalettes from '../parts/ColorPalettes';
+import ColorCanvas from '../parts/ColorCanvas';
 
 const ThemeAdvancedPickerView = React.memo(
   ({
@@ -11,16 +11,24 @@ const ThemeAdvancedPickerView = React.memo(
     lightSquare,
     setLightSquare,
     darkSquare,
-    setDarkSquare,
+    setDarkSquare
   }) => {
     const canvasRef = useRef(null);
+    const copyTimeoutRef = useRef(null);
     const [tempColor, setTempColor] = useState(
-      activeSquare === "light" ? lightSquare : darkSquare
+      activeSquare === 'light' ? lightSquare : darkSquare
     );
-    const [copiedText, setCopiedText] = useState("");
+    const [copiedText, setCopiedText] = useState('');
     const [showPalettes, setShowPalettes] = useState(false);
-    const [activePalette, setActivePalette] = useState("basic");
-    const currentValue = activeSquare === "light" ? lightSquare : darkSquare;
+    const [activePalette, setActivePalette] = useState('basic');
+    const currentValue = activeSquare === 'light' ? lightSquare : darkSquare;
+
+    useEffect(() => {
+      const timeoutId = copyTimeoutRef.current;
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+    }, []);
 
     useEffect(() => {
       setTempColor(currentValue);
@@ -32,7 +40,7 @@ const ThemeAdvancedPickerView = React.memo(
     const drawColorPicker = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       const width = canvas.width;
       const height = canvas.height;
       const rgb = hexToRgb(tempColor);
@@ -40,13 +48,13 @@ const ThemeAdvancedPickerView = React.memo(
       const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
       const hueRgb = hsvToRgb(hsv.h, 100, 100);
       const gradientH = ctx.createLinearGradient(0, 0, width, 0);
-      gradientH.addColorStop(0, "white");
+      gradientH.addColorStop(0, 'white');
       gradientH.addColorStop(1, `rgb(${hueRgb.r}, ${hueRgb.g}, ${hueRgb.b})`);
       ctx.fillStyle = gradientH;
       ctx.fillRect(0, 0, width, height);
       const gradientV = ctx.createLinearGradient(0, 0, 0, height);
-      gradientV.addColorStop(0, "rgba(0, 0, 0, 0)");
-      gradientV.addColorStop(1, "rgba(0, 0, 0, 1)");
+      gradientV.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      gradientV.addColorStop(1, 'rgba(0, 0, 0, 1)');
       ctx.fillStyle = gradientV;
       ctx.fillRect(0, 0, width, height);
     };
@@ -60,7 +68,7 @@ const ThemeAdvancedPickerView = React.memo(
       const rect = canvas.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
       const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       const imageData = ctx.getImageData(x, y, 1, 1).data;
       const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
       setTempColor(hex);
@@ -82,11 +90,11 @@ const ThemeAdvancedPickerView = React.memo(
 
     const getRgbValues = useCallback(() => {
       const rgb = hexToRgb(tempColor);
-      return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+      return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
     }, [tempColor]);
 
     const handleApply = useCallback(() => {
-      if (activeSquare === "light") {
+      if (activeSquare === 'light') {
         setLightSquare(tempColor);
       } else {
         setDarkSquare(tempColor);
@@ -100,7 +108,8 @@ const ThemeAdvancedPickerView = React.memo(
     const handleCopy = useCallback((text) => {
       navigator.clipboard.writeText(text);
       setCopiedText(text);
-      setTimeout(() => setCopiedText(""), 2000);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopiedText(''), 2000);
     }, []);
 
     const handlePaletteColorSelect = useCallback((color) => {
@@ -113,21 +122,21 @@ const ThemeAdvancedPickerView = React.memo(
         {/* Square Selector */}
         <div className="flex gap-2">
           <button
-            onClick={() => setActiveSquare("light")}
+            onClick={() => setActiveSquare('light')}
             className={`flex-1 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
-              activeSquare === "light"
-                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
-                : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"
+              activeSquare === 'light'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
+                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
             }`}
           >
             Light Square
           </button>
           <button
-            onClick={() => setActiveSquare("dark")}
+            onClick={() => setActiveSquare('dark')}
             className={`flex-1 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
-              activeSquare === "dark"
-                ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg"
-                : "bg-gray-800/50 text-gray-400 hover:bg-gray-800"
+              activeSquare === 'dark'
+                ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg'
+                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800'
             }`}
           >
             Dark Square
@@ -157,7 +166,7 @@ const ThemeAdvancedPickerView = React.memo(
             className="hue-slider w-full h-4 rounded-full appearance-none cursor-pointer"
             style={{
               background:
-                "linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)",
+                'linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)'
             }}
           />
         </div>
@@ -169,7 +178,7 @@ const ThemeAdvancedPickerView = React.memo(
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/50 rounded-lg text-purple-300 text-xs font-semibold transition-all active:scale-95"
           >
             <Palette className="w-3.5 h-3.5" />
-            {showPalettes ? "Hide" : "Palettes"}
+            {showPalettes ? 'Hide' : 'Palettes'}
           </button>
           <button
             onClick={handleReset}
@@ -183,7 +192,7 @@ const ThemeAdvancedPickerView = React.memo(
             className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 border border-green-500/50 rounded-lg text-green-300 text-xs font-semibold transition-all active:scale-95"
           >
             <Copy className="w-3.5 h-3.5" />
-            {copiedText === tempColor ? "Copied!" : "Copy"}
+            {copiedText === tempColor ? 'Copied!' : 'Copy'}
           </button>
         </div>
 
@@ -234,7 +243,7 @@ const ThemeAdvancedPickerView = React.memo(
           </button>
         </div>
 
-        <style jsx>{`
+        <style>{`
           .hue-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 20px;
@@ -280,6 +289,6 @@ const ThemeAdvancedPickerView = React.memo(
   }
 );
 
-ThemeAdvancedPickerView.displayName = "ThemeAdvancedPickerView";
+ThemeAdvancedPickerView.displayName = 'ThemeAdvancedPickerView';
 
 export default ThemeAdvancedPickerView;

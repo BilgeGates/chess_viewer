@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { ExportProgress } from "../../UI";
-import { useChessBoard, usePieceImages } from "../../../hooks";
-import { downloadPNG, downloadJPEG } from "../../../utils";
+import { useState, useEffect, useRef } from 'react';
+import { ExportProgress } from '../../UI';
+import { useChessBoard, usePieceImages } from '../../../hooks';
+import { downloadPNG, downloadJPEG, validateFEN } from '../../../utils';
+import { logger } from '../../../utils/logger';
 import {
   X,
   Plus,
@@ -13,53 +14,48 @@ import {
   Clipboard,
   Check,
   AlertCircle,
-  Star,
-} from "lucide-react";
-
-const validateFEN = (fen) => {
-  if (!fen || typeof fen !== "string") return false;
-  const parts = fen.trim().split(/\s+/);
-  if (parts.length < 2) return false;
-  const position = parts[0];
-  const rows = position.split("/");
-  if (rows.length !== 8) return false;
-  for (const row of rows) {
-    let sum = 0;
-    for (const char of row) {
-      if (/[1-8]/.test(char)) {
-        sum += parseInt(char);
-      } else if (/[pnbrqkPNBRQK]/.test(char)) {
-        sum += 1;
-      } else {
-        return false;
-      }
-    }
-    if (sum !== 8) return false;
-  }
-  return true;
-};
+  Star
+} from 'lucide-react';
 
 const AdvancedFENInputModal = ({
   isOpen,
   onClose,
   onApplyFEN,
-  pieceStyle = "cburnett",
-  boardTheme = "brown",
-  showCoords = true, // Accept from parent
-  exportQuality = 16, // Accept from parent
+  pieceStyle = 'cburnett',
+  boardTheme = 'brown',
+  showCoords = true,
+  exportQuality = 16
 }) => {
   const MAX_FENS = 10;
-  const DEFAULT_FENS = ["", "", ""];
+  const DEFAULT_FENS = ['', '', ''];
+
+  const duplicateTimeoutRef = useRef(null);
+  const pastedTimeoutRef = useRef(null);
+  const slideTimeoutRef = useRef(null);
+  const exportCleanupTimeoutRef = useRef(null);
 
   const [fens, setFens] = useState(() => {
-    const saved = localStorage.getItem("advancedFENHistory");
+    const saved = localStorage.getItem('advancedFENHistory');
     return saved ? JSON.parse(saved) : DEFAULT_FENS;
   });
 
   const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem("advancedFENFavorites");
+    const saved = localStorage.getItem('advancedFENFavorites');
     return saved ? JSON.parse(saved) : {};
   });
+
+  useEffect(() => {
+    const dupTimeout = duplicateTimeoutRef.current;
+    const pasteTimeout = pastedTimeoutRef.current;
+    const slideTimeout = slideTimeoutRef.current;
+    const exportTimeout = exportCleanupTimeoutRef.current;
+    return () => {
+      if (dupTimeout) clearTimeout(dupTimeout);
+      if (pasteTimeout) clearTimeout(pasteTimeout);
+      if (slideTimeout) clearTimeout(slideTimeout);
+      if (exportTimeout) clearTimeout(exportTimeout);
+    };
+  }, []);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -72,33 +68,33 @@ const AdvancedFENInputModal = ({
   // Export states
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
-  const [currentFormat, setCurrentFormat] = useState("");
+  const [currentFormat, setCurrentFormat] = useState('');
   const [isPaused, setIsPaused] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
 
   const validFens = fens.filter((f) => f.trim() && validateFEN(f));
-  const currentFen = validFens[currentIndex] || "";
+  const currentFen = validFens[currentIndex] || '';
   const boardState = useChessBoard(currentFen);
   const { pieceImages, isLoading: imagesLoading } = usePieceImages(pieceStyle);
   const hasValidFens = validFens.length > 0;
 
   // Board theme colors
   const boardThemes = {
-    brown: { light: "#F0D9B5", dark: "#B58863" },
-    blue: { light: "#DEE3E6", dark: "#8CA2AD" },
-    green: { light: "#FFFFDD", dark: "#86A666" },
-    purple: { light: "#E8E0D6", dark: "#9F90B0" },
+    brown: { light: '#F0D9B5', dark: '#B58863' },
+    blue: { light: '#DEE3E6', dark: '#8CA2AD' },
+    green: { light: '#FFFFDD', dark: '#86A666' },
+    purple: { light: '#E8E0D6', dark: '#9F90B0' }
   };
   const currentTheme = boardThemes[boardTheme] || boardThemes.brown;
 
   // Save FENs to localStorage
   useEffect(() => {
-    localStorage.setItem("advancedFENHistory", JSON.stringify(fens));
+    localStorage.setItem('advancedFENHistory', JSON.stringify(fens));
   }, [fens]);
 
   // Save favorites to localStorage
   useEffect(() => {
-    localStorage.setItem("advancedFENFavorites", JSON.stringify(favorites));
+    localStorage.setItem('advancedFENFavorites', JSON.stringify(favorites));
   }, [favorites]);
 
   // Validate FENs
@@ -106,7 +102,7 @@ const AdvancedFENInputModal = ({
     const errors = {};
     fens.forEach((fen, index) => {
       if (fen.trim() && !validateFEN(fen)) {
-        errors[index] = "Invalid FEN notation";
+        errors[index] = 'Invalid FEN notation';
       }
     });
     setFenErrors(errors);
@@ -128,7 +124,7 @@ const AdvancedFENInputModal = ({
 
   const addFenInput = () => {
     if (fens.length < MAX_FENS) {
-      setFens([...fens, ""]);
+      setFens([...fens, '']);
     }
   };
 
@@ -153,7 +149,12 @@ const AdvancedFENInputModal = ({
       fens.some((f, i) => i !== index && f.trim() === trimmedValue)
     ) {
       setDuplicateWarning(index);
-      setTimeout(() => setDuplicateWarning(null), 3000);
+      if (duplicateTimeoutRef.current)
+        clearTimeout(duplicateTimeoutRef.current);
+      duplicateTimeoutRef.current = setTimeout(
+        () => setDuplicateWarning(null),
+        3000
+      );
     }
     const newFens = [...fens];
     newFens[index] = value;
@@ -166,10 +167,11 @@ const AdvancedFENInputModal = ({
       if (text && text.trim()) {
         updateFen(index, text.trim());
         setPastedIndex(index);
-        setTimeout(() => setPastedIndex(null), 2000);
+        if (pastedTimeoutRef.current) clearTimeout(pastedTimeoutRef.current);
+        pastedTimeoutRef.current = setTimeout(() => setPastedIndex(null), 2000);
       }
     } catch (err) {
-      console.error("Failed to paste");
+      logger.error('Failed to paste:', err);
     }
   };
 
@@ -177,7 +179,7 @@ const AdvancedFENInputModal = ({
     if (!fen || !validateFEN(fen)) return;
     setFavorites((prev) => ({
       ...prev,
-      [fen]: !prev[fen],
+      [fen]: !prev[fen]
     }));
   };
 
@@ -217,7 +219,7 @@ const AdvancedFENInputModal = ({
           flipped: false,
           fen: fen,
           pieceImages: pieceImages,
-          exportQuality: exportQuality, // Use from parent
+          exportQuality: exportQuality // Use from parent
         };
 
         const onProgress = (p) => {
@@ -226,21 +228,23 @@ const AdvancedFENInputModal = ({
           setExportProgress(Math.round(totalProgress));
         };
 
-        if (format === "png") {
+        if (format === 'png') {
           await downloadPNG(exportConfig, fileName, onProgress);
-        } else if (format === "jpeg") {
+        } else if (format === 'jpeg') {
           await downloadJPEG(exportConfig, fileName, onProgress);
         }
       }
 
       setExportProgress(100);
-      setTimeout(() => {
+      if (exportCleanupTimeoutRef.current)
+        clearTimeout(exportCleanupTimeoutRef.current);
+      exportCleanupTimeoutRef.current = setTimeout(() => {
         setIsExporting(false);
         setShowProgress(false);
         setExportProgress(0);
       }, 500);
     } catch (error) {
-      console.error("Batch export failed:", error);
+      logger.error('Batch export failed:', error);
       setIsExporting(false);
       setShowProgress(false);
       setExportProgress(0);
@@ -250,18 +254,18 @@ const AdvancedFENInputModal = ({
   const handleCopyAll = async () => {
     if (validFens.length === 0) return;
     try {
-      await navigator.clipboard.writeText(validFens.join("\n"));
+      await navigator.clipboard.writeText(validFens.join('\n'));
     } catch (error) {
-      console.error("Failed to copy:", error);
+      logger.error('Failed to copy:', error);
     }
   };
 
   const intervalOptions = [
-    { value: 1, label: "1s" },
-    { value: 2, label: "2s" },
-    { value: 3, label: "3s" },
-    { value: 5, label: "5s" },
-    { value: 10, label: "10s" },
+    { value: 1, label: '1s' },
+    { value: 2, label: '2s' },
+    { value: 3, label: '3s' },
+    { value: 5, label: '5s' },
+    { value: 10, label: '10s' }
   ];
 
   if (!isOpen) return null;
@@ -324,8 +328,8 @@ const AdvancedFENInputModal = ({
                         placeholder="Enter FEN notation..."
                         className={`w-full px-4 py-2.5 pr-24 bg-gray-800/50 border rounded-lg text-sm text-white font-mono outline-none focus:border-blue-500 transition-colors ${
                           fenErrors[index]
-                            ? "border-red-500"
-                            : "border-gray-700"
+                            ? 'border-red-500'
+                            : 'border-gray-700'
                         }`}
                       />
                       <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
@@ -334,22 +338,22 @@ const AdvancedFENInputModal = ({
                           disabled={!fen.trim() || !validateFEN(fen)}
                           className={`p-1.5 rounded-md transition-all ${
                             favorites[fen]
-                              ? "bg-yellow-600 text-white"
-                              : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+                              ? 'bg-yellow-600 text-white'
+                              : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                           } disabled:opacity-30 disabled:cursor-not-allowed`}
                           title="Toggle favorite"
                         >
                           <Star
                             className="w-4 h-4"
-                            fill={favorites[fen] ? "currentColor" : "none"}
+                            fill={favorites[fen] ? 'currentColor' : 'none'}
                           />
                         </button>
                         <button
                           onClick={() => handlePasteFEN(index)}
                           className={`p-1.5 rounded-md transition-all ${
                             pastedIndex === index
-                              ? "bg-green-600"
-                              : "bg-gray-700 hover:bg-gray-600"
+                              ? 'bg-green-600'
+                              : 'bg-gray-700 hover:bg-gray-600'
                           }`}
                           title="Paste FEN"
                         >
@@ -415,8 +419,8 @@ const AdvancedFENInputModal = ({
                             }}
                             className={`w-full px-4 py-2 text-sm text-left transition-colors ${
                               interval === option.value
-                                ? "bg-blue-600 text-white font-semibold"
-                                : "text-gray-300 hover:bg-gray-700"
+                                ? 'bg-blue-600 text-white font-semibold'
+                                : 'text-gray-300 hover:bg-gray-700'
                             }`}
                           >
                             {option.label}
@@ -447,19 +451,19 @@ const AdvancedFENInputModal = ({
                       {currentIndex + 1}
                     </span>
                     <span className="text-sm text-gray-400">
-                      {" "}
+                      {' '}
                       of {validFens.length}
                     </span>
                   </div>
                 </div>
 
                 <div className="mx-auto aspect-square max-w-lg">
-                  <div className="grid grid-cols-8 gap-0 rounded-lg overflow-hidden shadow-2xl">
+                  <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-2xl">
                     {Array.from({ length: 64 }).map((_, i) => {
                       const row = Math.floor(i / 8);
                       const col = i % 8;
                       const isLight = (row + col) % 2 === 0;
-                      const piece = boardState[row]?.[col] || "";
+                      const piece = boardState[row]?.[col] || '';
                       return (
                         <div
                           key={i}
@@ -467,7 +471,7 @@ const AdvancedFENInputModal = ({
                           style={{
                             backgroundColor: isLight
                               ? currentTheme.light
-                              : currentTheme.dark,
+                              : currentTheme.dark
                           }}
                         >
                           {piece && pieceImages[piece] && !imagesLoading && (
@@ -513,8 +517,8 @@ const AdvancedFENInputModal = ({
                         onClick={() => setCurrentIndex(idx)}
                         className={`h-2.5 rounded-full transition-all ${
                           idx === currentIndex
-                            ? "bg-blue-500 w-8"
-                            : "bg-gray-600 hover:bg-gray-500 w-2.5"
+                            ? 'bg-blue-500 w-8'
+                            : 'bg-gray-600 hover:bg-gray-500 w-2.5'
                         }`}
                       />
                     ))}
@@ -536,14 +540,14 @@ const AdvancedFENInputModal = ({
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => handleBatchExport("png")}
+                    onClick={() => handleBatchExport('png')}
                     disabled={isExporting}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                   >
                     Export All as PNG
                   </button>
                   <button
-                    onClick={() => handleBatchExport("jpeg")}
+                    onClick={() => handleBatchExport('jpeg')}
                     disabled={isExporting}
                     className="px-6 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                   >

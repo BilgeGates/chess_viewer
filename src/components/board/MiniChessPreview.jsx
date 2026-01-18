@@ -1,9 +1,10 @@
-import React from "react";
-import { parseFEN } from "../../utils";
-import { usePieceImages } from "../../hooks";
+import React from 'react';
+import { parseFEN } from '../../utils';
+import { usePieceImages } from '../../hooks';
+import { logger } from '../../utils/logger';
 
 const MiniChessPreview = React.memo(
-  ({ fen, lightSquare, darkSquare, pieceStyle = "cburnett" }) => {
+  ({ fen, lightSquare, darkSquare, pieceStyle = 'cburnett' }) => {
     const canvasRef = React.useRef(null);
     const [hasError, setHasError] = React.useState(false);
     const { pieceImages, isLoading, error } = usePieceImages(pieceStyle);
@@ -13,7 +14,7 @@ const MiniChessPreview = React.memo(
         return;
 
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       const size = 160;
       const squareSize = size / 8;
       const scale = 2;
@@ -22,12 +23,12 @@ const MiniChessPreview = React.memo(
 
       canvas.width = size * scale;
       canvas.height = size * scale;
-      canvas.style.width = size + "px";
-      canvas.style.height = size + "px";
+      canvas.style.width = size + 'px';
+      canvas.style.height = size + 'px';
 
       ctx.scale(scale, scale);
       ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
+      ctx.imageSmoothingQuality = 'high';
 
       try {
         const board = parseFEN(fen);
@@ -49,11 +50,11 @@ const MiniChessPreview = React.memo(
               y + squareSize
             );
             if (isLight) {
-              gradient.addColorStop(0, "rgba(255, 255, 255, 0.1)");
-              gradient.addColorStop(1, "rgba(0, 0, 0, 0.05)");
+              gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+              gradient.addColorStop(1, 'rgba(0, 0, 0, 0.05)');
             } else {
-              gradient.addColorStop(0, "rgba(255, 255, 255, 0.05)");
-              gradient.addColorStop(1, "rgba(0, 0, 0, 0.1)");
+              gradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+              gradient.addColorStop(1, 'rgba(0, 0, 0, 0.1)');
             }
             ctx.fillStyle = gradient;
             ctx.fillRect(x, y, squareSize, squareSize);
@@ -84,11 +85,11 @@ const MiniChessPreview = React.memo(
         }
 
         // Border
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
         ctx.lineWidth = 2;
         ctx.strokeRect(1, 1, size - 2, size - 2);
       } catch (err) {
-        console.error("Preview error:", err);
+        logger.error('Preview error:', err);
         setHasError(true);
       }
     }, [fen, lightSquare, darkSquare, pieceImages]);
@@ -99,13 +100,13 @@ const MiniChessPreview = React.memo(
           ref={canvasRef}
           className={`rounded-lg border-2 shadow-xl transition-all duration-300 ${
             isLoading
-              ? "opacity-0 scale-95 border-gray-600"
-              : "opacity-100 scale-100 border-gray-600 group-hover:border-blue-500/50"
+              ? 'opacity-0 scale-95 border-gray-600'
+              : 'opacity-100 scale-100 border-gray-600 group-hover:border-blue-500/50'
           }`}
           style={{
-            width: "160px",
-            height: "160px",
-            imageRendering: "crisp-edges",
+            width: '160px',
+            height: '160px',
+            imageRendering: 'crisp-edges'
           }}
         />
         {isLoading && (
@@ -117,7 +118,7 @@ const MiniChessPreview = React.memo(
           <div className="absolute inset-0 flex items-center justify-center bg-red-900/20 rounded-lg backdrop-blur-sm border-2 border-red-500/50">
             <div className="text-center px-3">
               <p className="text-xs text-red-400 font-medium">
-                {error || "Invalid FEN"}
+                {error || 'Invalid FEN'}
               </p>
             </div>
           </div>
@@ -127,6 +128,6 @@ const MiniChessPreview = React.memo(
   }
 );
 
-MiniChessPreview.displayName = "MiniChessPreview";
+MiniChessPreview.displayName = 'MiniChessPreview';
 
 export default MiniChessPreview;
