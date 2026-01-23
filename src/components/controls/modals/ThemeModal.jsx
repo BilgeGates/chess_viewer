@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   ThemeMainView,
   ThemeAdvancedPickerView,
-  ThemeSettingsView,
-} from "../../UI/color-picker/views";
-import { Palette, Sliders, Settings, X } from "lucide-react";
+  ThemeSettingsView
+} from '../../UI/color-picker/views';
+import { Palette, Sliders, Settings, X } from 'lucide-react';
 
 const ThemeModal = ({
   isOpen,
@@ -13,10 +13,11 @@ const ThemeModal = ({
   setLightSquare,
   darkSquare,
   setDarkSquare,
-  onNotification,
+  pieceStyle = 'cburnett',
+  onNotification
 }) => {
-  const [activeTab, setActiveTab] = useState("main");
-  const [activeSquare, setActiveSquare] = useState("light");
+  const [activeTab, setActiveTab] = useState('main');
+  const [activeSquare, setActiveSquare] = useState('light');
 
   // Handle theme application from preset themes
   const handleThemeApply = (light, dark) => {
@@ -24,31 +25,31 @@ const ThemeModal = ({
     setDarkSquare(dark);
 
     if (onNotification) {
-      onNotification("Theme applied successfully", "success");
+      onNotification('Theme applied successfully', 'success');
     }
   };
 
   if (!isOpen) return null;
 
   const tabs = [
-    { id: "main", label: "Main", icon: Palette },
-    { id: "picker", label: "Advanced Picker", icon: Sliders },
-    { id: "settings", label: "Settings", icon: Settings },
+    { id: 'main', label: 'Main', icon: Palette },
+    { id: 'picker', label: 'Advanced Picker', icon: Sliders },
+    { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   const viewConfig = {
     main: {
-      title: "Board Theme",
-      gradient: "from-blue-600/10 to-purple-600/10",
+      title: 'Board Theme',
+      gradient: 'from-blue-600/10 to-purple-600/10'
     },
     picker: {
-      title: "Advanced Color Picker",
-      gradient: "from-purple-600/10 to-pink-600/10",
+      title: 'Advanced Color Picker',
+      gradient: 'from-purple-600/10 to-pink-600/10'
     },
     settings: {
-      title: "Theme Settings",
-      gradient: "from-blue-600/10 to-cyan-600/10",
-    },
+      title: 'Theme Settings',
+      gradient: 'from-blue-600/10 to-cyan-600/10'
+    }
   };
 
   const currentView = viewConfig[activeTab];
@@ -80,8 +81,8 @@ const ThemeModal = ({
               onClick={() => setActiveTab(id)}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold transition-all ${
                 activeTab === id
-                  ? "text-white bg-gray-800/70 border-b-2 border-blue-500"
-                  : "text-gray-400 hover:text-gray-300 hover:bg-gray-800/30"
+                  ? 'text-white bg-gray-800/70 border-b-2 border-blue-500'
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-gray-800/30'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -91,17 +92,17 @@ const ThemeModal = ({
         </div>
 
         {/* Content */}
-        <div className="max-h-[70vh] overflow-y-auto">
-          {activeTab === "main" && (
+        <div className="max-h-[70vh] overflow-y-auto custom-scrollbar">
+          {activeTab === 'main' && (
             <ThemeMainView
               currentLight={lightSquare}
               currentDark={darkSquare}
               onThemeApply={handleThemeApply}
-              onApplyToBoard={handleThemeApply} // Live sync to board
+              pieceStyle={pieceStyle}
             />
           )}
 
-          {activeTab === "picker" && (
+          {activeTab === 'picker' && (
             <ThemeAdvancedPickerView
               activeSquare={activeSquare}
               setActiveSquare={setActiveSquare}
@@ -112,7 +113,7 @@ const ThemeModal = ({
             />
           )}
 
-          {activeTab === "settings" && <ThemeSettingsView />}
+          {activeTab === 'settings' && <ThemeSettingsView />}
         </div>
 
         {/* Footer */}
