@@ -8,8 +8,54 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Planned
+
 - SVG export format
 - Keyboard shortcuts
+
+---
+
+## [v3.5.3] - 2026-01-23
+
+### Fixed
+
+#### Code Quality
+
+- Resolved git merge conflicts in HueSlider.jsx and colorUtils.js
+- Fixed unreachable code warning in colorUtils.js (duplicate return statement)
+- Fixed all ESLint warnings (unused variables, array index keys)
+- Prefixed unused props with underscore in PickerModal, HueSlider, imageOptimizer
+
+#### Props & State Management
+
+- Fixed AdvancedFENInputModal props - now correctly receives `lightSquare`/`darkSquare` instead of `boardTheme`
+- Updated theme color handling to use direct color values
+
+### Changed
+
+#### UI/UX Improvements
+
+- **AdvancedFENInputModal completely refactored** with tab-based interface:
+  - Positions tab - FEN input management
+  - Preview tab - Live board preview with slideshow
+  - Export tab - Batch export options
+- Reduced modal size from `max-w-6xl` to `max-w-2xl` for better UX
+- Reduced modal height from `max-h-[90vh]` to `max-h-[80vh]`
+- Compact header with integrated tab navigation
+- Smaller, more efficient footer buttons
+
+#### Code Refactoring
+
+- Replaced array index keys with proper unique keys in:
+  - ThemeSettingsView (recentColors)
+  - BoardPreview (squares, navigation dots)
+  - FENInputList (FEN rows)
+  - UserGuide (pros/cons lists)
+  - AboutPage (format comparisons)
+
+### Known Issues
+
+- 🐛 **ThemeModal preview** - Live board preview not updating correctly
+- 🐛 **AdvancedFENInputModal preview** - Board preview not rendering pieces properly
 
 ---
 
@@ -18,26 +64,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ### Fixed
 
 #### Console & Logging
+
 - Replaced console.log/error statements with logger utility (dev-only output)
 
 #### Memory & Performance
+
 - Added setTimeout cleanup refs in AdvancedFENInputModal and other components
 - Fixed memory leaks from timeout cleanup issues
 - Fixed React memo comparisons
 
 #### Board Coordinates
+
 - Fixed coordinate misalignment - coordinates now display and export correctly
 - Improved coordinate positioning for all board sizes
 
 #### Export & Rendering
+
 - Fixed export coordinate accuracy
 - Removed debug code affecting export performance
 
 #### User Interface
+
 - Fixed clipboard paste functionality for FEN notation
 - Fixed canvas overflow on mobile devices
 
 ### Added
+
 - **Error Boundary** - ErrorBoundary component wrapping App for graceful error recovery
 - **ARIA labels** - Accessibility attributes to Modal, Button, ActionButtons, ChessBoard
 - **Focus trap** - Modal component traps focus with Tab key cycling
@@ -45,6 +97,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - **Error handler** - Centralized errorHandler.js utility with ErrorTypes
 
 ### Changed
+
 - Modal now has `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
 - Button supports `aria-label` prop and `aria-disabled` attribute
 - ChessBoard has `role="img"` with dynamic board description
@@ -54,16 +107,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [v3.5.1] - 2026-01-04
 
 ### Fixed
+
 - Chess pieces missing in exported images
 - JPEG export background rendering
 - Responsive layout on small screens
 
 ### Changed
+
 - Increased coordinate font size and weight
 - Enlarged chess pieces on board
 - Added border around chessboard
 
 ### Added
+
 - ARCHITECTURE.md documentation
 - CHANGELOG.md for version tracking
 - SECURITY.md with security policies
@@ -73,6 +129,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - MIT License
 
 ### Dependencies
+
 - Bumped qs from 6.14.0 to 6.14.1
 
 ---
@@ -80,11 +137,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [v3.5.0] - 2026-01-03
 
 ### Added
+
 - Multi-FEN input (up to 10 positions)
 - Pagination with live board previews
 - Color picker with HSL/RGB/HEX
 
 ### Changed
+
 - React.memo optimizations
 - Faster export pipeline
 - Reduced bundle size
@@ -92,6 +151,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Improved FEN validation with error messages
 
 ### Fixed
+
 - FEN parsing edge cases
 - Export scaling on high-DPI displays
 - Cross-browser UI inconsistencies
@@ -102,11 +162,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [v3.0.0] - 2026-01-02
 
 ### Added
+
 - PNG and JPEG export with quality settings
 - Board theme customization system
 - Enhanced FEN validation
 
 ### Changed
+
 - Refactored color picker
 - Improved canvas scaling
 - Internal architecture cleanup
@@ -116,16 +178,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [v2.0.0] - 2025-12-29
 
 ### Added
+
 - Custom light/dark square colors
 - Pre-defined board themes
 - Piece selector with previews
 - Theme favorites
 
 ### Changed
+
 - Redesigned control panel
 - Responsive layout improvements
 
 ### Fixed
+
 - Reduced unnecessary re-renders
 - Optimized board redraw
 - Lazy loading for piece images
@@ -135,6 +200,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [v1.0.0] - 2025-12-28
 
 ### Initial Release
+
 - FEN notation support with validation
 - Canvas-based board renderer
 - 23 piece sets
@@ -147,11 +213,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## Version Support
 
-| Version | Status | Security Updates |
-|---------|--------|------------------|
-| v3.5.x  | Active | Yes |
-| v3.0.x  | Supported until 2026-06 | Yes |
-| v1.x-v2.x | Deprecated | No |
+| Version   | Status                  | Security Updates |
+| --------- | ----------------------- | ---------------- |
+| v3.5.x    | Active                  | Yes              |
+| v3.0.x    | Supported until 2026-06 | Yes              |
+| v1.x-v2.x | Deprecated              | No               |
 
 ---
 
