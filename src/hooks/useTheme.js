@@ -6,7 +6,7 @@ import { logger } from '../utils/logger';
  * Manages board colors, themes, and provides preset theme switching
  */
 export const useTheme = ({
-  onNotification,
+  onNotification: _onNotification,
   initialLight = '#f0d9b5',
   initialDark = '#b58863'
 } = {}) => {
