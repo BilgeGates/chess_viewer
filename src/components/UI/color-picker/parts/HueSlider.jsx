@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from 'react';
 
 /**
  * Combines: Slider + Current hue display + Color name hint
  */
 const HueSlider = React.memo(
-  ({ value, onChange, getCurrentHue }) => {
+  ({ value: _value, onChange, getCurrentHue }) => {
     const [isDragging, setIsDragging] = useState(false);
     const currentHue = getCurrentHue();
 
@@ -13,13 +13,13 @@ const HueSlider = React.memo(
     }, []);
 
     const getColorName = useCallback((hue) => {
-      if (hue < 30 || hue >= 330) return "Red";
-      if (hue < 90) return "Yellow";
-      if (hue < 150) return "Green";
-      if (hue < 210) return "Cyan";
-      if (hue < 270) return "Blue";
-      if (hue < 330) return "Magenta";
-      return "Red";
+      if (hue < 30 || hue >= 330) return 'Red';
+      if (hue < 90) return 'Yellow';
+      if (hue < 150) return 'Green';
+      if (hue < 210) return 'Cyan';
+      if (hue < 270) return 'Blue';
+      if (hue < 330) return 'Magenta';
+      return 'Red';
     }, []);
 
     const handleMouseDown = useCallback(() => setIsDragging(true), []);
@@ -52,10 +52,10 @@ const HueSlider = React.memo(
               className="w-7 h-7 rounded-full border-2 border-gray-700 shadow-lg transition-all duration-200 relative"
               style={{
                 background: getCurrentColor(currentHue),
-                transform: isDragging ? "scale(1.15)" : "scale(1)",
+                transform: isDragging ? 'scale(1.15)' : 'scale(1)',
                 boxShadow: isDragging
                   ? `0 0 20px ${getCurrentColor(currentHue)}80`
-                  : "0 2px 8px rgba(0,0,0,0.3)",
+                  : '0 2px 8px rgba(0,0,0,0.3)'
               }}
             >
               {isDragging && (
@@ -99,15 +99,15 @@ const HueSlider = React.memo(
                 <div
                   className={`h-2 rounded-full transition-all ${
                     Math.abs(currentHue - degree) < 10
-                      ? "w-0.5 bg-blue-500"
-                      : "w-px bg-gray-600"
+                      ? 'w-0.5 bg-blue-500'
+                      : 'w-px bg-gray-600'
                   }`}
                 />
                 <span
                   className={`text-[10px] font-mono mt-1 transition-colors ${
                     Math.abs(currentHue - degree) < 10
-                      ? "text-blue-400 font-bold"
-                      : "text-gray-500"
+                      ? 'text-blue-400 font-bold'
+                      : 'text-gray-500'
                   }`}
                 >
                   {degree}°
@@ -168,6 +168,6 @@ const HueSlider = React.memo(
   }
 );
 
-HueSlider.displayName = "HueSlider";
+HueSlider.displayName = 'HueSlider';
 
 export default HueSlider;
