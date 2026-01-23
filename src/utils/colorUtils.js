@@ -56,9 +56,9 @@ export const rgbToHsl = (r, g, b) => {
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  let h,
-    s,
-    l = (max + min) / 2;
+  let h;
+  let s;
+  const l = (max + min) / 2;
 
   if (max === min) {
     h = s = 0;
@@ -360,7 +360,7 @@ export const getAnalogous = (hex, angle = 30) => {
 
   const colors = [];
   for (const offset of [-angle, 0, angle]) {
-    let newHue = (hsl.h + offset + 360) % 360;
+    const newHue = (hsl.h + offset + 360) % 360;
     const newRgb = hslToRgb(newHue, hsl.s, hsl.l);
     colors.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
   }
@@ -381,7 +381,7 @@ export const getTriadic = (hex) => {
 
   const colors = [];
   for (const offset of [0, 120, 240]) {
-    let newHue = (hsl.h + offset) % 360;
+    const newHue = (hsl.h + offset) % 360;
     const newRgb = hslToRgb(newHue, hsl.s, hsl.l);
     colors.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
   }
