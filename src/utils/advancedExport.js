@@ -22,7 +22,7 @@ export const progressiveExport = async (config, fileName, format = 'png') => {
  */
 const createSmartCanvas = (config) => {
   const maxSafeSize = 16384;
-  let adjustedConfig = { ...config };
+  const adjustedConfig = { ...config };
 
   const projectedSize = (config.boardSize + 60) * config.exportQuality;
 
