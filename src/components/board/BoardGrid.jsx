@@ -1,22 +1,22 @@
-import React from "react";
-import BoardSquare from "./BoardSquare";
+import React from 'react';
+import BoardSquare from './BoardSquare';
 
 /**
  * Renders 64 BoardSquare atoms
  */
 const BoardGrid = React.memo(
-  ({ board, lightSquare, darkSquare, pieceImages, flipped }) => {
+  ({ board, lightSquare, darkSquare, pieceImages, flipped: _flipped }) => {
     return (
       <div className="grid grid-cols-8 gap-0">
         {Array.from({ length: 64 }).map((_, i) => {
           const row = Math.floor(i / 8);
           const col = i % 8;
           const isLight = (row + col) % 2 === 0;
-          const piece = board[row]?.[col] || "";
+          const piece = board[row]?.[col] || '';
 
           return (
             <BoardSquare
-              key={i}
+              key={`square-${row}-${col}`}
               piece={piece}
               isLight={isLight}
               lightSquare={lightSquare}
@@ -41,6 +41,6 @@ const BoardGrid = React.memo(
   }
 );
 
-BoardGrid.displayName = "BoardGrid";
+BoardGrid.displayName = 'BoardGrid';
 
 export default BoardGrid;
