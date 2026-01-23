@@ -181,7 +181,7 @@ export const createUltraQualityCanvas = async (config) => {
   }
 
   // Wait for all images to load
-  const imageLoadPromises = Object.entries(pieceImages).map(([key, img]) => {
+  const imageLoadPromises = Object.entries(pieceImages).map(([_key, img]) => {
     if (!img) return Promise.resolve();
     if (img.complete && img.naturalWidth > 0) return Promise.resolve();
 
