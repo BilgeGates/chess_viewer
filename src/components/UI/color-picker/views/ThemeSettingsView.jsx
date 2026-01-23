@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useCallback } from 'react';
+import { useThemeSettings } from '../../../../contexts';
 import {
   Zap,
   Palette,
@@ -10,131 +11,100 @@ import {
   Volume2,
   Clock,
   Eye,
-} from "lucide-react";
+  RotateCcw
+} from 'lucide-react';
 
 const ThemeSettingsView = () => {
-  const defaultSettings = {
-    autoApply: false,
-    showRGB: true,
-    enableAnimations: true,
-    showColorNames: false,
-    enableKeyboardShortcuts: true,
-    showHexValues: true,
-    enableSoundEffects: false,
-    compactMode: false,
-    showRecentColors: true,
-    enableColorBlindMode: false,
-  };
+  const {
+    settings,
+    updateSetting,
+    resetSettings,
+    recentColors,
+    clearRecentColors
+  } = useThemeSettings();
 
-  const [savedSettings, setSavedSettings] = useState(() => {
-    const saved = localStorage.getItem("themeSettings");
-    return saved ? JSON.parse(saved) : defaultSettings;
-  });
+  const handleToggle = useCallback(
+    (key) => {
+      updateSetting(key, !settings[key]);
+    },
+    [settings, updateSetting]
+  );
 
-  const [currentSettings, setCurrentSettings] = useState(savedSettings);
-  const [hasChanges, setHasChanges] = useState(false);
-
-  useEffect(() => {
-    const changed =
-      JSON.stringify(currentSettings) !== JSON.stringify(savedSettings);
-    setHasChanges(changed);
-  }, [currentSettings, savedSettings]);
-
-  const handleToggle = (key) => {
-    setCurrentSettings((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleSave = () => {
-    localStorage.setItem("themeSettings", JSON.stringify(currentSettings));
-    setSavedSettings(currentSettings);
-    setHasChanges(false);
-    if (currentSettings.enableAnimations) {
-      document.documentElement.style.setProperty("--transition-speed", "0.2s");
-    } else {
-      document.documentElement.style.setProperty("--transition-speed", "0s");
-    }
-  };
-
-  const handleCancel = () => {
-    setCurrentSettings(savedSettings);
-    setHasChanges(false);
-  };
-
-  const handleReset = () => {
-    setCurrentSettings(defaultSettings);
-  };
+  const handleReset = useCallback(() => {
+    resetSettings();
+  }, [resetSettings]);
 
   const settingsConfig = [
     {
-      key: "autoApply",
-      label: "Auto Apply Colors",
-      description: "Apply theme changes immediately when selected",
+      key: 'autoApply',
+      label: 'Auto Apply Colors',
+      description: 'Apply theme changes immediately when selected',
       icon: Zap,
-      category: "Behavior",
+      category: 'Behavior'
     },
     {
-      key: "showRGB",
-      label: "Show RGB Values",
-      description: "Display RGB color values in color picker",
+      key: 'showRGB',
+      label: 'Show RGB Values',
+      description: 'Display RGB color values in color picker',
       icon: Palette,
-      category: "Display",
+      category: 'Display'
     },
     {
-      key: "showHexValues",
-      label: "Show HEX Values",
-      description: "Display hexadecimal color codes",
+      key: 'showHexValues',
+      label: 'Show HEX Values',
+      description: 'Display hexadecimal color codes',
       icon: Hash,
-      category: "Display",
+      category: 'Display'
     },
     {
-      key: "showColorNames",
-      label: "Show Color Names",
-      description: "Display human-readable color names",
+      key: 'showColorNames',
+      label: 'Show Color Names',
+      description: 'Display human-readable color names',
       icon: Tag,
-      category: "Display",
+      category: 'Display'
     },
     {
-      key: "enableAnimations",
-      label: "Enable Animations",
-      description: "Smooth transitions and animated effects",
+      key: 'enableAnimations',
+      label: 'Enable Animations',
+      description: 'Smooth transitions and animated effects',
       icon: Sparkles,
-      category: "Visual",
+      category: 'Visual'
     },
     {
-      key: "compactMode",
-      label: "Compact Mode",
-      description: "Reduce spacing and show more content",
+      key: 'compactMode',
+      label: 'Compact Mode',
+      description: 'Reduce spacing and show more content',
       icon: Package,
-      category: "Layout",
+      category: 'Layout'
     },
     {
-      key: "enableKeyboardShortcuts",
-      label: "Keyboard Shortcuts",
-      description: "Enable hotkeys for quick actions (Ctrl+S to save)",
+      key: 'enableKeyboardShortcuts',
+      label: 'Keyboard Shortcuts',
+      description: 'Enable hotkeys for quick actions (Ctrl+S to save)',
       icon: Keyboard,
-      category: "Behavior",
+      category: 'Behavior'
     },
     {
-      key: "enableSoundEffects",
-      label: "Sound Effects",
-      description: "Play audio feedback for actions",
+      key: 'enableSoundEffects',
+      label: 'Sound Effects',
+      description: 'Play audio feedback for actions',
       icon: Volume2,
-      category: "Feedback",
+      category: 'Feedback'
     },
     {
-      key: "showRecentColors",
-      label: "Recent Colors History",
-      description: "Keep track of recently used colors",
+      key: 'showRecentColors',
+      label: 'Recent Colors History',
+      description: 'Keep track of recently used colors',
       icon: Clock,
-      category: "Features",
+      category: 'Features'
     },
     {
-      key: "enableColorBlindMode",
-      label: "Color Blind Assistance",
-      description: "Enhanced contrast and pattern indicators",
+      key: 'enableColorBlindMode',
+      label: 'Color Blind Assistance',
+      description: 'Enhanced contrast and pattern indicators',
       icon: Eye,
-      category: "Accessibility",
-    },
+      category: 'Accessibility'
+    }
   ];
 
   const categories = [...new Set(settingsConfig.map((s) => s.category))];
@@ -146,21 +116,45 @@ const ThemeSettingsView = () => {
         <div className="flex-1 bg-gray-800/50 rounded-lg p-3 border border-gray-700">
           <div className="text-xs text-gray-400 mb-1">Active Settings</div>
           <div className="text-2xl font-bold text-white">
-            {Object.values(currentSettings).filter(Boolean).length}
+            {Object.values(settings).filter(Boolean).length}
             <span className="text-sm text-gray-400 font-normal ml-1">/ 10</span>
           </div>
         </div>
         <div className="flex-1 bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-          <div className="text-xs text-gray-400 mb-1">Status</div>
-          <div className="text-sm font-semibold">
-            {hasChanges ? (
-              <span className="text-yellow-400">⚠️ Unsaved Changes</span>
-            ) : (
-              <span className="text-green-400">✓ All Saved</span>
-            )}
+          <div className="text-xs text-gray-400 mb-1">Recent Colors</div>
+          <div className="text-2xl font-bold text-white">
+            {recentColors.length}
+            <span className="text-sm text-gray-400 font-normal ml-1">/ 12</span>
           </div>
         </div>
       </div>
+
+      {/* Recent Colors Preview */}
+      {settings.showRecentColors && recentColors.length > 0 && (
+        <div className="mb-6 p-4 bg-gray-800/30 rounded-xl border border-gray-700">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              Recent Colors
+            </h4>
+            <button
+              onClick={clearRecentColors}
+              className="text-xs text-red-400 hover:text-red-300 transition-colors"
+            >
+              Clear All
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {recentColors.map((color) => (
+              <div
+                key={color}
+                className="w-8 h-8 rounded-lg border border-gray-600 cursor-pointer hover:scale-110 transition-transform"
+                style={{ backgroundColor: color }}
+                title={color}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Settings by Category */}
       <div className="space-y-6">
@@ -179,14 +173,14 @@ const ThemeSettingsView = () => {
                     key={key}
                     onClick={() => handleToggle(key)}
                     className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
-                      currentSettings[key]
-                        ? "bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/15"
-                        : "bg-gray-800/30 border-gray-700/50 hover:bg-gray-800/50"
+                      settings[key]
+                        ? 'bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/15'
+                        : 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800/50'
                     }`}
                   >
                     <Icon
                       className={`w-5 h-5 ${
-                        currentSettings[key] ? "text-blue-400" : "text-gray-400"
+                        settings[key] ? 'text-blue-400' : 'text-gray-400'
                       }`}
                     />
                     <div className="flex-1 min-w-0">
@@ -199,12 +193,12 @@ const ThemeSettingsView = () => {
                     </div>
                     <div
                       className={`w-10 h-6 rounded-full relative transition-all ${
-                        currentSettings[key] ? "bg-blue-600" : "bg-gray-600"
+                        settings[key] ? 'bg-blue-600' : 'bg-gray-600'
                       }`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
-                          currentSettings[key] ? "left-5" : "left-1"
+                          settings[key] ? 'left-5' : 'left-1'
                         }`}
                       ></div>
                     </div>
@@ -220,24 +214,14 @@ const ThemeSettingsView = () => {
         <div className="flex gap-3">
           <button
             onClick={handleReset}
-            className="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-semibold rounded-lg transition-all border border-gray-700"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-semibold rounded-lg transition-all border border-gray-700"
           >
+            <RotateCcw className="w-4 h-4" />
             Reset to Default
           </button>
-          <button
-            onClick={handleCancel}
-            disabled={!hasChanges}
-            className="flex-1 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:text-gray-500 text-white text-sm font-semibold rounded-lg transition-all border border-gray-700 disabled:cursor-not-allowed"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={!hasChanges}
-            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-700 disabled:to-gray-700 disabled:text-gray-500 text-white text-sm font-bold rounded-lg transition-all shadow-lg disabled:shadow-none disabled:cursor-not-allowed"
-          >
-            {hasChanges ? "Save Changes" : "Saved ✓"}
-          </button>
+          <div className="flex-1 text-right text-xs text-gray-500 self-center">
+            Settings are saved automatically
+          </div>
         </div>
       </div>
     </div>
