@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Info,
   Sparkles,
@@ -15,8 +15,8 @@ import {
   Shuffle,
   FileText,
   Maximize2,
-  Layers,
-} from "lucide-react";
+  Layers
+} from 'lucide-react';
 
 const UserGuide = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,13 +38,13 @@ const UserGuide = () => {
               <Sparkles className="w-4 h-4 text-yellow-400" />
             </h3>
             <p className="text-sm text-gray-400">
-              {isExpanded ? "Hide guide" : "Learn how to use this tool"}
+              {isExpanded ? 'Hide guide' : 'Learn how to use this tool'}
             </p>
           </div>
         </div>
         <div
           className={`transform transition-transform duration-300 ${
-            isExpanded ? "rotate-180" : ""
+            isExpanded ? 'rotate-180' : ''
           }`}
         >
           <svg
@@ -133,22 +133,22 @@ const UserGuide = () => {
                 format="PNG"
                 color="blue"
                 pros={[
-                  "Transparent background",
-                  "Lossless compression",
-                  "Best quality",
+                  'Transparent background',
+                  'Lossless compression',
+                  'Best quality'
                 ]}
-                cons={["Larger file size", "Slower to load"]}
+                cons={['Larger file size', 'Slower to load']}
               />
               <FormatCard
                 icon={<Download className="w-5 h-5" />}
                 format="JPEG"
                 color="amber"
                 pros={[
-                  "Smaller file size",
-                  "Universal support",
-                  "Fast loading",
+                  'Smaller file size',
+                  'Universal support',
+                  'Fast loading'
                 ]}
-                cons={["No transparency", "Lossy compression"]}
+                cons={['No transparency', 'Lossy compression']}
               />
             </div>
           </div>
@@ -250,7 +250,7 @@ const UserGuide = () => {
                   <li className="flex items-start gap-2">
                     <span className="text-blue-400 mt-0.5">•</span>
                     <span>
-                      Choose <strong>PNG</strong> for transparency or{" "}
+                      Choose <strong>PNG</strong> for transparency or{' '}
                       <strong>JPEG</strong> for smaller files
                     </span>
                   </li>
@@ -283,20 +283,20 @@ const QualityCard = ({
   use,
   description,
   color,
-  recommended,
+  recommended
 }) => {
   const colors = {
-    green: "from-green-600/10 to-green-600/5 border-green-600/30",
-    blue: "from-blue-600/10 to-blue-600/5 border-blue-600/30",
-    purple: "from-purple-600/10 to-purple-600/5 border-purple-600/30",
-    red: "from-red-600/10 to-red-600/5 border-red-600/30",
+    green: 'from-green-600/10 to-green-600/5 border-green-600/30',
+    blue: 'from-blue-600/10 to-blue-600/5 border-blue-600/30',
+    purple: 'from-purple-600/10 to-purple-600/5 border-purple-600/30',
+    red: 'from-red-600/10 to-red-600/5 border-red-600/30'
   };
 
   const iconColors = {
-    green: "text-green-400",
-    blue: "text-blue-400",
-    purple: "text-purple-400",
-    red: "text-red-400",
+    green: 'text-green-400',
+    blue: 'text-blue-400',
+    purple: 'text-purple-400',
+    red: 'text-red-400'
   };
 
   return (
@@ -325,11 +325,11 @@ const QualityCard = ({
 // Format Card Component
 const FormatCard = ({ icon, format, color, pros, cons }) => {
   const colors = {
-    blue: "from-blue-600/10 to-blue-600/5 border-blue-600/30 text-blue-400",
+    blue: 'from-blue-600/10 to-blue-600/5 border-blue-600/30 text-blue-400',
     amber:
-      "from-amber-600/10 to-amber-600/5 border-amber-600/30 text-amber-400",
+      'from-amber-600/10 to-amber-600/5 border-amber-600/30 text-amber-400',
     purple:
-      "from-purple-600/10 to-purple-600/5 border-purple-600/30 text-purple-400",
+      'from-purple-600/10 to-purple-600/5 border-purple-600/30 text-purple-400'
   };
 
   return (
@@ -342,9 +342,9 @@ const FormatCard = ({ icon, format, color, pros, cons }) => {
       </div>
       <div className="space-y-2">
         <div className="space-y-1">
-          {pros.map((pro, idx) => (
+          {pros.map((pro) => (
             <div
-              key={idx}
+              key={pro}
               className="flex items-start gap-2 text-xs text-green-400"
             >
               <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0" />
@@ -353,9 +353,9 @@ const FormatCard = ({ icon, format, color, pros, cons }) => {
           ))}
         </div>
         <div className="space-y-1">
-          {cons.map((con, idx) => (
+          {cons.map((con) => (
             <div
-              key={idx}
+              key={con}
               className="flex items-start gap-2 text-xs text-red-400"
             >
               <XCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
@@ -380,11 +380,11 @@ const TipCard = ({ icon, text }) => (
 const ActionCard = ({ icon, action, description, color }) => {
   const colors = {
     green:
-      "from-green-600/10 to-green-600/5 border-green-600/30 text-green-400",
-    blue: "from-blue-600/10 to-blue-600/5 border-blue-600/30 text-blue-400",
+      'from-green-600/10 to-green-600/5 border-green-600/30 text-green-400',
+    blue: 'from-blue-600/10 to-blue-600/5 border-blue-600/30 text-blue-400',
     purple:
-      "from-purple-600/10 to-purple-600/5 border-purple-600/30 text-purple-400",
-    pink: "from-pink-600/10 to-pink-600/5 border-pink-600/30 text-pink-400",
+      'from-purple-600/10 to-purple-600/5 border-purple-600/30 text-purple-400',
+    pink: 'from-pink-600/10 to-pink-600/5 border-pink-600/30 text-pink-400'
   };
 
   return (
