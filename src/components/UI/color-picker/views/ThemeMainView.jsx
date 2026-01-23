@@ -1,36 +1,98 @@
-import React, { useCallback, useState } from "react";
-import { BOARD_THEMES } from "../../../../constants/chessConstants";
-import { hexToRgb } from "../../../../utils";
-import ThemePresetCard from "../parts/ThemePresetCard";
+import React, { useCallback, useState } from 'react';
+import {
+  BOARD_THEMES,
+  STARTING_FEN
+} from '../../../../constants/chessConstants';
+import { useChessBoard, usePieceImages } from '../../../../hooks';
+import ThemePresetCard from '../parts/ThemePresetCard';
 
 /**
  * Displays preset themes and current custom colors (read-only)
  */
 
 const ThemeMainView = React.memo(
-  ({ currentLight, currentDark, onThemeApply }) => {
-    const getRgbString = useCallback((hex) => {
-      const rgb = hexToRgb(hex);
-      return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
-    }, []);
-
+  ({ currentLight, currentDark, onThemeApply, pieceStyle = 'cburnett' }) => {
     const [hoveredKey, setHoveredKey] = useState(null);
 
+    // Get starting position for preview
+    const boardState = useChessBoard(STARTING_FEN);
+    const { pieceImages, isLoading: imagesLoading } =
+      usePieceImages(pieceStyle);
+
     const handleThemeClick = useCallback(
-      (key, theme) => {
+      (_key, theme) => {
         onThemeApply(theme.light, theme.dark);
       },
       [onThemeApply]
     );
 
     return (
-      <div className="p-5 space-y-5">
+      <div className="p-4 space-y-4">
+        {/* Board Preview with Pieces */}
+        <div className="rounded-xl bg-gradient-to-br from-gray-900/70 via-gray-900/60 to-gray-900/70 p-4 border border-gray-700/60 backdrop-blur-sm">
+          <h4 className="text-sm font-bold text-gray-400 mb-3">Live Preview</h4>
+          <div className="flex items-center justify-center">
+            <div className="grid grid-cols-8 gap-0 overflow-hidden rounded-lg shadow-2xl w-full max-w-[240px] aspect-square">
+              {Array.from({ length: 64 }).map((_, i) => {
+                const row = Math.floor(i / 8);
+                const col = i % 8;
+                const isLight = (row + col) % 2 === 0;
+                const piece = boardState[row]?.[col] || '';
+                return (
+                  <div
+                    key={`preview-${row}-${col}`}
+                    className="aspect-square flex items-center justify-center relative transition-colors duration-300"
+                    style={{ background: isLight ? currentLight : currentDark }}
+                  >
+                    {piece && pieceImages[piece] && !imagesLoading && (
+                      <img
+                        src={pieceImages[piece].src}
+                        alt={piece}
+                        className="w-[85%] h-[85%] object-contain"
+                        draggable="false"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Current Colors */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-2 p-3 bg-gray-950/50 rounded-lg border border-gray-700/50">
+            <div
+              className="w-10 h-10 rounded-lg border-2 border-gray-700 flex-shrink-0"
+              style={{ background: currentLight }}
+            />
+            <div className="min-w-0">
+              <div className="text-xs text-gray-500">Light</div>
+              <div className="text-xs font-mono text-gray-200 font-bold truncate">
+                {currentLight}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 p-3 bg-gray-950/50 rounded-lg border border-gray-700/50">
+            <div
+              className="w-10 h-10 rounded-lg border-2 border-gray-700 flex-shrink-0"
+              style={{ background: currentDark }}
+            />
+            <div className="min-w-0">
+              <div className="text-xs text-gray-500">Dark</div>
+              <div className="text-xs font-mono text-gray-200 font-bold truncate">
+                {currentDark}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Preset Themes */}
         <div className="space-y-3">
           <h4 className="text-sm font-bold text-gray-400 tracking-wider">
             Preset Themes
           </h4>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-1">
             {Object.entries(BOARD_THEMES).map(([key, theme]) => {
               const isActive =
                 theme.light === currentLight && theme.dark === currentDark;
@@ -51,75 +113,10 @@ const ThemeMainView = React.memo(
           </div>
         </div>
 
-        {/* Current Custom Colors (Read-Only) */}
-        <div className="rounded-xl bg-gradient-to-br from-gray-900/70 via-gray-900/60 to-gray-900/70 p-5 backdrop-blur-sm space-y-4">
-          <h4 className="text-sm font-bold text-gray-400">
-            Current Custom Colors
-          </h4>
-          <div className="space-y-3">
-            {/* Light Square */}
-            <div className="flex items-center gap-3 p-3 bg-gray-950/50 rounded-lg border border-gray-700/50">
-              <div
-                className="w-12 h-12 rounded-lg border-2 border-gray-700 flex-shrink-0"
-                style={{ background: currentLight }}
-              />
-              <div className="flex-1">
-                <div className="text-xs text-gray-500 mb-1">Light Square</div>
-                <div className="text-sm font-mono text-gray-200 font-bold">
-                  {currentLight}
-                </div>
-                <div className="text-xs text-gray-500 font-mono">
-                  RGB: {getRgbString(currentLight)}
-                </div>
-              </div>
-            </div>
-
-            {/* Dark Square */}
-            <div className="flex items-center gap-3 p-3 bg-gray-950/50 rounded-lg border border-gray-700/50">
-              <div
-                className="w-12 h-12 rounded-lg border-2 border-gray-700 flex-shrink-0"
-                style={{ background: currentDark }}
-              />
-              <div className="flex-1">
-                <div className="text-xs text-gray-500 mb-1">Dark Square</div>
-                <div className="text-sm font-mono text-gray-200 font-bold">
-                  {currentDark}
-                </div>
-                <div className="text-xs text-gray-500 font-mono">
-                  RGB: {getRgbString(currentDark)}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-gray-700/50 text-center text-xs text-gray-500">
-            Modify colors in the{" "}
-            <span className="text-blue-400 font-semibold">Advanced Picker</span>{" "}
-            tab
-          </div>
-        </div>
-
-        {/* Board Preview */}
-        <div className="rounded-xl bg-gradient-to-br from-gray-900/70 via-gray-900/60 to-gray-900/70 p-5 border border-gray-700/60 backdrop-blur-sm">
-          <h4 className="text-sm font-bold text-gray-400 mb-4">
-            Board Preview
-          </h4>
-          <div className="flex items-center justify-center">
-            <div className="grid grid-cols-8 gap-0 overflow-hidden w-full max-w-[280px] aspect-square">
-              {Array.from({ length: 64 }).map((_, i) => {
-                const row = Math.floor(i / 8);
-                const col = i % 8;
-                const isLight = (row + col) % 2 === 0;
-                return (
-                  <div
-                    key={i}
-                    className="w-full h-full transition-colors duration-300"
-                    style={{ background: isLight ? currentLight : currentDark }}
-                  />
-                );
-              })}
-            </div>
-          </div>
+        <div className="text-center text-xs text-gray-500 pt-2 border-t border-gray-700/50">
+          Use{' '}
+          <span className="text-blue-400 font-semibold">Advanced Picker</span>{' '}
+          tab for custom colors
         </div>
       </div>
     );
@@ -127,11 +124,12 @@ const ThemeMainView = React.memo(
   (prevProps, nextProps) => {
     return (
       prevProps.currentLight === nextProps.currentLight &&
-      prevProps.currentDark === nextProps.currentDark
+      prevProps.currentDark === nextProps.currentDark &&
+      prevProps.pieceStyle === nextProps.pieceStyle
     );
   }
 );
 
-ThemeMainView.displayName = "ThemeMainView";
+ThemeMainView.displayName = 'ThemeMainView';
 
 export default ThemeMainView;
