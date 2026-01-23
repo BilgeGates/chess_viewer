@@ -1,11 +1,11 @@
-import { memo } from "react";
+import { memo } from 'react';
 
 /**
  * Famous Position Button
  * Single button in famous positions grid
  */
 const FamousPositionButton = memo(
-  ({ position, positionKey, onClick }) => {
+  ({ position, positionKey: _positionKey, onClick }) => {
     return (
       <button
         onClick={() => onClick(position.fen)}
@@ -21,6 +21,6 @@ const FamousPositionButton = memo(
   }
 );
 
-FamousPositionButton.displayName = "FamousPositionButton";
+FamousPositionButton.displayName = 'FamousPositionButton';
 
 export default FamousPositionButton;
