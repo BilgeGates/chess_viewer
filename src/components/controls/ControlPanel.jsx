@@ -251,6 +251,7 @@ const ControlPanel = memo((props) => {
           setLightSquare={handleLightSquareChange}
           darkSquare={theme.darkSquare}
           setDarkSquare={handleDarkSquareChange}
+          pieceStyle={pieceStyle}
           onNotification={onNotification}
         />
       )}
@@ -272,6 +273,8 @@ const ControlPanel = memo((props) => {
           onClose={() => setShowAdvancedModal(false)}
           onApplyFEN={setFen}
           pieceStyle={pieceStyle}
+          lightSquare={theme.lightSquare}
+          darkSquare={theme.darkSquare}
           showCoords={showCoords}
           exportQuality={exportQuality}
         />
