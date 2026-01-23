@@ -18,8 +18,7 @@ const HueSlider = React.memo(
       if (hue < 150) return 'Green';
       if (hue < 210) return 'Cyan';
       if (hue < 270) return 'Blue';
-      if (hue < 330) return 'Magenta';
-      return 'Red';
+      return 'Magenta';
     }, []);
 
     const handleMouseDown = useCallback(() => setIsDragging(true), []);
