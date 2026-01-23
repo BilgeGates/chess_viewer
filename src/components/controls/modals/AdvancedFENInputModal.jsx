@@ -14,15 +14,32 @@ import {
   Clipboard,
   Check,
   AlertCircle,
-  Star
+  Star,
+  List,
+  Eye,
+  Download
 } from 'lucide-react';
 
+/**
+ * Tab definitions for modal navigation
+ */
+const TABS = {
+  POSITIONS: 'positions',
+  PREVIEW: 'preview',
+  EXPORT: 'export'
+};
+
+/**
+ * AdvancedFENInputModal - Multi-position FEN management modal
+ * Refactored with tab-based UI for better UX
+ */
 const AdvancedFENInputModal = ({
   isOpen,
   onClose,
   onApplyFEN,
   pieceStyle = 'cburnett',
-  boardTheme = 'brown',
+  lightSquare = '#F0D9B5',
+  darkSquare = '#B58863',
   showCoords = true,
   exportQuality = 16
 }) => {
@@ -64,6 +81,7 @@ const AdvancedFENInputModal = ({
   const [pastedIndex, setPastedIndex] = useState(null);
   const [fenErrors, setFenErrors] = useState({});
   const [duplicateWarning, setDuplicateWarning] = useState(null);
+  const [activeTab, setActiveTab] = useState(TABS.POSITIONS);
 
   // Export states
   const [isExporting, setIsExporting] = useState(false);
@@ -78,14 +96,8 @@ const AdvancedFENInputModal = ({
   const { pieceImages, isLoading: imagesLoading } = usePieceImages(pieceStyle);
   const hasValidFens = validFens.length > 0;
 
-  // Board theme colors
-  const boardThemes = {
-    brown: { light: '#F0D9B5', dark: '#B58863' },
-    blue: { light: '#DEE3E6', dark: '#8CA2AD' },
-    green: { light: '#FFFFDD', dark: '#86A666' },
-    purple: { light: '#E8E0D6', dark: '#9F90B0' }
-  };
-  const currentTheme = boardThemes[boardTheme] || boardThemes.brown;
+  // Board theme colors - use props directly
+  const currentTheme = { light: lightSquare, dark: darkSquare };
 
   // Save FENs to localStorage
   useEffect(() => {
@@ -270,38 +282,79 @@ const AdvancedFENInputModal = ({
 
   if (!isOpen) return null;
 
+  /**
+   * Tab configuration for compact UI
+   */
+  const tabConfig = [
+    {
+      id: TABS.POSITIONS,
+      label: 'Positions',
+      icon: List,
+      count: fens.filter((f) => f.trim()).length
+    },
+    { id: TABS.PREVIEW, label: 'Preview', icon: Eye, disabled: !hasValidFens },
+    {
+      id: TABS.EXPORT,
+      label: 'Export',
+      icon: Download,
+      disabled: !hasValidFens
+    }
+  ];
+
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700 bg-gray-900/50">
-          <div>
-            <h2 className="text-2xl font-bold text-white">
-              Advanced FEN Input
-            </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Manage multiple board positions ({validFens.length} active)
-            </p>
+      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+        {/* Compact Header with Tabs */}
+        <div className="border-b border-gray-700 bg-gray-900/50">
+          <div className="flex items-center justify-between px-4 py-3">
+            <h2 className="text-lg font-bold text-white">Multi-Position FEN</h2>
+            <button
+              onClick={onClose}
+              className="p-1.5 hover:bg-gray-800 rounded-lg transition-colors"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5 text-gray-400" />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <X className="w-6 h-6 text-gray-400" />
-          </button>
+
+          {/* Tab Navigation */}
+          <div className="flex px-4 gap-1" role="tablist">
+            {tabConfig.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => !tab.disabled && setActiveTab(tab.id)}
+                disabled={tab.disabled}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-gray-800 text-white border-t border-x border-gray-700'
+                    : tab.disabled
+                      ? 'text-gray-600 cursor-not-allowed'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                }`}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+                {tab.count !== undefined && tab.count > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-600 rounded-full">
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* FEN Inputs Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">
-                FEN Positions
-              </h3>
-              <div className="flex items-center gap-3">
-                <div className="text-xs text-gray-400">
-                  {fens.length} / {MAX_FENS} slots
-                </div>
+        {/* Tab Content */}
+        <div className="flex-1 overflow-y-auto p-4" role="tabpanel">
+          {/* POSITIONS TAB */}
+          {activeTab === TABS.POSITIONS && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">
+                  {fens.length}/{MAX_FENS} slots
+                </span>
                 <button
                   onClick={addFenInput}
                   disabled={fens.length >= MAX_FENS}
@@ -311,119 +364,123 @@ const AdvancedFENInputModal = ({
                   Add
                 </button>
               </div>
-            </div>
 
-            <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-              {fens.map((fen, index) => (
-                <div key={index} className="space-y-1">
-                  <div className="flex items-center gap-2 group">
-                    <div className="flex-shrink-0 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center text-sm font-bold text-gray-400 border border-gray-700">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1 relative">
-                      <input
-                        type="text"
-                        value={fen}
-                        onChange={(e) => updateFen(index, e.target.value)}
-                        placeholder="Enter FEN notation..."
-                        className={`w-full px-4 py-2.5 pr-24 bg-gray-800/50 border rounded-lg text-sm text-white font-mono outline-none focus:border-blue-500 transition-colors ${
-                          fenErrors[index]
-                            ? 'border-red-500'
-                            : 'border-gray-700'
-                        }`}
-                      />
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
-                        <button
-                          onClick={() => toggleFavorite(fen)}
-                          disabled={!fen.trim() || !validateFEN(fen)}
-                          className={`p-1.5 rounded-md transition-all ${
-                            favorites[fen]
-                              ? 'bg-yellow-600 text-white'
-                              : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                          } disabled:opacity-30 disabled:cursor-not-allowed`}
-                          title="Toggle favorite"
-                        >
-                          <Star
-                            className="w-4 h-4"
-                            fill={favorites[fen] ? 'currentColor' : 'none'}
-                          />
-                        </button>
-                        <button
-                          onClick={() => handlePasteFEN(index)}
-                          className={`p-1.5 rounded-md transition-all ${
-                            pastedIndex === index
-                              ? 'bg-green-600'
-                              : 'bg-gray-700 hover:bg-gray-600'
-                          }`}
-                          title="Paste FEN"
-                        >
-                          {pastedIndex === index ? (
-                            <Check className="w-4 h-4 text-white" />
-                          ) : (
-                            <Clipboard className="w-4 h-4 text-gray-300" />
-                          )}
-                        </button>
+              <div className="space-y-2 max-h-[45vh] overflow-y-auto pr-1">
+                {fens.map((fen, index) => (
+                  <div key={fen || `empty-slot-${index}`} className="space-y-1">
+                    <div className="flex items-center gap-2 group">
+                      <div className="flex-shrink-0 w-7 h-7 bg-gray-800 rounded-md flex items-center justify-center text-xs font-bold text-gray-400 border border-gray-700">
+                        {index + 1}
                       </div>
+                      <div className="flex-1 relative">
+                        <input
+                          type="text"
+                          value={fen}
+                          onChange={(e) => updateFen(index, e.target.value)}
+                          placeholder="Enter FEN notation..."
+                          className={`w-full px-3 py-2 pr-20 bg-gray-800/50 border rounded-lg text-sm text-white font-mono outline-none focus:border-blue-500 transition-colors ${
+                            fenErrors[index]
+                              ? 'border-red-500'
+                              : 'border-gray-700'
+                          }`}
+                        />
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                          <button
+                            onClick={() => toggleFavorite(fen)}
+                            disabled={!fen.trim() || !validateFEN(fen)}
+                            className={`p-1 rounded transition-all ${
+                              favorites[fen]
+                                ? 'bg-yellow-600 text-white'
+                                : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                            } disabled:opacity-30 disabled:cursor-not-allowed`}
+                            title="Favorite"
+                          >
+                            <Star
+                              className="w-3.5 h-3.5"
+                              fill={favorites[fen] ? 'currentColor' : 'none'}
+                            />
+                          </button>
+                          <button
+                            onClick={() => handlePasteFEN(index)}
+                            className={`p-1 rounded transition-all ${
+                              pastedIndex === index
+                                ? 'bg-green-600'
+                                : 'bg-gray-700 hover:bg-gray-600'
+                            }`}
+                            title="Paste"
+                          >
+                            {pastedIndex === index ? (
+                              <Check className="w-3.5 h-3.5 text-white" />
+                            ) : (
+                              <Clipboard className="w-3.5 h-3.5 text-gray-300" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeFenInput(index)}
+                        disabled={fens.length === 1}
+                        className="p-1.5 hover:bg-red-600/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-0"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-400" />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => removeFenInput(index)}
-                      disabled={fens.length === 1}
-                      className="p-2 hover:bg-red-600/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:cursor-not-allowed"
-                    >
-                      <Trash2 className="w-4 h-4 text-red-400" />
-                    </button>
+                    {fenErrors[index] && (
+                      <div className="flex items-center gap-1.5 text-red-400 text-xs ml-9">
+                        <AlertCircle className="w-3 h-3" />
+                        <span>{fenErrors[index]}</span>
+                      </div>
+                    )}
+                    {duplicateWarning === index && (
+                      <div className="flex items-center gap-1.5 text-yellow-400 text-xs ml-9">
+                        <AlertCircle className="w-3 h-3" />
+                        <span>Duplicate FEN</span>
+                      </div>
+                    )}
                   </div>
-                  {fenErrors[index] && (
-                    <div className="flex items-center gap-2 text-red-400 text-xs ml-10">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                      <span>{fenErrors[index]}</span>
-                    </div>
-                  )}
-                  {duplicateWarning === index && (
-                    <div className="flex items-center gap-2 text-yellow-400 text-xs ml-10">
-                      <AlertCircle className="w-3.5 h-3.5" />
-                      <span>This FEN already exists in another position</span>
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Preview Section */}
-          {hasValidFens && (
-            <div className="bg-gray-800/50 rounded-xl border border-gray-700 p-6 space-y-6">
+          {/* PREVIEW TAB */}
+          {activeTab === TABS.PREVIEW && hasValidFens && (
+            <div className="space-y-4">
+              {/* Controls */}
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">
-                  Live Preview
-                </h3>
-                <div className="flex items-center gap-3">
+                <div className="inline-flex items-center gap-2 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                  <span className="text-sm text-gray-400">Position</span>
+                  <span className="text-base font-bold text-white">
+                    {currentIndex + 1}
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    of {validFens.length}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
                   <div className="relative">
                     <button
                       onClick={() => setShowIntervalMenu(!showIntervalMenu)}
-                      className="flex items-center gap-2 bg-gray-900 rounded-lg px-3 py-2 border border-gray-700 hover:bg-gray-800 transition-colors"
+                      className="flex items-center gap-1.5 bg-gray-800 rounded-lg px-2.5 py-1.5 border border-gray-700 hover:bg-gray-700 transition-colors text-sm"
                     >
-                      <span className="text-xs text-gray-400">Interval:</span>
-                      <span className="text-sm font-semibold text-white">
-                        {interval}s
-                      </span>
+                      <span className="text-gray-400">{interval}s</span>
                     </button>
                     {showIntervalMenu && (
-                      <div className="absolute top-full right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 overflow-hidden min-w-[100px]">
-                        {intervalOptions.map((option) => (
+                      <div className="absolute top-full right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 overflow-hidden">
+                        {intervalOptions.map((opt) => (
                           <button
-                            key={option.value}
+                            key={opt.value}
                             onClick={() => {
-                              setIntervalTime(option.value);
+                              setIntervalTime(opt.value);
                               setShowIntervalMenu(false);
                             }}
-                            className={`w-full px-4 py-2 text-sm text-left transition-colors ${
-                              interval === option.value
-                                ? 'bg-blue-600 text-white font-semibold'
+                            className={`w-full px-4 py-1.5 text-sm text-left transition-colors ${
+                              interval === opt.value
+                                ? 'bg-blue-600 text-white'
                                 : 'text-gray-300 hover:bg-gray-700'
                             }`}
                           >
-                            {option.label}
+                            {opt.label}
                           </button>
                         ))}
                       </div>
@@ -435,30 +492,18 @@ const AdvancedFENInputModal = ({
                     className="p-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-colors"
                   >
                     {isPlaying ? (
-                      <Pause className="w-5 h-5 text-white" />
+                      <Pause className="w-4 h-4 text-white" />
                     ) : (
-                      <Play className="w-5 h-5 text-white" />
+                      <Play className="w-4 h-4 text-white" />
                     )}
                   </button>
                 </div>
               </div>
 
-              <div className="relative bg-gray-900 rounded-lg border border-gray-700 p-6">
-                <div className="text-center mb-4">
-                  <div className="inline-block bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
-                    <span className="text-sm text-gray-400">Position </span>
-                    <span className="text-lg font-bold text-white">
-                      {currentIndex + 1}
-                    </span>
-                    <span className="text-sm text-gray-400">
-                      {' '}
-                      of {validFens.length}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mx-auto aspect-square max-w-lg">
-                  <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-2xl">
+              {/* Board Preview */}
+              <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
+                <div className="mx-auto aspect-square max-w-sm">
+                  <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-xl rounded-lg">
                     {Array.from({ length: 64 }).map((_, i) => {
                       const row = Math.floor(i / 8);
                       const col = i % 8;
@@ -466,8 +511,8 @@ const AdvancedFENInputModal = ({
                       const piece = boardState[row]?.[col] || '';
                       return (
                         <div
-                          key={i}
-                          className="aspect-square flex items-center justify-center relative"
+                          key={`sq-${row}-${col}`}
+                          className="aspect-square flex items-center justify-center"
                           style={{
                             backgroundColor: isLight
                               ? currentTheme.light
@@ -488,88 +533,91 @@ const AdvancedFENInputModal = ({
                   </div>
                 </div>
 
-                <div className="mt-4 text-center">
-                  <div className="inline-flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
+                {/* FEN display */}
+                <div className="mt-3 text-center">
+                  <div className="inline-flex items-center gap-2 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
                     {favorites[currentFen] && (
                       <Star
-                        className="w-4 h-4 text-yellow-400"
+                        className="w-3.5 h-3.5 text-yellow-400"
                         fill="currentColor"
                       />
                     )}
-                    <p className="text-xs font-mono text-gray-400 break-all max-w-xl">
+                    <p className="text-xs font-mono text-gray-400 break-all max-w-md">
                       {currentFen}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-4 mt-6">
+                {/* Navigation */}
+                <div className="flex items-center justify-center gap-3 mt-4">
                   <button
                     onClick={handlePrevious}
                     disabled={validFens.length < 2}
-                    className="p-3 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                    className="p-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-lg transition-colors"
                   >
-                    <ChevronLeft className="w-5 h-5 text-white" />
+                    <ChevronLeft className="w-4 h-4 text-white" />
                   </button>
-                  <div className="flex gap-2">
-                    {validFens.map((_, idx) => (
+                  <div className="flex gap-1.5">
+                    {validFens.map((fenVal, idx) => (
                       <button
-                        key={idx}
+                        key={fenVal}
                         onClick={() => setCurrentIndex(idx)}
-                        className={`h-2.5 rounded-full transition-all ${
-                          idx === currentIndex
-                            ? 'bg-blue-500 w-8'
-                            : 'bg-gray-600 hover:bg-gray-500 w-2.5'
-                        }`}
+                        className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'bg-blue-500 w-6' : 'bg-gray-600 hover:bg-gray-500 w-2'}`}
                       />
                     ))}
                   </div>
                   <button
                     onClick={handleNext}
                     disabled={validFens.length < 2}
-                    className="p-3 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                    className="p-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800/50 disabled:cursor-not-allowed rounded-lg transition-colors"
                   >
-                    <ChevronRight className="w-5 h-5 text-white" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Export Section */}
-              <div className="bg-gray-800/30 rounded-xl border border-gray-700 p-6">
-                <h3 className="text-lg font-semibold text-white mb-4">
-                  Batch Export All Positions
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => handleBatchExport('png')}
-                    disabled={isExporting}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Export All as PNG
-                  </button>
-                  <button
-                    onClick={() => handleBatchExport('jpeg')}
-                    disabled={isExporting}
-                    className="px-6 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Export All as JPEG
-                  </button>
-                  <button
-                    onClick={handleCopyAll}
-                    className="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors col-span-2"
-                  >
-                    Copy All FENs
+                    <ChevronRight className="w-4 h-4 text-white" />
                   </button>
                 </div>
               </div>
             </div>
           )}
+
+          {/* EXPORT TAB */}
+          {activeTab === TABS.EXPORT && hasValidFens && (
+            <div className="space-y-4">
+              <div className="text-center mb-4">
+                <p className="text-sm text-gray-400">
+                  Export {validFens.length} position
+                  {validFens.length > 1 ? 's' : ''} as images
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleBatchExport('png')}
+                  disabled={isExporting}
+                  className="px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+                >
+                  Export as PNG
+                </button>
+                <button
+                  onClick={() => handleBatchExport('jpeg')}
+                  disabled={isExporting}
+                  className="px-4 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+                >
+                  Export as JPEG
+                </button>
+              </div>
+              <button
+                onClick={handleCopyAll}
+                className="w-full px-4 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors"
+              >
+                Copy All FENs to Clipboard
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-700 bg-gray-900/50 flex gap-3">
+        {/* Compact Footer */}
+        <div className="p-3 border-t border-gray-700 bg-gray-900/50 flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors text-sm"
           >
             Close
           </button>
@@ -581,9 +629,9 @@ const AdvancedFENInputModal = ({
               }
             }}
             disabled={validFens.length === 0}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
+            className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors text-sm"
           >
-            Apply Current FEN
+            Apply Current
           </button>
         </div>
       </div>
