@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ThemeMainView,
   ThemeAdvancedPickerView,
@@ -18,6 +18,14 @@ const ThemeModal = ({
 }) => {
   const [activeTab, setActiveTab] = useState('main');
   const [activeSquare, setActiveSquare] = useState('light');
+
+  // Force re-render when colors change
+  const [renderKey, setRenderKey] = useState(0);
+
+  useEffect(() => {
+    // Trigger re-render when colors change
+    setRenderKey((prev) => prev + 1);
+  }, [lightSquare, darkSquare]);
 
   // Handle theme application from preset themes
   const handleThemeApply = (light, dark) => {
@@ -95,6 +103,7 @@ const ThemeModal = ({
         <div className="max-h-[70vh] overflow-y-auto custom-scrollbar">
           {activeTab === 'main' && (
             <ThemeMainView
+              key={`main-${renderKey}`}
               currentLight={lightSquare}
               currentDark={darkSquare}
               onThemeApply={handleThemeApply}
@@ -104,6 +113,7 @@ const ThemeModal = ({
 
           {activeTab === 'picker' && (
             <ThemeAdvancedPickerView
+              key={`picker-${renderKey}`}
               activeSquare={activeSquare}
               setActiveSquare={setActiveSquare}
               lightSquare={lightSquare}
@@ -113,7 +123,9 @@ const ThemeModal = ({
             />
           )}
 
-          {activeTab === 'settings' && <ThemeSettingsView />}
+          {activeTab === 'settings' && (
+            <ThemeSettingsView key={`settings-${renderKey}`} />
+          )}
         </div>
 
         {/* Footer */}
