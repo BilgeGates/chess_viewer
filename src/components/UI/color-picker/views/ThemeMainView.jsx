@@ -19,6 +19,12 @@ const ThemeMainView = React.memo(
     const { pieceImages, isLoading: imagesLoading } =
       usePieceImages(pieceStyle);
 
+    // Check if board is ready
+    const isBoardReady =
+      boardState.length === 8 &&
+      !imagesLoading &&
+      Object.keys(pieceImages).length > 0;
+
     const handleThemeClick = useCallback(
       (_key, theme) => {
         onThemeApply(theme.light, theme.dark);
@@ -37,16 +43,17 @@ const ThemeMainView = React.memo(
                 const row = Math.floor(i / 8);
                 const col = i % 8;
                 const isLight = (row + col) % 2 === 0;
-                const piece = boardState[row]?.[col] || '';
+                const piece = isBoardReady ? boardState[row]?.[col] || '' : '';
+                const pieceImage = piece && pieceImages[piece];
                 return (
                   <div
                     key={`preview-${row}-${col}`}
                     className="aspect-square flex items-center justify-center relative transition-colors duration-300"
                     style={{ background: isLight ? currentLight : currentDark }}
                   >
-                    {piece && pieceImages[piece] && !imagesLoading && (
+                    {pieceImage && (
                       <img
-                        src={pieceImages[piece].src}
+                        src={pieceImage.src}
                         alt={piece}
                         className="w-[85%] h-[85%] object-contain"
                         draggable="false"
@@ -57,6 +64,12 @@ const ThemeMainView = React.memo(
               })}
             </div>
           </div>
+          {/* Loading indicator */}
+          {!isBoardReady && (
+            <div className="mt-2 text-center text-xs text-gray-500">
+              Loading pieces...
+            </div>
+          )}
         </div>
 
         {/* Current Colors */}
