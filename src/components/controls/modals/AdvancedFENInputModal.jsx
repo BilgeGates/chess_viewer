@@ -90,11 +90,26 @@ const AdvancedFENInputModal = ({
   const [isPaused, setIsPaused] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
 
+  // Get valid FENs - memoize to prevent recalculation
   const validFens = fens.filter((f) => f.trim() && validateFEN(f));
-  const currentFen = validFens[currentIndex] || '';
+  const hasValidFens = validFens.length > 0;
+
+  // Ensure currentIndex is always valid
+  const safeCurrentIndex = Math.min(
+    currentIndex,
+    Math.max(0, validFens.length - 1)
+  );
+  const currentFen = hasValidFens ? validFens[safeCurrentIndex] : '';
+
+  // Initialize board and pieces with current FEN
   const boardState = useChessBoard(currentFen);
   const { pieceImages, isLoading: imagesLoading } = usePieceImages(pieceStyle);
-  const hasValidFens = validFens.length > 0;
+
+  // Check if board is ready for rendering
+  const isBoardReady =
+    boardState.length === 8 &&
+    !imagesLoading &&
+    Object.keys(pieceImages).length > 0;
 
   // Board theme colors - use props directly
   const currentTheme = { light: lightSquare, dark: darkSquare };
@@ -109,7 +124,7 @@ const AdvancedFENInputModal = ({
     localStorage.setItem('advancedFENFavorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // Validate FENs
+  // Validate FENs and ensure currentIndex is valid
   useEffect(() => {
     const errors = {};
     fens.forEach((fen, index) => {
@@ -118,21 +133,24 @@ const AdvancedFENInputModal = ({
       }
     });
     setFenErrors(errors);
-  }, [fens]);
+
+    // Reset currentIndex if it's out of bounds
+    const validCount = fens.filter((f) => f.trim() && validateFEN(f)).length;
+    if (currentIndex >= validCount && validCount > 0) {
+      setCurrentIndex(0);
+    }
+  }, [fens, currentIndex]);
 
   // Auto-play slideshow
   useEffect(() => {
     let timer;
-    if (isPlaying && isOpen) {
+    if (isPlaying && isOpen && validFens.length > 0) {
       timer = setInterval(() => {
-        setCurrentIndex((prev) => {
-          const validFens = fens.filter((f) => f.trim() && validateFEN(f));
-          return (prev + 1) % validFens.length;
-        });
+        setCurrentIndex((prev) => (prev + 1) % validFens.length);
       }, interval * 1000);
     }
     return () => clearInterval(timer);
-  }, [isPlaying, interval, fens, isOpen]);
+  }, [isPlaying, interval, validFens.length, isOpen]);
 
   const addFenInput = () => {
     if (fens.length < MAX_FENS) {
@@ -196,13 +214,17 @@ const AdvancedFENInputModal = ({
   };
 
   const handlePrevious = () => {
-    const validFens = fens.filter((f) => f.trim() && validateFEN(f));
-    setCurrentIndex((prev) => (prev - 1 + validFens.length) % validFens.length);
+    if (validFens.length > 0) {
+      setCurrentIndex(
+        (prev) => (prev - 1 + validFens.length) % validFens.length
+      );
+    }
   };
 
   const handleNext = () => {
-    const validFens = fens.filter((f) => f.trim() && validateFEN(f));
-    setCurrentIndex((prev) => (prev + 1) % validFens.length);
+    if (validFens.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % validFens.length);
+    }
   };
 
   const handleBatchExport = async (format) => {
@@ -225,13 +247,13 @@ const AdvancedFENInputModal = ({
 
         const exportConfig = {
           boardSize: 800,
-          showCoords: showCoords, // Use from parent
+          showCoords: showCoords,
           lightSquare: currentTheme.light,
           darkSquare: currentTheme.dark,
           flipped: false,
           fen: fen,
           pieceImages: pieceImages,
-          exportQuality: exportQuality // Use from parent
+          exportQuality: exportQuality
         };
 
         const onProgress = (p) => {
@@ -451,7 +473,7 @@ const AdvancedFENInputModal = ({
                 <div className="inline-flex items-center gap-2 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
                   <span className="text-sm text-gray-400">Position</span>
                   <span className="text-base font-bold text-white">
-                    {currentIndex + 1}
+                    {safeCurrentIndex + 1}
                   </span>
                   <span className="text-sm text-gray-400">
                     of {validFens.length}
@@ -503,34 +525,46 @@ const AdvancedFENInputModal = ({
               {/* Board Preview */}
               <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
                 <div className="mx-auto aspect-square max-w-sm">
-                  <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-xl rounded-lg">
-                    {Array.from({ length: 64 }).map((_, i) => {
-                      const row = Math.floor(i / 8);
-                      const col = i % 8;
-                      const isLight = (row + col) % 2 === 0;
-                      const piece = boardState[row]?.[col] || '';
-                      return (
-                        <div
-                          key={`sq-${row}-${col}`}
-                          className="aspect-square flex items-center justify-center"
-                          style={{
-                            backgroundColor: isLight
-                              ? currentTheme.light
-                              : currentTheme.dark
-                          }}
-                        >
-                          {piece && pieceImages[piece] && !imagesLoading && (
-                            <img
-                              src={pieceImages[piece].src}
-                              alt={piece}
-                              className="w-[85%] h-[85%] object-contain"
-                              draggable="false"
-                            />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {isBoardReady ? (
+                    <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-xl rounded-lg">
+                      {Array.from({ length: 64 }).map((_, i) => {
+                        const row = Math.floor(i / 8);
+                        const col = i % 8;
+                        const isLight = (row + col) % 2 === 0;
+                        const piece = boardState[row]?.[col] || '';
+                        const pieceImage = piece && pieceImages[piece];
+                        return (
+                          <div
+                            key={`sq-${row}-${col}`}
+                            className="aspect-square flex items-center justify-center"
+                            style={{
+                              backgroundColor: isLight
+                                ? currentTheme.light
+                                : currentTheme.dark
+                            }}
+                          >
+                            {pieceImage && (
+                              <img
+                                src={pieceImage.src}
+                                alt={piece}
+                                className="w-[85%] h-[85%] object-contain"
+                                draggable="false"
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-lg">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-600 border-t-blue-500 mx-auto mb-3"></div>
+                        <p className="text-sm text-gray-400">
+                          Loading board...
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* FEN display */}
@@ -562,7 +596,7 @@ const AdvancedFENInputModal = ({
                       <button
                         key={fenVal}
                         onClick={() => setCurrentIndex(idx)}
-                        className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'bg-blue-500 w-6' : 'bg-gray-600 hover:bg-gray-500 w-2'}`}
+                        className={`h-2 rounded-full transition-all ${idx === safeCurrentIndex ? 'bg-blue-500 w-6' : 'bg-gray-600 hover:bg-gray-500 w-2'}`}
                       />
                     ))}
                   </div>
@@ -624,7 +658,7 @@ const AdvancedFENInputModal = ({
           <button
             onClick={() => {
               if (validFens.length > 0) {
-                onApplyFEN(validFens[currentIndex]);
+                onApplyFEN(validFens[safeCurrentIndex]);
                 onClose();
               }
             }}
