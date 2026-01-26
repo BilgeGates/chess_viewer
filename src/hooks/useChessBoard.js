@@ -1,13 +1,29 @@
-import { useState, useEffect } from "react";
-import { parseFEN } from "../utils";
+import { useState, useEffect } from 'react';
+import { parseFEN } from '../utils';
 
 export const useChessBoard = (fen) => {
-  const [boardState, setBoardState] = useState([]);
+  // Simplified: just use state with useEffect
+  const [boardState, setBoardState] = useState(() => {
+    if (!fen) return [];
+    try {
+      return parseFEN(fen);
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
-    if (!fen) return;
-    const board = parseFEN(fen);
-    setBoardState(board);
+    if (!fen) {
+      setBoardState([]);
+      return;
+    }
+    try {
+      const board = parseFEN(fen);
+      setBoardState(board);
+    } catch (error) {
+      console.error('Failed to parse FEN:', error);
+      setBoardState([]);
+    }
   }, [fen]);
 
   return boardState;
