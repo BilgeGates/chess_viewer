@@ -30,7 +30,7 @@ const BoardPreview = memo(
     }
 
     return (
-      <div className="bg-gray-800/50 rounded-xl border border-gray-700 p-6 space-y-6">
+      <div className="bg-gray-800/50 border border-gray-700 p-6 space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-white">Live Preview</h3>
           <div className="flex items-center gap-3">
