@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
 const RangeSlider = React.memo(
-  ({ min, max, step, value, onChange, className = "" }) => {
+  ({ min, max, step, value, onChange, className = '' }) => {
     return (
       <input
         type="range"
@@ -19,6 +19,6 @@ const RangeSlider = React.memo(
   }
 );
 
-RangeSlider.displayName = "RangeSlider";
+RangeSlider.displayName = 'RangeSlider';
 
 export default RangeSlider;

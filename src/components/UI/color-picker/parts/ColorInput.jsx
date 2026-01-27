@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Pipette } from "lucide-react";
+import React, { useCallback } from 'react';
+import { Pipette } from 'lucide-react';
 
 /**
  * Combines: Color preview button + Hex input + RGB display + Pipette button
@@ -69,6 +69,6 @@ const ColorInput = React.memo(
   }
 );
 
-ColorInput.displayName = "ColorInput";
+ColorInput.displayName = 'ColorInput';
 
 export default ColorInput;

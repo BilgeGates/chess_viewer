@@ -1,4 +1,4 @@
-import { Mail, MessageSquare, FileText, ExternalLink } from "lucide-react";
+import { Mail, MessageSquare, FileText, ExternalLink } from 'lucide-react';
 
 const SupportPage = () => {
   return (

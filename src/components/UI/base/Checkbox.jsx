@@ -1,10 +1,10 @@
-import { memo } from "react";
+import { memo } from 'react';
 
 /**
  * Checkbox Component
  * Pure, memoized for performance
  */
-const Checkbox = memo(({ checked, onChange, label, className = "" }) => {
+const Checkbox = memo(({ checked, onChange, label, className = '' }) => {
   return (
     <label
       className={`flex items-center gap-3 cursor-pointer group p-2 rounded-xl transition-colors hover:bg-gray-800/30 ${className}`}
@@ -22,6 +22,6 @@ const Checkbox = memo(({ checked, onChange, label, className = "" }) => {
   );
 });
 
-Checkbox.displayName = "Checkbox";
+Checkbox.displayName = 'Checkbox';
 
 export default Checkbox;
