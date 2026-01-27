@@ -1,9 +1,9 @@
-import React from "react";
-import { AlertCircle } from "lucide-react";
+import React from 'react';
+import { AlertCircle } from 'lucide-react';
 
 const Input = React.memo(
   ({
-    type = "text",
+    type = 'text',
     value,
     onChange,
     placeholder,
@@ -11,7 +11,7 @@ const Input = React.memo(
     error,
     disabled = false,
     icon: Icon,
-    className = "",
+    className = '',
     ...props
   }) => {
     return (
@@ -35,13 +35,13 @@ const Input = React.memo(
             disabled={disabled}
             className={`
             w-full px-4 py-2.5
-            ${Icon ? "pl-10" : ""}
+            ${Icon ? 'pl-10' : ''}
             bg-gray-950/50 rounded-lg
             text-sm text-gray-200
             outline-none focus:outline-none focus-visible:outline-none focus:ring-0
             transition-all
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${error ? "border border-red-500" : "border-gray-700"}
+            ${error ? 'border border-red-500' : 'border-gray-700'}
             ${className}
           `}
             {...props}
@@ -58,6 +58,6 @@ const Input = React.memo(
   }
 );
 
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 export default Input;

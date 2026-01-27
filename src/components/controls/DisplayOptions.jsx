@@ -1,4 +1,4 @@
-import { Checkbox } from "../UI";
+import { Checkbox } from '../UI';
 
 const DisplayOptions = ({ showCoords, setShowCoords }) => {
   return (

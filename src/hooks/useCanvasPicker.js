@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from "react";
-import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from "../utils";
+import { useEffect, useCallback } from 'react';
+import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '../utils';
 
 /**
  * Hook for canvas-based color picker
@@ -15,7 +15,7 @@ export const useCanvasPicker = (canvasRef, currentColor) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
 
@@ -27,15 +27,15 @@ export const useCanvasPicker = (canvasRef, currentColor) => {
 
     // Horizontal gradient (white to hue)
     const gradientH = ctx.createLinearGradient(0, 0, width, 0);
-    gradientH.addColorStop(0, "white");
+    gradientH.addColorStop(0, 'white');
     gradientH.addColorStop(1, `rgb(${hueRgb.r}, ${hueRgb.g}, ${hueRgb.b})`);
     ctx.fillStyle = gradientH;
     ctx.fillRect(0, 0, width, height);
 
     // Vertical gradient (transparent to black)
     const gradientV = ctx.createLinearGradient(0, 0, 0, height);
-    gradientV.addColorStop(0, "rgba(0, 0, 0, 0)");
-    gradientV.addColorStop(1, "rgba(0, 0, 0, 1)");
+    gradientV.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    gradientV.addColorStop(1, 'rgba(0, 0, 0, 1)');
     ctx.fillStyle = gradientV;
     ctx.fillRect(0, 0, width, height);
   }, [canvasRef, currentColor]);
@@ -55,7 +55,7 @@ export const useCanvasPicker = (canvasRef, currentColor) => {
       const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
       const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       const imageData = ctx.getImageData(x, y, 1, 1).data;
 
       const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
@@ -68,7 +68,7 @@ export const useCanvasPicker = (canvasRef, currentColor) => {
 
   return {
     drawCanvas,
-    handleCanvasClick,
+    handleCanvasClick
   };
 };
 

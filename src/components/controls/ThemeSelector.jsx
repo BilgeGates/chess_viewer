@@ -1,5 +1,5 @@
-import { Palette } from "lucide-react";
-import { Button } from "../UI";
+import { Palette } from 'lucide-react';
+import { Button } from '../UI';
 
 const ThemeSelector = ({ onOpenModal }) => {
   return (

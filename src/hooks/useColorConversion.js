@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
 export const useColorConversion = () => {
   const hexToRgb = useCallback((hex) => {
@@ -7,20 +7,20 @@ export const useColorConversion = () => {
       ? {
           r: parseInt(result[1], 16),
           g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
+          b: parseInt(result[3], 16)
         }
       : null;
   }, []);
 
   const rgbToHex = useCallback((r, g, b) => {
     return (
-      "#" +
+      '#' +
       [r, g, b]
         .map((x) => {
           const hex = Math.max(0, Math.min(255, x)).toString(16);
-          return hex.length === 1 ? "0" + hex : hex;
+          return hex.length === 1 ? '0' + hex : hex;
         })
-        .join("")
+        .join('')
     );
   }, []);
 
@@ -90,7 +90,7 @@ export const useColorConversion = () => {
     return {
       r: Math.round(r * 255),
       g: Math.round(g * 255),
-      b: Math.round(b * 255),
+      b: Math.round(b * 255)
     };
   }, []);
 
@@ -98,6 +98,6 @@ export const useColorConversion = () => {
     hexToRgb,
     rgbToHex,
     rgbToHsv,
-    hsvToRgb,
+    hsvToRgb
   };
 };

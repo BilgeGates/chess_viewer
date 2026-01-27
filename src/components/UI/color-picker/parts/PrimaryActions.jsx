@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { Copy, RotateCcw, Shuffle } from "lucide-react";
+import React, { useCallback } from 'react';
+import { Copy, RotateCcw, Shuffle } from 'lucide-react';
 
 /**
  * Combines: Random, Reset, Copy buttons
@@ -46,7 +46,7 @@ const PrimaryActions = React.memo(
           className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-green-600/20 to-emerald-600/20 hover:from-green-600/30 hover:to-emerald-600/30 border border-green-500/50 rounded-lg text-green-300 text-xs font-semibold transition-all active:scale-95 outline-none"
         >
           <Copy className="w-3.5 h-3.5" />
-          {isCopied ? "Copied!" : "Copy"}
+          {isCopied ? 'Copied!' : 'Copy'}
         </button>
       </div>
     );
@@ -59,6 +59,6 @@ const PrimaryActions = React.memo(
   }
 );
 
-PrimaryActions.displayName = "PrimaryActions";
+PrimaryActions.displayName = 'PrimaryActions';
 
 export default PrimaryActions;

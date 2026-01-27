@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import React, { useState } from 'react';
+import { ChevronDown, Check } from 'lucide-react';
 
 const Select = React.memo(
   ({
@@ -7,8 +7,8 @@ const Select = React.memo(
     onChange,
     options,
     label,
-    placeholder = "Select...",
-    disabled = false,
+    placeholder = 'Select...',
+    disabled = false
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedOption = options.find((opt) => opt.value === value);
@@ -32,15 +32,15 @@ const Select = React.memo(
             transition-all
             ${
               disabled
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:border-gray-600"
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:border-gray-600'
             }
           `}
           >
             <span>{selectedOption ? selectedOption.label : placeholder}</span>
             <ChevronDown
               className={`w-5 h-5 text-gray-400 transition-transform ${
-                isOpen ? "rotate-180" : ""
+                isOpen ? 'rotate-180' : ''
               }`}
             />
           </button>
@@ -64,8 +64,8 @@ const Select = React.memo(
                     flex items-center justify-between
                     ${
                       option.value === value
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-300 hover:bg-gray-800"
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-300 hover:bg-gray-800'
                     }
                   `}
                   >
@@ -82,6 +82,6 @@ const Select = React.memo(
   }
 );
 
-Select.displayName = "Select";
+Select.displayName = 'Select';
 
 export default Select;

@@ -1,6 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 
-import { HomePage, AboutPage, DownloadPage, SupportPage } from "../pages";
+import { HomePage, AboutPage, DownloadPage, SupportPage } from '../pages';
 
 const AppRoutes = () => {
   return (

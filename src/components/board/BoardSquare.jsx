@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo } from 'react';
 
 /**
  * Single Board Square
@@ -36,6 +36,6 @@ const BoardSquare = memo(
   }
 );
 
-BoardSquare.displayName = "BoardSquare";
+BoardSquare.displayName = 'BoardSquare';
 
 export default BoardSquare;

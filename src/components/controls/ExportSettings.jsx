@@ -1,5 +1,5 @@
-import { Settings } from "lucide-react";
-import { Button } from "../UI";
+import { Settings } from 'lucide-react';
+import { Button } from '../UI';
 
 const ExportSettings = ({ onOpenModal }) => {
   return (

@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { Copy, CheckCircle, Clipboard, AlertCircle } from "lucide-react";
+import { memo } from 'react';
+import { Copy, CheckCircle, Clipboard, AlertCircle } from 'lucide-react';
 
 /**
  * FEN Input Textarea
@@ -19,7 +19,7 @@ const FENInputField = memo(
             font-mono resize-none min-h-[80px] sm:min-h-[90px] 
             focus-visible:outline-none focus:outline-none outline-none 
             focus:ring-0 transition-all
-            ${error ? "border border-red-500" : ""}
+            ${error ? 'border border-red-500' : ''}
           `}
             placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
           />
@@ -45,8 +45,8 @@ const FENInputField = memo(
               onClick={onCopy}
               className={`p-1.5 sm:p-2 rounded-md text-white transition-all ${
                 copySuccess
-                  ? "bg-green-600"
-                  : "bg-blue-600/90 hover:bg-blue-500"
+                  ? 'bg-green-600'
+                  : 'bg-blue-600/90 hover:bg-blue-500'
               }`}
               title="Copy FEN"
             >
@@ -80,6 +80,6 @@ const FENInputField = memo(
   }
 );
 
-FENInputField.displayName = "FENInputField";
+FENInputField.displayName = 'FENInputField';
 
 export default FENInputField;

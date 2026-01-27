@@ -1,17 +1,17 @@
-import { useRef, useEffect } from "react";
-import ColorInput from "./parts/ColorInput";
-import PickerModal from "./PickerModal";
-import { useColorConversion, useColorState } from "../../../hooks";
-import { Palette } from "lucide-react";
+import { useRef, useEffect } from 'react';
+import ColorInput from './parts/ColorInput';
+import PickerModal from './PickerModal';
+import { useColorConversion, useColorState } from '../../../hooks';
+import { Palette } from 'lucide-react';
 
 /**
  * Full-featured color picker with modal
  */
 const ColorPicker = ({
   label,
-  value = "#3B82F6",
+  value = '#3B82F6',
   onChange,
-  className = "",
+  className = ''
 }) => {
   const pickerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -31,7 +31,7 @@ const ColorPicker = ({
     handleReset,
     handleCopy,
     toggleOpen,
-    closeModal,
+    closeModal
   } = useColorState(value);
 
   useEffect(() => {
@@ -41,8 +41,8 @@ const ColorPicker = ({
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [closeModal]);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const ColorPicker = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
 
@@ -66,14 +66,14 @@ const ColorPicker = ({
     const hueRgb = hsvToRgb(hsv.h, 100, 100);
 
     const gradientH = ctx.createLinearGradient(0, 0, width, 0);
-    gradientH.addColorStop(0, "white");
+    gradientH.addColorStop(0, 'white');
     gradientH.addColorStop(1, `rgb(${hueRgb.r}, ${hueRgb.g}, ${hueRgb.b})`);
     ctx.fillStyle = gradientH;
     ctx.fillRect(0, 0, width, height);
 
     const gradientV = ctx.createLinearGradient(0, 0, 0, height);
-    gradientV.addColorStop(0, "rgba(0, 0, 0, 0)");
-    gradientV.addColorStop(1, "rgba(0, 0, 0, 1)");
+    gradientV.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    gradientV.addColorStop(1, 'rgba(0, 0, 0, 1)');
     ctx.fillStyle = gradientV;
     ctx.fillRect(0, 0, width, height);
   };
@@ -90,7 +90,7 @@ const ColorPicker = ({
     const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
     const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     const imageData = ctx.getImageData(x, y, 1, 1).data;
     const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
     handleColorSelect(hex);
@@ -105,7 +105,7 @@ const ColorPicker = ({
 
   const handleHexChange = (e) => {
     let hex = e.target.value.trim();
-    if (!hex.startsWith("#")) hex = "#" + hex;
+    if (!hex.startsWith('#')) hex = '#' + hex;
     setHexInput(hex);
     if (/^#[0-9A-F]{6}$/i.test(hex)) {
       setTempColor(hex);
@@ -126,7 +126,7 @@ const ColorPicker = ({
 
   const getRgbValues = () => {
     const rgb = hexToRgb(tempColor);
-    return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : "0, 0, 0";
+    return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
   };
 
   return (

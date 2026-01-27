@@ -1,5 +1,5 @@
-import React from "react";
-import { CheckCircle, XCircle, AlertCircle, Info } from "lucide-react";
+import React from 'react';
+import { CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
 
 const NotificationContainer = ({ notifications, onRemove }) => {
   if (!notifications || notifications.length === 0) return null;
@@ -41,21 +41,21 @@ const Toast = React.memo(({ notification, onRemove }) => {
 
   const styles = {
     success: {
-      bg: "bg-emerald-500/95",
-      icon: <CheckCircle className="w-5 h-5" strokeWidth={2.5} />,
+      bg: 'bg-emerald-500/95',
+      icon: <CheckCircle className="w-5 h-5" strokeWidth={2.5} />
     },
     error: {
-      bg: "bg-red-500/95",
-      icon: <XCircle className="w-5 h-5" strokeWidth={2.5} />,
+      bg: 'bg-red-500/95',
+      icon: <XCircle className="w-5 h-5" strokeWidth={2.5} />
     },
     warning: {
-      bg: "bg-amber-500/95",
-      icon: <AlertCircle className="w-5 h-5" strokeWidth={2.5} />,
+      bg: 'bg-amber-500/95',
+      icon: <AlertCircle className="w-5 h-5" strokeWidth={2.5} />
     },
     info: {
-      bg: "bg-blue-500/95",
-      icon: <Info className="w-5 h-5" strokeWidth={2.5} />,
-    },
+      bg: 'bg-blue-500/95',
+      icon: <Info className="w-5 h-5" strokeWidth={2.5} />
+    }
   };
 
   const style = styles[type] || styles.info;
@@ -72,6 +72,6 @@ const Toast = React.memo(({ notification, onRemove }) => {
   );
 });
 
-Toast.displayName = "Toast";
+Toast.displayName = 'Toast';
 
 export default NotificationContainer;

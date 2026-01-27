@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { X, FileImage, Pause, Play, XCircle } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { X, FileImage, Pause, Play, XCircle } from 'lucide-react';
 
 const ExportProgress = React.memo(
   ({
@@ -10,7 +10,7 @@ const ExportProgress = React.memo(
     onPause,
     onResume,
     onCancel,
-    isPaused,
+    isPaused
   }) => {
     const [displayProgress, setDisplayProgress] = useState(0);
 
@@ -39,7 +39,7 @@ const ExportProgress = React.memo(
 
     if (!isExporting) return null;
 
-    const format = currentFormat || "png";
+    const format = currentFormat || 'png';
 
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -72,7 +72,7 @@ const ExportProgress = React.memo(
                   Exporting {format.toUpperCase()}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-400">
-                  {isPaused ? "⏸ Paused" : "Creating high-quality image"}
+                  {isPaused ? '⏸ Paused' : 'Creating high-quality image'}
                 </p>
               </div>
             </div>
@@ -90,8 +90,8 @@ const ExportProgress = React.memo(
                       <div
                         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
                         style={{
-                          animation: "shimmer 1.5s infinite linear",
-                          backgroundSize: "200% 100%",
+                          animation: 'shimmer 1.5s infinite linear',
+                          backgroundSize: '200% 100%'
                         }}
                       />
                     )}
@@ -163,6 +163,6 @@ const ExportProgress = React.memo(
   }
 );
 
-ExportProgress.displayName = "ExportProgress";
+ExportProgress.displayName = 'ExportProgress';
 
 export default ExportProgress;

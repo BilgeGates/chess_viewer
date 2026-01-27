@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { Check } from "lucide-react";
+import { memo } from 'react';
+import { Check } from 'lucide-react';
 
 /**
  * Theme Preset Card
@@ -17,10 +17,10 @@ const ThemePresetCard = memo(
         transition-all duration-300 overflow-hidden
         ${
           isActive
-            ? "bg-blue-600/30 border-2 border-blue-500 scale-105"
-            : "bg-gray-900/80 border-2 border-gray-700 hover:border-blue-500/50"
+            ? 'bg-blue-600/30 border-2 border-blue-500 scale-105'
+            : 'bg-gray-900/80 border-2 border-gray-700 hover:border-blue-500/50'
         }
-        ${isHovered ? "scale-105" : ""}
+        ${isHovered ? 'scale-105' : ''}
       `}
       >
         {/* Color Preview Background */}
@@ -55,6 +55,6 @@ const ThemePresetCard = memo(
   }
 );
 
-ThemePresetCard.displayName = "ThemePresetCard";
+ThemePresetCard.displayName = 'ThemePresetCard';
 
 export default ThemePresetCard;

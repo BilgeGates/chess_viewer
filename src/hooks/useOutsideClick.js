@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 /**
  * Hook to detect clicks outside of a ref element
@@ -20,21 +20,21 @@ export const useOutsideClick = (ref, handler, enabled = true) => {
     };
 
     const handleEscape = (event) => {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         handler(event);
       }
     };
 
     // Add event listeners
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
 
     // Cleanup
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [ref, handler, enabled]);
 };

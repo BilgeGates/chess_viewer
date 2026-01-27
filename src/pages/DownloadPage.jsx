@@ -1,4 +1,4 @@
-import { Globe, CheckCircle, Monitor } from "lucide-react";
+import { Globe, CheckCircle, Monitor } from 'lucide-react';
 
 const DownloadPage = () => {
   return (

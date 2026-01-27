@@ -1,5 +1,5 @@
-import { SearchableSelect } from "../UI";
-import { PIECE_SETS } from "../../constants/chessConstants";
+import { SearchableSelect } from '../UI';
+import { PIECE_SETS } from '../../constants/chessConstants';
 
 const PieceSelector = ({ pieceStyle, setPieceStyle }) => {
   return (

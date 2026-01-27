@@ -1,16 +1,16 @@
-import { memo } from "react";
-import { Check } from "lucide-react";
+import { memo } from 'react';
+import { Check } from 'lucide-react';
 
 /**
  * Single Color Swatch
  * Highly optimized with React.memo
  */
 const ColorSwatch = memo(
-  ({ color, isSelected, onClick, size = "md" }) => {
+  ({ color, isSelected, onClick, size = 'md' }) => {
     const sizes = {
-      sm: "w-8 h-8",
-      md: "w-10 h-10",
-      lg: "w-12 h-12",
+      sm: 'w-8 h-8',
+      md: 'w-10 h-10',
+      lg: 'w-12 h-12'
     };
 
     return (
@@ -22,8 +22,8 @@ const ColorSwatch = memo(
         hover:scale-105 active:scale-95 relative
         ${
           isSelected
-            ? "border-blue-500 scale-105 shadow-lg"
-            : "border-gray-700 hover:border-gray-600"
+            ? 'border-blue-500 scale-105 shadow-lg'
+            : 'border-gray-700 hover:border-gray-600'
         }
       `}
         style={{ background: color }}
@@ -48,6 +48,6 @@ const ColorSwatch = memo(
   }
 );
 
-ColorSwatch.displayName = "ColorSwatch";
+ColorSwatch.displayName = 'ColorSwatch';
 
 export default ColorSwatch;

@@ -1,6 +1,6 @@
-import React from "react";
-import { MiniChessPreview } from "../../board";
-import { History, Clock, Trash2, X, Heart } from "lucide-react";
+import React from 'react';
+import { MiniChessPreview } from '../../board';
+import { History, Clock, Trash2, X, Heart } from 'lucide-react';
 
 const FENHistoryModal = ({
   isOpen,
@@ -12,15 +12,15 @@ const FENHistoryModal = ({
   onToggleFavorite,
   lightSquare,
   darkSquare,
-  pieceStyle,
+  pieceStyle
 }) => {
   const [hoveredFen, setHoveredFen] = React.useState(null);
-  const [filter, setFilter] = React.useState("all");
+  const [filter, setFilter] = React.useState('all');
 
   if (!isOpen) return null;
 
   const filteredHistory =
-    filter === "favorites"
+    filter === 'favorites'
       ? history.filter((item) => item.isFavorite)
       : history;
 
@@ -47,21 +47,21 @@ const FENHistoryModal = ({
         {history.length > 0 && (
           <div className="flex gap-2 px-4 sm:px-6 pt-4">
             <button
-              onClick={() => setFilter("all")}
+              onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                filter === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700/50 text-gray-300 hover:bg-gray-700"
+                filter === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
               }`}
             >
               All ({history.length})
             </button>
             <button
-              onClick={() => setFilter("favorites")}
+              onClick={() => setFilter('favorites')}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                filter === "favorites"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700/50 text-gray-300 hover:bg-gray-700"
+                filter === 'favorites'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
               }`}
             >
               Favorites ({history.filter((h) => h.isFavorite).length})
@@ -77,14 +77,14 @@ const FENHistoryModal = ({
               <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                 <Clock className="w-16 h-16 mb-4 opacity-50" />
                 <p className="text-lg font-medium">
-                  {filter === "favorites"
-                    ? "No favorites yet"
-                    : "No history yet"}
+                  {filter === 'favorites'
+                    ? 'No favorites yet'
+                    : 'No history yet'}
                 </p>
                 <p className="text-sm">
-                  {filter === "favorites"
-                    ? "Star positions to see them here"
-                    : "Set up positions to see them here"}
+                  {filter === 'favorites'
+                    ? 'Star positions to see them here'
+                    : 'Set up positions to see them here'}
                 </p>
               </div>
             ) : (
@@ -102,12 +102,12 @@ const FENHistoryModal = ({
                         <div className="flex items-center gap-2 mb-2">
                           <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
                           <span className="text-xs text-gray-400">
-                            {new Date(item.timestamp).toLocaleString("az-AZ", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
+                            {new Date(item.timestamp).toLocaleString('az-AZ', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
                             })}
                           </span>
                           {item.isFavorite && (
@@ -126,18 +126,18 @@ const FENHistoryModal = ({
                           }}
                           className={`p-2 rounded-lg transition-colors ${
                             item.isFavorite
-                              ? "bg-red-500/20 text-red-500 hover:bg-red-500/30"
-                              : "hover:bg-gray-700/50 text-gray-400"
+                              ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30'
+                              : 'hover:bg-gray-700/50 text-gray-400'
                           }`}
                           title={
                             item.isFavorite
-                              ? "Remove from favorites"
-                              : "Add to favorites"
+                              ? 'Remove from favorites'
+                              : 'Add to favorites'
                           }
                         >
                           <Heart
                             className="w-4 h-4"
-                            fill={item.isFavorite ? "currentColor" : "none"}
+                            fill={item.isFavorite ? 'currentColor' : 'none'}
                             strokeWidth={2}
                           />
                         </button>
@@ -212,7 +212,7 @@ const FENHistoryModal = ({
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
         }
-      `,
+      `
         }}
       />
     </div>
