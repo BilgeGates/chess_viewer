@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { ExportProgress } from '../../UI';
 import { useChessBoard, usePieceImages } from '../../../hooks';
-import { downloadPNG, downloadJPEG, validateFEN } from '../../../utils';
-import { logger } from '../../../utils/logger';
+import { downloadPNG, downloadJPEG, validateFEN, logger } from '../../../utils';
+import { ADVANCED_FEN_CONFIG } from '../../../constants/chessConstants';
 import {
   X,
   Plus,
@@ -20,14 +20,14 @@ import {
   Download
 } from 'lucide-react';
 
-/**
- * Tab definitions for modal navigation
- */
-const TABS = {
-  POSITIONS: 'positions',
-  PREVIEW: 'preview',
-  EXPORT: 'export'
-};
+const {
+  MAX_FENS,
+  DEFAULT_FENS,
+  DEFAULT_INTERVAL,
+  INTERVAL_OPTIONS,
+  TABS,
+  STORAGE_KEYS
+} = ADVANCED_FEN_CONFIG;
 
 /**
  * AdvancedFENInputModal - Multi-position FEN management modal
@@ -43,21 +43,18 @@ const AdvancedFENInputModal = ({
   showCoords = true,
   exportQuality = 16
 }) => {
-  const MAX_FENS = 10;
-  const DEFAULT_FENS = ['', '', ''];
-
   const duplicateTimeoutRef = useRef(null);
   const pastedTimeoutRef = useRef(null);
   const slideTimeoutRef = useRef(null);
   const exportCleanupTimeoutRef = useRef(null);
 
   const [fens, setFens] = useState(() => {
-    const saved = localStorage.getItem('advancedFENHistory');
+    const saved = localStorage.getItem(STORAGE_KEYS.HISTORY);
     return saved ? JSON.parse(saved) : DEFAULT_FENS;
   });
 
   const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('advancedFENFavorites');
+    const saved = localStorage.getItem(STORAGE_KEYS.FAVORITES);
     return saved ? JSON.parse(saved) : {};
   });
 
@@ -76,7 +73,7 @@ const AdvancedFENInputModal = ({
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [interval, setIntervalTime] = useState(3);
+  const [interval, setIntervalTime] = useState(DEFAULT_INTERVAL);
   const [showIntervalMenu, setShowIntervalMenu] = useState(false);
   const [pastedIndex, setPastedIndex] = useState(null);
   const [fenErrors, setFenErrors] = useState({});
@@ -116,12 +113,12 @@ const AdvancedFENInputModal = ({
 
   // Save FENs to localStorage
   useEffect(() => {
-    localStorage.setItem('advancedFENHistory', JSON.stringify(fens));
+    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(fens));
   }, [fens]);
 
   // Save favorites to localStorage
   useEffect(() => {
-    localStorage.setItem('advancedFENFavorites', JSON.stringify(favorites));
+    localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
   }, [favorites]);
 
   // Validate FENs and ensure currentIndex is valid
@@ -293,14 +290,6 @@ const AdvancedFENInputModal = ({
       logger.error('Failed to copy:', error);
     }
   };
-
-  const intervalOptions = [
-    { value: 1, label: '1s' },
-    { value: 2, label: '2s' },
-    { value: 3, label: '3s' },
-    { value: 5, label: '5s' },
-    { value: 10, label: '10s' }
-  ];
 
   if (!isOpen) return null;
 
@@ -489,7 +478,7 @@ const AdvancedFENInputModal = ({
                     </button>
                     {showIntervalMenu && (
                       <div className="absolute top-full right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 overflow-hidden">
-                        {intervalOptions.map((opt) => (
+                        {INTERVAL_OPTIONS.map((opt) => (
                           <button
                             key={opt.value}
                             onClick={() => {
@@ -526,7 +515,7 @@ const AdvancedFENInputModal = ({
               <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
                 <div className="mx-auto aspect-square max-w-sm">
                   {isBoardReady ? (
-                    <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-xl rounded-lg">
+                    <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-xl">
                       {Array.from({ length: 64 }).map((_, i) => {
                         const row = Math.floor(i / 8);
                         const col = i % 8;
