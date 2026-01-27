@@ -4,7 +4,7 @@
 
 **Professional chess position visualizer with ultra-HD export capabilities**
 
-[![React](https://img.shields.io/badge/React-18%2B_(Built_with_19.x)-61DAFB?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![React](<https://img.shields.io/badge/React-18%2B_(Built_with_19.x)-61DAFB?style=flat-square&logo=react&logoColor=white>)](https://react.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Backend](https://img.shields.io/badge/backend-none-success?style=flat-square)](#)
 [![Privacy](https://img.shields.io/badge/privacy-local--only-blue?style=flat-square)](#)
@@ -15,25 +15,40 @@
 [Report Bug](https://github.com/BilgeGates/chess_viewer/issues) ·
 [Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
 
-
 </div>
 
 ---
 
 ## 📖 Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Demo Screenshots](#-demo--screenshots)
-- [Quick Start](#-quick-start)
-- [Project Structure](#-project-structure)
-- [Technology Stack](#-technology-stack)
-- [Browser Support](#-browser-support)
-- [Release Strategy](#-release-strategy)
-- [Security Privacy](#-security--privacy)
-- [Contributing](#-contributing)
-- [FAQ](#-faq)
-- [License](#-license)
+- [📖 Table of Contents](#-table-of-contents)
+- [🌟 Overview](#-overview)
+- [✨ Features](#-features)
+- [🖼 Demo \& Screenshots](#-demo--screenshots)
+- [🚀 Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Production Build](#production-build)
+- [📁 Project Structure](#-project-structure)
+- [🛠️ Technology Stack](#️-technology-stack)
+  - [Core Technologies](#core-technologies)
+  - [Performance Stack](#performance-stack)
+- [🌐 Browser Support](#-browser-support)
+  - [Required Browser Features](#required-browser-features)
+- [🔐 Security \& Privacy](#-security--privacy)
+  - [🔒 Security Highlights](#-security-highlights)
+  - [🧠 Threat Model](#-threat-model)
+  - [🛡️ Data Safety Guarantee](#️-data-safety-guarantee)
+- [🤝 Contributing](#-contributing)
+  - [Quick Contribution Guide](#quick-contribution-guide)
+  - [Contributors](#contributors)
+- [📝 License](#-license)
+- [👨‍💻 Author](#-author)
+  - [Khatai Huseynzada](#khatai-huseynzada)
+- [🙏 Acknowledgments](#-acknowledgments)
+  - [Special Thanks](#special-thanks)
+- [📧 Support \& Contact](#-support--contact)
+- [FAQ](#faq)
 
 ---
 
@@ -46,14 +61,14 @@ It is built for chess players, coaches, authors, streamers, and developers who n
 
 ## ✨ Features
 
-- Full FEN notation support with validation  
-- Multi-FEN input (up to 10 positions)  
-- Ultra-HD PNG & JPEG export (up to 12,800×12,800px)  
-- Batch export & clipboard copy  
-- 23 professional piece sets  
-- Advanced color picker & themes  
-- Favorites, history & famous positions  
-- Board flip & coordinates  
+- Full FEN notation support with validation
+- Multi-FEN input (up to 10 positions)
+- Ultra-HD PNG & JPEG export (up to 12,800×12,800px)
+- Batch export & clipboard copy
+- 23 professional piece sets
+- Advanced color picker & themes
+- Favorites, history & famous positions
+- Board flip & coordinates
 
 ---
 
@@ -106,6 +121,7 @@ npm run preview
 # Deploy to Vercel (requires Vercel CLI)
 vercel --prod
 ```
+
 ---
 
 ## 📁 Project Structure
@@ -296,7 +312,6 @@ chess_viewer/
 </tr>
 </table>
 
-
 ### Performance Stack
 
 - **Rendering**: HTML5 Canvas
@@ -310,13 +325,13 @@ chess_viewer/
 
 <div align="center">
 
-| Browser | Version | Status |
-|---------|---------|--------|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/chrome/chrome-original.svg" width="20"/> Chrome | 90+ | ✅ Full Support |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firefox/firefox-original.svg" width="20"/> Firefox | 88+ | ✅ Full Support |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/safari/safari-original.svg" width="20"/> Safari | 14+ | ✅ Full Support |
-| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge.svg" width="20"/> Edge | 90+ | ✅ Full Support |
-| <img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera.svg" width="20"/> Opera | 76+ | ✅ Full Support |
+| Browser | Version | Status              |
+| ------- | ------- | ------------------- |
+| Chrome  | 90+     | ✅ Tested           |
+| Firefox | 88+     | ✅ Tested           |
+| Safari  | 14+     | ✅ Expected to work |
+| Edge    | 90+     | ✅ Expected to work |
+| Opera   | 76+     | ✅ Expected to work |
 
 </div>
 
@@ -326,41 +341,7 @@ chess_viewer/
 - ES6+ JavaScript
 - CSS Grid & Flexbox
 - Clipboard API (optional)
-- localStorage (optional)
-
-
----
-
-## 🏷 Release Strategy
-
-This project follows **semantic versioning**, with each release introducing clearly scoped and production-ready features.
-
-### Current Releases
-
-- **v1.0.0** – Initial public release  
-  Core chess diagram generator with standard FEN input, board rendering, basic customization, and PNG/JPEG export.
-
-- **v2.0.0** – High-resolution export system  
-  Ultra-HD export support (up to 32×), improved canvas rendering, export quality controls, and performance optimizations.
-
-- **v3.0.0** – Workflow features & usability  
-  Favorites management, position history, famous positions library, board controls, and general UX improvements.
-
-- **v3.5.0** – Advanced FEN workflows & customization  
-  Multi-FEN input (up to 10 positions), pagination with live previews, advanced color picker, extended theme customization, and UI refinements.
-
-### 🔮 Planned Future Releases
-
-- **v4.0.0** – SVG export format support  
-  Scalable Vector Graphics export for print-ready, resolution-independent chess diagrams.
-
-- **v4.1.0** – Open folder support  
-  Select an output directory for batch exports to streamline bulk workflows.
-
-- **v4.1.5** – Design and visual refinements  
-  Visual polish, layout adjustments, and overall user experience enhancements.
-
-> Version numbers and feature scope may evolve based on technical constraints and community feedback.
+- localStorage API
 
 ---
 
@@ -502,18 +483,20 @@ This project wouldn't be possible without these amazing resources:
 
 - **Lichess.org** - Inspiration and FEN notation standards
 - **Vercel** - Hosting and deployment platform
+
 ---
 
 ## 📧 Support & Contact
 
-### Get Help
-
 <div align="center">
 
-| Channel | Link | Response Time |
-|---------|------|---------------|
-| 🐛 **Bug Reports** | [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues) | 24-48 hours |
-| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/chess_viewer/discussions) | 1-3 days |
+| Channel                 | Link                                                                         |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| 🐛 **Bug Reports**      | [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues)           |
+| 💡 **Feature Requests** | [GitHub Discussions](https://github.com/BilgeGates/chess_viewer/discussions) |
+| 📧 **Email**            | darkdeveloperassistant@gmail.com                                             |
+
+_Responses on a best-effort basis_
 
 </div>
 
@@ -531,13 +514,14 @@ This project wouldn't be possible without these amazing resources:
    - Expected vs actual behavior
    - Screenshots (if applicable)
    - Browser and OS information
-</details>
+   </details>
 
 <details>
 <summary><b>Can I use this commercially?</b></summary>
 
 Yes! This project is MIT licensed, which means you can use it for commercial purposes.  
 Just include the license notice in your project.
+
 </details>
 
 <details>
@@ -554,6 +538,7 @@ Just include the license notice in your project.
 Currently only PNG and JPEG are supported.  
 SVG export is planned for version **4.0.0**.  
 You can track progress in [Issue #1](https://github.com/BilgeGates/chess_viewer/issues/1).
+
 </details>
 
 ---
