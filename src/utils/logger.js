@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Centralized logging utility
  * Prevents console pollution in production
@@ -9,6 +8,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 export const logger = {
   log: (...args) => {
     if (isDevelopment) {
+      // eslint-disable-next-line no-console
       console.log(...args);
     }
   },
@@ -23,4 +23,3 @@ export const logger = {
     console.error(...args);
   }
 };
-/* eslint-enable no-console */
