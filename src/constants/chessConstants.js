@@ -130,3 +130,26 @@ export const QUALITY_PRESETS = [
   { value: 24, label: 'Ultra (24x)', description: 'Professional' },
   { value: 32, label: 'Maximum (32x)', description: 'Largest files' }
 ];
+
+// Advanced FEN Modal Configuration
+export const ADVANCED_FEN_CONFIG = {
+  MAX_FENS: 10,
+  DEFAULT_FENS: ['', '', ''],
+  DEFAULT_INTERVAL: 3,
+  INTERVAL_OPTIONS: [
+    { value: 1, label: '1s' },
+    { value: 2, label: '2s' },
+    { value: 3, label: '3s' },
+    { value: 5, label: '5s' },
+    { value: 10, label: '10s' }
+  ],
+  TABS: {
+    POSITIONS: 'positions',
+    PREVIEW: 'preview',
+    EXPORT: 'export'
+  },
+  STORAGE_KEYS: {
+    HISTORY: 'advancedFENHistory',
+    FAVORITES: 'advancedFENFavorites'
+  }
+};
