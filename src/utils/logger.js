@@ -1,25 +1,13 @@
 /**
  * Centralized logging utility
- * Prevents console pollution in production
  */
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development';
+
+const noop = () => {};
 
 export const logger = {
-  log: (...args) => {
-    if (isDevelopment) {
-      // eslint-disable-next-line no-console
-      console.log(...args);
-    }
-  },
-
-  warn: (...args) => {
-    if (isDevelopment) {
-      console.warn(...args);
-    }
-  },
-
-  error: (...args) => {
-    console.error(...args);
-  }
+  log: isDev ? console.log.bind(console) : noop,
+  warn: isDev ? console.warn.bind(console) : noop,
+  error: console.error.bind(console)
 };
