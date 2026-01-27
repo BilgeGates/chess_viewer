@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Centralized logging utility
  * Prevents console pollution in production
@@ -22,3 +23,4 @@ export const logger = {
     console.error(...args);
   }
 };
+/* eslint-enable no-console */
