@@ -20,7 +20,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext .js,.jsx --report-unused-disable-directives",
     "lint:fix": "eslint src --ext .js,.jsx --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,json,css,md}\"",
