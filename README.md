@@ -76,7 +76,7 @@ It is built for chess players, coaches, authors, streamers, and developers who n
 
 > **Live demo:** https://chess-viewer-site.vercel.app
 
-[SCREENSHOOT](./docs/assets/screenshoot_home-page.jpg)
+![SCREENSHOOT](./docs/assets/screenshoot_home-page.jpg)
 
 ---
 
