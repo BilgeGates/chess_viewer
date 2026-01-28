@@ -1,0 +1,11 @@
+# Chess Viewer - Professional chess diagram generator
+# https://chess-viewer-site.vercel.app
+
+User-agent: *
+Allow: /
+
+# Optimal crawl delay
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://chess-viewer-site.vercel.app/sitemap.xml
