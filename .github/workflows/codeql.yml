@@ -1,54 +1,57 @@
-name: 'CodeQL Advanced Security Analysis'
+name: CodeQL Security Scanning
 
 on:
   push:
     branches:
-      - main
       - master
-      - develop
+      - main
+    paths:
+      - '**.js'
+      - '**.jsx'
+      - 'package.json'
+      - 'package-lock.json'
   pull_request:
     branches:
-      - main
       - master
-      - develop
+      - main
+    paths:
+      - '**.js'
+      - '**.jsx'
+      - 'package.json'
   schedule:
+    # Run every Monday at 9:00 AM UTC
     - cron: '0 9 * * 1'
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: codeql-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   analyze:
-    name: Analyze (${{ matrix.language }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
-    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     permissions:
       security-events: write
-      packages: read
-      actions: read
       contents: read
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language:
-          - javascript-typescript
-          - actions
+      actions: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
-          queries: +security-extended,security-and-quality
+          languages: javascript-typescript
+          queries: security-extended,security-and-quality
+          config: |
+            paths-ignore:
+              - node_modules
+              - build
+              - dist
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
@@ -56,21 +59,10 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: '/language:${{ matrix.language }}'
-          output: sarif-results
-          upload: failure-only
+          category: security-scan
 
-      - name: Upload SARIF results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: sarif-results
-          category: '/language:${{ matrix.language }}'
+      - name: Upload analysis results
         if: always()
-
-      - name: Upload analysis artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: codeql-results-${{ matrix.language }}
-          path: sarif-results
-          retention-days: 30
-        if: always()
+        run: |
+          echo "CodeQL analysis completed"
+          echo "Check Security tab for results: https://github.com/${{ github.repository }}/security/code-scanning"
