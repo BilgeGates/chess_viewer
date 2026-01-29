@@ -1,0 +1,244 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+  pull_request:
+    branches:
+      - master
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  lint-and-format:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Check Prettier formatting
+        run: npm run format:check
+        continue-on-error: false
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        env:
+          CI: true
+          GENERATE_SOURCEMAP: false
+
+      - name: Check build output
+        run: |
+          echo "Build completed successfully"
+          ls -lh build/
+          echo "Static files:"
+          ls -lh build/static/
+
+      - name: Calculate build size
+        run: |
+          BUILD_SIZE=$(du -sh build/ | cut -f1)
+          echo "Total build size: $BUILD_SIZE"
+          JS_SIZE=$(du -sh build/static/js/ | cut -f1)
+          echo "JavaScript bundle size: $JS_SIZE"
+          CSS_SIZE=$(du -sh build/static/css/ | cut -f1)
+          echo "CSS bundle size: $CSS_SIZE"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/
+          retention-days: 7
+
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for analysis
+        run: npm run build
+        env:
+          GENERATE_SOURCEMAP: true
+
+      - name: Analyze bundle
+        run: |
+          npx source-map-explorer 'build/static/js/*.js' --json > bundle-analysis.json || echo "Analysis completed"
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: bundle-analysis.json
+          retention-days: 30
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for vulnerable dependencies
+        run: |
+          echo "Checking for known vulnerabilities..."
+          npm audit --json > audit-results.json || true
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-audit
+          path: audit-results.json
+          retention-days: 30
+        if: always()
+
+  verify-deployment:
+    name: Verify Deployment Files
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build/
+
+      - name: Verify critical files
+        run: |
+          echo "Verifying build integrity..."
+
+          if [ ! -f "build/index.html" ]; then
+            echo "Error: index.html not found"
+            exit 1
+          fi
+
+          if [ ! -f "build/manifest.json" ]; then
+            echo "Warning: manifest.json not found"
+          fi
+
+          if [ ! -f "build/robots.txt" ]; then
+            echo "Warning: robots.txt not found"
+          fi
+
+          if [ ! -f "build/sitemap.xml" ]; then
+            echo "Warning: sitemap.xml not found"
+          fi
+
+          if [ ! -d "build/static/js" ]; then
+            echo "Error: JavaScript bundles not found"
+            exit 1
+          fi
+
+          if [ ! -d "build/static/css" ]; then
+            echo "Error: CSS bundles not found"
+            exit 1
+          fi
+
+          echo "Build verification completed successfully"
+
+      - name: Check for sensitive data
+        run: |
+          echo "Checking for exposed secrets..."
+          if grep -r "REACT_APP" build/ --include="*.js" | grep -v "process.env"; then
+            echo "Warning: Found hardcoded environment variables"
+          else
+            echo "No hardcoded environment variables found"
+          fi
+
+  summary:
+    name: Pipeline Summary
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, build, security-audit]
+    if: always()
+
+    steps:
+      - name: Check job statuses
+        run: |
+          echo "CI Pipeline Summary"
+          echo "=================="
+          echo "Code Quality: ${{ needs.lint-and-format.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          echo "Security Audit: ${{ needs.security-audit.result }}"
+
+          if [ "${{ needs.lint-and-format.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ]; then
+            echo "Pipeline failed - check logs above"
+            exit 1
+          fi
+
+          echo "Pipeline completed successfully"
