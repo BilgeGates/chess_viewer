@@ -1,7 +1,7 @@
 name: Bug Report
-description: Report a bug or issue with Chess Viewer
-title: "[Bug]: "
-labels: ["bug", "needs-triage"]
+description: Report a bug or issue with Chess Diagram Generator
+title: '[Bug]: '
+labels: ['bug', 'needs-triage']
 assignees:
   - BilgeGates
 
@@ -9,15 +9,22 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## Thanks for reporting a bug! 🐛
-        Please fill out the information below to help us identify and fix the issue.
+        ## 🐛 Thanks for reporting a bug!
+
+        Your feedback helps us improve Chess Diagram Generator. Please provide detailed information about the issue you encountered.
+
+        **Before submitting:**
+        - Search existing issues to avoid duplicates
+        - Try the latest version at [chess-viewer-site.vercel.app](https://chess-viewer-site.vercel.app)
+        - Check browser console for errors (F12 → Console tab)
 
   - type: textarea
     id: description
     attributes:
       label: Bug Description
-      description: A clear and concise description of what the bug is.
-      placeholder: Describe the bug...
+      description: A clear and concise description of what the bug is
+      placeholder: |
+        Example: "Board pieces are not rendering correctly when using custom theme colors"
     validations:
       required: true
 
@@ -25,12 +32,13 @@ body:
     id: reproduce
     attributes:
       label: Steps to Reproduce
-      description: Steps to reproduce the behavior
+      description: Detailed steps to reproduce the behavior
       placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. Enter FEN '...'
-        4. See error
+        1. Navigate to the main page
+        2. Enter FEN notation: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        3. Select piece style "Alpha"
+        4. Click "Export as PNG"
+        5. Observe the error/issue
     validations:
       required: true
 
@@ -39,7 +47,7 @@ body:
     attributes:
       label: Expected Behavior
       description: What you expected to happen
-      placeholder: Describe what should happen...
+      placeholder: 'The board should export as a high-quality PNG with all pieces visible...'
     validations:
       required: true
 
@@ -47,8 +55,8 @@ body:
     id: actual
     attributes:
       label: Actual Behavior
-      description: What actually happened
-      placeholder: Describe what actually happens...
+      description: What actually happened (include any error messages)
+      placeholder: 'Instead, the export only shows an empty board without pieces...'
     validations:
       required: true
 
@@ -57,7 +65,27 @@ body:
     attributes:
       label: FEN String (if applicable)
       description: The FEN notation you were using when the bug occurred
-      placeholder: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+      placeholder: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which part of the application is affected?
+      options:
+        - Board Rendering
+        - FEN Input/Validation
+        - Piece Styles
+        - Theme/Colors
+        - Export (PNG/JPEG)
+        - Board Controls (Flip, Coordinates)
+        - History/Favorites
+        - UI/Layout
+        - Mobile Interface
+        - Performance
+        - Other
+    validations:
+      required: true
 
   - type: dropdown
     id: browser
@@ -65,11 +93,12 @@ body:
       label: Browser
       description: Which browser are you using?
       options:
-        - Chrome
+        - Chrome/Chromium
         - Firefox
         - Safari
         - Edge
         - Opera
+        - Brave
         - Other
     validations:
       required: true
@@ -78,8 +107,8 @@ body:
     id: browser-version
     attributes:
       label: Browser Version
-      description: What version of the browser?
-      placeholder: "e.g., 120.0.6099.109"
+      description: What version of the browser? (Help → About or Settings)
+      placeholder: 'e.g., Chrome 121.0.6167.85'
     validations:
       required: true
 
@@ -89,11 +118,16 @@ body:
       label: Operating System
       description: What OS are you using?
       options:
-        - Windows
-        - macOS
-        - Linux
-        - iOS
-        - Android
+        - Windows 11
+        - Windows 10
+        - macOS Sonoma (14.x)
+        - macOS Ventura (13.x)
+        - macOS Monterey (12.x)
+        - Ubuntu/Linux
+        - iOS 17
+        - iOS 16
+        - Android 14
+        - Android 13
         - Other
     validations:
       required: true
@@ -102,59 +136,113 @@ body:
     id: device
     attributes:
       label: Device Type
-      description: What type of device?
+      description: What type of device are you using?
       options:
-        - Desktop
-        - Laptop
-        - Tablet
-        - Mobile Phone
+        - Desktop (Windows)
+        - Desktop (Mac)
+        - Desktop (Linux)
+        - Laptop (Windows)
+        - Laptop (Mac)
+        - Tablet (iPad)
+        - Tablet (Android)
+        - Mobile Phone (iOS)
+        - Mobile Phone (Android)
     validations:
       required: true
+
+  - type: input
+    id: screen-resolution
+    attributes:
+      label: Screen Resolution (optional)
+      description: Your screen resolution if the bug is visual
+      placeholder: 'e.g., 1920x1080, 2560x1440'
 
   - type: textarea
     id: screenshots
     attributes:
-      label: Screenshots
-      description: If applicable, add screenshots to help explain your problem
-      placeholder: Drag and drop images here or paste URLs
+      label: Screenshots / Screen Recording
+      description: |
+        Visual evidence helps tremendously! 
+        - Drag and drop images here
+        - Paste image URLs
+        - Include browser console screenshots if there are errors (F12 → Console)
+      placeholder: |
+        Paste images or URLs here...
 
   - type: textarea
     id: console-errors
     attributes:
-      label: Console Errors
-      description: Open browser console (F12) and paste any error messages
-      placeholder: Paste console errors here...
+      label: Browser Console Errors
+      description: |
+        Open Developer Tools (F12 or Cmd+Opt+I) → Console tab
+        Copy any red error messages or warnings
+      placeholder: |
+        Example:
+        Uncaught TypeError: Cannot read property 'image' of undefined
+            at ChessBoard.jsx:145
       render: shell
 
   - type: dropdown
     id: severity
     attributes:
-      label: Severity
-      description: How severe is this bug?
+      label: Bug Severity
+      description: How severe is this bug for your use case?
       options:
-        - Critical (App is unusable)
-        - High (Major feature broken)
-        - Medium (Feature partially broken)
-        - Low (Minor issue or cosmetic)
+        - Critical - Application is completely unusable
+        - High - Major feature is broken or data loss occurs
+        - Medium - Feature works partially or has workarounds
+        - Low - Minor visual issue or cosmetic problem
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: Frequency
+      description: How often does this bug occur?
+      options:
+        - Always (100% reproducible)
+        - Frequently (>50% of the time)
+        - Sometimes (Intermittent)
+        - Rarely (Happened once or twice)
     validations:
       required: true
 
   - type: checkboxes
     id: checklist
     attributes:
-      label: Checklist
-      description: Please confirm the following
+      label: Pre-submission Checklist
+      description: Please confirm you have completed these steps
       options:
-        - label: I have searched existing issues to make sure this is not a duplicate
+        - label: I have searched existing issues and this is not a duplicate
           required: true
-        - label: I have tested this on the latest version
+        - label: I have tested on the latest version (https://chess-viewer-site.vercel.app)
           required: true
-        - label: I have provided all the requested information
+        - label: I have provided detailed steps to reproduce
           required: true
+        - label: I have checked the browser console for errors
+          required: true
+        - label: I have included screenshots/recordings if the issue is visual
+          required: false
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround (if any)
+      description: Have you found any temporary workaround for this issue?
+      placeholder: 'Using a different piece style works, or refreshing the page fixes it temporarily...'
 
   - type: textarea
     id: additional
     attributes:
       label: Additional Context
-      description: Add any other context about the problem here
-      placeholder: Any additional information...
+      description: |
+        Any other relevant information:
+        - Network conditions (slow connection, VPN, etc.)
+        - Browser extensions that might interfere
+        - Specific settings or customizations
+        - Related issues or discussions
+      placeholder: |
+        - Using VPN connection
+        - Have Dark Reader extension enabled
+        - Custom board size set to 1200px
