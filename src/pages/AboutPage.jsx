@@ -109,7 +109,6 @@ const AboutPage = () => {
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
                 How to Use
-                <Sparkles className="w-5 h-5 text-yellow-400" />
               </h2>
               <p className="text-sm text-gray-400">
                 Complete guide for creating perfect chess diagrams
@@ -335,7 +334,7 @@ const QualityCard = ({
     >
       {recommended && (
         <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-          ⭐ Recommended
+          Recommended
         </div>
       )}
       <div className="flex items-center gap-2">
