@@ -99,13 +99,18 @@ const AdvancedFENInputModal = ({
   const currentFen = hasValidFens ? validFens[safeCurrentIndex] : '';
 
   // Initialize board and pieces with current FEN
-  const boardState = useChessBoard(currentFen);
+  // Ensure we always have a valid FEN for rendering
+  const renderFen = currentFen || DEFAULT_FENS[0];
+  const boardState = useChessBoard(renderFen);
   const { pieceImages, isLoading: imagesLoading } = usePieceImages(pieceStyle);
 
   // Check if board is ready for rendering
   const isBoardReady =
+    Array.isArray(boardState) &&
     boardState.length === 8 &&
+    boardState[0]?.length === 8 &&
     !imagesLoading &&
+    pieceImages &&
     Object.keys(pieceImages).length > 0;
 
   // Board theme colors - use props directly
@@ -313,8 +318,8 @@ const AdvancedFENInputModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col animate-scale-in">
         {/* Compact Header with Tabs */}
         <div className="border-b border-gray-700 bg-gray-900/50">
           <div className="flex items-center justify-between px-4 py-3">
@@ -515,7 +520,7 @@ const AdvancedFENInputModal = ({
               <div className="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
                 <div className="mx-auto aspect-square max-w-sm">
                   {isBoardReady ? (
-                    <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-xl">
+                    <div className="grid grid-cols-8 gap-0 overflow-hidden shadow-2xl border-2 border-gray-800">
                       {Array.from({ length: 64 }).map((_, i) => {
                         const row = Math.floor(i / 8);
                         const col = i % 8;
@@ -525,18 +530,18 @@ const AdvancedFENInputModal = ({
                         return (
                           <div
                             key={`sq-${row}-${col}`}
-                            className="aspect-square flex items-center justify-center"
+                            className="aspect-square flex items-center justify-center transition-colors duration-200"
                             style={{
                               backgroundColor: isLight
-                                ? currentTheme.light
-                                : currentTheme.dark
+                                ? lightSquare
+                                : darkSquare
                             }}
                           >
                             {pieceImage && (
                               <img
                                 src={pieceImage.src}
                                 alt={piece}
-                                className="w-[85%] h-[85%] object-contain"
+                                className="w-[85%] h-[85%] object-contain pointer-events-none"
                                 draggable="false"
                               />
                             )}
@@ -545,7 +550,7 @@ const AdvancedFENInputModal = ({
                       })}
                     </div>
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-lg">
+                    <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-lg border-2 border-gray-700">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-600 border-t-blue-500 mx-auto mb-3"></div>
                         <p className="text-sm text-gray-400">
