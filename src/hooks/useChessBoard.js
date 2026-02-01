@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { parseFEN } from '../utils';
+import { parseFEN, logger } from '../utils';
 
 export const useChessBoard = (fen) => {
   // Simplified: just use state with useEffect
@@ -21,7 +21,7 @@ export const useChessBoard = (fen) => {
       const board = parseFEN(fen);
       setBoardState(board);
     } catch (error) {
-      console.error('Failed to parse FEN:', error);
+      logger.error('Failed to parse FEN:', error);
       setBoardState([]);
     }
   }, [fen]);
