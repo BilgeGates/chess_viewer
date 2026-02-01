@@ -1,6 +1,6 @@
 {
   "name": "chessviewer",
-  "version": "3.5.3",
+  "version": "3.5.4",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
