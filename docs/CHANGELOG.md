@@ -7,10 +7,183 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-### Planned
-
 - SVG export format
 - Keyboard shortcuts
+
+---
+
+## [v3.5.4] - 2026-02-01
+
+### Fixed
+
+#### Modal Bugs
+
+- **ThemeModal** - Fixed piece preview display issues:
+  - Corrected piece key mapping (wK, wQ, etc.) for proper piece rendering
+  - Restored theme color template selections to previous working state
+  - Fixed board preview showing pieces correctly in theme selector
+
+#### Accessibility Improvements
+
+- **ThemeModal** - Added comprehensive ARIA support:
+  - Added `role="dialog"`, `aria-modal`, `aria-labelledby`
+  - Implemented tab pattern with `role="tablist"`, `role="tab"`, `aria-selected`
+  - Added tabpanel structure with `role="tabpanel"`, `aria-labelledby`
+  - Enhanced button focus styles with `focus-visible` rings
+- **ThemePresetButton** - Added descriptive `aria-label` with color values
+- **Theme grid** - Added `role="group"` with `aria-label`
+
+### Added
+
+#### Performance Optimizations
+
+- **React.lazy code splitting** - All pages now lazy-loaded (HomePage, AboutPage, DownloadPage, SupportPage)
+- **Intersection Observer** - Created `useIntersectionObserver` hook for lazy rendering theme presets
+- **Performance hooks** - Added `useDebounce` and `useIdleCallback` hooks in usePerformance.js
+- **GPU acceleration** - Added `will-change` properties, `transform: translateZ(0)` for GPU layer promotion
+- **CSS containment** - Added `contain` property to modals and board elements
+- **Reduced CSS duplication** - Single source of truth for scrollbar and animation styles
+- **Better tree-shaking** - Removed unused props improves bundle optimization
+
+#### UI Animations
+
+- Added `animate-fadeIn` keyframe animation
+- Added `animate-slideUp` keyframe animation
+- Added `animate-scaleIn` keyframe animation
+- All animations respect `--animation-duration` CSS variable
+
+#### Custom Scrollbar
+
+- Blue themed custom scrollbar with sharp corners (no border-radius)
+- Scrollbar colors: blue-500/60 thumb, gray-800/50 track
+- Hover and active states for better UX
+- Firefox support with `scrollbar-width` and `scrollbar-color`
+
+#### Accessibility (A11y) Enhancements
+
+- **Skip Navigation Link** - Added skip-to-main-content link in App.jsx for keyboard users
+- **Main Landmark** - Wrapped content in `<main id="main-content">` for screen readers
+- **404 Page** - Created professional NotFoundPage with navigation options
+- **Footer ARIA** - Added `role="contentinfo"`, aria-labels to external links
+- **Navbar Keyboard Support**:
+  - Escape key closes mobile menu
+  - Body scroll lock when menu is open
+  - Focus-visible styles on logo buttons
+  - `onKeyDown` handlers for Enter/Space key activation
+  - `aria-label` on all interactive elements
+- **NotificationContainer** - Added `role="region"`, `aria-live="polite"`, keyboard dismiss
+- **FENInputField** - Added `aria-describedby`, `aria-invalid`, `aria-label` attributes
+- **ExportProgress** - Added `role="dialog"`, `aria-modal`, `aria-valuenow` on progress bar
+- **FamousPositionButton** - Added `aria-label`, focus-visible styles
+- **PickerModal (Color Picker)**:
+  - Added `role="dialog"`, `aria-modal`, `aria-labelledby`
+  - Canvas has `role="img"` with descriptive aria-label
+  - Hue slider has proper `id` and `htmlFor` label association
+  - Action buttons have `type="button"` and focus-visible styles
+- **UserGuide** - Added `aria-expanded`, `aria-controls`, `id` for collapsible content
+- **Input (base)** - Added `useId` for label association, `aria-invalid`, `aria-describedby` for errors
+- **Checkbox (base)** - Added `useId` for proper label-input association, focus-within styles
+- **Select (base)** - Added listbox ARIA pattern with `role="listbox"`, `aria-selected`, keyboard navigation
+
+#### New Components
+
+- **NotFoundPage** (`src/pages/NotFoundPage.jsx`) - 404 error page with:
+  - Gradient animated 404 text
+  - Home and Go Back navigation buttons
+  - Proper heading hierarchy
+  - Responsive design
+
+#### Animations
+
+- **slideInRight** - New keyframe animation for notifications
+- **shimmer** - New keyframe animation for progress bars (moved from inline)
+
+### Fixed
+
+#### Board Preview Bugs
+
+- **ThemeModal preview** - Fixed live board preview not rendering pieces correctly
+  - Added `isBoardReady` check to ensure board state and piece images are loaded before rendering
+  - Added loading indicator while pieces are being fetched
+  - Improved conditional rendering for piece images
+- **AdvancedFENInputModal preview** - Fixed board preview not displaying pieces properly
+  - Added `isBoardReady` validation for proper piece rendering
+  - Added loading indicator during piece image loading
+  - Fixed piece image access pattern for consistent rendering
+
+#### Hook Improvements
+
+- **useChessBoard hook** - Fixed empty initial board state issue
+  - Added `useMemo` for initial board parsing to prevent empty state on first render
+  - Added try-catch error handling for FEN parsing
+  - Board now initializes with parsed FEN immediately instead of empty array
+
+#### Bug Fixes
+
+- **ThemeAdvancedPickerView** - Fixed JSX syntax errors and improved color picker functionality
+- **AdvancedFENInputModal preview** - Fixed board preview not rendering pieces
+  - Added proper array structure validation for boardState
+  - Added fallback to default FEN when currentFen is empty
+  - Improved `isBoardReady` checks with Array.isArray validation
+
+#### CSS Fixes
+
+- Fixed duplicate and broken CSS in reduce-motion media query
+- Removed malformed CSS block syntax at end of index.css
+
+#### Code Quality
+
+- **Removed duplicate CSS** - Consolidated custom-scrollbar styles from 3 files into `index.css`:
+  - Removed inline `<style>` from ControlPanel.jsx
+  - Removed inline `<style>` from FENHistoryModal.jsx (dangerouslySetInnerHTML)
+  - Removed inline `<style>` from NotificationContainer.jsx
+- **Removed unused variables**:
+  - `positionKey` prop from FamousPositionButton
+  - `onNotification` parameter from useTheme hook
+- **Removed inline styles** - Moved shimmer animation from ExportProgress inline style to CSS
+
+#### Router
+
+- Added catch-all `*` route for 404 handling
+- Improved PageLoader with `role="status"` and `aria-live="polite"`
+
+### Changed
+
+#### UI/UX Improvements
+
+- **ThemeModal** - Expanded from `max-w-md` to `max-w-lg` for better content visibility
+- **ThemeModal header** - Added gradient background and improved icon styling
+- **ThemePresetButton** - Extracted as separate memoized component with lazy loading
+
+#### About Page & UserGuide
+
+- Removed excessive emojis (⭐ and Sparkles icon)
+- Cleaner, more professional appearance
+- "Recommended" badge now text-only without emoji
+
+#### Router
+
+- Implemented Suspense with loading spinner fallback for lazy-loaded pages
+- Reduced initial bundle size through code splitting
+
+### Performance
+
+- **ThemeMainView** - Uses Intersection Observer for lazy rendering presets (100px rootMargin)
+- **Modal classes** - Added `modal-backdrop` and `modal-content` classes with optimized properties
+- **Transition utilities** - Enhanced `transition-smooth` and `transition-smooth-fast` with `will-change`
+
+#### CSS Improvements
+
+- **Scrollbar consolidation** - All scrollbar styles now in single location (`index.css`)
+- **Animation centralization** - All @keyframes moved to base layer in index.css
+- **Focus-visible styles** - Added consistent focus-visible ring styles across components
+
+#### Component Updates
+
+- **Navbar** - Added Escape key listener, scroll lock, improved keyboard navigation
+- **Footer** - Added aria-hidden to decorative icons, focus styles on links
+- **Router** - Added NotFoundPage lazy import and route
+- **PickerModal** - Improved accessibility with ARIA attributes and focus management
 
 ---
 
@@ -51,11 +224,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   - FENInputList (FEN rows)
   - UserGuide (pros/cons lists)
   - AboutPage (format comparisons)
-
-### Known Issues
-
-- 🐛 **ThemeModal preview** - Live board preview not updating correctly
-- 🐛 **AdvancedFENInputModal preview** - Board preview not rendering pieces properly
 
 ---
 
