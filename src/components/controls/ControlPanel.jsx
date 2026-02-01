@@ -68,7 +68,6 @@ const ControlPanel = memo((props) => {
 
   // Theme hook
   const theme = useTheme({
-    onNotification,
     initialLight: initialLightSquare,
     initialDark: initialDarkSquare
   });
@@ -182,12 +181,7 @@ const ControlPanel = memo((props) => {
           </div>
           <div className="grid grid-cols-2 gap-2 max-h-40 sm:max-h-48 overflow-y-auto pr-2 custom-scrollbar">
             {Object.entries(FAMOUS_POSITIONS).map(([key, pos]) => (
-              <FamousPositionButton
-                key={key}
-                positionKey={key}
-                position={pos}
-                onClick={setFen}
-              />
+              <FamousPositionButton key={key} position={pos} onClick={setFen} />
             ))}
           </div>
         </div>
@@ -206,26 +200,6 @@ const ControlPanel = memo((props) => {
           onOpenModal={() => setIsExportModalOpen(true)}
         />
       </div>
-
-      {/* Custom Scrollbar Styles */}
-      <style>
-        {`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(26, 26, 36, 0.8);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
-        }
-      `}
-      </style>
 
       {/* Modals - Only render when open */}
       {isHistoryOpen && (
