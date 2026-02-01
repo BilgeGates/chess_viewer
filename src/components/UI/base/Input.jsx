@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { AlertCircle } from 'lucide-react';
+import { getInputClasses, classNames, cn } from '../../../utils';
 
 const Input = React.memo(
   ({
@@ -12,44 +13,57 @@ const Input = React.memo(
     disabled = false,
     icon: Icon,
     className = '',
+    id: providedId,
     ...props
   }) => {
+    const generatedId = useId();
+    const inputId = providedId || generatedId;
+    const errorId = `${inputId}-error`;
+    const state = error ? 'error' : 'normal';
+
     return (
       <div className="space-y-2">
         {label && (
-          <label className="block text-sm font-semibold text-gray-300">
+          <label htmlFor={inputId} className={classNames.text.label}>
             {label}
           </label>
         )}
         <div className="relative">
           {Icon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <div
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              aria-hidden="true"
+            >
               <Icon className="w-5 h-5" />
             </div>
           )}
           <input
+            id={inputId}
             type={type}
             value={value}
             onChange={onChange}
             placeholder={placeholder}
             disabled={disabled}
-            className={`
-            w-full px-4 py-2.5
-            ${Icon ? 'pl-10' : ''}
-            bg-gray-950/50 rounded-lg
-            text-sm text-gray-200
-            outline-none focus:outline-none focus-visible:outline-none focus:ring-0
-            transition-all
-            disabled:opacity-50 disabled:cursor-not-allowed
-            ${error ? 'border border-red-500' : 'border-gray-700'}
-            ${className}
-          `}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={error ? errorId : undefined}
+            className={getInputClasses(
+              state,
+              cn(
+                Icon && 'pl-10',
+                disabled && 'opacity-50 cursor-not-allowed',
+                className
+              )
+            )}
             {...props}
           />
         </div>
         {error && (
-          <div className="flex items-center gap-2 text-red-400 text-xs">
-            <AlertCircle className="w-3.5 h-3.5" />
+          <div
+            id={errorId}
+            className="flex items-center gap-2 text-danger-400 text-xs"
+            role="alert"
+          >
+            <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{error}</span>
           </div>
         )}
