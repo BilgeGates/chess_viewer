@@ -42,18 +42,25 @@ const ExportProgress = React.memo(
     const format = currentFormat || 'png';
 
     return (
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="export-progress-title"
+      >
         <div className="bg-gradient-to-br from-gray-850 to-gray-900 border border-gray-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl max-w-xl w-full relative animate-fadeIn">
           {/* Close Button */}
           {onClose && (
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 hover:bg-gray-800 rounded-lg transition-colors group"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 p-1.5 hover:bg-gray-800 rounded-lg transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
               title="Hide modal"
+              aria-label="Hide export progress"
             >
               <X
                 className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 group-hover:text-white transition-colors"
                 strokeWidth={2}
+                aria-hidden="true"
               />
             </button>
           )}
@@ -65,10 +72,14 @@ const ExportProgress = React.memo(
                 <FileImage
                   className="w-6 h-6 sm:w-7 sm:h-7 text-blue-400"
                   strokeWidth={2}
+                  aria-hidden="true"
                 />
               </div>
               <div className="flex-1">
-                <h3 className="text-base sm:text-lg font-semibold text-white mb-1">
+                <h3
+                  id="export-progress-title"
+                  className="text-base sm:text-lg font-semibold text-white mb-1"
+                >
                   Exporting {format.toUpperCase()}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-400">
@@ -77,9 +88,15 @@ const ExportProgress = React.memo(
               </div>
             </div>
 
-            {/* Dual Range Progress Bar */}
+            {/* Progress Bar */}
             <div className="space-y-4">
-              <div className="flex-1 relative h-2.5">
+              <div
+                className="flex-1 relative h-2.5"
+                role="progressbar"
+                aria-valuenow={displayProgress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <div className="flex gap-1 h-full items-center">
                   {/* Blue Range */}
                   <div
@@ -87,13 +104,7 @@ const ExportProgress = React.memo(
                     style={{ width: `${displayProgress}%` }}
                   >
                     {!isPaused && (
-                      <div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                        style={{
-                          animation: 'shimmer 1.5s infinite linear',
-                          backgroundSize: '200% 100%'
-                        }}
-                      />
+                      <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/25 to-transparent" />
                     )}
                   </div>
                   {/* Gray Range */}
@@ -103,6 +114,9 @@ const ExportProgress = React.memo(
                   />
                 </div>
               </div>
+              <p className="text-center text-sm text-gray-400">
+                {Math.round(displayProgress)}% complete
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -111,7 +125,8 @@ const ExportProgress = React.memo(
               {onPause && onResume && (
                 <button
                   onClick={isPaused ? onResume : onPause}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white font-semibold text-xs sm:text-sm"
+                  className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-white font-semibold text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+                  aria-label={isPaused ? 'Resume export' : 'Pause export'}
                 >
                   {isPaused ? (
                     <>
@@ -119,6 +134,7 @@ const ExportProgress = React.memo(
                         className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                         strokeWidth={2.5}
                         fill="currentColor"
+                        aria-hidden="true"
                       />
                       <span>Resume</span>
                     </>
@@ -127,6 +143,7 @@ const ExportProgress = React.memo(
                       <Pause
                         className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                         strokeWidth={2.5}
+                        aria-hidden="true"
                       />
                       <span>Pause</span>
                     </>
@@ -138,11 +155,13 @@ const ExportProgress = React.memo(
               {onCancel && (
                 <button
                   onClick={onCancel}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-red-600 hover:bg-red-500 rounded-lg transition-colors text-white font-semibold text-xs sm:text-sm"
+                  className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-red-600 hover:bg-red-500 rounded-lg transition-colors text-white font-semibold text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                  aria-label="Cancel export"
                 >
                   <XCircle
                     className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                     strokeWidth={2.5}
+                    aria-hidden="true"
                   />
                   <span>Cancel</span>
                 </button>
@@ -150,14 +169,6 @@ const ExportProgress = React.memo(
             </div>
           </div>
         </div>
-
-        {/* Shimmer Animation */}
-        <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-      `}</style>
       </div>
     );
   }
