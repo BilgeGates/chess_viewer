@@ -1,145 +1,205 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import {
   ThemeMainView,
   ThemeAdvancedPickerView,
   ThemeSettingsView
 } from '../../UI/color-picker/views';
-import { Palette, Sliders, Settings, X } from 'lucide-react';
+import { Palette, Sliders, Settings, X, Check } from 'lucide-react';
 
-const ThemeModal = ({
-  isOpen,
-  onClose,
-  lightSquare,
-  setLightSquare,
-  darkSquare,
-  setDarkSquare,
-  pieceStyle = 'cburnett',
-  onNotification
-}) => {
-  const [activeTab, setActiveTab] = useState('main');
-  const [activeSquare, setActiveSquare] = useState('light');
+const ThemeModal = memo(
+  ({
+    isOpen,
+    onClose,
+    lightSquare,
+    setLightSquare,
+    darkSquare,
+    setDarkSquare,
+    pieceStyle = 'cburnett',
+    onNotification
+  }) => {
+    const [activeTab, setActiveTab] = useState('main');
+    const [activeSquare, setActiveSquare] = useState('light');
+    const [previewLight, setPreviewLight] = useState(lightSquare);
+    const [previewDark, setPreviewDark] = useState(darkSquare);
 
-  // Force re-render when colors change
-  const [renderKey, setRenderKey] = useState(0);
+    useEffect(() => {
+      if (isOpen) {
+        setPreviewLight(lightSquare);
+        setPreviewDark(darkSquare);
+      }
+    }, [isOpen, lightSquare, darkSquare]);
 
-  useEffect(() => {
-    // Trigger re-render when colors change
-    setRenderKey((prev) => prev + 1);
-  }, [lightSquare, darkSquare]);
+    const hasChanges =
+      previewLight !== lightSquare || previewDark !== darkSquare;
 
-  // Handle theme application from preset themes
-  const handleThemeApply = (light, dark) => {
-    setLightSquare(light);
-    setDarkSquare(dark);
+    const handleThemeApply = useCallback((light, dark) => {
+      setPreviewLight(light);
+      setPreviewDark(dark);
+    }, []);
 
-    if (onNotification) {
-      onNotification('Theme applied successfully', 'success');
-    }
-  };
+    const handleSave = useCallback(() => {
+      setLightSquare(previewLight);
+      setDarkSquare(previewDark);
+      onNotification?.('Theme applied', 'success');
+      onClose();
+    }, [
+      previewLight,
+      previewDark,
+      setLightSquare,
+      setDarkSquare,
+      onNotification,
+      onClose
+    ]);
 
-  if (!isOpen) return null;
+    const handleCancel = useCallback(() => {
+      onClose();
+    }, [onClose]);
 
-  const tabs = [
-    { id: 'main', label: 'Main', icon: Palette },
-    { id: 'picker', label: 'Advanced Picker', icon: Sliders },
-    { id: 'settings', label: 'Settings', icon: Settings }
-  ];
+    if (!isOpen) return null;
 
-  const viewConfig = {
-    main: {
-      title: 'Board Theme',
-      gradient: 'from-blue-600/10 to-purple-600/10'
-    },
-    picker: {
-      title: 'Advanced Color Picker',
-      gradient: 'from-purple-600/10 to-pink-600/10'
-    },
-    settings: {
-      title: 'Theme Settings',
-      gradient: 'from-blue-600/10 to-cyan-600/10'
-    }
-  };
+    const tabs = [
+      { id: 'main', icon: Palette },
+      { id: 'picker', icon: Sliders },
+      { id: 'settings', icon: Settings }
+    ];
 
-  const currentView = viewConfig[activeTab];
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border border-gray-700/50 rounded-2xl shadow-2xl overflow-hidden w-full max-w-2xl animate-fadeIn">
-        {/* Header */}
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm modal-backdrop flex items-center justify-center z-50 p-3"
+        onClick={handleCancel}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="theme-modal-title"
+      >
         <div
-          className={`flex items-center gap-3 p-4 border-b border-gray-700/50 bg-gradient-to-r ${currentView.gradient}`}
+          className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl modal-content"
+          onClick={(e) => e.stopPropagation()}
+          style={{ contain: 'layout style paint' }}
         >
-          <Palette className="w-5 h-5 text-purple-400" />
-          <span className="text-sm font-bold text-gray-200 flex-1">
-            {currentView.title}
-          </span>
-          <button
-            onClick={onClose}
-            className="p-1.5 hover:bg-gray-800/80 rounded-lg transition-all"
-          >
-            <X className="w-4 h-4 text-gray-400" />
-          </button>
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="flex border-b border-gray-700/50 bg-gray-900/50">
-          {tabs.map(({ id, label, icon: Icon }) => (
+          {/* Header */}
+          <div className="flex items-center justify-between p-3 border-b border-gray-800 bg-gradient-to-r from-gray-800/50 to-gray-900/50">
+            <div className="flex items-center gap-2">
+              <Palette
+                className="w-4 h-4 text-primary-400"
+                aria-hidden="true"
+              />
+              <span
+                id="theme-modal-title"
+                className="text-sm font-bold text-gray-200"
+              >
+                Board Theme
+              </span>
+            </div>
             <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold transition-all ${
-                activeTab === id
-                  ? 'text-white bg-gray-800/70 border-b-2 border-blue-500'
-                  : 'text-gray-400 hover:text-gray-300 hover:bg-gray-800/30'
-              }`}
+              onClick={handleCancel}
+              className="p-1.5 hover:bg-gray-800 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              aria-label="Close theme modal"
             >
-              <Icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{label}</span>
+              <X className="w-4 h-4 text-gray-400" aria-hidden="true" />
             </button>
-          ))}
-        </div>
+          </div>
 
-        {/* Content */}
-        <div className="max-h-[70vh] overflow-y-auto custom-scrollbar">
-          {activeTab === 'main' && (
-            <ThemeMainView
-              key={`main-${renderKey}`}
-              currentLight={lightSquare}
-              currentDark={darkSquare}
-              onThemeApply={handleThemeApply}
-              pieceStyle={pieceStyle}
-            />
-          )}
-
-          {activeTab === 'picker' && (
-            <ThemeAdvancedPickerView
-              key={`picker-${renderKey}`}
-              activeSquare={activeSquare}
-              setActiveSquare={setActiveSquare}
-              lightSquare={lightSquare}
-              setLightSquare={setLightSquare}
-              darkSquare={darkSquare}
-              setDarkSquare={setDarkSquare}
-            />
-          )}
-
-          {activeTab === 'settings' && (
-            <ThemeSettingsView key={`settings-${renderKey}`} />
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-700/50 bg-gray-900/50">
-          <button
-            onClick={onClose}
-            className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold rounded-xl transition-all shadow-lg"
+          {/* Tabs */}
+          <div
+            className="flex border-b border-gray-800 bg-gray-800/30"
+            role="tablist"
+            aria-label="Theme options"
           >
-            Done
-          </button>
+            {tabs.map(({ id, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                role="tab"
+                aria-selected={activeTab === id}
+                aria-controls={`theme-panel-${id}`}
+                className={`flex-1 p-2.5 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  activeTab === id
+                    ? 'text-white bg-gray-800/70 border-b-2 border-primary-500'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/40'
+                }`}
+              >
+                <Icon className="w-4 h-4" aria-hidden="true" />
+                {id.charAt(0).toUpperCase() + id.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {/* Content with custom scrollbar */}
+          <div className="max-h-[55vh] overflow-y-auto custom-scrollbar">
+            {activeTab === 'main' && (
+              <div
+                role="tabpanel"
+                id="theme-panel-main"
+                aria-labelledby="tab-main"
+              >
+                <ThemeMainView
+                  currentLight={previewLight}
+                  currentDark={previewDark}
+                  onThemeApply={handleThemeApply}
+                  pieceStyle={pieceStyle}
+                />
+              </div>
+            )}
+            {activeTab === 'picker' && (
+              <div
+                role="tabpanel"
+                id="theme-panel-picker"
+                aria-labelledby="tab-picker"
+              >
+                <ThemeAdvancedPickerView
+                  activeSquare={activeSquare}
+                  setActiveSquare={setActiveSquare}
+                  lightSquare={previewLight}
+                  setLightSquare={setPreviewLight}
+                  darkSquare={previewDark}
+                  setDarkSquare={setPreviewDark}
+                />
+              </div>
+            )}
+            {activeTab === 'settings' && (
+              <div
+                role="tabpanel"
+                id="theme-panel-settings"
+                aria-labelledby="tab-settings"
+              >
+                <ThemeSettingsView />
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div
+            className="p-2 border-t border-gray-800 flex gap-2"
+            role="group"
+            aria-label="Modal actions"
+          >
+            <button
+              onClick={handleCancel}
+              className="flex-1 py-2 bg-gray-800 hover:bg-gray-700 text-white text-xs font-medium rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={!hasChanges}
+              className={`flex-1 py-2 text-xs font-medium rounded flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
+                hasChanges
+                  ? 'bg-primary-600 hover:bg-primary-500 text-white'
+                  : 'bg-gray-800 text-gray-600 cursor-not-allowed'
+              }`}
+              type="button"
+              aria-disabled={!hasChanges}
+            >
+              <Check className="w-3.5 h-3.5" aria-hidden="true" />
+              Save
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
+ThemeModal.displayName = 'ThemeModal';
 export default ThemeModal;
