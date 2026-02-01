@@ -194,27 +194,6 @@ const FENHistoryModal = ({
           </div>
         )}
       </div>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(26, 26, 36, 0.8);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
-        }
-      `
-        }}
-      />
     </div>
   );
 };
