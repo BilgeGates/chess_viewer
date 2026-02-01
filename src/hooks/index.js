@@ -9,3 +9,5 @@ export { useColorState } from './useColorState';
 export { useColorConversion } from './useColorConversion';
 export { useCanvasPicker } from './useCanvasPicker';
 export { useOutsideClick } from './useOutsideClick';
+export { useIntersectionObserver } from './useIntersectionObserver';
+export { useDebounce, useIdleCallback } from './usePerformance';

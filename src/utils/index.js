@@ -23,3 +23,9 @@ export * from './imageOptimizer';
 
 // Validation utilities
 export * from './validation';
+
+// Class name utilities
+export * from './classNames';
+
+// Performance utilities
+export * from './performance';
