@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Info, Download, HelpCircle, Menu, X, Crown } from 'lucide-react';
 
@@ -27,22 +27,65 @@ const Navbar = () => {
     };
   }, []);
 
-  const navItems = [
-    { path: '/', label: 'Home', icon: Home },
-    { path: '/about', label: 'About', icon: Info },
-    { path: '/download', label: 'Download', icon: Download },
-    { path: '/support', label: 'Support', icon: HelpCircle }
-  ];
+  // Close menu on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
 
-  const handleClose = () => setIsOpen(false);
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  const navItems = useMemo(
+    () => [
+      { path: '/', label: 'Home', icon: Home },
+      { path: '/about', label: 'About', icon: Info },
+      { path: '/download', label: 'Download', icon: Download },
+      { path: '/support', label: 'Support', icon: HelpCircle }
+    ],
+    []
+  );
+
+  const handleClose = useCallback(() => setIsOpen(false), []);
+
+  const handleLogoClick = useCallback(() => {
+    navigate('/');
+    handleClose();
+  }, [navigate, handleClose]);
+
+  const handleLogoKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleLogoClick();
+      }
+    },
+    [handleLogoClick]
+  );
 
   return (
     <>
       {/* Floating Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-2xl hover:scale-110 transition-transform"
+        className="fixed top-4 left-4 z-50 p-3 rounded-xl gradient-primary text-white shadow-2xl hover:scale-110 transition-smooth gpu-accelerated"
         aria-label="Menu"
+        aria-expanded={isOpen}
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -50,22 +93,25 @@ const Navbar = () => {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-fade-in"
           onClick={handleClose}
+          aria-hidden="true"
         />
       )}
 
       {/* DESKTOP: Side Menu */}
       {!isMobile && (
         <nav
-          className={`fixed top-0 left-0 h-full w-72 md:w-80 bg-gray-900/98 backdrop-blur-lg border-r border-gray-700 shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
+          className={`fixed top-0 left-0 h-full w-72 md:w-80 glass shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
             isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
+          aria-label="Main navigation"
         >
           {/* Close Button */}
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-smooth-fast"
+            aria-label="Close menu"
           >
             <X className="w-6 h-6" />
           </button>
@@ -73,13 +119,14 @@ const Navbar = () => {
           <div className="p-6 pt-16">
             {/* Logo */}
             <div
-              className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-700 cursor-pointer"
-              onClick={() => {
-                navigate('/');
-                handleClose();
-              }}
+              className="flex items-center gap-3 mb-8 pb-6 border-b border-gray-700 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 rounded-lg"
+              onClick={handleLogoClick}
+              onKeyDown={handleLogoKeyDown}
+              role="button"
+              tabIndex={0}
+              aria-label="Go to home page"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                 <Crown className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -98,9 +145,9 @@ const Navbar = () => {
                     to={item.path}
                     onClick={handleClose}
                     className={({ isActive }) =>
-                      `w-full px-4 py-3 rounded-lg font-semibold text-sm transition-all flex items-center gap-3 ${
+                      `w-full px-4 py-3 rounded-lg font-semibold text-sm transition-smooth-fast flex items-center gap-3 ${
                         isActive
-                          ? 'bg-blue-600 text-white shadow-lg'
+                          ? 'bg-primary-600 text-white shadow-lg'
                           : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                       }`
                     }
@@ -118,31 +165,37 @@ const Navbar = () => {
       {/* MOBILE: Bottom Sheet */}
       {isMobile && (
         <nav
-          className={`fixed bottom-0 left-0 right-0 bg-gray-900/98 backdrop-blur-lg rounded-t-3xl shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
+          className={`fixed bottom-0 left-0 right-0 glass rounded-t-3xl shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
             isOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
+          aria-label="Main navigation"
         >
           <div className="p-6 pb-safe">
             {/* Handle Bar */}
-            <div className="w-12 h-1.5 bg-gray-600 rounded-full mx-auto mb-6" />
+            <div
+              className="w-12 h-1.5 bg-gray-600 rounded-full mx-auto mb-6"
+              aria-hidden="true"
+            />
 
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+              className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-smooth-fast"
+              aria-label="Close menu"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Logo */}
             <div
-              className="flex items-center justify-center gap-3 mb-6 pb-6 border-b border-gray-700 cursor-pointer"
-              onClick={() => {
-                navigate('/');
-                handleClose();
-              }}
+              className="flex items-center justify-center gap-3 mb-6 pb-6 border-b border-gray-700 cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 rounded-lg"
+              onClick={handleLogoClick}
+              onKeyDown={handleLogoKeyDown}
+              role="button"
+              tabIndex={0}
+              aria-label="Go to home page"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
                 <Crown className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -161,9 +214,9 @@ const Navbar = () => {
                     to={item.path}
                     onClick={handleClose}
                     className={({ isActive }) =>
-                      `px-4 py-4 rounded-xl font-semibold text-sm transition-all flex flex-col items-center justify-center gap-2 ${
+                      `px-4 py-4 rounded-xl font-semibold text-sm transition-smooth-fast flex flex-col items-center justify-center gap-2 ${
                         isActive
-                          ? 'bg-blue-600 text-white shadow-lg'
+                          ? 'bg-primary-600 text-white shadow-lg'
                           : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
                       }`
                     }
