@@ -26,16 +26,17 @@ const UserGuide = () => {
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-6 py-5 flex items-center justify-between text-left group hover:bg-gray-700/30 transition-all duration-300"
+        className="w-full px-6 py-5 flex items-center justify-between text-left group hover:bg-gray-700/30 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+        aria-expanded={isExpanded}
+        aria-controls="user-guide-content"
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-            <Info className="w-6 h-6 text-white" />
+            <Info className="w-6 h-6 text-white" aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors flex items-center gap-2">
               User Guide
-              <Sparkles className="w-4 h-4 text-yellow-400" />
             </h3>
             <p className="text-sm text-gray-400">
               {isExpanded ? 'Hide guide' : 'Learn how to use this tool'}
@@ -46,6 +47,7 @@ const UserGuide = () => {
           className={`transform transition-transform duration-300 ${
             isExpanded ? 'rotate-180' : ''
           }`}
+          aria-hidden="true"
         >
           <svg
             className="w-6 h-6 text-gray-400"
@@ -65,7 +67,10 @@ const UserGuide = () => {
 
       {/* Content */}
       {isExpanded && (
-        <div className="px-6 pb-6 space-y-6 animate-fadeIn">
+        <div
+          id="user-guide-content"
+          className="px-6 pb-6 space-y-6 animate-fadeIn"
+        >
           {/* Export Quality Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -305,7 +310,7 @@ const QualityCard = ({
     >
       {recommended && (
         <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-          ⭐ Recommended
+          Recommended
         </div>
       )}
       <div className="flex items-center gap-2">
