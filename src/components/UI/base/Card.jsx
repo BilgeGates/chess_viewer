@@ -1,24 +1,18 @@
+import { getCardClasses } from '../../../utils';
+
+/**
+ * Card Component
+ * Reusable card with consistent styling
+ */
 const Card = ({
   children,
   className = '',
   gradient = false,
-  padding = 'p-4 sm:p-6',
-  border = true
+  glass = false,
+  padding = 'md'
 }) => {
   return (
-    <div
-      className={`
-        ${
-          gradient
-            ? 'bg-gradient-to-br from-gray-800 to-gray-900'
-            : 'bg-gray-800'
-        }
-        rounded-xl ${padding}
-        ${border ? 'border border-gray-700/50' : ''}
-        shadow-xl
-        ${className}
-      `}
-    >
+    <div className={getCardClasses(gradient, glass, padding, className)}>
       {children}
     </div>
   );
