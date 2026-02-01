@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { logger } from '../../utils';
 
 /**
  * ErrorFallback component displayed when an error is caught
@@ -75,10 +76,8 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
+    // Log error using logger utility
+    logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
     // Call optional onError callback
     if (this.props.onError) {
