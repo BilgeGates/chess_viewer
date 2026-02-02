@@ -80,15 +80,17 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Floating Menu Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-[45] p-3 rounded-xl gradient-primary text-white shadow-2xl hover:scale-110 transition-smooth gpu-accelerated"
-        aria-label="Menu"
-        aria-expanded={isOpen}
-      >
-        <Menu className="w-6 h-6" />
-      </button>
+      {/* Floating Menu Button - Hide when menu is open */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed top-4 left-4 z-[45] p-3 rounded-xl gradient-primary text-white shadow-2xl hover:scale-110 transition-smooth gpu-accelerated"
+          aria-label="Menu"
+          aria-expanded={false}
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      )}
 
       {/* Overlay */}
       {isOpen && (
