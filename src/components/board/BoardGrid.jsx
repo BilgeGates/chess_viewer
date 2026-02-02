@@ -31,13 +31,31 @@ const BoardGrid = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    return (
-      prevProps.board === nextProps.board &&
-      prevProps.lightSquare === nextProps.lightSquare &&
-      prevProps.darkSquare === nextProps.darkSquare &&
-      prevProps.flipped === nextProps.flipped &&
-      prevProps.pieceImages === nextProps.pieceImages
-    );
+    // Fast reference equality
+    if (prevProps.board === nextProps.board)
+      return (
+        prevProps.lightSquare === nextProps.lightSquare &&
+        prevProps.darkSquare === nextProps.darkSquare &&
+        prevProps.flipped === nextProps.flipped &&
+        prevProps.pieceImages === nextProps.pieceImages
+      );
+
+    // If references differ, do a lightweight value comparison for 8x8 boards
+    try {
+      const prevFlat = (prevProps.board || []).flat().join(',');
+      const nextFlat = (nextProps.board || []).flat().join(',');
+
+      return (
+        prevFlat === nextFlat &&
+        prevProps.lightSquare === nextProps.lightSquare &&
+        prevProps.darkSquare === nextProps.darkSquare &&
+        prevProps.flipped === nextProps.flipped &&
+        prevProps.pieceImages === nextProps.pieceImages
+      );
+    } catch (e) {
+      // Fall back to conservative re-render on unexpected shapes
+      return false;
+    }
   }
 );
 
