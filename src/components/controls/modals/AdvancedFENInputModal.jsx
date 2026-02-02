@@ -526,7 +526,19 @@ const AdvancedFENInputModal = ({
                         const col = i % 8;
                         const isLight = (row + col) % 2 === 0;
                         const piece = boardState[row]?.[col] || '';
-                        const pieceImage = piece && pieceImages[piece];
+
+                        // Convert FEN piece notation to image key (e.g., 'K' -> 'wK', 'k' -> 'bK')
+                        let pieceKey = '';
+                        if (piece) {
+                          const color =
+                            piece === piece.toUpperCase() ? 'w' : 'b';
+                          pieceKey = color + piece.toUpperCase();
+                        }
+
+                        const pieceImage = pieceKey
+                          ? pieceImages[pieceKey]
+                          : null;
+
                         return (
                           <div
                             key={`sq-${row}-${col}`}
@@ -608,35 +620,74 @@ const AdvancedFENInputModal = ({
 
           {/* EXPORT TAB */}
           {activeTab === TABS.EXPORT && hasValidFens && (
-            <div className="space-y-4">
-              <div className="text-center mb-4">
-                <p className="text-sm text-gray-400">
-                  Export {validFens.length} position
-                  {validFens.length > 1 ? 's' : ''} as images
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-lg px-4 py-2 mb-2">
+                  <Download className="w-5 h-5 text-blue-400" />
+                  <span className="text-sm font-semibold text-gray-200">
+                    Batch Export Ready
+                  </span>
+                </div>
+                <p className="text-sm text-gray-400 mt-2">
+                  Export all {validFens.length} valid position
+                  {validFens.length > 1 ? 's' : ''} as high-quality images
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              {/* Export Format Options */}
+              <div className="space-y-3">
+                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                  Select Format
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => handleBatchExport('png')}
+                    disabled={isExporting}
+                    className="group relative overflow-hidden px-5 py-4 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-blue-500/50 active:scale-95"
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <Download className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                      <span className="text-sm">Export PNG</span>
+                      <span className="text-xs text-blue-200 font-normal">
+                        Lossless quality
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => handleBatchExport('jpeg')}
+                    disabled={isExporting}
+                    className="group relative overflow-hidden px-5 py-4 bg-gradient-to-br from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-amber-500/50 active:scale-95"
+                  >
+                    <div className="flex flex-col items-center gap-2">
+                      <Download className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                      <span className="text-sm">Export JPEG</span>
+                      <span className="text-xs text-amber-200 font-normal">
+                        Smaller files
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Additional Actions */}
+              <div className="pt-4 border-t border-gray-700">
                 <button
-                  onClick={() => handleBatchExport('png')}
-                  disabled={isExporting}
-                  className="px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+                  onClick={handleCopyAll}
+                  className="w-full group px-5 py-4 bg-gradient-to-br from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-emerald-500/50 active:scale-95 flex items-center justify-center gap-2"
                 >
-                  Export as PNG
-                </button>
-                <button
-                  onClick={() => handleBatchExport('jpeg')}
-                  disabled={isExporting}
-                  className="px-4 py-3 bg-amber-600 hover:bg-amber-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-                >
-                  Export as JPEG
+                  <Clipboard className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span>Copy All FEN Notations</span>
                 </button>
               </div>
-              <button
-                onClick={handleCopyAll}
-                className="w-full px-4 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors"
-              >
-                Copy All FENs to Clipboard
-              </button>
+
+              {/* Info */}
+              <div className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-3">
+                <p className="text-xs text-blue-300 text-center">
+                  💡 Images will be saved with sequential filenames:
+                  chess-position-1, chess-position-2, etc.
+                </p>
+              </div>
             </div>
           )}
         </div>
