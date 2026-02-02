@@ -318,8 +318,8 @@ const AdvancedFENInputModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-scale-in">
         {/* Compact Header with Tabs */}
         <div className="border-b border-gray-700 bg-gray-900/50">
           <div className="flex items-center justify-between px-4 py-3">
