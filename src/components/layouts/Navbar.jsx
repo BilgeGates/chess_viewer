@@ -83,7 +83,7 @@ const Navbar = () => {
       {/* Floating Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-3 rounded-xl gradient-primary text-white shadow-2xl hover:scale-110 transition-smooth gpu-accelerated"
+        className="fixed top-4 left-4 z-[45] p-3 rounded-xl gradient-primary text-white shadow-2xl hover:scale-110 transition-smooth gpu-accelerated"
         aria-label="Menu"
         aria-expanded={isOpen}
       >
@@ -93,7 +93,7 @@ const Navbar = () => {
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-fade-in"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[40] animate-fade-in"
           onClick={handleClose}
           aria-hidden="true"
         />
@@ -102,7 +102,7 @@ const Navbar = () => {
       {/* DESKTOP: Side Menu */}
       {!isMobile && (
         <nav
-          className={`fixed top-0 left-0 h-full w-72 md:w-80 glass shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
+          className={`fixed top-0 left-0 h-full w-72 md:w-80 glass shadow-2xl z-[42] transform transition-transform duration-300 ease-out ${
             isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           aria-label="Main navigation"
@@ -165,7 +165,7 @@ const Navbar = () => {
       {/* MOBILE: Bottom Sheet */}
       {isMobile && (
         <nav
-          className={`fixed bottom-0 left-0 right-0 glass rounded-t-3xl shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
+          className={`fixed bottom-0 left-0 right-0 glass rounded-t-3xl shadow-2xl z-[42] transform transition-transform duration-300 ease-out ${
             isOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
           aria-label="Main navigation"
