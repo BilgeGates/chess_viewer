@@ -72,7 +72,7 @@ const ThemeModal = memo(
         aria-labelledby="theme-modal-title"
       >
         <div
-          className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl modal-content"
+          className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl modal-content"
           onClick={(e) => e.stopPropagation()}
           style={{ contain: 'layout style paint' }}
         >
@@ -125,7 +125,7 @@ const ThemeModal = memo(
           </div>
 
           {/* Content with custom scrollbar */}
-          <div className="max-h-[55vh] overflow-y-auto custom-scrollbar">
+          <div className="max-h-[65vh] overflow-y-auto custom-scrollbar">
             {activeTab === 'main' && (
               <div
                 role="tabpanel"
