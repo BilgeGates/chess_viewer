@@ -12,6 +12,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ---
 
+## [v4.0.0] - 2026-02-02
+
+### Added
+
+#### Progressive Web App (PWA) Support
+
+- **Service Worker** - Implemented offline-first caching strategy with Workbox
+- **Web App Manifest** - Added comprehensive manifest.json with app icons and metadata
+- **Installability** - Users can now install the app on desktop and mobile devices
+- **Offline Mode** - Full functionality available without internet connection
+- **App Icons** - Added complete set of PWA icons (192x192, 512x512, maskable icons)
+- **Theme Color** - Added theme color support for better native app experience
+- **Cache Management** - Intelligent caching of static assets and API responses
+
+### Changed
+
+- Updated build configuration to support PWA features
+- Enhanced app metadata for better mobile experience
+- Improved loading performance with service worker precaching
+
+---
+
 ## [v3.5.4] - 2026-02-01
 
 ### Fixed
