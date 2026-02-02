@@ -1,13 +1,6 @@
 import { memo, useCallback } from 'react';
-import {
-  BOARD_THEMES,
-  STARTING_FEN
-} from '../../../../constants/chessConstants';
-import {
-  useChessBoard,
-  usePieceImages,
-  useIntersectionObserver
-} from '../../../../hooks';
+import { BOARD_THEMES } from '../../../../constants/chessConstants';
+import { useIntersectionObserver } from '../../../../hooks';
 
 const ThemePresetButton = memo(({ themeKey, theme, isActive, onClick }) => {
   const { ref, isVisible } = useIntersectionObserver({
@@ -20,16 +13,16 @@ const ThemePresetButton = memo(({ themeKey, theme, isActive, onClick }) => {
       ref={ref}
       onClick={() => onClick(themeKey, theme)}
       aria-label={`Apply ${theme.name || themeKey} theme: light ${theme.light}, dark ${theme.dark}`}
-      className={`p-1 rounded border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${
+      className={`p-2 rounded-lg border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 hover:scale-105 ${
         isActive
-          ? 'border-primary-500 bg-primary-500/10'
-          : 'border-gray-700/50 hover:border-gray-600'
+          ? 'border-primary-500 bg-primary-500/20 shadow-lg shadow-primary-500/20'
+          : 'border-gray-700 hover:border-gray-600 hover:bg-gray-800/30'
       }`}
     >
       {isVisible ? (
         <>
           <div
-            className="grid grid-cols-2 w-full aspect-square rounded overflow-hidden"
+            className="grid grid-cols-2 w-full aspect-square rounded overflow-hidden shadow-md"
             aria-hidden="true"
           >
             <div style={{ backgroundColor: theme.light }} />
@@ -38,7 +31,7 @@ const ThemePresetButton = memo(({ themeKey, theme, isActive, onClick }) => {
             <div style={{ backgroundColor: theme.light }} />
           </div>
           <div
-            className="text-[8px] text-gray-400 mt-0.5 truncate text-center"
+            className="text-[9px] text-gray-300 mt-1.5 truncate text-center font-medium"
             aria-hidden="true"
           >
             {theme.name || themeKey}
@@ -56,132 +49,92 @@ const ThemePresetButton = memo(({ themeKey, theme, isActive, onClick }) => {
 
 ThemePresetButton.displayName = 'ThemePresetButton';
 
-const ThemeMainView = memo(
-  ({ currentLight, currentDark, onThemeApply, pieceStyle = 'cburnett' }) => {
-    const boardState = useChessBoard(STARTING_FEN);
-    const { pieceImages, isLoading } = usePieceImages(pieceStyle);
+const ThemeMainView = memo(({ currentLight, currentDark, onThemeApply }) => {
+  const handleThemeClick = useCallback(
+    (key, theme) => {
+      onThemeApply(theme.light, theme.dark);
+    },
+    [onThemeApply]
+  );
 
-    const isBoardReady =
-      boardState.length === 8 &&
-      !isLoading &&
-      Object.keys(pieceImages).length > 0;
-
-    const handleThemeClick = useCallback(
-      (key, theme) => {
-        onThemeApply(theme.light, theme.dark);
-      },
-      [onThemeApply]
-    );
-
-    return (
-      <div className="p-2 space-y-2">
-        {/* Board Preview */}
-        <div className="p-2 bg-gray-800/50 rounded border border-gray-700/50">
-          <div className="text-[10px] text-gray-500 mb-1.5 font-medium">
-            Preview
-          </div>
-          <div className="flex justify-center">
-            {isBoardReady ? (
-              <div
-                className="grid grid-cols-8 w-48 h-48 border border-gray-700"
-                style={{ contain: 'strict' }}
-              >
-                {Array.from({ length: 64 }).map((_, i) => {
-                  const row = Math.floor(i / 8);
-                  const col = i % 8;
-                  const isLight = (row + col) % 2 === 0;
-                  const piece = boardState[row]?.[col];
-
-                  // Fix piece key mapping
-                  let pieceImage = null;
-                  if (piece) {
-                    const color = piece === piece.toUpperCase() ? 'w' : 'b';
-                    const pieceKey = color + piece.toUpperCase();
-                    pieceImage = pieceImages[pieceKey];
-                  }
-
-                  return (
-                    <div
-                      key={`sq-${row}-${col}`}
-                      className="flex items-center justify-center"
-                      style={{
-                        backgroundColor: isLight ? currentLight : currentDark
-                      }}
-                    >
-                      {pieceImage && (
-                        <img
-                          src={pieceImage.src}
-                          alt=""
-                          className="w-[85%] h-[85%]"
-                          draggable={false}
-                          loading="lazy"
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="w-48 h-48 bg-gray-800 flex items-center justify-center border border-gray-700">
-                <div className="animate-spin w-8 h-8 border-2 border-gray-600 border-t-blue-500 rounded-full" />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Current Colors */}
-        <div className="grid grid-cols-2 gap-1.5">
-          {[
-            { label: 'Light', color: currentLight },
-            { label: 'Dark', color: currentDark }
-          ].map(({ label, color }) => (
-            <div
-              key={label}
-              className="flex items-center gap-1.5 p-1.5 bg-gray-800/50 rounded border border-gray-700/50"
-            >
-              <div
-                className="w-6 h-6 rounded border border-gray-600"
-                style={{ backgroundColor: color }}
-              />
-              <div className="min-w-0">
-                <div className="text-[9px] text-gray-500">{label}</div>
-                <div className="text-[10px] font-mono text-gray-300 truncate">
-                  {color}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Themes Grid */}
-        <div>
-          <div className="text-[10px] text-gray-500 mb-1 font-medium">
-            Presets
-          </div>
+  return (
+    <div className="p-3 space-y-3">
+      {/* Board Preview */}
+      <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
+        <div className="text-xs text-gray-400 mb-2 font-medium">Preview</div>
+        <div className="flex justify-center">
           <div
-            className="grid grid-cols-5 gap-1 max-h-32 overflow-y-auto custom-scrollbar"
-            role="group"
-            aria-label="Theme preset options"
+            className="grid grid-cols-8 w-64 h-64 border-2 border-gray-700 rounded shadow-lg"
+            style={{ contain: 'strict' }}
           >
-            {Object.entries(BOARD_THEMES).map(([key, theme]) => {
-              const isActive =
-                theme.light === currentLight && theme.dark === currentDark;
+            {Array.from({ length: 64 }).map((_, i) => {
+              const row = Math.floor(i / 8);
+              const col = i % 8;
+              const isLight = (row + col) % 2 === 0;
+
               return (
-                <ThemePresetButton
-                  key={key}
-                  themeKey={key}
-                  theme={theme}
-                  isActive={isActive}
-                  onClick={handleThemeClick}
+                <div
+                  key={`sq-${row}-${col}`}
+                  style={{
+                    backgroundColor: isLight ? currentLight : currentDark
+                  }}
                 />
               );
             })}
           </div>
         </div>
       </div>
-    );
-  }
-);
+
+      {/* Current Colors */}
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          { label: 'Light Square', color: currentLight },
+          { label: 'Dark Square', color: currentDark }
+        ].map(({ label, color }) => (
+          <div
+            key={label}
+            className="flex items-center gap-2 p-2.5 bg-gray-800/50 rounded-lg border border-gray-700/50"
+          >
+            <div
+              className="w-10 h-10 rounded border-2 border-gray-600 shadow-sm"
+              style={{ backgroundColor: color }}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="text-xs text-gray-400 mb-0.5">{label}</div>
+              <div className="text-xs font-mono text-gray-200 truncate font-semibold">
+                {color}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Themes Grid */}
+      <div>
+        <div className="text-xs text-gray-400 mb-2 font-medium">Presets</div>
+        <div
+          className="grid grid-cols-6 gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1"
+          role="group"
+          aria-label="Theme preset options"
+        >
+          {Object.entries(BOARD_THEMES).map(([key, theme]) => {
+            const isActive =
+              theme.light === currentLight && theme.dark === currentDark;
+            return (
+              <ThemePresetButton
+                key={key}
+                themeKey={key}
+                theme={theme}
+                isActive={isActive}
+                onClick={handleThemeClick}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+});
 
 ThemeMainView.displayName = 'ThemeMainView';
 export default ThemeMainView;
