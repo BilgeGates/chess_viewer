@@ -1,4 +1,4 @@
-import { Globe, CheckCircle, Smartphone } from 'lucide-react';
+import { Globe, CheckCircle, Smartphone, Monitor } from 'lucide-react';
 
 const DownloadPage = () => {
   const handleInstallPWA = () => {
@@ -108,10 +108,13 @@ const DownloadPage = () => {
           </h3>
           <div className="space-y-4 text-gray-300">
             <div>
-              <h4 className="font-semibold text-white mb-2">
-                📱 Mobile (iOS/Android)
-              </h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Smartphone className="w-5 h-5 text-blue-400" />
+                <h4 className="font-semibold text-white">
+                  Mobile (iOS/Android)
+                </h4>
+              </div>
+              <ol className="list-decimal list-inside space-y-1 text-sm ml-7">
                 <li>Open the app in Safari (iOS) or Chrome (Android)</li>
                 <li>Tap the Share button (iOS) or Menu (⋮) (Android)</li>
                 <li>Select "Add to Home Screen"</li>
@@ -119,10 +122,13 @@ const DownloadPage = () => {
               </ol>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-2">
-                💻 Desktop (Chrome/Edge)
-              </h4>
-              <ol className="list-decimal list-inside space-y-1 text-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Monitor className="w-5 h-5 text-purple-400" />
+                <h4 className="font-semibold text-white">
+                  Desktop (Chrome/Edge)
+                </h4>
+              </div>
+              <ol className="list-decimal list-inside space-y-1 text-sm ml-7">
                 <li>Look for the install icon (➕) in the address bar</li>
                 <li>Click "Install" when prompted</li>
                 <li>The app will open in a standalone window</li>
