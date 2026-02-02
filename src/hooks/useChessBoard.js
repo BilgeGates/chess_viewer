@@ -1,30 +1,42 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { parseFEN, logger } from '../utils';
 
-export const useChessBoard = (fen) => {
-  // Simplified: just use state with useEffect
-  const [boardState, setBoardState] = useState(() => {
-    if (!fen) return [];
-    try {
-      return parseFEN(fen);
-    } catch {
-      return [];
-    }
-  });
+// Create a safe empty 8x8 board (stable reference)
+const createEmptyBoard = () =>
+  Array.from({ length: 8 }, () => Array(8).fill(''));
 
-  useEffect(() => {
-    if (!fen) {
-      setBoardState([]);
-      return;
+/**
+ * useChessBoard
+ * Returns a stable, memoized 8x8 board array parsed from the provided FEN.
+ * Guarantees the returned value is always an 8x8 array (never null/[]) which
+ * prevents downstream render errors and makes shallow equality checks more
+ * reliable for memoized components.
+ *
+ * @param {string} fen - FEN string
+ * @returns {string[][]} 8x8 board array
+ */
+export const useChessBoard = (fen) => {
+  const board = useMemo(() => {
+    if (!fen || typeof fen !== 'string' || fen.trim() === '') {
+      return createEmptyBoard();
     }
+
     try {
-      const board = parseFEN(fen);
-      setBoardState(board);
-    } catch (error) {
-      logger.error('Failed to parse FEN:', error);
-      setBoardState([]);
+      const parsed = parseFEN(fen);
+      // Ensure parser returns a valid 8x8 board; fallback to empty board
+      if (!Array.isArray(parsed) || parsed.length !== 8) {
+        logger.warn(
+          'parseFEN returned invalid board, falling back to empty board'
+        );
+        return createEmptyBoard();
+      }
+      return parsed;
+    } catch (err) {
+      logger.error('Failed to parse FEN in useChessBoard:', err);
+      return createEmptyBoard();
     }
+    // Only recompute when fen string value changes
   }, [fen]);
 
-  return boardState;
+  return board;
 };
