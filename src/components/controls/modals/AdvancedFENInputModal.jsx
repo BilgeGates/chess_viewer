@@ -31,7 +31,7 @@ const {
 
 /**
  * AdvancedFENInputModal - Multi-position FEN management modal
- * Refactored with tab-based UI for better UX
+ * FIXED: Modal properly centered with internal scroll only
  */
 const AdvancedFENInputModal = ({
   isOpen,
@@ -57,6 +57,18 @@ const AdvancedFENInputModal = ({
     const saved = localStorage.getItem(STORAGE_KEYS.FAVORITES);
     return saved ? JSON.parse(saved) : {};
   });
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const dupTimeout = duplicateTimeoutRef.current;
@@ -318,10 +330,10 @@ const AdvancedFENInputModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col animate-scale-in">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in overflow-hidden">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-950 border-2 border-gray-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-scale-in">
         {/* Compact Header with Tabs */}
-        <div className="border-b border-gray-700 bg-gray-900/50">
+        <div className="border-b border-gray-700 bg-gray-900/50 flex-shrink-0">
           <div className="flex items-center justify-between px-4 py-3">
             <h2 className="text-lg font-bold text-white">Multi-Position FEN</h2>
             <button
@@ -362,7 +374,7 @@ const AdvancedFENInputModal = ({
           </div>
         </div>
 
-        {/* Tab Content */}
+        {/* Tab Content - WITH SCROLL */}
         <div className="flex-1 overflow-y-auto p-4" role="tabpanel">
           {/* POSITIONS TAB */}
           {activeTab === TABS.POSITIONS && (
@@ -381,7 +393,7 @@ const AdvancedFENInputModal = ({
                 </button>
               </div>
 
-              <div className="space-y-2 max-h-[45vh] overflow-y-auto pr-1">
+              <div className="space-y-2">
                 {fens.map((fen, index) => (
                   <div key={fen || `empty-slot-${index}`} className="space-y-1">
                     <div className="flex items-center gap-2 group">
@@ -692,8 +704,8 @@ const AdvancedFENInputModal = ({
           )}
         </div>
 
-        {/* Compact Footer */}
-        <div className="p-3 border-t border-gray-700 bg-gray-900/50 flex gap-2">
+        {/* Compact Footer - NO SCROLL */}
+        <div className="p-3 border-t border-gray-700 bg-gray-900/50 flex gap-2 flex-shrink-0">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors text-sm"
