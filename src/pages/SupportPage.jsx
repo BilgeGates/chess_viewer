@@ -1,4 +1,11 @@
-import { Mail, MessageSquare, FileText, ExternalLink } from 'lucide-react';
+import {
+  MessageSquare,
+  FileText,
+  ExternalLink,
+  Github,
+  AlertCircle,
+  BookOpen
+} from 'lucide-react';
 
 const SupportPage = () => {
   return (
@@ -14,43 +21,65 @@ const SupportPage = () => {
         </div>
 
         {/* Support Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Email Support */}
-          <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600/30 rounded-2xl p-8 hover:border-blue-500/50 transition-all">
-            <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-6">
-              <Mail className="w-8 h-8 text-white" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {/* GitHub Issues */}
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-2xl p-6 hover:border-gray-600 transition-all">
+            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center mb-4">
+              <Github className="w-7 h-7 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">
-              Email Support
-            </h2>
-            <p className="text-gray-300 mb-6">
-              Send us an email and we'll respond within 24-48 hours.
+            <h2 className="text-xl font-bold text-white mb-2">GitHub Issues</h2>
+            <p className="text-gray-400 text-sm mb-4">
+              Report bugs or request features
             </p>
-
             <a
-              href="mailto:support@chessdiagram.com"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+              href="https://github.com/BilgeGates/chess_viewer/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold text-sm transition-colors"
             >
-              support@chessdiagram.com
+              Open Issue
               <ExternalLink className="w-4 h-4" />
             </a>
           </div>
 
-          {/* Community Forum */}
-          <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-600/30 rounded-2xl p-8 hover:border-purple-500/50 transition-all">
-            <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
-              <MessageSquare className="w-8 h-8 text-white" />
+          {/* Discussions */}
+          <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all">
+            <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
+              <MessageSquare className="w-7 h-7 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">
-              Community Forum
-            </h2>
-            <p className="text-gray-300 mb-6">
-              Join our community to ask questions and share tips.
+            <h2 className="text-xl font-bold text-white mb-2">Discussions</h2>
+            <p className="text-gray-400 text-sm mb-4">
+              Ask questions and share ideas
             </p>
-            <button className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-semibold transition-colors">
-              Visit Forum
+            <a
+              href="https://github.com/BilgeGates/chess_viewer/discussions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold text-sm transition-colors"
+            >
+              Join Discussion
               <ExternalLink className="w-4 h-4" />
-            </button>
+            </a>
+          </div>
+
+          {/* Documentation */}
+          <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-600/30 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
+            <div className="w-14 h-14 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
+              <BookOpen className="w-7 h-7 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Documentation</h2>
+            <p className="text-gray-400 text-sm mb-4">
+              Read detailed guides and docs
+            </p>
+            <a
+              href="https://github.com/BilgeGates/chess_viewer/tree/master/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-semibold text-sm transition-colors"
+            >
+              View Docs
+              <ExternalLink className="w-4 h-4" />
+            </a>
           </div>
         </div>
 
@@ -140,23 +169,37 @@ const SupportPage = () => {
         </div>
 
         {/* Contact CTA */}
-        {/* <div className="mt-12 text-center bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-2xl p-8">
+        <div className="mt-12 text-center bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-2xl p-8">
+          <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-white mb-3">
             Still need help?
           </h3>
           <p className="text-gray-300 mb-6">
-            Can't find the answer you're looking for? Feel free to contact us
-            directly.
+            Can't find the answer you're looking for? Open an issue on GitHub or
+            start a discussion.
           </p>
 
-          <a
-            href="mailto:"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-colors"
-          >
-            <Mail className="w-5 h-5" />
-            Contact Support
-          </a>
-        </div> */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="https://github.com/BilgeGates/chess_viewer/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-colors"
+            >
+              <Github className="w-5 h-5" />
+              Report Issue
+            </a>
+            <a
+              href="https://github.com/BilgeGates/chess_viewer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-semibold transition-colors"
+            >
+              <Github className="w-5 h-5" />
+              View on GitHub
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
