@@ -3,14 +3,10 @@ name: Lint and Format Check
 on:
   push:
     branches:
-      - main
       - master
-      - develop
   pull_request:
     branches:
-      - main
       - master
-      - develop
 
 permissions:
   contents: read
@@ -19,9 +15,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: '20'
+
 jobs:
   lint:
-    name: Lint and Format
+    name: Code Quality Check
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -39,12 +38,14 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+        continue-on-error: false
 
-      - name: Check formatting
+      - name: Check Prettier formatting
         run: npm run format:check
+        continue-on-error: false
 
   build:
-    name: Build Check
+    name: Build Verification
     runs-on: ubuntu-latest
     needs: lint
 
@@ -55,7 +56,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -64,4 +65,33 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          CI: false
+          CI: true
+          GENERATE_SOURCEMAP: false
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/
+          retention-days: 7
+
+  summary:
+    name: Workflow Summary
+    runs-on: ubuntu-latest
+    needs: [lint, build]
+    if: always()
+
+    steps:
+      - name: Check job statuses
+        run: |
+          echo "Lint & Format Check Summary"
+          echo "==========================="
+          echo "Code Quality: ${{ needs.lint.result }}"
+          echo "Build: ${{ needs.build.result }}"
+
+          if [ "${{ needs.lint.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ]; then
+            echo "Workflow failed - check logs above"
+            exit 1
+          fi
+
+          echo "All checks passed successfully"
