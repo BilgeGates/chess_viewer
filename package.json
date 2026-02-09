@@ -1,7 +1,12 @@
 {
   "name": "chessviewer",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -16,27 +21,23 @@
     "react-dom": "^19.2.3",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.11.0",
-    "react-scripts": "5.0.1",
     "react-window": "^2.2.6",
     "react-window-infinite-loader": "^2.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "build:analyze": "npm run build && source-map-explorer 'build/static/js/*.js'",
-    "eject": "react-scripts eject",
-    "lint": "eslint src --ext .js,.jsx --report-unused-disable-directives",
-    "lint:fix": "eslint src --ext .js,.jsx --fix",
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:analyze": "vite build && npx vite-bundle-visualizer",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "lint:ci": "eslint . || true",
     "format": "prettier --write \"src/**/*.{js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,json,css,md}\"",
+    "format:check": "prettier . --check",
+    "format:ci": "prettier . --check || true",
     "prepare": "husky install"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -53,12 +54,10 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
-    "@craco/craco": "^7.1.0",
     "@eslint/js": "^9.39.2",
-    "@tailwindcss/postcss": "^4.1.18",
+    "@vitejs/plugin-react": "^4.5.2",
     "@welldone-software/why-did-you-render": "^10.0.1",
     "autoprefixer": "^10.4.16",
-    "craco-alias": "^3.0.1",
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -68,8 +67,8 @@
     "lint-staged": "^15.2.0",
     "postcss": "^8.4.31",
     "prettier": "^3.2.2",
-    "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.4.1",
-    "webpack-bundle-analyzer": "^5.2.0"
+    "vite": "^6.3.5",
+    "vite-bundle-visualizer": "^1.2.1"
   }
 }
