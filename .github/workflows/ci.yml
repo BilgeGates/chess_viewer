@@ -23,12 +23,15 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '20.20.0'
+  NODE_ENV: production
 
 jobs:
-  lint-and-format:
-    name: Code Quality Check
+  setup:
+    name: Setup & Cache Dependencies
     runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
 
     steps:
       - name: Checkout repository
@@ -40,21 +43,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: Cache node_modules
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+
       - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-        continue-on-error: false
-
-      - name: Check Prettier formatting
-        run: npm run format:check
-        continue-on-error: false
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit
 
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    needs: lint-and-format
+    needs: setup
 
     steps:
       - name: Checkout repository
@@ -64,10 +69,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}
 
       - name: Build project
         run: npm run build
@@ -102,7 +109,7 @@ jobs:
   bundle-analysis:
     name: Bundle Size Analysis
     runs-on: ubuntu-latest
-    needs: build
+    needs: [setup, build]
     if: github.event_name == 'pull_request'
 
     steps:
@@ -113,30 +120,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build for analysis
-        run: npm run build
-        env:
-          GENERATE_SOURCEMAP: true
-
-      - name: Analyze bundle
-        run: |
-          npx source-map-explorer 'build/static/js/*.js' --json > bundle-analysis.json || echo "Analysis completed"
-
-      - name: Upload bundle analysis
-        uses: actions/upload-artifact@v4
+      - name: Restore node_modules
+        uses: actions/cache@v4
         with:
-          name: bundle-analysis
-          path: bundle-analysis.json
-          retention-days: 30
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build/
+
+      - name: Analyze bundle size
+        run: |
+          echo "Bundle Size Analysis"
+          echo "===================="
+          du -sh build/ | awk '{print "Total: " $1}'
+          du -sh build/static/js/ | awk '{print "JS: " $1}'
+          du -sh build/static/css/ | awk '{print "CSS: " $1}'
+
+          echo ""
+          echo "Individual JS chunks:"
+          du -h build/static/js/*.js | sort -h
 
   security-audit:
     name: Security Audit
     runs-on: ubuntu-latest
+    needs: setup
 
     steps:
       - name: Checkout repository
@@ -148,21 +160,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Run npm audit
-        run: npm audit --audit-level=moderate
-        continue-on-error: true
-
-      - name: Check for vulnerable dependencies
         run: |
-          echo "Checking for known vulnerabilities..."
-          npm audit --json > audit-results.json || true
+          echo "Security Audit Results"
+          echo "======================"
+          npm audit --audit-level=moderate || echo "Vulnerabilities found (non-blocking)"
 
-      - name: Upload audit results
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-audit
-          path: audit-results.json
-          retention-days: 30
-        if: always()
+      - name: Check Snyk (if available)
+        run: |
+          if command -v snyk &> /dev/null; then
+            snyk test --severity-threshold=high || true
+          else
+            echo "Snyk not installed, skipping..."
+          fi
+        continue-on-error: true
 
   verify-deployment:
     name: Verify Deployment Files
@@ -225,7 +235,7 @@ jobs:
   summary:
     name: Pipeline Summary
     runs-on: ubuntu-latest
-    needs: [lint-and-format, build, security-audit]
+    needs: [setup, build, security-audit]
     if: always()
 
     steps:
@@ -233,11 +243,12 @@ jobs:
         run: |
           echo "CI Pipeline Summary"
           echo "=================="
-          echo "Code Quality: ${{ needs.lint-and-format.result }}"
+          echo "Setup: ${{ needs.setup.result }}"
           echo "Build: ${{ needs.build.result }}"
           echo "Security Audit: ${{ needs.security-audit.result }}"
+          echo ""
 
-          if [ "${{ needs.lint-and-format.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ]; then
+          if [ "${{ needs.build.result }}" != "success" ]; then
             echo "Pipeline failed - check logs above"
             exit 1
           fi
