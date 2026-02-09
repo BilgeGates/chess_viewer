@@ -2,47 +2,64 @@ import { createUltraQualityCanvas } from './';
 import { logger } from './logger';
 
 /**
- * PROGRESSIVE DOWNLOAD STRATEGY
- * Breaks large canvases into chunks to prevent memory issues
+ * Progressive export with auto-scaling for large images.
+ *
+ * @param {Object} config - Export configuration
+ * @param {string} fileName - File name without extension
+ * @param {string} format - Output format (png/jpeg)
  */
-export const progressiveExport = async (config, fileName, format = 'png') => {
+export async function progressiveExport(config, fileName, format) {
+  if (format === undefined || format === null) {
+    format = 'png';
+  }
+
   const canvas = createSmartCanvas(config);
 
-  // For very large exports, use chunked approach
   if (canvas.width > 8192 || canvas.height > 8192) {
     return await chunkedExport(canvas, fileName, format);
   }
 
-  // Standard export for reasonable sizes
   return await standardExport(canvas, fileName, format);
-};
+}
 
 /**
- * Create canvas with smart memory management
+ * Create canvas with memory-safe size limits.
+ *
+ * @param {Object} config - Export configuration
+ * @returns {HTMLCanvasElement} Rendered canvas
  */
-const createSmartCanvas = (config) => {
+function createSmartCanvas(config) {
   const maxSafeSize = 16384;
-  const adjustedConfig = { ...config };
+
+  const adjustedConfig = Object.assign({}, config);
 
   const projectedSize = (config.boardSize + 60) * config.exportQuality;
 
   if (projectedSize > maxSafeSize) {
     const safeQuality = Math.floor(maxSafeSize / (config.boardSize + 60));
-    adjustedConfig.exportQuality = Math.max(8, safeQuality);
+
+    if (safeQuality < 8) {
+      adjustedConfig.exportQuality = 8;
+    } else {
+      adjustedConfig.exportQuality = safeQuality;
+    }
+
     logger.warn(
-      `Quality adjusted to ${adjustedConfig.exportQuality}x for stability`
+      'Quality adjusted to ' + adjustedConfig.exportQuality + 'x for stability'
     );
   }
 
   return createUltraQualityCanvas(adjustedConfig);
-};
+}
 
 /**
- * Chunked export for very large images
+ * Export large images with 50% scaling.
+ *
+ * @param {HTMLCanvasElement} canvas - Source canvas
+ * @param {string} fileName - File name without extension
+ * @param {string} format - Output format (png/jpeg)
  */
-const chunkedExport = async (canvas, fileName, format) => {
-  // This would split canvas into tiles and reassemble
-  // For now, we'll just scale down
+async function chunkedExport(canvas, fileName, format) {
   logger.warn('Image too large, scaling down...');
 
   const scale = 0.5;
@@ -54,33 +71,44 @@ const chunkedExport = async (canvas, fileName, format) => {
   ctx.drawImage(canvas, 0, 0, smallerCanvas.width, smallerCanvas.height);
 
   return await standardExport(smallerCanvas, fileName, format);
-};
+}
 
 /**
- * Standard export method
+ * Standard canvas-to-file download.
+ *
+ * @param {HTMLCanvasElement} canvas - Source canvas
+ * @param {string} fileName - File name without extension
+ * @param {string} format - Output format (png/jpeg)
  */
-const standardExport = async (canvas, fileName, format) => {
-  const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-  const extension = format === 'jpeg' ? 'jpg' : 'png';
-  const quality = format === 'jpeg' ? 0.98 : 1.0;
+async function standardExport(canvas, fileName, format) {
+  let mimeType = 'image/png';
+  let extension = 'png';
+  let quality = 1.0;
 
-  return new Promise((resolve, reject) => {
+  if (format === 'jpeg') {
+    mimeType = 'image/jpeg';
+    extension = 'jpg';
+    quality = 0.98;
+  }
+
+  return new Promise(function (resolve, reject) {
     canvas.toBlob(
-      (blob) => {
+      function (blob) {
         if (!blob) {
-          return reject(new Error(`Failed to create ${format} blob`));
+          reject(new Error('Failed to create ' + format + ' blob'));
+          return;
         }
 
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${fileName}.${extension}`;
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName + '.' + extension;
 
-        document.body.appendChild(a);
-        a.click();
+        document.body.appendChild(link);
+        link.click();
 
-        setTimeout(() => {
-          document.body.removeChild(a);
+        setTimeout(function () {
+          document.body.removeChild(link);
           URL.revokeObjectURL(url);
           resolve();
         }, 100);
@@ -89,4 +117,4 @@ const standardExport = async (canvas, fileName, format) => {
       quality
     );
   });
-};
+}

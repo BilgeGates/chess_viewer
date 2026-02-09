@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import { PIECE_MAP } from '../constants/chessConstants';
-import { logger } from '../utils/logger';
+import { PIECE_MAP } from '@/constants/chessConstants';
+import { logger } from '@/utils/logger';
 
 /**
  * Load piece images with caching and retry logic

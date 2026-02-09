@@ -1,143 +1,155 @@
-import { Globe, CheckCircle, Smartphone, Monitor } from 'lucide-react';
+import {
+  Globe,
+  CheckCircle,
+  Smartphone,
+  Download,
+  Monitor,
+  Tablet
+} from 'lucide-react';
 
 const DownloadPage = () => {
   const handleInstallPWA = () => {
-    // Check if PWA can be installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       alert('App is already installed!');
       return;
     }
-
-    // For browsers that support PWA installation
     alert(
-      'To install:\n\n1. Click the browser menu (⋮)\n2. Select "Install app" or "Add to Home Screen"\n3. Follow the prompts'
+      'To install:\n\n1. Click browser menu (⋮)\n2. Select "Install app"\n3. Follow the prompts'
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 pt-24 pb-12 sm:pb-16 lg:pb-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+    <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto">
+        {/* Hero */}
+        <div className="text-center mb-10 animate-fadeIn">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-5">
+            <Download className="w-5 h-5" />
+            Get the App
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary mb-4">
             Download Options
           </h1>
-          <p className="text-gray-400 text-lg">
-            Access Chess Diagram Generator on any device
+          <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+            Access on any device, anywhere
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Web Application */}
-          <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600/30 rounded-2xl p-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-6">
-              <Globe className="w-8 h-8 text-white" />
+
+        {/* Download Options */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 animate-fadeIn">
+          {/* Web */}
+          <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01] border border-border">
+            <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-5 text-accent">
+              <Globe className="w-7 h-7" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">
+            <h2 className="text-xl font-display font-bold text-text-primary mb-3">
               Web Application
             </h2>
-            <p className="text-gray-300 mb-6">
-              Use directly in your browser. No installation required.
+            <p className="text-text-secondary text-base mb-5 leading-relaxed">
+              Use directly in browser. No installation required.
             </p>
-            <div className="space-y-2 text-sm text-gray-400 mb-6">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Instant access</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Always up to date</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Works on all devices</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>No downloads needed</span>
-              </div>
-            </div>
+            <ul className="space-y-2.5 text-sm text-text-muted mb-6">
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                Instant access
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                Always updated
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                Works everywhere
+              </li>
+            </ul>
             <a
               href="/"
-              className="block w-full px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-colors text-center"
+              className="block w-full py-3 px-5 bg-accent hover:bg-accent-hover text-bg text-center rounded-xl font-bold shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
             >
               Use Web App
             </a>
           </div>
 
-          {/* PWA (Progressive Web App) */}
-          <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-600/30 rounded-2xl p-8">
-            <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
-              <Smartphone className="w-8 h-8 text-white" />
+          {/* PWA */}
+          <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01] border-2 border-secondary">
+            <div className="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-5 text-secondary">
+              <Smartphone className="w-7 h-7" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">
+            <h2 className="text-xl font-display font-bold text-text-primary mb-3">
               Progressive Web App
             </h2>
-            <p className="text-gray-300 mb-6">
-              Install as a native app on your device for offline access.
+            <p className="text-text-secondary text-base mb-5 leading-relaxed">
+              Install for offline access and app-like experience.
             </p>
-            <div className="space-y-2 text-sm text-gray-400 mb-6">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Works offline</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>App-like experience</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Home screen icon</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" />
-                <span>Fast loading</span>
-              </div>
-            </div>
+            <ul className="space-y-2.5 text-sm text-text-muted mb-6">
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                Offline support
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                Native feel
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-success shrink-0" />
+                Home screen icon
+              </li>
+            </ul>
             <button
               onClick={handleInstallPWA}
-              className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-lg text-white font-semibold transition-all shadow-lg hover:shadow-purple-500/50 active:scale-95"
+              className="block w-full py-3 px-5 bg-surface-elevated hover:bg-surface-hover text-text-primary text-center rounded-xl font-bold border-2 border-secondary hover:shadow-md transition-all duration-200 active:scale-95"
             >
               Install PWA
             </button>
           </div>
         </div>
 
-        {/* Additional Info */}
-        <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-          <h3 className="text-xl font-bold text-white mb-4">
-            Installation Guide
-          </h3>
-          <div className="space-y-4 text-gray-300">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Smartphone className="w-5 h-5 text-blue-400" />
-                <h4 className="font-semibold text-white">
-                  Mobile (iOS/Android)
-                </h4>
-              </div>
-              <ol className="list-decimal list-inside space-y-1 text-sm ml-7">
-                <li>Open the app in Safari (iOS) or Chrome (Android)</li>
-                <li>Tap the Share button (iOS) or Menu (⋮) (Android)</li>
-                <li>Select "Add to Home Screen"</li>
-                <li>Confirm and enjoy!</li>
-              </ol>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Monitor className="w-5 h-5 text-purple-400" />
-                <h4 className="font-semibold text-white">
-                  Desktop (Chrome/Edge)
-                </h4>
-              </div>
-              <ol className="list-decimal list-inside space-y-1 text-sm ml-7">
-                <li>Look for the install icon (➕) in the address bar</li>
-                <li>Click "Install" when prompted</li>
-                <li>The app will open in a standalone window</li>
-              </ol>
-            </div>
+        {/* Supported Platforms */}
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fadeIn">
+          <h2 className="text-xl font-display font-bold text-text-primary mb-6 text-center">
+            Supported Platforms
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <PlatformCard
+              icon={<Monitor className="w-7 h-7" />}
+              title="Desktop"
+              platforms="Windows, macOS, Linux"
+              browsers="Chrome, Firefox, Safari, Edge"
+            />
+            <PlatformCard
+              icon={<Tablet className="w-7 h-7" />}
+              title="Tablet"
+              platforms="iPad, Android"
+              browsers="Safari, Chrome"
+            />
+            <PlatformCard
+              icon={<Smartphone className="w-7 h-7" />}
+              title="Mobile"
+              platforms="iOS, Android"
+              browsers="Safari, Chrome"
+            />
           </div>
+          <p className="text-center text-text-muted text-sm mt-6 leading-relaxed">
+            Modern browser with JavaScript required. PWA available on Chrome,
+            Edge, Safari.
+          </p>
         </div>
       </div>
     </div>
   );
 };
+
+const PlatformCard = ({ icon, title, platforms, browsers }) => (
+  <div className="text-center p-5 rounded-xl bg-surface-elevated border border-border hover:border-accent transition-all duration-200 hover:scale-[1.02]">
+    <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-3 text-accent">
+      {icon}
+    </div>
+    <h3 className="text-base font-display font-bold text-text-primary mb-2">
+      {title}
+    </h3>
+    <p className="text-sm text-text-secondary font-medium mb-1">{platforms}</p>
+    <p className="text-xs text-text-muted">{browsers}</p>
+  </div>
+);
+
 export default DownloadPage;

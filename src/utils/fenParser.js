@@ -1,11 +1,31 @@
+const VALID_PIECES = 'pnbrqkPNBRQK';
+
 /**
- * Parse FEN string into 2D board array
+ * Creates an empty 8x8 chess board.
  *
- * FEN reads from rank 8 down to rank 1
- * This matches the natural board representation
+ * @returns {Array<Array<string>>} Empty board matrix
+ */
+function createEmptyBoard() {
+  const board = [];
+
+  for (let row = 0; row < 8; row++) {
+    const emptyRow = [];
+
+    for (let col = 0; col < 8; col++) {
+      emptyRow.push('');
+    }
+
+    board.push(emptyRow);
+  }
+
+  return board;
+}
+
+/**
+ * Parses FEN string into 2D board array.
  *
- * @param {string} fenString - FEN notation
- * @returns {string[][]} 8x8 board array
+ * @param {string} fenString - FEN notation string
+ * @returns {Array<Array<string>>} 8x8 array of pieces or empty strings
  */
 export function parseFEN(fenString) {
   try {
@@ -14,90 +34,110 @@ export function parseFEN(fenString) {
     }
 
     const trimmed = fenString.trim();
+
     if (trimmed.length === 0) {
       throw new Error('FEN string is empty');
     }
 
-    const position = trimmed.split(/\s+/)[0];
+    const parts = trimmed.split(/\s+/);
+    const position = parts[0];
     const rows = position.split('/');
 
     if (rows.length !== 8) {
-      throw new Error(`Invalid FEN: expected 8 ranks, got ${rows.length}`);
+      throw new Error('Invalid FEN: expected 8 ranks, got ' + rows.length);
     }
 
     const board = [];
 
-    // FEN gives ranks from 8 -> 1 (top -> bottom)
-    // Keep this natural order - DO NOT REVERSE
-    for (const row of rows) {
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
       const boardRow = [];
 
-      for (const char of row) {
+      for (let charIndex = 0; charIndex < row.length; charIndex++) {
+        const char = row[charIndex];
+
         if (isNaN(char)) {
-          if (!'pnbrqkPNBRQK'.includes(char)) {
-            throw new Error(`Invalid piece character: ${char}`);
+          if (VALID_PIECES.indexOf(char) === -1) {
+            throw new Error('Invalid piece character: ' + char);
           }
           boardRow.push(char);
         } else {
           const emptySquares = parseInt(char, 10);
+
           if (emptySquares < 1 || emptySquares > 8) {
-            throw new Error(`Invalid empty square count: ${char}`);
+            throw new Error('Invalid empty square count: ' + char);
           }
-          boardRow.push(...Array(emptySquares).fill(''));
+
+          for (let i = 0; i < emptySquares; i++) {
+            boardRow.push('');
+          }
         }
       }
 
       if (boardRow.length !== 8) {
-        throw new Error(`Invalid rank length: ${boardRow.length} (expected 8)`);
+        throw new Error(
+          'Invalid rank length: ' + boardRow.length + ' (expected 8)'
+        );
       }
 
       board.push(boardRow);
     }
 
-    // Validate we have exactly 8 rows
     if (board.length !== 8) {
-      throw new Error(`Invalid board structure: ${board.length} ranks`);
+      throw new Error('Invalid board structure: ' + board.length + ' ranks');
     }
 
-    // Return in natural FEN order: board[0] = rank 8, board[7] = rank 1
     return board;
-  } catch (error) {
-    // Error logging handled by caller if needed
-
-    // Safe empty board fallback
-    return Array.from({ length: 8 }, () => Array(8).fill(''));
+  } catch {
+    return createEmptyBoard();
   }
 }
 
 /**
- * Validate FEN notation
+ * Validates FEN string structure.
+ *
  * @param {string} fen - FEN string to validate
- * @returns {boolean}
+ * @returns {boolean} True if valid
  */
 export function validateFEN(fen) {
   try {
-    if (!fen || typeof fen !== 'string') return false;
+    if (!fen || typeof fen !== 'string') {
+      return false;
+    }
 
     const position = fen.trim().split(/\s+/)[0];
     const rows = position.split('/');
 
-    if (rows.length !== 8) return false;
+    if (rows.length !== 8) {
+      return false;
+    }
 
-    for (const row of rows) {
-      let count = 0;
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
+      let squareCount = 0;
 
-      for (const char of row) {
+      for (let charIndex = 0; charIndex < row.length; charIndex++) {
+        const char = row[charIndex];
+
         if (isNaN(char)) {
-          if (!'pnbrqkPNBRQK'.includes(char)) return false;
-          count++;
+          if (VALID_PIECES.indexOf(char) === -1) {
+            return false;
+          }
+          squareCount = squareCount + 1;
         } else {
           const num = parseInt(char, 10);
-          if (num < 1 || num > 8) return false;
-          count += num;
+
+          if (num < 1 || num > 8) {
+            return false;
+          }
+
+          squareCount = squareCount + num;
         }
       }
 
-      if (count !== 8) return false;
+      if (squareCount !== 8) {
+        return false;
+      }
     }
 
     return true;
@@ -107,9 +147,10 @@ export function validateFEN(fen) {
 }
 
 /**
- * Get material statistics from FEN
- * @param {string} fen
- * @returns {object|null}
+ * Gets piece count statistics from FEN position.
+ *
+ * @param {string} fen - FEN string
+ * @returns {Object|null} Piece counts for white and black
  */
 export function getPositionStats(fen) {
   try {
@@ -134,9 +175,13 @@ export function getPositionStats(fen) {
       }
     };
 
-    for (const row of board) {
-      for (const piece of row) {
-        if (!piece) continue;
+    for (let row = 0; row < board.length; row++) {
+      for (let col = 0; col < board[row].length; col++) {
+        const piece = board[row][col];
+
+        if (!piece) {
+          continue;
+        }
 
         const color = piece === piece.toUpperCase() ? 'white' : 'black';
         const type = piece.toLowerCase();
@@ -173,17 +218,20 @@ export function getPositionStats(fen) {
 }
 
 /**
- * Check if FEN position is empty
- * @param {string} fen
- * @returns {boolean}
+ * Checks if FEN position is empty (no pieces).
+ *
+ * @param {string} fen - FEN string
+ * @returns {boolean} True if board is empty
  */
 export function isEmptyPosition(fen) {
   try {
     const board = parseFEN(fen);
 
-    for (const row of board) {
-      for (const piece of row) {
-        if (piece) return false;
+    for (let row = 0; row < board.length; row++) {
+      for (let col = 0; col < board[row].length; col++) {
+        if (board[row][col]) {
+          return false;
+        }
       }
     }
 

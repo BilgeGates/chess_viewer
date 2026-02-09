@@ -1,21 +1,24 @@
 import { useMemo } from 'react';
-import { parseFEN, logger } from '../utils';
 
-// Create a safe empty 8x8 board (stable reference)
-const createEmptyBoard = () =>
-  Array.from({ length: 8 }, () => Array(8).fill(''));
+import { parseFEN, logger } from '@/utils';
 
 /**
- * useChessBoard
- * Returns a stable, memoized 8x8 board array parsed from the provided FEN.
- * Guarantees the returned value is always an 8x8 array (never null/[]) which
- * prevents downstream render errors and makes shallow equality checks more
- * reliable for memoized components.
+ * Creates an empty 8x8 chess board.
  *
- * @param {string} fen - FEN string
- * @returns {string[][]} 8x8 board array
+ * @returns {Array<Array<string>>} Empty board matrix
  */
-export const useChessBoard = (fen) => {
+function createEmptyBoard() {
+  return Array.from({ length: 8 }, () => Array(8).fill(''));
+}
+
+/**
+ * Parses FEN string into a stable board array.
+ * Returns memoized board to prevent unnecessary re-renders.
+ *
+ * @param {string} fen - FEN notation string
+ * @returns {Array<Array<string>>} 8x8 board matrix
+ */
+export function useChessBoard(fen) {
   const board = useMemo(() => {
     if (!fen || typeof fen !== 'string' || fen.trim() === '') {
       return createEmptyBoard();
@@ -23,7 +26,6 @@ export const useChessBoard = (fen) => {
 
     try {
       const parsed = parseFEN(fen);
-      // Ensure parser returns a valid 8x8 board; fallback to empty board
       if (!Array.isArray(parsed) || parsed.length !== 8) {
         logger.warn(
           'parseFEN returned invalid board, falling back to empty board'
@@ -31,12 +33,11 @@ export const useChessBoard = (fen) => {
         return createEmptyBoard();
       }
       return parsed;
-    } catch (err) {
-      logger.error('Failed to parse FEN in useChessBoard:', err);
+    } catch (error) {
+      logger.error('Failed to parse FEN in useChessBoard:', error);
       return createEmptyBoard();
     }
-    // Only recompute when fen string value changes
   }, [fen]);
 
   return board;
-};
+}

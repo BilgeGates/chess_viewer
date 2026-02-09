@@ -1,88 +1,99 @@
 /**
- * Performance Utilities
- * Helper functions for optimizing React components
- */
-
-/**
- * Debounce function - delays execution until after wait time
+ * Debounce function execution.
+ *
  * @param {Function} func - Function to debounce
  * @param {number} wait - Wait time in milliseconds
- * @returns {Function} - Debounced function
+ * @returns {Function} Debounced function
  */
-export const debounce = (func, wait = 300) => {
+export function debounce(func, wait = 300) {
   let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
+
+  return function debouncedFunction(...args) {
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+
+    timeout = setTimeout(function () {
+      func(...args);
+    }, wait);
   };
-};
+}
 
 /**
- * Throttle function - limits execution rate
+ * Throttle function execution.
+ *
  * @param {Function} func - Function to throttle
- * @param {number} limit - Time limit in milliseconds
- * @returns {Function} - Throttled function
+ * @param {number} limit - Minimum time between executions
+ * @returns {Function} Throttled function
  */
-export const throttle = (func, limit = 300) => {
-  let inThrottle;
-  return function executedFunction(...args) {
+export function throttle(func, limit = 300) {
+  let inThrottle = false;
+
+  return function throttledFunction(...args) {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+
+      setTimeout(function () {
+        inThrottle = false;
+      }, limit);
     }
   };
-};
+}
 
 /**
- * Request Animation Frame wrapper for smooth animations
- * @param {Function} callback - Function to execute
- * @returns {number} - Request ID
+ * Throttle using requestAnimationFrame.
+ *
+ * @param {Function} callback - Function to throttle
+ * @returns {Function} Throttled function with cancel method
  */
-export const rafThrottle = (callback) => {
+export function rafThrottle(callback) {
   let requestId = null;
   let lastArgs;
 
-  const later = (context) => () => {
-    requestId = null;
-    callback.apply(context, lastArgs);
-  };
-
-  const throttled = function (...args) {
+  function throttled(...args) {
     lastArgs = args;
-    if (requestId === null) {
-      requestId = requestAnimationFrame(later(this));
-    }
-  };
 
-  throttled.cancel = () => {
+    if (requestId === null) {
+      requestId = requestAnimationFrame(function () {
+        requestId = null;
+        callback.apply(null, lastArgs);
+      });
+    }
+  }
+
+  throttled.cancel = function () {
     cancelAnimationFrame(requestId);
     requestId = null;
   };
 
   return throttled;
-};
+}
 
 /**
- * Lazy load images with Intersection Observer
+ * Lazy load images with Intersection Observer.
+ *
  * @param {string} selector - CSS selector for images
- * @param {object} options - Intersection Observer options
+ * @param {Object} options - Intersection Observer options
+ * @returns {Function|undefined} Cleanup function
  */
-export const lazyLoadImages = (selector = 'img[data-src]', options = {}) => {
+export function lazyLoadImages(selector = 'img[data-src]', options = {}) {
   const defaultOptions = {
     root: null,
     rootMargin: '50px',
-    threshold: 0.01,
-    ...options
+    threshold: 0.01
   };
 
+  const finalOptions = {};
+  finalOptions.root = options.root || defaultOptions.root;
+  finalOptions.rootMargin = options.rootMargin || defaultOptions.rootMargin;
+  finalOptions.threshold = options.threshold || defaultOptions.threshold;
+
   if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
+    const imageObserver = new IntersectionObserver(function (
+      entries,
+      observer
+    ) {
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
         if (entry.isIntersecting) {
           const img = entry.target;
           const src = img.getAttribute('data-src');
@@ -92,77 +103,89 @@ export const lazyLoadImages = (selector = 'img[data-src]', options = {}) => {
             observer.unobserve(img);
           }
         }
-      });
-    }, defaultOptions);
+      }
+    }, finalOptions);
 
     const images = document.querySelectorAll(selector);
-    images.forEach((img) => imageObserver.observe(img));
+    for (let i = 0; i < images.length; i++) {
+      imageObserver.observe(images[i]);
+    }
 
-    return () => images.forEach((img) => imageObserver.unobserve(img));
+    return function cleanup() {
+      for (let i = 0; i < images.length; i++) {
+        imageObserver.unobserve(images[i]);
+      }
+    };
   }
 
-  // Fallback for browsers without Intersection Observer
   const images = document.querySelectorAll(selector);
-  images.forEach((img) => {
-    const src = img.getAttribute('data-src');
+  for (let i = 0; i < images.length; i++) {
+    const src = images[i].getAttribute('data-src');
     if (src) {
-      img.src = src;
-      img.removeAttribute('data-src');
+      images[i].src = src;
+      images[i].removeAttribute('data-src');
     }
-  });
-};
+  }
+}
 
 /**
- * Preload critical resources
- * @param {Array<string>} urls - Array of resource URLs
- * @param {string} as - Resource type (image, script, style, font)
+ * Preload critical resources.
+ *
+ * @param {string[]} urls - URLs to preload
+ * @param {string} as - Resource type
  */
-export const preloadResources = (urls, as = 'image') => {
-  urls.forEach((url) => {
+export function preloadResources(urls, as = 'image') {
+  for (let i = 0; i < urls.length; i++) {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = as;
-    link.href = url;
+    link.href = urls[i];
     document.head.appendChild(link);
-  });
-};
+  }
+}
 
 /**
- * Check if element is in viewport
+ * Check if element is in viewport.
+ *
  * @param {HTMLElement} element - DOM element
- * @returns {boolean} - True if in viewport
+ * @returns {boolean} True if fully visible
  */
-export const isInViewport = (element) => {
+export function isInViewport(element) {
   const rect = element.getBoundingClientRect();
-  return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <=
-      (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  );
-};
+  const windowHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  const isVerticallyVisible = rect.top >= 0 && rect.bottom <= windowHeight;
+  const isHorizontallyVisible = rect.left >= 0 && rect.right <= windowWidth;
+
+  return isVerticallyVisible && isHorizontallyVisible;
+}
 
 /**
- * Memoize expensive function results
+ * Memoize function results.
+ *
  * @param {Function} fn - Function to memoize
- * @returns {Function} - Memoized function
+ * @returns {Function} Memoized function
  */
-export const memoize = (fn) => {
+export function memoize(fn) {
   const cache = new Map();
-  return (...args) => {
+
+  return function memoized(...args) {
     const key = JSON.stringify(args);
+
     if (cache.has(key)) {
       return cache.get(key);
     }
+
     const result = fn(...args);
     cache.set(key, result);
     return result;
   };
-};
+}
 
 /**
- * Batch DOM reads and writes for better performance
+ * Batch DOM read/write operations.
  */
 export class DOMBatcher {
   constructor() {
@@ -171,30 +194,48 @@ export class DOMBatcher {
     this.scheduled = false;
   }
 
+  /**
+   * Add read operation.
+   *
+   * @param {Function} callback - Read callback
+   */
   read(callback) {
     this.reads.push(callback);
     this.schedule();
   }
 
+  /**
+   * Add write operation.
+   *
+   * @param {Function} callback - Write callback
+   */
   write(callback) {
     this.writes.push(callback);
     this.schedule();
   }
 
+  /**
+   * Schedule batch execution.
+   */
   schedule() {
-    if (this.scheduled) return;
+    if (this.scheduled) {
+      return;
+    }
     this.scheduled = true;
 
-    requestAnimationFrame(() => {
-      // Execute all reads first
-      this.reads.forEach((read) => read());
-      this.reads = [];
+    const self = this;
+    requestAnimationFrame(function () {
+      for (let i = 0; i < self.reads.length; i++) {
+        self.reads[i]();
+      }
+      self.reads = [];
 
-      // Then execute all writes
-      this.writes.forEach((write) => write());
-      this.writes = [];
+      for (let i = 0; i < self.writes.length; i++) {
+        self.writes[i]();
+      }
+      self.writes = [];
 
-      this.scheduled = false;
+      self.scheduled = false;
     });
   }
 }

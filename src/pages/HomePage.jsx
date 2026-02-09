@@ -1,12 +1,22 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
-import ChessBoard from '../components/board/ChessBoard';
-import ControlPanel from '../components/controls/ControlPanel';
 import {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useReducer,
+  useEffect
+} from 'react';
+import { useLocation } from 'react-router-dom';
+
+import { ChessBoard } from '@/components/board';
+import { ChessEditor } from '@/components/interactions';
+import {
+  ControlPanel,
   ActionButtons,
-  NotificationContainer,
   ExportProgress
-} from '../components/UI';
-import { useNotifications, useLocalStorage } from '../hooks';
+} from '@/components/features';
+import { NotificationContainer } from '@/components/ui';
+import { useNotifications, useLocalStorage, useFENHistory } from '@/hooks';
 import {
   downloadPNG,
   downloadJPEG,
@@ -15,24 +25,76 @@ import {
   cancelExport,
   pauseExport,
   resumeExport
-} from '../utils/canvasExporter';
+} from '@/utils/canvasExporter';
+import { shouldForceCoordinateBorder } from '@/utils/imageOptimizer';
+
+/**
+ * Export state reducer - PERFORMANCE OPTIMIZED
+ * Batches export-related state updates to prevent cascading renders
+ */
+const exportReducer = (state, action) => {
+  switch (action.type) {
+    case 'START_EXPORT':
+      return {
+        ...state,
+        isExporting: true,
+        currentFormat: action.format,
+        exportProgress: 0,
+        isPaused: false,
+        showProgress: true
+      };
+    case 'UPDATE_PROGRESS':
+      return { ...state, exportProgress: action.progress };
+    case 'PAUSE':
+      return { ...state, isPaused: true };
+    case 'RESUME':
+      return { ...state, isPaused: false };
+    case 'COMPLETE':
+      return {
+        ...state,
+        isExporting: false,
+        currentFormat: null,
+        exportProgress: 0,
+        isPaused: false
+      };
+    case 'TOGGLE_PROGRESS':
+      return { ...state, showProgress: !state.showProgress };
+    default:
+      return state;
+  }
+};
 
 /**
  * Home Page
- * Prevents unnecessary re-renders with useCallback and useMemo
+ * PERFORMANCE OPTIMIZED: Prevents unnecessary re-renders with useCallback, useMemo, and useReducer
  */
 const HomePage = () => {
+  const location = useLocation();
+
   // Persistent state
   const [fen, setFen] = useLocalStorage(
     'chess-fen',
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
   );
+
+  // Handle FEN loading from navigation state (when coming back from pages)
+  useEffect(() => {
+    if (location.state?.loadFEN) {
+      setFen(location.state.loadFEN);
+      // Clear the state so it doesn't reload on navigation back/forward
+      window.history.replaceState({}, document.title);
+    }
+  }, [location, setFen]);
   const [pieceStyle, setPieceStyle] = useLocalStorage(
     'chess-piece-style',
     'cburnett'
   );
   const [showCoords, setShowCoords] = useLocalStorage(
     'chess-show-coords',
+    true
+  );
+  const [showCoordinateBorder, setShowCoordinateBorder] = useLocalStorage(
+    'chess-show-coordinate-border',
     true
   );
   const [lightSquare, setLightSquare] = useLocalStorage(
@@ -54,48 +116,70 @@ const HomePage = () => {
     16
   );
 
-  // Temporary state
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportProgress, setExportProgress] = useState(0);
-  const [currentFormat, setCurrentFormat] = useState(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const [showProgress, setShowProgress] = useState(true);
+  // Export state with useReducer for better performance
+  const [exportState, dispatchExport] = useReducer(exportReducer, {
+    isExporting: false,
+    exportProgress: 0,
+    currentFormat: null,
+    isPaused: false,
+    showProgress: true
+  });
+
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Refs
+  const {
+    saveManualFen,
+    saveExportFen,
+    notifyDragAction,
+    addCurrentToFavorites
+  } = useFENHistory(fen, setIsFavorite);
+
   const boardRef = useRef(null);
   const addToFavoritesRef = useRef(null);
 
-  // Notifications
   const { notifications, success, error, info, removeNotification } =
     useNotifications();
 
-  // Memoized export config
+  /**
+   * @returns {Object} Export configuration object
+   */
   const getExportConfig = useCallback(() => {
-    // boardSize is in centimeters (4, 6, 8, etc.)
-    // Export functions will convert cm to pixels at 300 DPI for print quality
+    const forceCoordBorder = shouldForceCoordinateBorder(exportQuality);
+    const effectiveCoordBorder = forceCoordBorder || showCoordinateBorder;
+
     return {
-      boardSize: boardSize, // In centimeters - will be converted to 300 DPI pixels
+      boardSize: boardSize,
       showCoords,
+      showCoordinateBorder: effectiveCoordBorder,
       lightSquare,
       darkSquare,
       flipped,
       fen,
       pieceImages: boardRef.current?.getPieceImages() || {},
-      exportQuality: 2 // Slightly higher for better print quality
+      exportQuality
     };
-  }, [boardSize, showCoords, lightSquare, darkSquare, flipped, fen]);
+  }, [
+    boardSize,
+    showCoords,
+    showCoordinateBorder,
+    lightSquare,
+    darkSquare,
+    flipped,
+    fen,
+    exportQuality
+  ]);
 
-  // Export handlers
+  /**
+   * @returns {Promise<void>}
+   */
   const handleDownloadPNG = useCallback(async () => {
-    setIsExporting(true);
-    setCurrentFormat('png');
-    setExportProgress(0);
-    setIsPaused(false);
-    setShowProgress(true);
+    dispatchExport({ type: 'START_EXPORT', format: 'png' });
+    saveExportFen(fen);
 
     try {
-      await downloadPNG(getExportConfig(), fileName, setExportProgress);
+      await downloadPNG(getExportConfig(), fileName, (progress) => {
+        dispatchExport({ type: 'UPDATE_PROGRESS', progress });
+      });
       success('PNG exported successfully');
     } catch (err) {
       if (err.message === 'Export cancelled') {
@@ -105,23 +189,22 @@ const HomePage = () => {
       }
     } finally {
       setTimeout(() => {
-        setIsExporting(false);
-        setCurrentFormat(null);
-        setExportProgress(0);
-        setIsPaused(false);
+        dispatchExport({ type: 'COMPLETE' });
       }, 300);
     }
-  }, [getExportConfig, fileName, success, error, info]);
+  }, [getExportConfig, fileName, fen, saveExportFen, success, error, info]);
 
+  /**
+   * @returns {Promise<void>}
+   */
   const handleDownloadJPEG = useCallback(async () => {
-    setIsExporting(true);
-    setCurrentFormat('jpeg');
-    setExportProgress(0);
-    setIsPaused(false);
-    setShowProgress(true);
+    dispatchExport({ type: 'START_EXPORT', format: 'jpeg' });
+    saveExportFen(fen);
 
     try {
-      await downloadJPEG(getExportConfig(), fileName, setExportProgress);
+      await downloadJPEG(getExportConfig(), fileName, (progress) => {
+        dispatchExport({ type: 'UPDATE_PROGRESS', progress });
+      });
       success('JPEG exported successfully');
     } catch (err) {
       if (err.message === 'Export cancelled') {
@@ -131,34 +214,40 @@ const HomePage = () => {
       }
     } finally {
       setTimeout(() => {
-        setIsExporting(false);
-        setCurrentFormat(null);
-        setExportProgress(0);
-        setIsPaused(false);
+        dispatchExport({ type: 'COMPLETE' });
       }, 300);
     }
-  }, [getExportConfig, fileName, success, error, info]);
+  }, [getExportConfig, fileName, fen, saveExportFen, success, error, info]);
 
+  /**
+   * @returns {Promise<void>}
+   */
   const handleCopyImage = useCallback(async () => {
     try {
       await copyToClipboard(getExportConfig());
+      saveExportFen(fen);
       success('Image copied to clipboard');
     } catch (err) {
       error('Copy failed: ' + err.message);
     }
-  }, [getExportConfig, success, error]);
+  }, [getExportConfig, fen, saveExportFen, success, error]);
 
+  /**
+   * @returns {void}
+   */
   const handleFlip = useCallback(() => {
     setFlipped((prev) => !prev);
     success('Board flipped');
   }, [setFlipped, success]);
 
+  /**
+   * @param {Array<string>} formats - Export format array (e.g., ['png', 'svg'])
+   * @returns {Promise<void>}
+   */
   const handleBatchExport = useCallback(
     async (formats) => {
-      setIsExporting(true);
-      setExportProgress(0);
-      setIsPaused(false);
-      setShowProgress(true);
+      dispatchExport({ type: 'START_EXPORT', format: formats[0] });
+      saveExportFen(fen);
 
       try {
         await batchExport(
@@ -166,8 +255,11 @@ const HomePage = () => {
           formats,
           fileName,
           (progress, format) => {
-            setExportProgress(progress);
-            setCurrentFormat(format);
+            dispatchExport({ type: 'UPDATE_PROGRESS', progress });
+            // Update format separately if needed
+            if (format !== exportState.currentFormat) {
+              dispatchExport({ type: 'START_EXPORT', format });
+            }
           }
         );
         success(`Exported ${formats.length} formats successfully`);
@@ -179,34 +271,36 @@ const HomePage = () => {
         }
       } finally {
         setTimeout(() => {
-          setIsExporting(false);
-          setCurrentFormat(null);
-          setExportProgress(0);
-          setIsPaused(false);
+          dispatchExport({ type: 'COMPLETE' });
         }, 300);
       }
     },
-    [getExportConfig, fileName, success, error, info]
+    [
+      getExportConfig,
+      fileName,
+      fen,
+      saveExportFen,
+      success,
+      error,
+      info,
+      exportState.currentFormat
+    ]
   );
 
   const handleCancelExport = useCallback(() => {
     cancelExport();
-    setIsExporting(false);
-    setCurrentFormat(null);
-    setExportProgress(0);
-    setIsPaused(false);
-    setShowProgress(true);
+    dispatchExport({ type: 'COMPLETE' });
     info('Export cancelled');
   }, [info]);
 
   const handlePause = useCallback(() => {
     pauseExport();
-    setIsPaused(true);
+    dispatchExport({ type: 'PAUSE' });
   }, []);
 
   const handleResume = useCallback(() => {
     resumeExport();
-    setIsPaused(false);
+    dispatchExport({ type: 'RESUME' });
   }, []);
 
   const handleAddToFavorites = useCallback(() => {
@@ -215,13 +309,12 @@ const HomePage = () => {
     }
   }, []);
 
-  // Memoized board props - DÜZƏLDİLMİŞ
   const boardProps = useMemo(
     () => ({
       fen,
       pieceStyle,
       showCoords,
-      boardSize: 400, // Fixed display size for website
+      boardSize: 400,
       lightSquare,
       darkSquare,
       flipped
@@ -229,12 +322,63 @@ const HomePage = () => {
     [fen, pieceStyle, showCoords, lightSquare, darkSquare, flipped]
   );
 
+  /**
+   * @param {string} newFen - Updated FEN from editor
+   * @returns {void}
+   */
+  const handleEditorFenChange = useCallback(
+    (newFen) => {
+      setFen(newFen);
+      notifyDragAction();
+    },
+    [setFen, notifyDragAction]
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-4 sm:py-6 lg:py-8 px-3 sm:px-4">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-12 px-3 sm:px-4 lg:px-6">
       <div className="max-w-[1600px] mx-auto w-full">
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 items-start">
-          {/* Control Panel - Mobile First, Desktop Right */}
-          <div className="w-full lg:w-[380px] xl:w-[520px] order-1 lg:order-2">
+        {/* Main Content Grid - Responsive */}
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+          {/* Board Section - Left/Center */}
+          <div className="w-full lg:flex-1 space-y-4 sm:space-y-5 animate-fadeIn">
+            {/* Interactive Chess Editor */}
+            <div className="relative">
+              <div className="glass-card p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg">
+                <ChessEditor
+                  fen={fen}
+                  onFenChange={handleEditorFenChange}
+                  pieceStyle={pieceStyle}
+                  showCoords={showCoords}
+                  lightSquare={lightSquare}
+                  darkSquare={darkSquare}
+                  flipped={flipped}
+                />
+              </div>
+            </div>
+
+            {/* Hidden canvas board for export (not visible but used by export functions) */}
+            <div className="sr-only" aria-hidden="true">
+              <ChessBoard ref={boardRef} {...boardProps} />
+            </div>
+
+            {/* Action Buttons */}
+            <div>
+              <ActionButtons
+                onDownloadPNG={handleDownloadPNG}
+                onDownloadJPEG={handleDownloadJPEG}
+                onCopyImage={handleCopyImage}
+                onFlip={handleFlip}
+                onBatchExport={handleBatchExport}
+                onAddToFavorites={handleAddToFavorites}
+                isExporting={exportState.isExporting}
+                currentFen={fen}
+                isFavorite={isFavorite}
+              />
+            </div>
+          </div>
+
+          {/* Control Panel - Right Sidebar (Responsive) */}
+          <div className="w-full lg:w-[420px] xl:w-[480px] lg:flex-shrink-0 animate-fadeIn">
             <ControlPanel
               fen={fen}
               setFen={setFen}
@@ -242,6 +386,8 @@ const HomePage = () => {
               setPieceStyle={setPieceStyle}
               showCoords={showCoords}
               setShowCoords={setShowCoords}
+              showCoordinateBorder={showCoordinateBorder}
+              setShowCoordinateBorder={setShowCoordinateBorder}
               lightSquare={lightSquare}
               setLightSquare={setLightSquare}
               darkSquare={darkSquare}
@@ -254,33 +400,15 @@ const HomePage = () => {
               setExportQuality={setExportQuality}
               addToFavoritesRef={addToFavoritesRef}
               onFavoriteStatusChange={setIsFavorite}
+              saveManualFen={saveManualFen}
+              saveExportFen={saveExportFen}
+              addCurrentToFavorites={addCurrentToFavorites}
               onNotification={(message, type) => {
                 if (type === 'success') success(message);
                 else if (type === 'error') error(message);
                 else if (type === 'warning') info(message);
               }}
             />
-          </div>
-
-          {/* Board & Actions - Mobile Second, Desktop Left */}
-          <div className="flex-1 w-full flex flex-col items-center gap-4 sm:gap-6 order-2 lg:order-1">
-            <div className="w-full max-w-2xl">
-              <ChessBoard ref={boardRef} {...boardProps} />
-            </div>
-
-            <div className="w-full max-w-2xl">
-              <ActionButtons
-                onDownloadPNG={handleDownloadPNG}
-                onDownloadJPEG={handleDownloadJPEG}
-                onCopyImage={handleCopyImage}
-                onFlip={handleFlip}
-                onBatchExport={handleBatchExport}
-                onAddToFavorites={handleAddToFavorites}
-                isExporting={isExporting}
-                currentFen={fen}
-                isFavorite={isFavorite}
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -290,14 +418,14 @@ const HomePage = () => {
         onRemove={removeNotification}
       />
 
-      {showProgress && (
+      {exportState.showProgress && (
         <ExportProgress
-          isExporting={isExporting}
-          progress={exportProgress}
-          currentFormat={currentFormat}
+          isExporting={exportState.isExporting}
+          progress={exportState.exportProgress}
+          currentFormat={exportState.currentFormat}
           config={getExportConfig()}
-          isPaused={isPaused}
-          onClose={() => setShowProgress(false)}
+          isPaused={exportState.isPaused}
+          onClose={() => dispatchExport({ type: 'TOGGLE_PROGRESS' })}
           onPause={handlePause}
           onResume={handleResume}
           onCancel={handleCancelExport}

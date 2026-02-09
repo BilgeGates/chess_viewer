@@ -69,12 +69,14 @@ Before you begin, ensure you have:
 
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/chess_viewer.git
 cd chess_viewer
 ```
 
 3. **Install dependencies:**
+
 ```bash
 npm install
 # or
@@ -82,6 +84,7 @@ yarn install
 ```
 
 4. **Start the development server:**
+
 ```bash
 npm start
 # or
@@ -91,148 +94,145 @@ yarn start
 5. **Open your browser** and navigate to the local development URL (typically `http://localhost:3000`)
 
 ### Project Structure
+
 ```
 chess_viewer/
 │
 ├── 📂 public/
 │   ├── index.html
+│   ├── manifest.json
+│   ├── robots.txt
+│   └── sitemap.xml
 │
 ├── 📂 src/
 │   │
 │   ├── 📂 components/
 │   │   │
 │   │   ├── 📂 board/              # Chess Board Rendering
-│   │   │   ├── BoardSquare.jsx    # Single square component (memoized)
-│   │   │   ├── BoardGrid.jsx      # 8×8 grid layout
-│   │   │   ├── ChessBoard.jsx     # Main board with Canvas rendering
-│   │   │   ├── MiniChessPreview.jsx # Thumbnail for history
+│   │   │   ├── BoardSquare.jsx
+│   │   │   ├── BoardGrid.jsx
+│   │   │   ├── ChessBoard.jsx
+│   │   │   ├── MiniChessPreview.jsx
 │   │   │   └── index.js
 │   │   │
-│   │   ├── 📂 controls/           # Control Panel System
-│   │   │   │
-│   │   │   ├── 📂 atoms/          # Atomic components
-│   │   │   │   ├── FENInputField.jsx
-│   │   │   │   ├── FamousPositionButton.jsx
-│   │   │   │   └── index.js
-│   │   │   │
-│   │   │   ├── 📂 modals/         # Modal dialogs
-│   │   │   │   ├── AdvancedFENInputModal.jsx
-│   │   │   │   ├── ExportSettingsModal.jsx
-│   │   │   │   ├── FENHistoryModal.jsx
-│   │   │   │   ├── ThemeModal.jsx
-│   │   │   │   └── index.js
-│   │   │   │
-│   │   │   ├── ControlPanel.jsx   # Main control container
-│   │   │   ├── BoardSizeControl.jsx
-│   │   │   ├── DisplayOptions.jsx
-│   │   │   ├── ExportSettings.jsx
-│   │   │   ├── FENInput.jsx
-│   │   │   ├── PieceSelector.jsx
-│   │   │   ├── ThemeSelector.jsx
+│   │   ├── 📂 features/           # Feature Modules
+│   │   │   ├── (export, theme, fen, color-picker modules)
+│   │   │   └── index.js
+│   │   │
+│   │   ├── 📂 interactions/       # Interactive Components
+│   │   │   └── index.js
+│   │   │
+│   │   ├── 📂 layout/             # Layout Components
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Footer.jsx
 │   │   │   └── index.js
 │   │   │
 │   │   ├── 📂 ui/                 # Reusable UI Components
-│   │   │   │
-│   │   │   ├── 📂 base/           # Base components
-│   │   │   │   ├── Badge.jsx
-│   │   │   │   ├── Button.jsx
-│   │   │   │   ├── Card.jsx
-│   │   │   │   ├── Checkbox.jsx
-│   │   │   │   ├── Input.jsx
-│   │   │   │   ├── Modal.jsx
-│   │   │   │   ├── Select.jsx
-│   │   │   │   ├── SearchableSelect.jsx
-│   │   │   │   ├── RangeSlider.jsx
-│   │   │   │   └── index.js
-│   │   │   │
-│   │   │   ├── 📂 color-picker/   # Advanced color picker
-│   │   │   │   │
-│   │   │   │   ├── 📂 parts/      # Picker components
-│   │   │   │   │   ├── ColorCanvas.jsx
-│   │   │   │   │   ├── ColorInput.jsx
-│   │   │   │   │   ├── ColorPalettes.jsx
-│   │   │   │   │   ├── ColorSwatch.jsx
-│   │   │   │   │   ├── HueSlider.jsx
-│   │   │   │   │   ├── PrimaryActions.jsx
-│   │   │   │   │   ├── SelectedPreview.jsx
-│   │   │   │   │   ├── ThemePresetCard.jsx
-│   │   │   │   │   └── index.js
-│   │   │   │   │
-│   │   │   │   ├── 📂 views/      # Picker views
-│   │   │   │   │   ├── ThemeMainView.jsx
-│   │   │   │   │   ├── ThemeAdvancedPickerView.jsx
-│   │   │   │   │   ├── ThemeSettingsView.jsx
-│   │   │   │   │   └── index.js
-│   │   │   │   │
-│   │   │   │   ├── ColorPicker.jsx
-│   │   │   │   ├── PickerModal.jsx
-│   │   │   │   └── index.js
-│   │   │   │
-│   │   │   ├── ActionButtons.jsx
-│   │   │   ├── ExportProgress.jsx
-│   │   │   ├── NotificationContainer.jsx
-│   │   │   ├── UserGuide.jsx
+│   │   │   ├── Button.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── Input.jsx
 │   │   │   └── index.js
 │   │   │
-│   │   └── 📂 layout/             # Layout components
-│   │       ├── Navbar.jsx
-│   │       ├── Footer.jsx
-│   │       └── index.js
+│   │   └── index.js
 │   │
-│   ├── 📂 pages/                  # Application pages
+│   ├── 📂 pages/                  # Application Pages
 │   │   ├── HomePage.jsx
 │   │   ├── AboutPage.jsx
+│   │   ├── AdvancedFENInputPage.jsx
 │   │   ├── DownloadPage.jsx
+│   │   ├── FENHistoryPage.jsx
+│   │   ├── NotFoundPage.jsx
 │   │   ├── SupportPage.jsx
+│   │   ├── ThemeCustomizerPage.jsx
 │   │   └── index.js
 │   │
-│   ├── 📂 hooks/                  # Custom React hooks
-│   │   ├── useChessBoard.js       # FEN parsing & validation
-│   │   ├── usePieceImages.js      # Image loading & caching
-│   │   ├── useFENHistory.js       # History management
-│   │   ├── useTheme.js            # Theme state
-│   │   ├── useNotifications.js    # Toast system
-│   │   ├── useLocalStorage.js     # Persistent storage
-│   │   ├── useColorState.js       # Color picker state
-│   │   ├── useColorConversion.js  # Color utilities
-│   │   ├── useCanvasPicker.js     # Canvas interactions
-│   │   ├── useOutsideClick.js     # Click outside detection
+│   ├── 📂 hooks/                  # Custom React Hooks
+│   │   ├── useChessBoard.js
+│   │   ├── usePieceImages.js
+│   │   ├── useFENHistory.js
+│   │   ├── useTheme.js
+│   │   ├── useNotifications.js
+│   │   ├── useLocalStorage.js
+│   │   ├── useColorState.js
+│   │   ├── useColorConversion.js
+│   │   ├── useCanvasPicker.js
+│   │   ├── useInteractiveBoard.js
+│   │   ├── useIntersectionObserver.js
+│   │   ├── useOutsideClick.js
+│   │   ├── usePerformance.js
+│   │   ├── useScrollLock.js
 │   │   └── index.js
 │   │
-│   ├── 📂 utils/                  # Utility functions
-│   │   ├── fenParser.js           # FEN validation & parsing
-│   │   ├── colorUtils.js          # Color conversions
-│   │   ├── coordinateCalculations.js # Board coordinates
-│   │   ├── canvasExporter.js      # Export logic
-│   │   ├── imageOptimizer.js      # Canvas optimization
+│   ├── 📂 utils/                  # Utility Functions
+│   │   ├── fenParser.js
+│   │   ├── colorUtils.js
+│   │   ├── coordinateCalculations.js
+│   │   ├── canvasExporter.js
+│   │   ├── advancedExport.js
+│   │   ├── imageOptimizer.js
+│   │   ├── pieceImageCache.js
+│   │   ├── validation.js
+│   │   ├── errorHandler.js
+│   │   ├── eventUtils.js
+│   │   ├── logger.js
+│   │   ├── performance.js
+│   │   ├── classNames.js
 │   │   └── index.js
 │   │
-│   ├── 📂 constants/              # Application constants
-│   │   ├── chessConstants.js      # Piece sets, themes, positions
+│   ├── 📂 contexts/               # React Contexts
+│   │   ├── ThemeSettingsContext.jsx
 │   │   └── index.js
 │   │
-│   ├── 📂 routes/                 # Routing configuration
+│   ├── 📂 constants/              # Application Constants
+│   │   └── chessConstants.js
+│   │
+│   ├── 📂 routes/                 # Routing Configuration
 │   │   └── Router.jsx
 │   │
 │   ├── App.jsx                    # Root component
 │   ├── index.js                   # Entry point
 │   └── index.css                  # Global styles
 │
-├── 📄 .env                        # Environment variables
-├── 📄 .gitignore
-├── 📄 postcss.config.js
-├── 📄 tailwind.config.js
+├── 📂 docs/                       # Documentation
+│   ├── ACCESSIBILITY.md
+│   ├── ARCHITECTURE.md
+│   ├── CHANGELOG.md
+│   ├── DECISIONS.md
+│   ├── DESIGN_ERRORS_ANALYSIS.md
+│   ├── EXPORT_PIPELINE.md
+│   ├── FAQ.md
+│   ├── FEN.md
+│   ├── KNOWN_ISSUES.md
+│   ├── LINTING_SETUP.md
+│   ├── PERFORMANCE.md
+│   ├── README.md
+│   ├── ROADMAP.md
+│   └── STATE_MANAGEMENT.md
+│
+├── 📂 build/                      # Production build output
+├── 📂 scripts/                    # Build & utility scripts
+│   └── fix-imports.js
+│
 ├── 📄 package.json
-├── 📄 package-lock.json
-├── 📄 vercel.json                 # Vercel deployment config
+├── 📄 craco.config.js
+├── 📄 jsconfig.json
+├── 📄 tailwind.config.js
+├── 📄 postcss.config.js
+├── 📄 vercel.json
 ├── 📄 README.md
+├── 📄 LICENSE
 ├── 📄 CONTRIBUTING.md
-├── 📄 ARCHITECTURE.md
-├── 📄 SECURITY.md
 ├── 📄 CODE_OF_CONDUCT.md
-├── 📄 FAQ.md
-└── 📄 LICENSE
+└── 📄 SECURITY.md
 ```
+
+### Architecture Highlights
+
+- **Feature-Based**: Components organized by domain (export, theme, fen, color-picker)
+- **Page-Based Routing**: Dedicated pages for different app views
+- **Barrel Exports**: Clean imports via `index.js` in each directory
+- **Hooks & Utils**: Global access from `src/hooks` and `src/utils`
+- **Comprehensive Docs**: Detailed documentation in `docs/` folder
 
 ---
 
@@ -241,6 +241,7 @@ chess_viewer/
 ### Workflow
 
 1. **Create a new branch** for your changes:
+
 ```bash
 git checkout -b feature/your-feature-name
 # or
@@ -248,6 +249,7 @@ git checkout -b fix/bug-description
 ```
 
 2. **Make your changes** with clear, focused commits:
+
 ```bash
 git add .
 git commit -m "Add: brief description of changes"
@@ -265,6 +267,7 @@ git commit -m "Add: brief description of changes"
    - Test on different browsers if possible
 
 5. **Push to your fork:**
+
 ```bash
 git push origin feature/your-feature-name
 ```
@@ -280,6 +283,7 @@ Use clear, descriptive commit messages:
 - **Docs:** for documentation changes
 
 **Example:**
+
 ```
 Add: board flip functionality
 Fix: piece drag-and-drop on mobile devices

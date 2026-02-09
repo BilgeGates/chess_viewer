@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '../utils';
+import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '@/utils';
 
 /**
  * Hook for canvas-based color picker

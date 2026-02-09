@@ -1,13 +1,5 @@
-/**
- * Centralized error handling utility
- * Provides consistent error handling patterns across the application
- */
-
 import { logger } from './logger';
 
-/**
- * Error types for categorization
- */
 export const ErrorTypes = {
   VALIDATION: 'VALIDATION',
   NETWORK: 'NETWORK',
@@ -18,10 +10,7 @@ export const ErrorTypes = {
   UNKNOWN: 'UNKNOWN'
 };
 
-/**
- * User-friendly error messages
- */
-const userFriendlyMessages = {
+const USER_FRIENDLY_MESSAGES = {
   [ErrorTypes.VALIDATION]: 'Invalid input provided',
   [ErrorTypes.NETWORK]: 'Network error occurred. Please check your connection',
   [ErrorTypes.CANVAS]: 'Failed to render the board',
@@ -32,98 +21,113 @@ const userFriendlyMessages = {
 };
 
 /**
- * Determine error type from error object
- * @param {Error} error - The error object
- * @returns {string} Error type
+ * Determines error type from error message.
+ *
+ * @param {Error} error - Error object
+ * @returns {string} Error type constant
  */
-const getErrorType = (error) => {
-  if (!error) return ErrorTypes.UNKNOWN;
+function getErrorType(error) {
+  if (!error) {
+    return ErrorTypes.UNKNOWN;
+  }
 
-  const message = error.message?.toLowerCase() || '';
+  const message = error.message ? error.message.toLowerCase() : '';
 
   if (
-    message.includes('network') ||
-    message.includes('fetch') ||
-    message.includes('timeout')
+    message.indexOf('network') !== -1 ||
+    message.indexOf('fetch') !== -1 ||
+    message.indexOf('timeout') !== -1
   ) {
     return ErrorTypes.NETWORK;
   }
-  if (message.includes('canvas') || message.includes('context')) {
+
+  if (message.indexOf('canvas') !== -1 || message.indexOf('context') !== -1) {
     return ErrorTypes.CANVAS;
   }
-  if (message.includes('storage') || message.includes('quota')) {
+
+  if (message.indexOf('storage') !== -1 || message.indexOf('quota') !== -1) {
     return ErrorTypes.STORAGE;
   }
-  if (message.includes('clipboard')) {
+
+  if (message.indexOf('clipboard') !== -1) {
     return ErrorTypes.CLIPBOARD;
   }
-  if (message.includes('export') || message.includes('download')) {
+
+  if (message.indexOf('export') !== -1 || message.indexOf('download') !== -1) {
     return ErrorTypes.EXPORT;
   }
-  if (message.includes('invalid') || message.includes('validation')) {
+
+  if (
+    message.indexOf('invalid') !== -1 ||
+    message.indexOf('validation') !== -1
+  ) {
     return ErrorTypes.VALIDATION;
   }
 
   return ErrorTypes.UNKNOWN;
-};
+}
 
 /**
- * Get user-friendly message for an error
- * @param {Error} error - The error object
- * @param {string} [customMessage] - Optional custom message
+ * Gets user-friendly error message.
+ *
+ * @param {Error} error - Error object
+ * @param {string} customMessage - Custom message override
  * @returns {string} User-friendly message
  */
-export const getUserFriendlyMessage = (error, customMessage) => {
-  if (customMessage) return customMessage;
+export function getUserFriendlyMessage(error, customMessage) {
+  if (customMessage) {
+    return customMessage;
+  }
 
   const errorType = getErrorType(error);
   return (
-    userFriendlyMessages[errorType] || userFriendlyMessages[ErrorTypes.UNKNOWN]
+    USER_FRIENDLY_MESSAGES[errorType] ||
+    USER_FRIENDLY_MESSAGES[ErrorTypes.UNKNOWN]
   );
-};
+}
 
 /**
- * Handle error with logging and optional notification
- * @param {Error} error - The error object
- * @param {string} context - Context where error occurred
- * @param {Object} options - Options
- * @param {Function} [options.onNotification] - Notification callback
- * @param {string} [options.customMessage] - Custom user message
- * @param {boolean} [options.silent] - Don't show notification
+ * Handles error with logging and notification.
+ *
+ * @param {Error} error - Error object
+ * @param {string} context - Error context
+ * @param {Object} options - Handling options
+ * @param {Function} options.onNotification - Notification callback
+ * @param {string} options.customMessage - Custom message override
+ * @param {boolean} options.silent - Suppress notifications
  * @returns {Object} Error info object
  */
-export const handleError = (error, context, options = {}) => {
+export function handleError(error, context, options = {}) {
   const { onNotification, customMessage, silent = false } = options;
 
   const errorInfo = {
-    message: error?.message || 'Unknown error',
-    context,
+    message: error && error.message ? error.message : 'Unknown error',
+    context: context,
     type: getErrorType(error),
     timestamp: new Date().toISOString(),
-    stack: error?.stack
+    stack: error ? error.stack : undefined
   };
 
-  // Log error (development only via logger)
-  logger.error(`Error in ${context}:`, errorInfo);
+  logger.error('Error in ' + context + ':', errorInfo);
 
-  // Show user notification if callback provided
   if (!silent && onNotification) {
     const userMessage = getUserFriendlyMessage(error, customMessage);
     onNotification(userMessage, 'error');
   }
 
   return errorInfo;
-};
+}
 
 /**
- * Wrap async function with error handling
- * @param {Function} fn - Async function to wrap
- * @param {string} context - Context for error logging
- * @param {Object} options - Error handling options
+ * Wraps async function with error handling.
+ *
+ * @param {Function} fn - Function to wrap
+ * @param {string} context - Function context
+ * @param {Object} options - Handling options
  * @returns {Function} Wrapped function
  */
-export const withErrorHandling = (fn, context, options = {}) => {
-  return async (...args) => {
+export function withErrorHandling(fn, context, options = {}) {
+  return async function wrappedFunction(...args) {
     try {
       return await fn(...args);
     } catch (error) {
@@ -131,23 +135,24 @@ export const withErrorHandling = (fn, context, options = {}) => {
       throw error;
     }
   };
-};
+}
 
 /**
- * Try-catch wrapper that returns result or error
- * @param {Function} fn - Function to execute
- * @param {string} context - Context for error logging
- * @returns {Object} { result, error }
+ * Tries function and returns result or error.
+ *
+ * @param {Function} fn - Function to try
+ * @param {string} context - Function context
+ * @returns {Promise<Object>} Result or error object
  */
-export const tryCatch = async (fn, context) => {
+export async function tryCatch(fn, context) {
   try {
     const result = await fn();
     return { result, error: null };
   } catch (error) {
-    logger.error(`Error in ${context}:`, error);
+    logger.error('Error in ' + context + ':', error);
     return { result: null, error };
   }
-};
+}
 
 const errorHandler = {
   ErrorTypes,

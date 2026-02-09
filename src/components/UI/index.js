@@ -1,14 +1,11 @@
-// UI components main exports
-
-// Re-export base components
-export * from './base';
-
-// Re-export color picker
-export * from './color-picker';
-
-// Export other UI components
-export { default as ActionButtons } from './ActionButtons';
-export { default as ExportProgress } from './ExportProgress';
-export { default as NotificationContainer } from './NotificationContainer';
-export { default as UserGuide } from './UserGuide';
-export { ErrorBoundary, ErrorFallback } from './ErrorBoundary';
+export { default as Badge } from './Badge/Badge';
+export { default as Button } from './Button/Button';
+export { default as Card } from './Card/Card';
+export { default as Checkbox } from './Checkbox/Checkbox';
+export { default as ErrorBoundary } from './ErrorBoundary/ErrorBoundary';
+export { default as Input } from './Input/Input';
+export { default as Modal } from './Modal/Modal';
+export { default as NotificationContainer } from './NotificationContainer/NotificationContainer';
+export { default as RangeSlider } from './RangeSlider/RangeSlider';
+export { default as SearchableSelect } from './SearchableSelect/SearchableSelect';
+export { default as Select } from './Select/Select';

@@ -3,298 +3,167 @@ import {
   Code,
   Shield,
   Info,
-  Sparkles,
-  Image,
-  Download,
   Zap,
-  Lightbulb,
-  Keyboard,
   Copy,
   RotateCw,
   Shuffle,
   FileText,
   Maximize2,
   Layers,
-  XCircle
+  Crown
 } from 'lucide-react';
 
 const AboutPage = () => {
   return (
-    <div className="min-h-screen bg-gray-900 py-12 sm:py-16 lg:py-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* About Section */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 sm:p-8 lg:p-12 border border-gray-700 shadow-2xl">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 sm:mb-8">
-            About Chess Diagram Generator
+    <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Hero Section */}
+        <div className="text-center mb-10 animate-fadeIn">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-5">
+            <Crown className="w-5 h-5" />
+            Professional Tool
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary mb-4">
+            About
           </h1>
+          <p className="text-text-secondary text-lg max-w-2xl mx-auto leading-relaxed">
+            Professional chess diagram generator for players, coaches, and
+            content creators
+          </p>
+        </div>
 
-          <div className="space-y-6 text-gray-300 text-base sm:text-lg leading-relaxed">
+        {/* Main About Card */}
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fadeIn">
+          <div className="space-y-5 text-text-secondary leading-relaxed">
             <p>
-              Chess Diagram Generator is a professional tool designed for chess
-              enthusiasts, coaches, authors, and content creators who need
-              high-quality chess diagrams.
+              A modern web application for creating high-quality chess diagrams
+              from FEN notation. Built with performance and usability in mind.
             </p>
 
-            <p>
-              Built with modern web technologies, this application provides
-              pixel-perfect rendering and ultra-high resolution exports suitable
-              for print publications, digital content, and presentations.
-            </p>
-
-            <div className="bg-blue-600/10 border border-blue-600/30 rounded-xl p-6 my-8">
-              <h2 className="text-2xl font-bold text-blue-400 mb-4">
-                Key Highlights
-              </h2>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
-                  <span>
-                    <strong>Ultra-HD Export:</strong> Up to 32x quality
-                    (12,800px × 12,800px)
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
-                  <span>
-                    <strong>20+ Piece Styles:</strong> Professional piece sets
-                    from Lichess
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
-                  <span>
-                    <strong>FEN Support:</strong> Full Forsyth-Edwards Notation
-                    compatibility
-                  </span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-blue-400 mt-1 flex-shrink-0" />
-                  <span>
-                    <strong>Cloud Sync:</strong> Save and sync your favorite
-                    positions
-                  </span>
-                </li>
-              </ul>
+            <div className="grid sm:grid-cols-2 gap-4 my-6">
+              <div className="p-5 rounded-xl bg-accent/5 border border-accent/20">
+                <h3 className="flex items-center gap-2 text-base font-bold text-accent mb-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Ultra-HD Export
+                </h3>
+                <p className="text-sm">Up to 32x quality (12,800px)</p>
+              </div>
+              <div className="p-5 rounded-xl bg-accent/5 border border-accent/20">
+                <h3 className="flex items-center gap-2 text-base font-bold text-accent mb-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Privacy First
+                </h3>
+                <p className="text-sm">All processing in browser</p>
+              </div>
+              <div className="p-5 rounded-xl bg-accent/5 border border-accent/20">
+                <h3 className="flex items-center gap-2 text-base font-bold text-accent mb-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Multiple Formats
+                </h3>
+                <p className="text-sm">PNG, JPEG, clipboard</p>
+              </div>
+              <div className="p-5 rounded-xl bg-accent/5 border border-accent/20">
+                <h3 className="flex items-center gap-2 text-base font-bold text-accent mb-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Full FEN Support
+                </h3>
+                <p className="text-sm">Complete notation support</p>
+              </div>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-8 mb-4 flex items-center gap-3">
-              <Code className="w-7 h-7 text-purple-400" />
-              Technology
-            </h2>
-            <p>
-              This application is built with React and uses HTML5 Canvas for
-              rendering. All processing happens in your browser - no server
-              uploads required, ensuring your positions remain private and
-              secure.
-            </p>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-8 mb-4 flex items-center gap-3">
-              <Shield className="w-7 h-7 text-green-400" />
-              Privacy & Security
-            </h2>
-            <p>
-              Your chess positions and diagrams never leave your device. All
-              image generation happens locally in your browser, ensuring
-              complete privacy and security for your content.
-            </p>
+            <div className="grid sm:grid-cols-2 gap-6 mt-6">
+              <div>
+                <h3 className="flex items-center gap-2 text-base font-bold text-text-primary mb-2">
+                  <Code className="w-5 h-5 text-accent" />
+                  Technology
+                </h3>
+                <p className="text-sm">
+                  Built with React 19 and HTML5 Canvas for high-performance
+                  rendering.
+                </p>
+              </div>
+              <div>
+                <h3 className="flex items-center gap-2 text-base font-bold text-text-primary mb-2">
+                  <Shield className="w-5 h-5 text-success" />
+                  Privacy
+                </h3>
+                <p className="text-sm">
+                  Your positions never leave your device. Everything runs
+                  locally.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* User Guide Section */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 sm:p-8 lg:p-12 border border-gray-700 shadow-2xl">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <Info className="w-6 h-6 text-white" />
+        {/* How to Use Section */}
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fadeIn">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+              <Info className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
+              <h2 className="text-xl font-display font-bold text-text-primary">
                 How to Use
               </h2>
-              <p className="text-sm text-gray-400">
-                Complete guide for creating perfect chess diagrams
+              <p className="text-sm text-text-muted">
+                Quick guide to creating diagrams
               </p>
             </div>
           </div>
 
-          <div className="space-y-8">
-            {/* Export Quality Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
-                  <Layers className="w-5 h-5 text-blue-400" />
-                </div>
-                <h3 className="text-xl font-bold text-blue-400">
-                  Export Quality Levels
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <QualityCard
-                  icon={<Zap className="w-5 h-5" />}
-                  level="8x Quality"
-                  resolution="3,200px"
-                  fileSize="~86KB - 1MB"
-                  use="Web & Social Media"
-                  color="green"
-                />
-                <QualityCard
-                  icon={<Shield className="w-5 h-5" />}
-                  level="16x Quality"
-                  resolution="6,400px"
-                  fileSize="~255KB - 3MB"
-                  use="Print & Presentations"
-                  color="blue"
-                  recommended
-                />
-                <QualityCard
-                  icon={<Sparkles className="w-5 h-5" />}
-                  level="24x Quality"
-                  resolution="9,600px"
-                  fileSize="~506KB - 6MB"
-                  use="Professional Print"
-                  color="purple"
-                />
-                <QualityCard
-                  icon={<Maximize2 className="w-5 h-5" />}
-                  level="32x Quality"
-                  resolution="12,800px"
-                  fileSize="~837KB - 6MB+"
-                  use="Maximum Quality"
-                  color="red"
-                />
+          <div className="space-y-6">
+            {/* Quality Levels */}
+            <div>
+              <h3 className="flex items-center gap-2 text-base font-semibold text-text-primary mb-3">
+                <Layers className="w-5 h-5 text-accent" />
+                Export Quality
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <QualityCard level="1-4x" label="Web" desc="Fast" />
+                <QualityCard level="8x" label="HD" desc="3200px" />
+                <QualityCard level="16x" label="Print" desc="6400px" />
+                <QualityCard level="32x" label="Ultra" desc="12800px" />
               </div>
             </div>
 
-            {/* File Formats Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-amber-600/20 flex items-center justify-center">
-                  <Image className="w-5 h-5 text-amber-400" />
-                </div>
-                <h3 className="text-xl font-bold text-amber-400">
-                  File Formats
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <FormatCard
+            {/* Actions */}
+            <div>
+              <h3 className="flex items-center gap-2 text-base font-semibold text-text-primary mb-3">
+                <Zap className="w-5 h-5 text-accent" />
+                Quick Actions
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <ActionCard
                   icon={<FileText className="w-5 h-5" />}
-                  format="PNG"
-                  color="blue"
-                  pros={[
-                    'Transparent background',
-                    'Lossless compression',
-                    'Best quality'
-                  ]}
-                  cons={['Larger file size']}
-                />
-                <FormatCard
-                  icon={<Download className="w-5 h-5" />}
-                  format="JPEG"
-                  color="amber"
-                  pros={[
-                    'Smaller file size',
-                    'Universal support',
-                    'Fast loading'
-                  ]}
-                  cons={['No transparency']}
-                />
-              </div>
-            </div>
-
-            {/* Pro Tips Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-green-600/20 flex items-center justify-center">
-                  <Lightbulb className="w-5 h-5 text-green-400" />
-                </div>
-                <h3 className="text-xl font-bold text-green-400">Pro Tips</h3>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <TipCard text="Use Batch Export to download multiple formats at once" />
-                <TipCard text="Validate FEN notation before exporting to ensure accuracy" />
-                <TipCard text="Higher quality settings may slow down older browsers" />
-                <TipCard text="Board size range: 150-600px, adjustable in 50px steps" />
-              </div>
-            </div>
-
-            {/* Quick Actions Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-600/20 flex items-center justify-center">
-                  <Keyboard className="w-5 h-5 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-bold text-purple-400">
-                  Quick Actions
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <ActionCard
-                  icon={<Copy className="w-4 h-4" />}
-                  action="Copy Image"
-                  description="Copy to clipboard instantly"
-                  color="green"
+                  title="PNG"
+                  desc="Transparent"
                 />
                 <ActionCard
-                  icon={<FileText className="w-4 h-4" />}
-                  action="Copy FEN"
-                  description="Copy position notation"
-                  color="blue"
+                  icon={<FileText className="w-5 h-5" />}
+                  title="JPEG"
+                  desc="White bg"
                 />
                 <ActionCard
-                  icon={<RotateCw className="w-4 h-4" />}
-                  action="Flip Board"
-                  description="View from black's perspective"
-                  color="purple"
+                  icon={<Copy className="w-5 h-5" />}
+                  title="Copy"
+                  desc="Clipboard"
                 />
                 <ActionCard
-                  icon={<Shuffle className="w-4 h-4" />}
-                  action="Random Position"
-                  description="Generate test positions"
-                  color="pink"
+                  icon={<RotateCw className="w-5 h-5" />}
+                  title="Flip"
+                  desc="Rotate"
                 />
-              </div>
-            </div>
-
-            {/* Best Practices */}
-            <div className="bg-gradient-to-br from-blue-950/40 to-purple-950/40 rounded-xl p-5 border border-blue-700/30">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-5 h-5 text-blue-400" />
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-bold text-blue-300 text-base">
-                    Best Practices
-                  </h4>
-                  <ul className="text-sm text-gray-300 space-y-1.5">
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>
-                        Use <strong>16x quality</strong> for balanced file size
-                        and quality
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>
-                        Choose <strong>PNG</strong> for transparency or{' '}
-                        <strong>JPEG</strong> for smaller files
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>Enable coordinates for instructional diagrams</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-400 mt-0.5">•</span>
-                      <span>
-                        Test different themes to match your content style
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+                <ActionCard
+                  icon={<Shuffle className="w-5 h-5" />}
+                  title="Random"
+                  desc="Position"
+                />
+                <ActionCard
+                  icon={<Maximize2 className="w-5 h-5" />}
+                  title="Batch"
+                  desc="Multi-export"
+                />
               </div>
             </div>
           </div>
@@ -304,125 +173,26 @@ const AboutPage = () => {
   );
 };
 
-// Quality Card Component
-const QualityCard = ({
-  icon,
-  level,
-  resolution,
-  fileSize,
-  use,
-  color,
-  recommended
-}) => {
-  const colors = {
-    green: 'from-green-600/10 to-green-600/5 border-green-600/30',
-    blue: 'from-blue-600/10 to-blue-600/5 border-blue-600/30',
-    purple: 'from-purple-600/10 to-purple-600/5 border-purple-600/30',
-    red: 'from-red-600/10 to-red-600/5 border-red-600/30'
-  };
-
-  const iconColors = {
-    green: 'text-green-400',
-    blue: 'text-blue-400',
-    purple: 'text-purple-400',
-    red: 'text-red-400'
-  };
-
-  return (
-    <div
-      className={`bg-gradient-to-br ${colors[color]} border rounded-xl p-4 space-y-2 hover:shadow-lg transition-all duration-300 relative`}
-    >
-      {recommended && (
-        <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-          Recommended
-        </div>
-      )}
-      <div className="flex items-center gap-2">
-        <div className={iconColors[color]}>{icon}</div>
-        <h5 className={`font-bold text-sm ${iconColors[color]}`}>{level}</h5>
-      </div>
-      <div className="space-y-1">
-        <p className="text-xs text-gray-400 font-mono">{resolution}</p>
-        <p className="text-xs text-gray-300 font-semibold">{use}</p>
-        <p className="text-xs text-gray-500 italic">{fileSize}</p>
-      </div>
+const QualityCard = ({ level, label, desc }) => (
+  <div className="p-3 rounded-lg bg-surface-elevated border border-border hover:border-accent text-center transition-all duration-200 hover:scale-105">
+    <div className="text-lg font-bold text-accent mb-0.5">{level}</div>
+    <div className="text-sm font-semibold text-text-primary mb-0.5">
+      {label}
     </div>
-  );
-};
-
-// Format Card Component
-const FormatCard = ({ icon, format, color, pros, cons }) => {
-  const colors = {
-    blue: 'from-blue-600/10 to-blue-600/5 border-blue-600/30 text-blue-400',
-    amber: 'from-amber-600/10 to-amber-600/5 border-amber-600/30 text-amber-400'
-  };
-
-  return (
-    <div
-      className={`bg-gradient-to-br ${colors[color]} border rounded-xl p-4 space-y-3 hover:shadow-lg transition-all duration-300`}
-    >
-      <div className="flex items-center gap-2">
-        {icon}
-        <h5 className="font-bold text-base">{format}</h5>
-      </div>
-      <div className="space-y-2">
-        <div className="space-y-1">
-          {pros.map((pro) => (
-            <div
-              key={pro}
-              className="flex items-start gap-2 text-xs text-green-400"
-            >
-              <CheckCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-              <span>{pro}</span>
-            </div>
-          ))}
-        </div>
-        <div className="space-y-1">
-          {cons.map((con) => (
-            <div
-              key={con}
-              className="flex items-start gap-2 text-xs text-red-400"
-            >
-              <XCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-              <span>{con}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Tip Card Component
-const TipCard = ({ text }) => (
-  <div className="bg-gray-800/50 rounded-lg p-3 flex items-start gap-3 hover:bg-gray-700/50 transition-all duration-300 border border-gray-700/50">
-    <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-    <p className="text-sm text-gray-300 leading-relaxed">{text}</p>
+    <div className="text-xs text-text-muted">{desc}</div>
   </div>
 );
 
-// Action Card Component
-const ActionCard = ({ icon, action, description, color }) => {
-  const colors = {
-    green:
-      'from-green-600/10 to-green-600/5 border-green-600/30 text-green-400',
-    blue: 'from-blue-600/10 to-blue-600/5 border-blue-600/30 text-blue-400',
-    purple:
-      'from-purple-600/10 to-purple-600/5 border-purple-600/30 text-purple-400',
-    pink: 'from-pink-600/10 to-pink-600/5 border-pink-600/30 text-pink-400'
-  };
-
-  return (
-    <div
-      className={`bg-gradient-to-br ${colors[color]} border rounded-lg p-3 space-y-1 hover:shadow-lg transition-all duration-300`}
-    >
-      <div className="flex items-center gap-2">
-        {icon}
-        <h6 className="font-bold text-sm">{action}</h6>
-      </div>
-      <p className="text-xs text-gray-400">{description}</p>
+const ActionCard = ({ icon, title, desc }) => (
+  <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-elevated border border-border hover:border-accent transition-all duration-200 hover:scale-105">
+    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent shrink-0">
+      {icon}
     </div>
-  );
-};
+    <div className="text-left">
+      <div className="text-sm font-semibold text-text-primary">{title}</div>
+      <div className="text-xs text-text-muted">{desc}</div>
+    </div>
+  </div>
+);
 
 export default AboutPage;

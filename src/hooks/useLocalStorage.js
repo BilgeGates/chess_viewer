@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react';
-import { logger } from '../utils/logger';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { logger } from '@/utils/logger';
 
+/**
+ * PERFORMANCE OPTIMIZED: useLocalStorage with debounced writes
+ * Prevents main thread blocking from excessive localStorage writes
+ */
 export const useLocalStorage = (key, initialValue) => {
+  // Debounce timeout ref
+  const debounceTimeoutRef = useRef(null);
+  const pendingValueRef = useRef(null);
+
   // State to store our value
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === 'undefined') {
@@ -19,21 +27,19 @@ export const useLocalStorage = (key, initialValue) => {
     }
   });
 
-  // Return a wrapped version of useState's setter function that
-  // persists the new value to localStorage.
-  const setValue = (value) => {
-    try {
-      // Allow value to be a function so we have same API as useState
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
+  // Debounced write to localStorage - prevents blocking main thread
+  const debouncedWrite = useCallback((key, value) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
 
-      // Save state
-      setStoredValue(valueToStore);
+    pendingValueRef.current = value;
 
-      // Save to local storage
+    debounceTimeoutRef.current = setTimeout(() => {
       if (typeof window !== 'undefined') {
         try {
-          window.localStorage.setItem(key, JSON.stringify(valueToStore));
+          window.localStorage.setItem(key, JSON.stringify(value));
+          pendingValueRef.current = null;
         } catch (storageError) {
           // Handle quota exceeded error gracefully
           if (storageError.name === 'QuotaExceededError') {
@@ -46,7 +52,7 @@ export const useLocalStorage = (key, initialValue) => {
               if (keys.length > 0) {
                 window.localStorage.removeItem(keys[0]);
                 // Retry once after clearing
-                window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                window.localStorage.setItem(key, JSON.stringify(value));
               }
             } catch (retryError) {
               logger.error(
@@ -55,14 +61,53 @@ export const useLocalStorage = (key, initialValue) => {
               );
             }
           } else {
-            throw storageError;
+            logger.error(`Error saving ${key} to localStorage:`, storageError);
           }
         }
       }
-    } catch (error) {
-      logger.error(`Error saving ${key} to localStorage:`, error);
-    }
-  };
+    }, 300); // 300ms debounce - balances responsiveness with performance
+  }, []);
+
+  // Cleanup effect to flush pending writes on unmount
+  useEffect(() => {
+    return () => {
+      // Flush any pending write immediately on unmount
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+        if (pendingValueRef.current !== null && typeof window !== 'undefined') {
+          try {
+            window.localStorage.setItem(
+              key,
+              JSON.stringify(pendingValueRef.current)
+            );
+          } catch (error) {
+            logger.error(`Error flushing ${key} on unmount:`, error);
+          }
+        }
+      }
+    };
+  }, [key]);
+
+  // Return a wrapped version of useState's setter function that
+  // persists the new value to localStorage (debounced).
+  const setValue = useCallback(
+    (value) => {
+      try {
+        // Allow value to be a function so we have same API as useState
+        const valueToStore =
+          value instanceof Function ? value(storedValue) : value;
+
+        // Save state immediately (instant UI update)
+        setStoredValue(valueToStore);
+
+        // Write to localStorage with debounce (prevents main thread blocking)
+        debouncedWrite(key, valueToStore);
+      } catch (error) {
+        logger.error(`Error in setValue for ${key}:`, error);
+      }
+    },
+    [storedValue, key, debouncedWrite]
+  );
 
   return [storedValue, setValue];
 };

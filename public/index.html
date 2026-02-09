@@ -29,10 +29,52 @@
     <!-- Theme Color -->
     <meta name="theme-color" content="#111827" />
 
+    <!-- PERFORMANCE: Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- PERFORMANCE: Preconnect to Lichess CDN for piece images -->
+    <link rel="dns-prefetch" href="https://lichess1.org" />
+    <link rel="preconnect" href="https://lichess1.org" crossorigin />
+
     <title>Chess Diagram Generator</title>
   </head>
   <body class="preload">
+    <!-- CRITICAL: Apply theme BEFORE React hydration to prevent flicker -->
+    <script>
+      (function () {
+        // Immediately apply theme from localStorage or system preference
+        const getInitialTheme = () => {
+          try {
+            const saved = localStorage.getItem('chess-theme');
+            if (saved && (saved === 'light' || saved === 'dark')) {
+              return saved;
+            }
+          } catch (e) {
+            // localStorage might be blocked
+          }
+
+          // Fallback to system preference
+          if (
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: light)').matches
+          ) {
+            return 'light';
+          }
+
+          return 'dark'; // Default to dark
+        };
+
+        const theme = getInitialTheme();
+        document.documentElement.setAttribute('data-theme', theme);
+
+        // Store for React to read without flash
+        window.__INITIAL_THEME__ = theme;
+      })();
+    </script>
+
     <div id="root"></div>
+
     <script>
       window.addEventListener('load', () => {
         document.body.classList.remove('preload');

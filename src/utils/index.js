@@ -29,3 +29,12 @@ export * from './classNames';
 
 // Performance utilities
 export * from './performance';
+
+// History utilities
+export * from './historyUtils';
+
+// Archive manager
+export * from './archiveManager';
+
+// Passive event options (distinct from performance utils)
+export { passiveEventOptions, supportsPassive } from './eventUtils';

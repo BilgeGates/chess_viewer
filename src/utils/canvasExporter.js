@@ -2,42 +2,30 @@ import {
   createUltraQualityCanvas,
   calculateExportSize,
   getMaxCanvasSize,
-  sanitizeFileName
+  sanitizeFileName,
+  getExportMode,
+  shouldForceCoordinateBorder,
+  estimateFileSizes
 } from './';
 
-/**
- * Export state management
- */
 let exportState = {
   cancelled: false,
   paused: false
 };
 
-/**
- * Cancel current export
- */
 export function cancelExport() {
   exportState.cancelled = true;
   exportState.paused = false;
 }
 
-/**
- * Pause current export
- */
 export function pauseExport() {
   exportState.paused = true;
 }
 
-/**
- * Resume current export
- */
 export function resumeExport() {
   exportState.paused = false;
 }
 
-/**
- * Reset export state
- */
 export function resetExportState() {
   exportState = {
     cancelled: false,
@@ -46,16 +34,18 @@ export function resetExportState() {
 }
 
 /**
- * Wait while paused
+ * Wait while export is paused.
  */
 async function waitWhilePaused() {
   while (exportState.paused && !exportState.cancelled) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise(function (resolve) {
+      setTimeout(resolve, 100);
+    });
   }
 }
 
 /**
- * Check if cancelled
+ * Throw error if export was cancelled.
  */
 function checkCancellation() {
   if (exportState.cancelled) {
@@ -64,7 +54,12 @@ function checkCancellation() {
 }
 
 /**
- * Simulate progress with pause support
+ * Animate progress bar smoothly across a range.
+ *
+ * @param {Function} onProgress - Progress callback (0-100)
+ * @param {number} start - Starting progress value
+ * @param {number} end - Ending progress value
+ * @param {number} duration - Duration in milliseconds
  */
 async function simulateProgress(onProgress, start, end, duration) {
   const steps = 20;
@@ -76,43 +71,58 @@ async function simulateProgress(onProgress, start, end, duration) {
     checkCancellation();
 
     const progress = start + stepSize * (i + 1);
-    onProgress?.(Math.min(progress, end));
+    const clampedProgress = Math.min(progress, end);
+    if (onProgress) {
+      onProgress(clampedProgress);
+    }
 
-    await new Promise((resolve) => setTimeout(resolve, stepDuration));
+    await new Promise(function (resolve) {
+      setTimeout(resolve, stepDuration);
+    });
   }
 }
 
+/**
+ * Get export information before starting export.
+ *
+ * @param {Object} config - Export configuration
+ * @returns {Object} Dimensions, file size estimates, and mode info
+ */
 export function getExportInfo(config) {
-  const { boardSize, showCoords, exportQuality } = config;
+  const boardSize = config.boardSize;
+  const showCoords = config.showCoords;
+  const exportQuality = config.exportQuality;
+
   const exportSize = calculateExportSize(boardSize, showCoords, exportQuality);
   const maxSize = getMaxCanvasSize();
+  const mode = getExportMode(exportQuality);
+  const fileSizes = estimateFileSizes(
+    exportSize.width,
+    exportSize.height,
+    exportQuality
+  );
 
   return {
-    displaySize: exportSize.displaySize,
+    displaySize: exportSize.width + ' × ' + exportSize.height,
     exportWidth: exportSize.width,
     exportHeight: exportSize.height,
     requestedQuality: exportQuality,
     actualQuality: exportSize.actualQuality,
     maxCanvasSize: maxSize,
-    willBeReduced: exportSize.actualQuality < exportQuality,
-    fileSizeEstimate: estimateFileSize(exportSize.width, exportSize.height)
-  };
-}
-
-function estimateFileSize(width, height) {
-  const pixels = width * height;
-  const pngSize = (pixels * 3) / 1024 / 1024;
-  const jpegSize = pngSize * 0.1;
-
-  return {
-    png: `${pngSize.toFixed(1)} MB`,
-    jpeg: `${jpegSize.toFixed(1)} MB`
+    willBeReduced: exportSize.width > maxSize || exportSize.height > maxSize,
+    fileSizeEstimate: fileSizes,
+    mode: mode,
+    physicalSizeCm: exportSize.baseSizeCm,
+    effectiveDPI: exportSize.dpi,
+    forceCoordinateBorder: shouldForceCoordinateBorder(exportQuality)
   };
 }
 
 /**
- * Validate config before export
- * Note: boardSize is now in CENTIMETERS, not pixels
+ * Validate export configuration.
+ *
+ * @param {Object} config - Export configuration
+ * @throws {Error} If configuration is invalid
  */
 function validateExportConfig(config) {
   const errors = [];
@@ -120,9 +130,10 @@ function validateExportConfig(config) {
   if (!config) {
     errors.push('Config is null or undefined');
   } else {
-    // boardSize is in centimeters now (minimum 1cm, typical: 4cm, 6cm, 8cm)
     if (!config.boardSize || config.boardSize < 1) {
-      errors.push(`Invalid boardSize: ${config.boardSize}cm (minimum 1cm)`);
+      errors.push(
+        'Invalid boardSize: ' + config.boardSize + 'cm (minimum 1cm)'
+      );
     }
 
     if (!config.fen) {
@@ -136,7 +147,7 @@ function validateExportConfig(config) {
     if (!config.pieceImages) {
       errors.push('pieceImages is null or undefined');
     } else if (typeof config.pieceImages !== 'object') {
-      errors.push(`pieceImages is not an object: ${typeof config.pieceImages}`);
+      errors.push('pieceImages is not an object: ' + typeof config.pieceImages);
     } else if (Object.keys(config.pieceImages).length === 0) {
       errors.push('pieceImages is empty');
     }
@@ -148,7 +159,11 @@ function validateExportConfig(config) {
 }
 
 /**
- * Download PNG with comprehensive error handling
+ * Export board as PNG file with transparent background.
+ *
+ * @param {Object} config - Export configuration
+ * @param {string} fileName - File name without extension
+ * @param {Function} onProgress - Progress callback (0-100)
  */
 export async function downloadPNG(config, fileName, onProgress) {
   resetExportState();
@@ -157,28 +172,33 @@ export async function downloadPNG(config, fileName, onProgress) {
     validateExportConfig(config);
     const safeFileName = sanitizeFileName(fileName);
 
-    onProgress?.(5);
+    if (onProgress) {
+      onProgress(5);
+    }
     await simulateProgress(onProgress, 5, 15, 300);
 
     await waitWhilePaused();
     checkCancellation();
 
-    const canvas = await createUltraQualityCanvas(config);
+    const pngConfig = Object.assign({}, config, { format: 'png' });
+    const canvas = await createUltraQualityCanvas(pngConfig);
 
     if (!canvas) {
       throw new Error('Canvas creation returned null');
     }
 
-    onProgress?.(30);
+    if (onProgress) {
+      onProgress(30);
+    }
     await simulateProgress(onProgress, 30, 50, 400);
 
     await waitWhilePaused();
     checkCancellation();
 
-    const blob = await new Promise((resolve, reject) => {
+    const blob = await new Promise(function (resolve, reject) {
       try {
         canvas.toBlob(
-          (blob) => {
+          function (blob) {
             if (exportState.cancelled) {
               reject(new Error('Export cancelled'));
               return;
@@ -208,14 +228,15 @@ export async function downloadPNG(config, fileName, onProgress) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${safeFileName}.png`;
+    link.download = safeFileName + '.png';
     document.body.appendChild(link);
     link.click();
 
-    onProgress?.(100);
+    if (onProgress) {
+      onProgress(100);
+    }
 
-    // Ensure cleanup happens
-    setTimeout(() => {
+    setTimeout(function () {
       if (document.body.contains(link)) {
         document.body.removeChild(link);
       }
@@ -223,17 +244,20 @@ export async function downloadPNG(config, fileName, onProgress) {
     }, 100);
   } catch (error) {
     if (error.message === 'Export cancelled') {
-      throw new Error('Export cancelled');
+      throw new Error('Export cancelled', { cause: error });
     }
-    throw new Error(`PNG export failed: ${error.message}`);
+    throw new Error('PNG export failed: ' + error.message, { cause: error });
   } finally {
-    // Force cleanup in case of errors
     resetExportState();
   }
 }
 
 /**
- * Download JPEG with comprehensive error handling
+ * Export board as JPEG file with white background.
+ *
+ * @param {Object} config - Export configuration
+ * @param {string} fileName - File name without extension
+ * @param {Function} onProgress - Progress callback (0-100)
  */
 export async function downloadJPEG(config, fileName, onProgress) {
   resetExportState();
@@ -242,19 +266,24 @@ export async function downloadJPEG(config, fileName, onProgress) {
     validateExportConfig(config);
     const safeFileName = sanitizeFileName(fileName);
 
-    onProgress?.(5);
+    if (onProgress) {
+      onProgress(5);
+    }
     await simulateProgress(onProgress, 5, 15, 300);
 
     await waitWhilePaused();
     checkCancellation();
 
-    const canvas = await createUltraQualityCanvas(config);
+    const jpegConfig = Object.assign({}, config, { format: 'jpeg' });
+    const canvas = await createUltraQualityCanvas(jpegConfig);
 
     if (!canvas) {
       throw new Error('Canvas creation returned null');
     }
 
-    onProgress?.(25);
+    if (onProgress) {
+      onProgress(25);
+    }
     await simulateProgress(onProgress, 25, 35, 300);
 
     await waitWhilePaused();
@@ -263,6 +292,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
+
     const ctx = tempCanvas.getContext('2d', {
       alpha: false,
       desynchronized: false,
@@ -273,26 +303,27 @@ export async function downloadJPEG(config, fileName, onProgress) {
       throw new Error('Failed to get 2D context for JPEG conversion');
     }
 
-    // Fill white background
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
 
-    // Copy full canvas (no crop) to preserve borders and exact dimensions
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-
     ctx.drawImage(canvas, 0, 0);
 
-    onProgress?.(45);
+    if (onProgress) {
+      onProgress(45);
+    }
     await simulateProgress(onProgress, 45, 60, 400);
 
     await waitWhilePaused();
     checkCancellation();
 
-    const blob = await new Promise((resolve, reject) => {
+    const jpegQuality = 0.92;
+
+    const blob = await new Promise(function (resolve, reject) {
       try {
         tempCanvas.toBlob(
-          (blob) => {
+          function (blob) {
             if (exportState.cancelled) {
               reject(new Error('Export cancelled'));
               return;
@@ -308,7 +339,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
             resolve(blob);
           },
           'image/jpeg',
-          0.98 // 98% quality for professional use - virtually lossless
+          jpegQuality
         );
       } catch (err) {
         reject(err);
@@ -322,35 +353,37 @@ export async function downloadJPEG(config, fileName, onProgress) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${safeFileName}.jpg`;
+    link.download = safeFileName + '.jpg';
     document.body.appendChild(link);
     link.click();
 
-    onProgress?.(100);
+    if (onProgress) {
+      onProgress(100);
+    }
 
-    // Ensure cleanup happens
-    setTimeout(() => {
+    setTimeout(function () {
       if (document.body.contains(link)) {
         document.body.removeChild(link);
       }
       URL.revokeObjectURL(url);
-      // Clean up temporary canvas
       tempCanvas.width = 0;
       tempCanvas.height = 0;
     }, 100);
   } catch (error) {
     if (error.message === 'Export cancelled') {
-      throw new Error('Export cancelled');
+      throw new Error('Export cancelled', { cause: error });
     }
-    throw new Error(`JPEG export failed: ${error.message}`);
+    throw new Error('JPEG export failed: ' + error.message, { cause: error });
   } finally {
-    // Force cleanup in case of errors
     resetExportState();
   }
 }
 
 /**
- * Copy to clipboard
+ * Copy board image to clipboard.
+ *
+ * @param {Object} config - Export configuration
+ * @returns {boolean} True if successful
  */
 export async function copyToClipboard(config) {
   resetExportState();
@@ -367,9 +400,9 @@ export async function copyToClipboard(config) {
 
     checkCancellation();
 
-    const blob = await new Promise((resolve, reject) => {
+    const blob = await new Promise(function (resolve, reject) {
       canvas.toBlob(
-        (blob) => {
+        function (blob) {
           if (exportState.cancelled) {
             reject(new Error('Export cancelled'));
             return;
@@ -387,16 +420,16 @@ export async function copyToClipboard(config) {
 
     checkCancellation();
 
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    const clipboardItem = new ClipboardItem({ 'image/png': blob });
+    await navigator.clipboard.write([clipboardItem]);
 
     return true;
   } catch (error) {
     if (error.message === 'Export cancelled') {
-      throw new Error('Export cancelled');
+      throw new Error('Export cancelled', { cause: error });
     }
-    throw new Error(`Copy failed: ${error.message}`);
+    throw new Error('Copy failed: ' + error.message, { cause: error });
   } finally {
-    // Clean up canvas
     if (canvas) {
       canvas.width = 0;
       canvas.height = 0;
@@ -406,11 +439,16 @@ export async function copyToClipboard(config) {
 }
 
 /**
- * Batch export
+ * Export board in multiple formats.
+ *
+ * @param {Object} config - Export configuration
+ * @param {string[]} formats - Array of format names (e.g., ['png', 'jpeg'])
+ * @param {string} fileName - File name without extension
+ * @param {Function} onProgress - Progress callback (progress, currentFormat)
+ * @returns {Object} { success: [...], failed: [...] }
  */
 export async function batchExport(config, formats, fileName, onProgress) {
   resetExportState();
-
   validateExportConfig(config);
 
   const total = formats.length;
@@ -425,10 +463,12 @@ export async function batchExport(config, formats, fileName, onProgress) {
     const baseProgress = (i / total) * 100;
 
     try {
-      const updateProgress = (p) => {
+      function updateProgress(p) {
         const totalProgress = baseProgress + p / total;
-        onProgress?.(totalProgress, format);
-      };
+        if (onProgress) {
+          onProgress(totalProgress, format);
+        }
+      }
 
       if (format === 'png') {
         await downloadPNG(config, fileName, updateProgress);
@@ -441,16 +481,20 @@ export async function batchExport(config, formats, fileName, onProgress) {
       if (error.message === 'Export cancelled') {
         throw error;
       }
-      results.failed.push({ format, error: error.message });
+      results.failed.push({ format: format, error: error.message });
     }
   }
 
-  onProgress?.(100, null);
+  if (onProgress) {
+    onProgress(100, null);
+  }
 
   if (results.failed.length > 0) {
-    throw new Error(
-      `Some exports failed: ${results.failed.map((f) => f.format).join(', ')}`
-    );
+    const failedNames = [];
+    for (let i = 0; i < results.failed.length; i++) {
+      failedNames.push(results.failed[i].format);
+    }
+    throw new Error('Some exports failed: ' + failedNames.join(', '));
   }
 
   return results;

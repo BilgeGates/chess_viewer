@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { logger } from '../utils/logger';
+import { logger } from '@/utils/logger';
 
 export const useColorState = (initialValue) => {
   const [hexInput, setHexInput] = useState(initialValue);

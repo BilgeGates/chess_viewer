@@ -1,207 +1,155 @@
 import {
   MessageSquare,
-  FileText,
   ExternalLink,
   Github,
-  AlertCircle,
-  BookOpen
+  BookOpen,
+  HelpCircle,
+  ChevronDown
 } from 'lucide-react';
+import { useState } from 'react';
 
 const SupportPage = () => {
   return (
-    <div className="min-h-screen bg-gray-900 pt-24 pb-12 sm:pb-16 lg:pb-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+    <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto">
+        {/* Hero */}
+        <div className="text-center mb-10 animate-fadeIn">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-info/10 text-info text-sm font-semibold mb-5">
+            <HelpCircle className="w-5 h-5" />
+            Help Center
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary mb-4">
             Support & Help
           </h1>
-          <p className="text-gray-400 text-lg">
-            Get help and find answers to common questions
+          <p className="text-text-secondary text-lg max-w-2xl mx-auto">
+            Get help and find answers
           </p>
         </div>
 
         {/* Support Options */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {/* GitHub Issues */}
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-2xl p-6 hover:border-gray-600 transition-all">
-            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center mb-4">
-              <Github className="w-7 h-7 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">GitHub Issues</h2>
-            <p className="text-gray-400 text-sm mb-4">
-              Report bugs or request features
-            </p>
-            <a
-              href="https://github.com/BilgeGates/chess_viewer/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold text-sm transition-colors"
-            >
-              Open Issue
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-
-          {/* Discussions */}
-          <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-600/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all">
-            <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
-              <MessageSquare className="w-7 h-7 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">Discussions</h2>
-            <p className="text-gray-400 text-sm mb-4">
-              Ask questions and share ideas
-            </p>
-            <a
-              href="https://github.com/BilgeGates/chess_viewer/discussions"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold text-sm transition-colors"
-            >
-              Join Discussion
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-
-          {/* Documentation */}
-          <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-600/30 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
-            <div className="w-14 h-14 bg-purple-600 rounded-xl flex items-center justify-center mb-4">
-              <BookOpen className="w-7 h-7 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">Documentation</h2>
-            <p className="text-gray-400 text-sm mb-4">
-              Read detailed guides and docs
-            </p>
-            <a
-              href="https://github.com/BilgeGates/chess_viewer/tree/master/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-semibold text-sm transition-colors"
-            >
-              View Docs
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 animate-fadeIn">
+          <SupportCard
+            icon={<Github className="w-6 h-6" />}
+            title="GitHub Issues"
+            desc="Report bugs or features"
+            link="https://github.com/BilgeGates/chess_viewer/issues"
+            linkText="Open Issue"
+          />
+          <SupportCard
+            icon={<MessageSquare className="w-6 h-6" />}
+            title="Discussions"
+            desc="Ask questions"
+            link="https://github.com/BilgeGates/chess_viewer/discussions"
+            linkText="Join Discussion"
+            primary
+          />
+          <SupportCard
+            icon={<BookOpen className="w-6 h-6" />}
+            title="Documentation"
+            desc="Read guides"
+            link="https://github.com/BilgeGates/chess_viewer/tree/master/docs"
+            linkText="View Docs"
+          />
         </div>
 
-        {/* FAQ Section */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 sm:p-8 lg:p-12 border border-gray-700 shadow-2xl">
-          <div className="flex items-center gap-3 mb-8">
-            <FileText className="w-8 h-8 text-green-400" />
-            <h2 className="text-3xl font-bold text-white">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            {/* FAQ Item 1 */}
-            <div className="border-b border-gray-700 pb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                How do I export a chess diagram?
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                Click on the "Download PNG" or "Download JPEG" buttons below the
-                chess board. You can also use the "Batch Export" option to
-                export multiple formats at once.
-              </p>
-            </div>
-
-            {/* FAQ Item 2 */}
-            <div className="border-b border-gray-700 pb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                What is FEN notation?
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                FEN (Forsyth-Edwards Notation) is a standard notation for
-                describing chess positions. You can enter FEN strings in the
-                control panel to set up any chess position you want to diagram.
-              </p>
-            </div>
-
-            {/* FAQ Item 3 */}
-            <div className="border-b border-gray-700 pb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Can I customize the board colors?
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                Yes! Use the color picker controls in the control panel to
-                customize both light and dark square colors. You can also choose
-                from 20+ different piece styles.
-              </p>
-            </div>
-
-            {/* FAQ Item 4 */}
-            <div className="border-b border-gray-700 pb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                What export quality should I use?
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                For web use, 4x-8x quality is sufficient. For print
-                publications, use 16x or higher. The maximum 32x quality
-                produces images up to 12,800px × 12,800px for professional
-                printing.
-              </p>
-            </div>
-
-            {/* FAQ Item 5 */}
-            <div className="border-b border-gray-700 pb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Is my data stored on your servers?
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                No. All processing happens locally in your browser. Your chess
-                positions and diagrams never leave your device, ensuring
-                complete privacy and security.
-              </p>
-            </div>
-
-            {/* FAQ Item 6 */}
-            <div className="pb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Can I save my favorite positions?
-              </h3>
-              <p className="text-gray-300 leading-relaxed">
-                Yes! Click the "Add to Favorites" button to save positions. Your
-                favorites are stored locally in your browser and synced across
-                sessions.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact CTA */}
-        <div className="mt-12 text-center bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-2xl p-8">
-          <AlertCircle className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-white mb-3">
-            Still need help?
-          </h3>
-          <p className="text-gray-300 mb-6">
-            Can't find the answer you're looking for? Open an issue on GitHub or
-            start a discussion.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="https://github.com/BilgeGates/chess_viewer/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-colors"
-            >
-              <Github className="w-5 h-5" />
-              Report Issue
-            </a>
-            <a
-              href="https://github.com/BilgeGates/chess_viewer"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-semibold transition-colors"
-            >
-              <Github className="w-5 h-5" />
-              View on GitHub
-            </a>
+        {/* FAQ */}
+        <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fadeIn">
+          <h2 className="text-xl font-display font-bold text-text-primary mb-6">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-3">
+            <FAQItem
+              q="What export formats are supported?"
+              a="PNG (transparent background) and JPEG (white background). You can also copy to clipboard."
+            />
+            <FAQItem
+              q="What is the maximum export quality?"
+              a="Up to 32x quality (12,800×12,800 pixels). Higher settings produce larger, detailed images for print."
+            />
+            <FAQItem
+              q="How do I enter a chess position?"
+              a="Use standard FEN notation. The starting position is entered by default."
+            />
+            <FAQItem
+              q="Is my data private?"
+              a="Yes! All processing happens locally in your browser. No data is sent to any server."
+            />
+            <FAQItem
+              q="Can I use the diagrams commercially?"
+              a="Yes, generated diagrams can be used freely for any purpose including commercial use."
+            />
+            <FAQItem
+              q="How do I customize board colors?"
+              a="Use the theme selector in the control panel to choose presets or create custom colors."
+            />
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+const SupportCard = ({ icon, title, desc, link, linkText, primary }) => (
+  <div
+    className={`glass-card p-5 rounded-xl shadow-md transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${
+      primary ? 'border-2 border-accent' : 'border border-border'
+    }`}
+  >
+    <div
+      className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
+        primary
+          ? 'bg-accent/10 text-accent'
+          : 'bg-surface-elevated text-text-primary'
+      }`}
+    >
+      {icon}
+    </div>
+    <h3 className="text-base font-display font-bold text-text-primary mb-2">
+      {title}
+    </h3>
+    <p className="text-text-muted text-sm mb-4 leading-relaxed">{desc}</p>
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 ${
+        primary ? 'text-accent' : 'text-text-secondary hover:text-accent'
+      }`}
+    >
+      {linkText}
+      <ExternalLink className="w-4 h-4" />
+    </a>
+  </div>
+);
+
+const FAQItem = ({ q, a }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border border-border hover:border-accent/50 rounded-xl transition-all duration-200">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-5 py-4 flex items-center justify-between text-left transition-colors duration-200"
+        aria-expanded={isOpen}
+      >
+        <span className="font-semibold text-text-primary pr-4">{q}</span>
+        <ChevronDown
+          className={`w-5 h-5 text-accent shrink-0 transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-200 ${
+          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="px-5 pb-4 text-text-secondary leading-relaxed text-sm">
+          {a}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default SupportPage;

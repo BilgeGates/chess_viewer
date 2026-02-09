@@ -2,11 +2,14 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Lazy load pages for better performance
-const HomePage = lazy(() => import('../pages/HomePage'));
-const AboutPage = lazy(() => import('../pages/AboutPage'));
-const DownloadPage = lazy(() => import('../pages/DownloadPage'));
-const SupportPage = lazy(() => import('../pages/SupportPage'));
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const HomePage = lazy(() => import('@/pages/HomePage'));
+const AboutPage = lazy(() => import('@/pages/AboutPage'));
+const DownloadPage = lazy(() => import('@/pages/DownloadPage'));
+const SupportPage = lazy(() => import('@/pages/SupportPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const ThemeCustomizerPage = lazy(() => import('@/pages/ThemeCustomizerPage'));
+const FENHistoryPage = lazy(() => import('@/pages/FENHistoryPage'));
+const AdvancedFENInputPage = lazy(() => import('@/pages/AdvancedFENInputPage'));
 
 // Simple loading fallback
 const PageLoader = () => (
@@ -39,6 +42,9 @@ const AppRoutes = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/download" element={<DownloadPage />} />
         <Route path="/support" element={<SupportPage />} />
+        <Route path="/theme" element={<ThemeCustomizerPage />} />
+        <Route path="/fen-history" element={<FENHistoryPage />} />
+        <Route path="/advanced-fen" element={<AdvancedFENInputPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>

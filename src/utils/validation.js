@@ -1,117 +1,123 @@
 /**
- * Validation and sanitization utilities
- */
-
-/**
- * Sanitize file name to remove invalid characters
+ * Sanitize file name by removing invalid characters.
+ *
  * @param {string} fileName - Raw file name
- * @returns {string} - Sanitized file name
+ * @returns {string} Safe file name
  */
-export const sanitizeFileName = (fileName) => {
+export function sanitizeFileName(fileName) {
   if (!fileName || typeof fileName !== 'string') {
     return 'chess-position';
   }
 
-  // Remove or replace invalid characters for file systems
-  // Windows: \ / : * ? " < > |
-  // Also trim whitespace and limit length
-  let sanitized = fileName
-    .replace(/[\\/:*?"<>|]/g, '-')
-    .replace(/\s+/g, '_')
-    .replace(/^\.+/, '') // Remove leading dots
-    .replace(/\.+$/, '') // Remove trailing dots
-    .trim();
+  let sanitized = fileName.replace(/[\\/:*?"<>|]/g, '-');
+  sanitized = sanitized.replace(/\s+/g, '_');
+  sanitized = sanitized.replace(/^\.+/, '');
+  sanitized = sanitized.replace(/\.+$/, '');
+  sanitized = sanitized.trim();
 
-  // Limit length to 100 characters
   if (sanitized.length > 100) {
     sanitized = sanitized.substring(0, 100);
   }
 
-  // Ensure we have a valid name
   if (!sanitized || sanitized.length === 0) {
     return 'chess-position';
   }
 
   return sanitized;
-};
+}
 
 /**
- * Validate numeric input within range
- * @param {number|string} value - Value to validate
+ * Validate and clamp number within range.
+ *
+ * @param {*} value - Value to validate
  * @param {number} min - Minimum value
  * @param {number} max - Maximum value
- * @param {number} defaultValue - Default value if invalid
- * @returns {number} - Valid number
+ * @param {number} defaultValue - Default if invalid
+ * @returns {number} Valid number
  */
-export const validateNumber = (value, min, max, defaultValue) => {
-  const num = typeof value === 'string' ? parseFloat(value) : value;
+export function validateNumber(value, min, max, defaultValue) {
+  const num = parseFloat(value);
 
   if (isNaN(num) || !isFinite(num)) {
     return defaultValue;
   }
 
-  return Math.max(min, Math.min(max, num));
-};
+  if (num < min) {
+    return min;
+  }
+  if (num > max) {
+    return max;
+  }
+
+  return num;
+}
 
 /**
- * Validate board size (in cm)
- * @param {number} size - Board size
- * @returns {number} - Valid board size
+ * Validate board size in centimeters.
+ *
+ * @param {number} size - Board size in cm
+ * @returns {number} Valid board size (4-100cm)
  */
-export const validateBoardSize = (size) => {
-  return validateNumber(size, 4, 100, 8); // 4cm to 100cm, default 8cm
-};
+export function validateBoardSize(size) {
+  return validateNumber(size, 4, 100, 8);
+}
 
 /**
- * Validate export quality
- * @param {number} quality - Export quality multiplier
- * @returns {number} - Valid quality
+ * Validate export quality multiplier.
+ *
+ * @param {number} quality - Quality multiplier
+ * @returns {number} Valid quality (1-32x)
  */
-export const validateExportQuality = (quality) => {
-  return validateNumber(quality, 1, 32, 16); // 1x to 32x, default 16x
-};
+export function validateExportQuality(quality) {
+  return validateNumber(quality, 1, 32, 16);
+}
 
 /**
- * Validate hex color
- * @param {string} color - Hex color string
- * @returns {boolean} - True if valid hex color
+ * Check if string is valid hex color.
+ *
+ * @param {string} color - Color string
+ * @returns {boolean} True if valid hex color
  */
-export const isValidHexColor = (color) => {
+export function isValidHexColor(color) {
   if (!color || typeof color !== 'string') {
     return false;
   }
-  return /^#[0-9A-Fa-f]{6}$/.test(color);
-};
+
+  const hexPattern = /^#[0-9A-Fa-f]{6}$/;
+  return hexPattern.test(color);
+}
 
 /**
- * Sanitize hex color with fallback
- * @param {string} color - Color to sanitize
+ * Sanitize hex color with fallback.
+ *
+ * @param {string} color - Color to check
  * @param {string} fallback - Fallback color
- * @returns {string} - Valid hex color
+ * @returns {string} Valid hex color
  */
-export const sanitizeHexColor = (color, fallback = '#ffffff') => {
-  return isValidHexColor(color) ? color : fallback;
-};
+export function sanitizeHexColor(color, fallback = '#ffffff') {
+  if (isValidHexColor(color)) {
+    return color;
+  }
+  return fallback;
+}
 
 /**
- * Validate FEN string format (basic check)
+ * Validate FEN string format.
+ *
  * @param {string} fen - FEN string
- * @returns {boolean} - True if FEN appears valid
+ * @returns {boolean} True if valid format
  */
-export const isValidFENFormat = (fen) => {
+export function isValidFENFormat(fen) {
   if (!fen || typeof fen !== 'string') {
     return false;
   }
 
   const trimmed = fen.trim();
-
-  // Basic FEN structure check
   const parts = trimmed.split(/\s+/);
   if (parts.length < 1 || parts.length > 6) {
     return false;
   }
 
-  // Check piece placement (first part)
   const position = parts[0];
   const ranks = position.split('/');
 
@@ -119,67 +125,82 @@ export const isValidFENFormat = (fen) => {
     return false;
   }
 
-  // Check each rank
-  for (const rank of ranks) {
-    let count = 0;
-    for (const char of rank) {
+  for (let rankIndex = 0; rankIndex < ranks.length; rankIndex++) {
+    const rank = ranks[rankIndex];
+    let squareCount = 0;
+
+    for (let charIndex = 0; charIndex < rank.length; charIndex++) {
+      const char = rank[charIndex];
+
       if (/[1-8]/.test(char)) {
-        count += parseInt(char, 10);
+        squareCount = squareCount + parseInt(char, 10);
       } else if (/[pnbrqkPNBRQK]/.test(char)) {
-        count++;
+        squareCount = squareCount + 1;
       } else {
-        return false; // Invalid character
+        return false;
       }
     }
-    if (count !== 8) {
-      return false; // Rank doesn't have 8 squares
+
+    if (squareCount !== 8) {
+      return false;
     }
   }
 
   return true;
-};
+}
 
 /**
- * Sanitize string input to prevent XSS
- * @param {string} input - Raw input
+ * Sanitize user input.
+ *
+ * @param {string} input - Raw user input
  * @param {number} maxLength - Maximum length
- * @returns {string} - Sanitized input
+ * @returns {string} Sanitized string
  */
-export const sanitizeInput = (input, maxLength = 500) => {
+export function sanitizeInput(input, maxLength = 500) {
   if (!input || typeof input !== 'string') {
     return '';
   }
 
-  // Remove potentially dangerous characters
-  let sanitized = input
-    .replace(/[<>'"]/g, '') // Remove HTML-like characters
-    .trim();
+  let sanitized = input.replace(/[<>'"]/g, '');
+  sanitized = sanitized.trim();
 
-  // Limit length
   if (sanitized.length > maxLength) {
     sanitized = sanitized.substring(0, maxLength);
   }
 
   return sanitized;
-};
+}
 
 /**
- * Validate and sanitize piece style name
- * @param {string} style - Piece style name
- * @param {string[]} validStyles - Array of valid style names
+ * Validate piece style name.
+ *
+ * @param {string} style - Style name
+ * @param {string[]} validStyles - Array of valid styles
  * @param {string} defaultStyle - Default style
- * @returns {string} - Valid style name
+ * @returns {string} Valid style name
  */
-export const validatePieceStyle = (
+export function validatePieceStyle(
   style,
   validStyles,
   defaultStyle = 'cburnett'
-) => {
+) {
   if (!style || typeof style !== 'string') {
     return defaultStyle;
   }
 
   const sanitized = sanitizeInput(style, 50);
 
-  return validStyles.includes(sanitized) ? sanitized : defaultStyle;
-};
+  let isValid = false;
+  for (let i = 0; i < validStyles.length; i++) {
+    if (validStyles[i] === sanitized) {
+      isValid = true;
+      break;
+    }
+  }
+
+  if (isValid) {
+    return sanitized;
+  }
+
+  return defaultStyle;
+}
