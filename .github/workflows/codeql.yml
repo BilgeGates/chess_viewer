@@ -9,7 +9,7 @@ on:
       - '**.js'
       - '**.jsx'
       - 'package.json'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
   pull_request:
     branches:
       - master
@@ -19,13 +19,16 @@ on:
       - '**.jsx'
       - 'package.json'
   schedule:
-    # Run every Monday at 9:00 AM UTC
     - cron: '0 9 * * 1'
   workflow_dispatch:
 
 concurrency:
   group: codeql-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
 
 jobs:
   analyze:
@@ -42,6 +45,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
@@ -52,6 +66,9 @@ jobs:
               - node_modules
               - build
               - dist
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
