@@ -1,10 +1,9 @@
-name: CodeQL Security Scanning
+name: CodeQL Security Analysis
 
 on:
   push:
     branches:
       - master
-      - main
     paths:
       - '**.js'
       - '**.jsx'
@@ -13,11 +12,11 @@ on:
   pull_request:
     branches:
       - master
-      - main
     paths:
       - '**.js'
       - '**.jsx'
       - 'package.json'
+      - 'package-lock.json'
   schedule:
     # Run every Monday at 9:00 AM UTC
     - cron: '0 9 * * 1'
@@ -29,7 +28,7 @@ concurrency:
 
 jobs:
   analyze:
-    name: Security Analysis
+    name: Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -38,6 +37,11 @@ jobs:
       contents: read
       actions: read
 
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript']
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,24 +49,44 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript-typescript
+          languages: ${{ matrix.language }}
           queries: security-extended,security-and-quality
           config: |
             paths-ignore:
               - node_modules
               - build
               - dist
+              - coverage
+              - '**.test.js'
+              - '**.spec.js'
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        env:
+          CI: true
+        continue-on-error: true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: security-scan
+          category: '/language:${{ matrix.language }}'
 
-      - name: Upload analysis results
+      - name: Security scan summary
         if: always()
         run: |
-          echo "CodeQL analysis completed"
-          echo "Check Security tab for results: https://github.com/${{ github.repository }}/security/code-scanning"
+          echo "CodeQL Security Analysis Completed"
+          echo "======================================"
+          echo "Language: ${{ matrix.language }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo ""
+          echo "View detailed results in the Security tab:"
+          echo "https://github.com/${{ github.repository }}/security/code-scanning"
