@@ -10,6 +10,15 @@
 
 # production
 /build
+/dist
+
+# Vite
+*.local
+.vite/
+
+# pnpm
+.pnpm-store/
+pnpm-debug.log*
 
 # misc
 .DS_Store

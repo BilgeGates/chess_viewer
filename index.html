@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Professional chess diagram generator with ultra-high quality export"
+    />
+    <meta
+      name="keywords"
+      content="chess, diagram, generator, export, PNG, JPEG, SVG"
+    />
+    <meta
+      name="google-site-verification"
+      content="JOQDA_IVktrTpKqQ6hedH3jk7ixrSYA_WZMT5QLSOOU"
+    />
+
+    <!-- Favicons and Icons -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/logo512.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#111827" />
+
+    <!-- PERFORMANCE: Preconnect to Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- PERFORMANCE: Preconnect to Lichess CDN for piece images -->
+    <link rel="dns-prefetch" href="https://lichess1.org" />
+    <link rel="preconnect" href="https://lichess1.org" crossorigin />
+
+    <title>Chess Diagram Generator</title>
+  </head>
+  <body class="preload">
+    <script>
+      (function () {
+        const getInitialTheme = () => {
+          try {
+            const saved = localStorage.getItem('chess-theme');
+            if (saved && (saved === 'light' || saved === 'dark')) {
+              return saved;
+            }
+          } catch (e) {
+            // localStorage might be blocked
+          }
+
+          if (
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: light)').matches
+          ) {
+            return 'light';
+          }
+
+          return 'dark';
+        };
+
+        const theme = getInitialTheme();
+        document.documentElement.setAttribute('data-theme', theme);
+
+        window.__INITIAL_THEME__ = theme;
+      })();
+    </script>
+
+    <div id="root"></div>
+
+    <script type="module" src="/src/index.jsx"></script>
+
+    <script>
+      window.addEventListener('load', () => {
+        document.body.classList.remove('preload');
+      });
+    </script>
+  </body>
+</html>

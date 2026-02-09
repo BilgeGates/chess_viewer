@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
 
 export default [
@@ -16,23 +17,21 @@ export default [
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-
       parserOptions: {
         ecmaFeatures: {
           jsx: true
         }
       },
-
       globals: {
         ...globals.browser,
-        ...globals.node,
-        ...globals.es2021
+        ...globals.node
       }
     },
 
     plugins: {
       react: reactPlugin,
-      'react-hooks': reactHooksPlugin
+      'react-hooks': reactHooksPlugin,
+      'react-refresh': reactRefresh
     },
 
     settings: {
@@ -44,11 +43,10 @@ export default [
     rules: {
       'react/prop-types': 'off',
       'react/display-name': 'warn',
+      'react-refresh/only-export-components': 'warn',
       'react/jsx-key': 'error',
-      'react/jsx-no-target-blank': 'error',
+      'react/jsx-no-target-blank': ['error', { allowReferrer: false }],
       'react/no-array-index-key': 'warn',
-      'react/jsx-uses-react': 'error',
-      'react/jsx-uses-vars': 'error',
 
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps':
