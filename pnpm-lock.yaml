@@ -53,9 +53,6 @@ importers:
       react-window-infinite-loader:
         specifier: ^2.0.1
         version: 2.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      web-vitals:
-        specifier: ^2.1.4
-        version: 2.1.4
     devDependencies:
       '@commitlint/cli':
         specifier: ^18.4.3
@@ -2552,9 +2549,6 @@ packages:
         optional: true
       yaml:
         optional: true
-
-  web-vitals@2.1.4:
-    resolution: {integrity: sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==}
 
   which-boxed-primitive@1.1.1:
     resolution: {integrity: sha512-TbX3mj8n0odCBFVlY8AxkqcHASw3L60jIuF8jFP78az3C2YhmGvqbHBpAjTRH2/xqYunrJ9g1jSyjCjpoWzIAA==}
@@ -5181,8 +5175,6 @@ snapshots:
       fsevents: 2.3.3
       jiti: 1.21.7
       yaml: 2.8.2
-
-  web-vitals@2.1.4: {}
 
   which-boxed-primitive@1.1.1:
     dependencies:
