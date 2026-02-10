@@ -9,7 +9,7 @@ import Routes from '@/routes/Router';
 /**
  * Tool pages where navbar should be hidden for distraction-free experience.
  */
-const TOOL_PAGES = ['/theme', '/fen-history', '/advanced-fen'];
+const TOOL_PAGES = ['/settings', '/fen-history', '/advanced-fen'];
 
 /**
  * Retrieves the initial theme from various sources.
