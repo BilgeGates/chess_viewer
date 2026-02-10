@@ -7,7 +7,7 @@ const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const DownloadPage = lazy(() => import('@/pages/DownloadPage'));
 const SupportPage = lazy(() => import('@/pages/SupportPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
-const ThemeCustomizerPage = lazy(() => import('@/pages/ThemeCustomizerPage'));
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
 const FENHistoryPage = lazy(() => import('@/pages/FENHistoryPage'));
 const AdvancedFENInputPage = lazy(() => import('@/pages/AdvancedFENInputPage'));
 
@@ -42,7 +42,7 @@ const AppRoutes = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/download" element={<DownloadPage />} />
         <Route path="/support" element={<SupportPage />} />
-        <Route path="/theme" element={<ThemeCustomizerPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="/fen-history" element={<FENHistoryPage />} />
         <Route path="/advanced-fen" element={<AdvancedFENInputPage />} />
         <Route path="*" element={<NotFoundPage />} />
