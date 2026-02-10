@@ -48,6 +48,8 @@ export default [
       'react/jsx-no-target-blank': ['error', { allowReferrer: false }],
       'react/no-array-index-key': 'warn',
 
+      'react/jsx-uses-vars': 'error',
+
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps':
         process.env.NODE_ENV === 'production' ? 'error' : 'warn',
