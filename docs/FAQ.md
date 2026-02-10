@@ -7,14 +7,17 @@ Common questions and answers.
 ## General
 
 ### What is this tool?
+
 A browser-based tool that creates chess position images from FEN notation.
 
 ### Requirements
+
 - Modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
 - Internet connection (piece images loaded from CDN)
 - No installation needed
 
 ### Is it free?
+
 Yes. MIT License. Use for any purpose.
 
 ---
@@ -22,15 +25,19 @@ Yes. MIT License. Use for any purpose.
 ## FEN Notation
 
 ### What is FEN?
+
 FEN (Forsyth-Edwards Notation) describes chess positions as text.
 
 **Example (starting position):**
+
 ```
 rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 ```
 
 ### FEN Format
+
 Six fields separated by spaces:
+
 1. **Piece placement** - Ranks 8 to 1, separated by `/`. Uppercase=White, lowercase=Black, numbers=empty squares
 2. **Active color** - `w` or `b`
 3. **Castling** - `KQkq` or `-`
@@ -39,9 +46,11 @@ Six fields separated by spaces:
 6. **Fullmove number** - Current move number
 
 ### Partial FEN
+
 Only the piece placement field is required. Others default to standard values.
 
 ### Common FEN Errors
+
 - Wrong number of ranks (must be 8)
 - Invalid piece letters (only `prnbqkPRNBQK`)
 - Rank doesn't sum to 8 squares
@@ -51,12 +60,14 @@ Only the piece placement field is required. Others default to standard values.
 ## Export
 
 ### Formats
+
 - **PNG** - Lossless, transparent background
 - **JPEG** - Smaller file size, no transparency
 
 ### Resolution
+
 - 8× scale: 3,200×3,200px
-- 16× scale: 6,400×6,400px  
+- 16× scale: 6,400×6,400px
 - 24× scale: 9,600×9,600px
 - 32× scale: 12,800×12,800px (max)
 
@@ -73,12 +84,15 @@ Only the piece placement field is required. Others default to standard values.
 ## Customization
 
 ### Themes
+
 12+ preset board themes available. Custom hex colors supported via color picker.
 
 ### Piece Sets
+
 20+ piece sets included. Cannot upload custom sets.
 
 ### Board Options
+
 - Flip board (view from Black's perspective)
 - Toggle coordinate labels
 - Adjust board size
@@ -100,17 +114,20 @@ Only the piece placement field is required. Others default to standard values.
 ## Troubleshooting
 
 ### Board not displaying
+
 1. Refresh page (Ctrl+F5)
 2. Clear browser cache
 3. Check internet connection
 4. Try different browser
 
 ### Piece images missing
+
 1. Refresh page
 2. Try different piece set
 3. Clear browser cache
 
 ### Export not working
+
 1. Check browser supports Canvas API
 2. Reduce export scale
 3. Disable popup blockers
@@ -121,13 +138,16 @@ Only the piece placement field is required. Others default to standard values.
 ## Development
 
 ### Report a Bug
+
 [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues) - Include browser, steps to reproduce, screenshots.
 
 ### Contribute
+
 Fork repo, create branch, submit pull request. See CONTRIBUTING.md.
 
 ### Self-Host
-Clone repository. Build with `npm run build`. Deploy `build/` folder.
+
+Clone repository. Build with `pnpm build`. Deploy `dist/` folder.
 
 ---
 

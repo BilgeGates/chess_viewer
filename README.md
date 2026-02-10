@@ -100,14 +100,10 @@ git clone https://github.com/BilgeGates/chess_viewer.git
 cd chess_viewer
 
 # Install dependencies
-npm install
-# or
-yarn install
+pnpm install
 
 # Start development server
-npm start
-# or
-yarn start
+pnpm dev
 ```
 
 The application will automatically open at [http://localhost:3000](http://localhost:3000)
@@ -116,10 +112,10 @@ The application will automatically open at [http://localhost:3000](http://localh
 
 ```bash
 # Create optimized production build
-npm run build
+pnpm build
 
 # Preview production build locally
-npm run preview
+pnpm preview
 
 # Deploy to Vercel (requires Vercel CLI)
 vercel --prod
@@ -246,12 +242,11 @@ chess_viewer/
 │   ├── ROADMAP.md
 │   └── STATE_MANAGEMENT.md
 │
-├── 📂 build/                      # Production build output
-├── 📂 scripts/                    # Build & utility scripts
-│   └── fix-imports.js
+├── 📂 dist/                       # Vite build output (gitignored)
 │
 ├── 📄 package.json
-├── 📄 craco.config.js
+├── 📄 vite.config.js
+├── 📄 eslint.config.js
 ├── 📄 jsconfig.json
 ├── 📄 tailwind.config.js
 ├── 📄 postcss.config.js

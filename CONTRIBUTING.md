@@ -78,17 +78,13 @@ cd chess_viewer
 3. **Install dependencies:**
 
 ```bash
-npm install
-# or
-yarn install
+pnpm install
 ```
 
 4. **Start the development server:**
 
 ```bash
-npm start
-# or
-yarn start
+pnpm dev
 ```
 
 5. **Open your browser** and navigate to the local development URL (typically `http://localhost:3000`)
@@ -209,12 +205,11 @@ chess_viewer/
 │   ├── ROADMAP.md
 │   └── STATE_MANAGEMENT.md
 │
-├── 📂 build/                      # Production build output
-├── 📂 scripts/                    # Build & utility scripts
-│   └── fix-imports.js
+├── 📂 dist/                       # Vite build output (gitignored)
 │
 ├── 📄 package.json
-├── 📄 craco.config.js
+├── 📄 vite.config.js
+├── 📄 eslint.config.js
 ├── 📄 jsconfig.json
 ├── 📄 tailwind.config.js
 ├── 📄 postcss.config.js

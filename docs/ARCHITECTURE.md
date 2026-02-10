@@ -187,8 +187,9 @@ chess_viewer/
 │   └── index.css                     # Global styles
 │
 ├── docs/                             # Documentation
-├── build/                            # Production build output
+├── dist/                             # Vite build output (gitignored)
 ├── package.json                      # Dependencies
+├── vite.config.js                    # Vite configuration
 ├── tailwind.config.js               # Tailwind configuration
 └── README.md                         # Project readme
 ```

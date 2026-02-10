@@ -193,36 +193,22 @@ Include:- **Initial acknowledgment:** Within 48 hours
 
 ### Dependency Updates
 
-**Export Functionality**- 🔄 **Automated:** Dependabot monitors for security updates
-
-- Canvas operations run client-side- 🔍 **Manual review:** Monthly security audits via `npm audit`
-
-- No server-side processing- ⚡ **Quick response:** Critical vulnerabilities patched within 48 hours
-
-- File size limits enforced- 📋 **Changelog:** All dependency updates documented
-
-- Memory limits respected
+- 🔄 **Automated:** Dependabot monitors for security updates
+- 🔍 **Manual review:** Monthly security audits via `pnpm audit`
+- ⚡ **Quick response:** Critical vulnerabilities patched within 48 hours
+- 📋 **Changelog:** All dependency updates documented
 
 ### How to Check Dependencies
 
-### LocalStorage```bash
-
+```bash
 # Check for vulnerabilities in your local installation
+pnpm audit
 
-**Data Storage**npm audit
-
-- Only non-sensitive data stored (preferences, history)
-
-- No authentication tokens or credentials# View detailed security report
-
-- Data stored per-domain (browser security)npm audit --json
-
-- User can clear at any time
+# View detailed security report
+pnpm audit --json
 
 # Fix automatically (when possible)
-
----npm audit fix
-
+pnpm audit fix
 ```
 
 ## Known Non-Issues
@@ -251,7 +237,7 @@ These are **not** security vulnerabilities:
 
 ## Security Best Practices for Users- ✅ Review code changes carefully before committing
 
-- ✅ Run `npm audit` before submitting PRs
+- ✅ Run `pnpm audit` before submitting PRs
 
 ### Recommended Actions- ✅ Follow secure coding practices
 
@@ -265,11 +251,7 @@ These are **not** security vulnerabilities:
 
 - Clear **localStorage** if using a shared computer---
 
-
-
 ### What We Don't Need## 📄 Security Disclosure Policy
-
-
 
 - No password requirements (no accounts)### Responsible Disclosure
 
@@ -293,13 +275,14 @@ These are **not** security vulnerabilities:
 
 ### Public Disclosure
 
-- Dependencies audited regularly with `npm audit`After a fix is released, we will:
+- Dependencies audited regularly with `pnpm audit`
+- Security patches applied promptly
+- Minimal dependency footprint
+- No dependencies with known critical vulnerabilities
 
-- Security patches applied promptly- 📢 Publish a security advisory on GitHub
+### Public Disclosure
 
-- Minimal dependency footprint- 📝 Document the issue in CHANGELOG.md
-
-- No dependencies with known critical vulnerabilities- 🏆 Credit the reporter (unless anonymity requested)
+After a fix is released, we will:
 
 - 📊 Share lessons learned with the community
 
@@ -321,17 +304,20 @@ These are **not** security vulnerabilities:
 
 - Canvg 4.0.2| 2025-12-28 | Dependency Audit | 1 moderate (qs) | ✅ Fixed in v3.5.1 |
 
+**Development:**
 
-
-**Development:**---
-
-- React Scripts 5.0.1
-
-- CRACO 7.1.0## 📞 Security Contact
-
+- Vite 6.3.5
 - Tailwind CSS 3.3.5
+- ESLint 9.39.2
+- Prettier 3.2.2
 
-- ESLint 8.57.1**Project Maintainer:** Khatai Huseynzada
+All production dependencies are from trusted sources (npm registry, official packages).
+
+---
+
+## 📞 Security Contact
+
+**Project Maintainer:** Khatai Huseynzada
 
 **Email:** [darkdeveloperassistant@gmail.com](mailto:darkdeveloperassistant@gmail.com)
 
@@ -369,19 +355,14 @@ When submitting code:
 
 - [ ] No file system access (browser only)
 
-- [ ] Dependencies checked with npm auditWe thank the following security researchers for responsible disclosure:
+- [ ] Dependencies checked with pnpm audit
+- [ ] No sensitive data in commit history
 
+### For Maintainers
 
+Before releasing:
 
-### For Maintainers- *No security issues reported yet*
-
-
-
-Before releasing:---
-
-
-
-- [ ] Run `npm audit` and fix critical/high issues**Thank you for helping keep Chess Diagram Generator secure!** ♟️🔒
+- [ ] Run `pnpm audit` and fix critical/high issues
 
 - [ ] Review all PR changes for security implications
 
@@ -422,4 +403,7 @@ For security concerns:
 ---
 
 Last Updated: February 7, 2026
+
+```
+
 ```
