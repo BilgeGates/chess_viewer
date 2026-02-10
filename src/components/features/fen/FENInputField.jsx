@@ -24,11 +24,11 @@ const FENInputField = memo(
             aria-invalid={error ? 'true' : 'false'}
             className={`
               w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 
-              bg-gray-950/50 rounded-lg text-xs sm:text-sm text-gray-200 
+              bg-surface/50 rounded-lg text-xs sm:text-sm text-text-primary 
               font-mono resize-none min-h-[80px] sm:min-h-[90px] 
               focus-visible:outline-none focus:outline-none outline-none 
-              focus:ring-2 focus:ring-blue-500 transition-all border
-              ${error ? 'border-red-500' : 'border-gray-700 hover:border-gray-600'}
+              focus:ring-2 focus:ring-accent/50 transition-all border
+              ${error ? 'border-error' : 'border-border hover:border-border'}
             `}
             placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
             spellCheck="false"
@@ -37,7 +37,7 @@ const FENInputField = memo(
 
           <button
             onClick={onAdvancedClick}
-            className="absolute bottom-2 right-2 text-xs text-blue-400 hover:text-blue-300 font-semibold transition-colors underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 rounded px-1"
+            className="absolute bottom-2 right-2 text-xs text-accent/80 hover:text-accent font-semibold transition-colors underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded px-1"
             type="button"
             aria-label="Open advanced FEN input modal"
           >
@@ -51,7 +51,7 @@ const FENInputField = memo(
           >
             <button
               onClick={onPaste}
-              className="p-1.5 sm:p-2 rounded-md text-white transition-all bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
+              className="p-1.5 sm:p-2 rounded-md transition-all bg-surface-elevated hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               title="Paste FEN from clipboard"
               aria-label="Paste FEN from clipboard"
               type="button"
@@ -64,10 +64,10 @@ const FENInputField = memo(
             </button>
             <button
               onClick={onCopy}
-              className={`p-1.5 sm:p-2 rounded-md text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`p-1.5 sm:p-2 rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 copySuccess
-                  ? 'bg-green-600'
-                  : 'bg-blue-600/90 hover:bg-blue-500'
+                  ? 'bg-success/20 text-success border border-success/30'
+                  : 'bg-surface-elevated hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-accent'
               }`}
               title={copySuccess ? 'Copied!' : 'Copy FEN to clipboard'}
               aria-label={
