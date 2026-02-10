@@ -64,8 +64,8 @@ jobs:
           config: |
             paths-ignore:
               - node_modules
-              - build
               - dist
+              - build
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
