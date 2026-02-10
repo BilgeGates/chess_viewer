@@ -85,6 +85,7 @@ const HomePage = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location, setFen]);
+
   const [pieceStyle, setPieceStyle] = useLocalStorage(
     'chess-piece-style',
     'cburnett'
@@ -105,16 +106,54 @@ const HomePage = () => {
     'chess-dark-square',
     '#b58863'
   );
-  const [boardSize, setBoardSize] = useLocalStorage('chess-board-size', 4);
+
+  // Listen for theme changes from theme customization
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const light = localStorage.getItem('chess-light-square');
+      const dark = localStorage.getItem('chess-dark-square');
+
+      if (light) {
+        try {
+          const parsed = JSON.parse(light);
+          setLightSquare(parsed);
+        } catch {
+          // If not JSON, use as-is
+          setLightSquare(light);
+        }
+      }
+      if (dark) {
+        try {
+          const parsed = JSON.parse(dark);
+          setDarkSquare(parsed);
+        } catch {
+          // If not JSON, use as-is
+          setDarkSquare(dark);
+        }
+      }
+    };
+
+    // Listen for custom storage event (same tab)
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also check on visibility change (when returning from another tab/page)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleStorageChange();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [setLightSquare, setDarkSquare]);
+  const [boardSize] = useLocalStorage('chess-board-size', 4);
   const [flipped, setFlipped] = useLocalStorage('chess-flipped', false);
-  const [fileName, setFileName] = useLocalStorage(
-    'chess-file-name',
-    'chess-position'
-  );
-  const [exportQuality, setExportQuality] = useLocalStorage(
-    'chess-export-quality',
-    16
-  );
+  const [fileName] = useLocalStorage('chess-file-name', 'chess-position');
+  const [exportQuality] = useLocalStorage('chess-export-quality', 16);
 
   // Export state with useReducer for better performance
   const [exportState, dispatchExport] = useReducer(exportReducer, {
@@ -388,16 +427,7 @@ const HomePage = () => {
               setShowCoords={setShowCoords}
               showCoordinateBorder={showCoordinateBorder}
               setShowCoordinateBorder={setShowCoordinateBorder}
-              lightSquare={lightSquare}
-              setLightSquare={setLightSquare}
-              darkSquare={darkSquare}
-              setDarkSquare={setDarkSquare}
-              boardSize={boardSize}
-              setBoardSize={setBoardSize}
-              fileName={fileName}
-              setFileName={setFileName}
               exportQuality={exportQuality}
-              setExportQuality={setExportQuality}
               addToFavoritesRef={addToFavoritesRef}
               onFavoriteStatusChange={setIsFavorite}
               saveManualFen={saveManualFen}
