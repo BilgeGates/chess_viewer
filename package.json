@@ -22,8 +22,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.11.0",
     "react-window": "^2.2.6",
-    "react-window-infinite-loader": "^2.0.1",
-    "web-vitals": "^2.1.4"
+    "react-window-infinite-loader": "^2.0.1"
   },
   "scripts": {
     "dev": "vite",
@@ -38,18 +37,6 @@
     "format:check": "prettier . --check",
     "format:ci": "prettier . --check || true",
     "prepare": "husky install"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
