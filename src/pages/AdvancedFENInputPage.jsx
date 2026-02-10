@@ -889,7 +889,7 @@ const AdvancedFENInputPage = memo(
                           <ThemeSelector
                             lightSquare={theme.lightSquare}
                             darkSquare={theme.darkSquare}
-                            onOpenModal={() => navigate('/theme')}
+                            onOpenModal={() => navigate('/settings')}
                           />
 
                           <ExportSettings
