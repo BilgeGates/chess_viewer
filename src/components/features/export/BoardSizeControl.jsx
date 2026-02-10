@@ -2,6 +2,14 @@ import { useState, useEffect, useMemo } from 'react';
 
 import { Input } from '@/components/ui';
 
+/**
+ * Board size control with preset sizes and custom input.
+ *
+ * @param {Object} props
+ * @param {number} props.boardSize - Current board size in cm
+ * @param {Function} props.setBoardSize - Board size setter
+ * @returns {JSX.Element}
+ */
 const BoardSizeControl = ({ boardSize, setBoardSize }) => {
   const [boardSizeInput, setBoardSizeInput] = useState(boardSize);
   const [boardSizeError, setBoardSizeError] = useState('');
@@ -41,7 +49,7 @@ const BoardSizeControl = ({ boardSize, setBoardSize }) => {
 
     if (!/^\d*\.?\d*$/.test(value)) {
       setBoardSizeInput(value);
-      setBoardSizeError('Zəhmət olmasa yalnız rəqəm daxil edin');
+      setBoardSizeError('Numbers only');
       return;
     }
 
@@ -50,9 +58,9 @@ const BoardSizeControl = ({ boardSize, setBoardSize }) => {
       setBoardSizeInput(numValue);
 
       if (numValue < 4) {
-        setBoardSizeError('Minimum ölçü 4 sm-dir');
+        setBoardSizeError('Min 4 cm');
       } else if (numValue > 16) {
-        setBoardSizeError('Maksimum ölçü 16 sm-dir');
+        setBoardSizeError('Max 16 cm');
       } else {
         setBoardSizeError('');
         setBoardSize(numValue);
@@ -62,7 +70,9 @@ const BoardSizeControl = ({ boardSize, setBoardSize }) => {
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-gray-200">Board Size</label>
+      <label className="text-sm font-semibold text-text-secondary">
+        Board Size
+      </label>
 
       <div className="grid grid-cols-4 gap-2">
         {presets.map((preset) => (
@@ -71,8 +81,8 @@ const BoardSizeControl = ({ boardSize, setBoardSize }) => {
             onClick={() => handlePresetClick(preset.value)}
             className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
               selectedPreset === preset.value
-                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white'
+                ? 'bg-accent text-bg shadow-md shadow-accent/20'
+                : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'
             }`}
           >
             {preset.label}
@@ -93,9 +103,7 @@ const BoardSizeControl = ({ boardSize, setBoardSize }) => {
           />
         </div>
       </div>
-      {boardSizeError && (
-        <p className="text-xs text-red-400">{boardSizeError}</p>
-      )}
+      {boardSizeError && <p className="text-xs text-error">{boardSizeError}</p>}
     </div>
   );
 };
