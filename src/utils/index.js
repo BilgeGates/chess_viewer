@@ -38,3 +38,6 @@ export * from './archiveManager';
 
 // Passive event options (distinct from performance utils)
 export { passiveEventOptions, supportsPassive } from './eventUtils';
+
+// Board utilities
+export * from './boardUtils';
