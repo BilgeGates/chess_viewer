@@ -22,8 +22,8 @@ const BoardSquare = memo(function BoardSquare(props) {
 
   return (
     <div
-      className="aspect-square flex items-center justify-center relative"
-      style={{ backgroundColor }}
+      className="w-full h-full flex items-center justify-center relative"
+      style={{ backgroundColor, minWidth: 0, minHeight: 0 }}
     >
       {piece && pieceImage && !isLoading && (
         <img
