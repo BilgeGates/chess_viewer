@@ -7,18 +7,14 @@ import {
   useEffect
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import {
   FENInputField,
   FamousPositionButton,
   PieceSelector
 } from '@/components/features/fen';
 import DisplayOptions from '@/components/features/DisplayOptions';
-
 import { useFENHistory } from '@/hooks';
-
 import { FAMOUS_POSITIONS } from '@/constants/chessConstants';
-
 import { History, Settings } from 'lucide-react';
 
 const ControlPanel = memo((props) => {
@@ -138,7 +134,7 @@ const ControlPanel = memo((props) => {
 
   return (
     <>
-      <div className="card rounded-xl p-5 sm:p-6 lg:p-7 space-y-5 sm:space-y-6">
+      <div className="glass-card rounded-xl p-5 sm:p-6 lg:p-7 space-y-5 sm:space-y-6">
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <label className="text-sm font-semibold text-text-primary">
@@ -169,6 +165,7 @@ const ControlPanel = memo((props) => {
             onPaste={handlePasteFEN}
             copySuccess={copySuccess}
             onAdvancedClick={() => navigate('/advanced-fen')}
+            onNotification={onNotification}
           />
         </div>
 
