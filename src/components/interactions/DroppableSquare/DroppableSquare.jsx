@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { useDrop } from 'react-dnd';
 
 import { ItemTypes } from '@/components/interactions/dndConstants';
@@ -49,14 +49,16 @@ const DroppableSquare = memo(
     return (
       <div
         ref={drop}
-        className="aspect-square flex items-center justify-center relative"
+        className="w-full h-full flex items-center justify-center relative"
         style={{
           backgroundColor: bgColor,
           zIndex: 0,
           boxShadow: isOver
             ? 'inset 0 0 0 3px rgba(255, 255, 255, 0.5)'
             : 'none',
-          contain: 'layout style'
+          contain: 'layout style',
+          minWidth: 0,
+          minHeight: 0
         }}
         data-row={row}
         data-col={col}
