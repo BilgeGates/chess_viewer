@@ -1,8 +1,9 @@
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 import { useDrop } from 'react-dnd';
 
 import { ItemTypes } from '@/components/interactions/dndConstants';
 import DroppableSquare from '@/components/interactions/DroppableSquare';
+import { areBoardsEqual } from '@/utils/boardUtils';
 
 const InteractiveBoard = memo(
   ({
@@ -99,11 +100,11 @@ const InteractiveBoard = memo(
     return (
       <div
         ref={setRefs}
-        className="grid grid-cols-8 gap-0 overflow-hidden"
+        className="grid grid-cols-8 grid-rows-8 gap-0 overflow-hidden"
         style={{
           aspectRatio: '1 / 1',
           width: '100%',
-          height: 'auto',
+          height: '100%',
           zIndex: 1,
           contain: 'layout style paint',
           borderRadius: '0',
@@ -116,7 +117,7 @@ const InteractiveBoard = memo(
   },
   (prevProps, nextProps) => {
     return (
-      prevProps.board === nextProps.board &&
+      areBoardsEqual(prevProps.board, nextProps.board) &&
       prevProps.lightSquare === nextProps.lightSquare &&
       prevProps.darkSquare === nextProps.darkSquare &&
       prevProps.pieceImages === nextProps.pieceImages &&
