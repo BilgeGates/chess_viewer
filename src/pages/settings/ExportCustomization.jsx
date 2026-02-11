@@ -29,10 +29,6 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
     setSelectedPreset(matchingPreset ? matchingPreset.value : null);
   }, [boardSize, presets]);
 
-  /**
-   * @param {number} value - Preset board size value
-   * @returns {void}
-   */
   const handlePresetClick = (value) => {
     setSelectedPreset(value);
     setBoardSize(value);
@@ -40,10 +36,6 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
     setBoardSizeError('');
   };
 
-  /**
-   * @param {Event} e - Input change event
-   * @returns {void}
-   */
   const handleCustomInputChange = (e) => {
     const value = e.target.value;
     setSelectedPreset(null);
@@ -75,46 +67,51 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 mb-1">
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
         <Ruler className="w-4 h-4 text-accent" />
-        <h3 className="text-sm font-bold text-text-primary">Board Size</h3>
+        <h3 className="text-sm font-semibold text-text-primary">Board Size</h3>
       </div>
-      <div className="grid grid-cols-4 gap-2">
+
+      {/* Preset buttons */}
+      <div className="grid grid-cols-3 gap-2">
         {presets.map((preset) => (
           <button
             key={preset.value}
             onClick={() => handlePresetClick(preset.value)}
-            className={`flex flex-col items-center gap-0.5 px-3 py-2.5 text-sm font-semibold rounded-lg transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 px-3 py-3 text-sm font-medium rounded-lg transition-all ${
               selectedPreset === preset.value
-                ? 'bg-accent text-bg shadow-md shadow-accent/20'
-                : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'
+                ? 'bg-accent text-bg shadow-sm'
+                : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'
             }`}
           >
-            <span>{preset.label}</span>
-            <span className="text-[10px] opacity-70 font-normal">
-              {preset.desc}
-            </span>
+            <span className="font-semibold">{preset.label}</span>
+            <span className="text-xs opacity-75">{preset.desc}</span>
           </button>
         ))}
-        <div className="relative">
-          <Input
-            value={boardSizeInput}
-            onChange={handleCustomInputChange}
-            placeholder="cm"
-            className="text-sm py-2.5 text-center"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                e.target.blur();
-              }
-            }}
-          />
-        </div>
       </div>
-      {boardSizeError && (
-        <p className="text-xs text-error font-medium">{boardSizeError}</p>
-      )}
+
+      {/* Custom input - separate section */}
+      <div className="space-y-2">
+        <label className="text-xs font-medium text-text-secondary">
+          Custom Size (cm)
+        </label>
+        <Input
+          value={boardSizeInput}
+          onChange={handleCustomInputChange}
+          placeholder="Enter size (4-16 cm)"
+          className="text-sm"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.target.blur();
+            }
+          }}
+        />
+        {boardSizeError && (
+          <p className="text-xs text-error font-medium">{boardSizeError}</p>
+        )}
+      </div>
     </div>
   );
 });
@@ -150,19 +147,20 @@ const ExportCustomization = memo(
 
     return (
       <div className="h-full flex flex-col lg:flex-row gap-0 overflow-hidden">
-        <div className="flex-1 p-4 lg:p-6 lg:border-r border-border/30 flex flex-col justify-center">
+        {/* LEFT SIDE - Board Size & File Name */}
+        <div className="flex-1 p-4 lg:p-6 lg:border-r border-border flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full space-y-6">
             <BoardSizeSection
               boardSize={boardSize}
               setBoardSize={setBoardSize}
             />
 
-            <div className="h-px bg-border/30" />
+            <div className="h-px bg-border" />
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 mb-1">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-bold text-text-primary">
+                <h3 className="text-sm font-semibold text-text-primary">
                   File Name
                 </h3>
               </div>
@@ -173,7 +171,7 @@ const ExportCustomization = memo(
               />
               <p className="text-xs text-text-muted">
                 Output:{' '}
-                <span className="font-data font-semibold text-text-secondary">
+                <span className="font-mono font-medium text-text-secondary">
                   {fileName || 'board'}
                 </span>
                 .png / .jpeg
@@ -182,12 +180,13 @@ const ExportCustomization = memo(
           </div>
         </div>
 
+        {/* RIGHT SIDE - Export Quality */}
         <div className="flex-1 p-4 lg:p-6 flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full space-y-5">
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs text-text-muted mb-1">
+              <div className="flex items-center gap-2">
                 <Printer className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-bold text-text-primary">
+                <h3 className="text-sm font-semibold text-text-primary">
                   Print Quality
                 </h3>
               </div>
@@ -215,10 +214,10 @@ const ExportCustomization = memo(
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs text-text-muted mb-1">
+              <div className="flex items-center gap-2">
                 <Share2 className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-bold text-text-primary">
-                  Social / Zoom
+                <h3 className="text-sm font-semibold text-text-primary">
+                  Social
                 </h3>
               </div>
               <div className="grid grid-cols-2 gap-2">
