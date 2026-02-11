@@ -115,7 +115,8 @@ const ThemeAdvancedPickerView = memo(
                       <div
                         key={`sq-${row}-${col}`}
                         style={{
-                          backgroundColor: isLight ? lightSquare : darkSquare
+                          backgroundColor: isLight ? lightSquare : darkSquare,
+                          outline: '1px solid transparent'
                         }}
                       />
                     );
