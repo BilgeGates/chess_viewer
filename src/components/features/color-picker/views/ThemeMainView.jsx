@@ -223,7 +223,8 @@ const ThemeMainView = memo(({ currentLight, currentDark, onThemeApply }) => {
                     <div
                       key={`sq-${row}-${col}`}
                       style={{
-                        backgroundColor: isLight ? currentLight : currentDark
+                        backgroundColor: isLight ? currentLight : currentDark,
+                        outline: '1px solid transparent'
                       }}
                     />
                   );
