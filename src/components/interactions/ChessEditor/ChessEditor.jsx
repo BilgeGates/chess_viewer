@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect } from 'react';
+import { RotateCcw, X } from 'lucide-react';
 
 import { usePieceImages, useInteractiveBoard } from '@/hooks';
 import DndProvider from '@/components/interactions/DndProvider';
@@ -8,6 +9,9 @@ import TrashZone from '@/components/interactions/TrashZone';
 import CustomDragLayer from '@/components/interactions/CustomDragLayer';
 
 const FIXED_BOARD_SIZE = 400;
+const RANK_GUTTER = 20;
+const BOARD_SIZE_EXPR = 'min(52vh, 46vw)';
+const CELL_SIZE_EXPR = `calc(${BOARD_SIZE_EXPR} / 8)`;
 
 const ChessEditor = memo(
   ({
@@ -50,14 +54,15 @@ const ChessEditor = memo(
         : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
       return (
-        <div className="flex justify-around mt-4">
+        <div className="flex" style={{ paddingLeft: RANK_GUTTER }}>
           {files.map((file) => (
-            <span
+            <div
               key={file}
-              className="text-xs sm:text-sm font-semibold text-text-muted flex-1 flex items-center justify-center"
+              className="text-[12px] font-bold text-text-primary text-center mt-1"
+              style={{ width: CELL_SIZE_EXPR }}
             >
               {file}
-            </span>
+            </div>
           ))}
         </div>
       );
@@ -69,14 +74,18 @@ const ChessEditor = memo(
         : ['8', '7', '6', '5', '4', '3', '2', '1'];
 
       return (
-        <div className="flex flex-col justify-around mr-2">
+        <div
+          className="flex flex-col flex-shrink-0"
+          style={{ width: RANK_GUTTER }}
+        >
           {ranks.map((rank) => (
-            <span
+            <div
               key={rank}
-              className="text-xs sm:text-sm font-semibold text-text-muted flex-1 flex items-center justify-center"
+              className="flex items-center justify-center text-[12px] font-bold text-text-primary"
+              style={{ height: CELL_SIZE_EXPR }}
             >
               {rank}
-            </span>
+            </div>
           ))}
         </div>
       );
@@ -89,40 +98,30 @@ const ChessEditor = memo(
         <div
           className={`flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 ${className}`}
         >
-          <div
-            className="flex-shrink-0 w-full lg:w-auto mx-auto lg:mx-0"
-            style={{
-              flexShrink: 0,
-              maxWidth: `${boardSize}px`
-            }}
-          >
-            <div
-              className="relative w-full"
-              style={{
-                aspectRatio: '1 / 1',
-                maxWidth: `${boardSize}px`,
-                margin: '0 auto'
-              }}
-            >
-              <div className="flex w-full h-full">
+          <div className="flex-shrink-0 w-full lg:w-auto mx-auto lg:mx-0">
+            <div className="inline-flex flex-col relative">
+              <div className="flex">
                 {showCoords && renderRankCoordinates()}
-                <div className="flex-1 min-w-0 flex flex-col">
-                  <div className="flex-1 min-h-0">
-                    <InteractiveBoard
-                      key={boardKey}
-                      board={board}
-                      lightSquare={lightSquare}
-                      darkSquare={darkSquare}
-                      pieceImages={pieceImages}
-                      isLoading={isLoading}
-                      flipped={flipped}
-                      onPieceDrop={handlePieceDrop}
-                      onPieceRemove={handlePieceRemove}
-                    />
-                  </div>
-                  {showCoords && renderFileCoordinates()}
+                <div
+                  style={{
+                    width: BOARD_SIZE_EXPR,
+                    height: BOARD_SIZE_EXPR
+                  }}
+                >
+                  <InteractiveBoard
+                    key={boardKey}
+                    board={board}
+                    lightSquare={lightSquare}
+                    darkSquare={darkSquare}
+                    pieceImages={pieceImages}
+                    isLoading={isLoading}
+                    flipped={flipped}
+                    onPieceDrop={handlePieceDrop}
+                    onPieceRemove={handlePieceRemove}
+                  />
                 </div>
               </div>
+              {showCoords && renderFileCoordinates()}
 
               {isLoading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm rounded-lg z-50">
@@ -161,19 +160,7 @@ const ChessEditor = memo(
                 "
                   title="Reset to starting position"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
+                  <RotateCcw className="w-4 h-4" />
                   <span className="hidden xs:inline">Reset</span>
                 </button>
                 <button
@@ -192,19 +179,7 @@ const ChessEditor = memo(
                 "
                   title="Clear all pieces"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <X className="w-4 h-4" />
                   <span className="hidden xs:inline">Clear</span>
                 </button>
               </div>
