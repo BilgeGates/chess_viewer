@@ -97,54 +97,63 @@ export function calculateExportSize(boardSizeCm, showCoords, exportQuality) {
   let baseBoardPixels;
   let scaleFactor;
   let physicalSizeCm;
+  let actualResolutionPixels;
 
   if (mode === 'print') {
+    // CRITICAL: Use boardSizeCm directly to ensure different sizes produce different outputs
     baseBoardPixels = cmToPixels(boardSizeCm);
-    scaleFactor = exportQuality; // 8x or 16x
+    scaleFactor = 1; // Do NOT apply multiplier as scale - apply to actual pixels instead
     physicalSizeCm = boardSizeCm;
+    // Apply multiplier directly to resolution
+    actualResolutionPixels = baseBoardPixels * exportQuality;
   } else {
     // SOCIAL: Fixed pixel size, ignore physical dimensions
     baseBoardPixels = EXPORT_MODE_CONFIG.social.fixedBoardPixels;
     scaleFactor = exportQuality / 24; // Normalize (24x = 1.0, 32x = 1.33)
     physicalSizeCm = null;
+    actualResolutionPixels = baseBoardPixels * scaleFactor;
   }
 
   // Get coordinate border size at BASE resolution
-  const params = getCoordinateParams(baseBoardPixels);
+  const params = getCoordinateParams(actualResolutionPixels);
   let borderSize = 0;
   if (showCoords) {
     borderSize = params.borderSize;
   }
 
-  // Canvas dimensions at BASE resolution (before scaling)
-  const baseWidth = borderSize + baseBoardPixels;
-  const baseHeight = baseBoardPixels + borderSize;
+  // Canvas dimensions at ACTUAL resolution
+  const finalBoardPixels = actualResolutionPixels;
+  const finalWidth = Math.round(borderSize + finalBoardPixels);
+  const finalHeight = Math.round(finalBoardPixels + borderSize);
 
   // Check if the final size exceeds browser limits
-  const finalWidth = Math.round(baseWidth * scaleFactor);
-  const finalHeight = Math.round(baseHeight * scaleFactor);
+  let reducedWidth = finalWidth;
+  let reducedHeight = finalHeight;
+  let actualScaleFactor = 1.0;
 
   if (finalWidth > maxCanvasSize || finalHeight > maxCanvasSize) {
-    // Reduce the scale factor to fit within browser limits
+    // Reduce to fit within browser limits
     const maxDim = Math.max(finalWidth, finalHeight);
-    scaleFactor = scaleFactor * (maxCanvasSize / maxDim);
+    actualScaleFactor = maxCanvasSize / maxDim;
+    reducedWidth = Math.round(finalWidth * actualScaleFactor);
+    reducedHeight = Math.round(finalHeight * actualScaleFactor);
     logger.warn(
-      'Scale reduced to ' +
-        scaleFactor.toFixed(2) +
-        'x for browser compatibility'
+      'Resolution reduced by ' +
+        (actualScaleFactor * 100).toFixed(1) +
+        '% for browser compatibility'
     );
   }
 
   return {
-    width: Math.round(baseWidth * scaleFactor),
-    height: Math.round(baseHeight * scaleFactor),
-    scaleFactor: scaleFactor,
-    baseBoardPixels: baseBoardPixels,
-    baseWidth: baseWidth,
-    baseHeight: baseHeight,
+    width: reducedWidth,
+    height: reducedHeight,
+    scaleFactor: actualScaleFactor,
+    baseBoardPixels: finalBoardPixels,
+    baseWidth: finalWidth,
+    baseHeight: finalHeight,
     borderSize: borderSize,
     physicalSizeCm: physicalSizeCm,
-    effectiveDPI: mode === 'print' ? PRINT_DPI * scaleFactor : null,
+    effectiveDPI: mode === 'print' ? PRINT_DPI * exportQuality : null,
     mode: mode,
     exportQuality: exportQuality
   };
@@ -278,29 +287,42 @@ export async function createUltraQualityCanvas(config) {
 
   await Promise.all(imagePromises);
 
-  let baseBoardPixels;
-  let scaleFactor;
+  // CRITICAL: Calculate actual pixel dimensions based on mode
+  let finalBoardPixels;
 
   if (mode === 'print') {
-    baseBoardPixels = cmToPixels(boardSizeCm);
-    scaleFactor = exportQuality;
+    // Apply quality multiplier directly to pixel resolution
+    const baseBoardPixels = cmToPixels(boardSizeCm);
+    finalBoardPixels = baseBoardPixels * exportQuality;
   } else {
-    baseBoardPixels = EXPORT_MODE_CONFIG.social.fixedBoardPixels;
-    scaleFactor = exportQuality / 24;
+    // Social mode: fixed base scaled by normalized multiplier
+    const baseBoardPixels = EXPORT_MODE_CONFIG.social.fixedBoardPixels;
+    finalBoardPixels = baseBoardPixels * (exportQuality / 24);
   }
 
-  const params = getCoordinateParams(baseBoardPixels);
+  // Calculate border and frame sizes based on final resolution
+  const params = getCoordinateParams(finalBoardPixels);
   let borderSize = 0;
   if (showCoords) {
     borderSize = params.borderSize;
   }
 
-  const baseWidth = borderSize + baseBoardPixels;
-  const baseHeight = baseBoardPixels + borderSize;
+  // Check if thin frame should be added (8x or 16x only, if enabled)
+  const showThinFrame = config.showThinFrame || false;
+  const shouldShowFrame =
+    showThinFrame && (exportQuality === 8 || exportQuality === 16);
+  const frameThickness = shouldShowFrame
+    ? Math.max(2, Math.round(finalBoardPixels * 0.003))
+    : 0;
+  const framePadding = shouldShowFrame ? frameThickness * 2 : 0;
+
+  // Canvas dimensions include border, board, and optional frame
+  const canvasWidth = Math.round(borderSize + finalBoardPixels + framePadding);
+  const canvasHeight = Math.round(finalBoardPixels + borderSize + framePadding);
 
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(baseWidth * scaleFactor);
-  canvas.height = Math.round(baseHeight * scaleFactor);
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
 
   const ctx = canvas.getContext('2d', {
     alpha: true,
@@ -308,13 +330,15 @@ export async function createUltraQualityCanvas(config) {
     willReadFrequently: false
   });
 
-  ctx.scale(scaleFactor, scaleFactor);
+  // No scaling - work at actual resolution
+  const squareSize = finalBoardPixels / 8;
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  const squareSize = baseBoardPixels / 8;
-  const boardX = borderSize;
-  const boardY = 0;
+  // Calculate board position with optional frame offset
+  const frameOffset = shouldShowFrame ? frameThickness : 0;
+  const boardX = borderSize + frameOffset;
+  const boardY = frameOffset;
 
   /**
    * Get pixel bounds of board square.
@@ -339,26 +363,62 @@ export async function createUltraQualityCanvas(config) {
     };
   }
 
-  ctx.clearRect(0, 0, baseWidth, baseHeight);
+  // Clear canvas
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+  // Draw thin frame if enabled (8x and 16x only)
+  if (shouldShowFrame) {
+    ctx.fillStyle = '#333333';
+    // Top frame
+    ctx.fillRect(frameOffset, 0, borderSize + finalBoardPixels, frameThickness);
+    // Bottom frame
+    ctx.fillRect(
+      frameOffset,
+      frameOffset + finalBoardPixels + borderSize,
+      borderSize + finalBoardPixels,
+      frameThickness
+    );
+    // Left frame
+    ctx.fillRect(0, 0, frameThickness, canvasHeight);
+    // Right frame
+    ctx.fillRect(
+      frameOffset + borderSize + finalBoardPixels,
+      0,
+      frameThickness,
+      canvasHeight
+    );
+  }
+
+  // Draw coordinate border backgrounds and borders if needed
   if (effectiveCoordBorder) {
     if (format === 'jpeg' || format === 'jpg') {
       ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, borderSize, baseBoardPixels);
-      ctx.fillRect(0, baseBoardPixels, baseWidth, borderSize);
+      ctx.fillRect(frameOffset, frameOffset, borderSize, finalBoardPixels);
+      ctx.fillRect(
+        frameOffset,
+        frameOffset + finalBoardPixels,
+        borderSize + finalBoardPixels,
+        borderSize
+      );
     }
 
-    const borderLineWidth = Math.max(0.5, baseBoardPixels * 0.001);
+    const borderLineWidth = Math.max(0.5, finalBoardPixels * 0.001);
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = borderLineWidth;
-    ctx.strokeRect(0, 0, borderSize, baseBoardPixels);
-    ctx.strokeRect(borderSize, baseBoardPixels, baseBoardPixels, borderSize);
+    ctx.strokeRect(frameOffset, frameOffset, borderSize, finalBoardPixels);
+    ctx.strokeRect(
+      frameOffset + borderSize,
+      frameOffset + finalBoardPixels,
+      finalBoardPixels,
+      borderSize
+    );
   }
 
-  const boardBorderWidth = Math.max(1, baseBoardPixels * 0.002);
+  // Draw main board border
+  const boardBorderWidth = Math.max(1, finalBoardPixels * 0.002);
   ctx.strokeStyle = '#000000';
   ctx.lineWidth = boardBorderWidth;
-  ctx.strokeRect(boardX, boardY, baseBoardPixels, baseBoardPixels);
+  ctx.strokeRect(boardX, boardY, finalBoardPixels, finalBoardPixels);
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -423,11 +483,12 @@ export async function createUltraQualityCanvas(config) {
     drawCoordinates(
       ctx,
       squareSize,
-      borderSize,
+      borderSize + frameOffset,
       flipped,
-      baseBoardPixels,
+      finalBoardPixels,
       true,
-      false
+      false,
+      boardY
     );
   }
 
