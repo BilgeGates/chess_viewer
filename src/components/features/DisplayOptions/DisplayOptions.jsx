@@ -6,11 +6,16 @@ const DisplayOptions = ({
   setShowCoords,
   showCoordinateBorder,
   setShowCoordinateBorder,
+  showThinFrame,
+  setShowThinFrame,
   exportQuality = 16
 }) => {
   const preset = QUALITY_PRESETS.find((p) => p.value === exportQuality);
   const isBorderForced = preset?.forceCoordinateBorder || false;
   const isSocialMode = preset?.mode === 'social';
+  const isPrintMode = preset?.mode === 'print';
+  const canShowFrame =
+    isPrintMode && (exportQuality === 8 || exportQuality === 16);
 
   const effectiveBorderState = isBorderForced || showCoordinateBorder;
 
@@ -53,6 +58,21 @@ const DisplayOptions = ({
             </p>
           )}
         </div>
+      )}
+
+      {canShowFrame && (
+        <Checkbox
+          checked={showThinFrame || false}
+          onChange={(e) => setShowThinFrame(e.target.checked)}
+          label={
+            <span className="flex items-center gap-2">
+              Thin Frame
+              <span className="text-xs text-text-muted font-normal">
+                (8× and 16× only)
+              </span>
+            </span>
+          }
+        />
       )}
     </div>
   );
