@@ -7,14 +7,9 @@ import {
   useEffect
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  FENInputField,
-  FamousPositionButton,
-  PieceSelector
-} from '@/components/features/fen';
+import { FENInputField, PieceSelector } from '@/components/features/Fen';
 import DisplayOptions from '@/components/features/DisplayOptions';
 import { useFENHistory } from '@/hooks';
-import { FAMOUS_POSITIONS } from '@/constants/chessConstants';
 import { History, Settings } from 'lucide-react';
 
 const ControlPanel = memo((props) => {
@@ -113,20 +108,6 @@ const ControlPanel = memo((props) => {
     }
   }, [setFen, externalSaveManualFen, onNotification]);
 
-  /**
-   * @param {string} positionFen - FEN of selected famous position
-   * @returns {void}
-   */
-  const handleFamousPositionClick = useCallback(
-    (positionFen) => {
-      setFen(positionFen);
-      if (externalSaveManualFen) {
-        externalSaveManualFen(positionFen);
-      }
-    },
-    [setFen, externalSaveManualFen]
-  );
-
   useImperativeHandle(
     addToFavoritesRef,
     () => () => addCurrentToFavorites(fen, onNotification)
@@ -169,23 +150,7 @@ const ControlPanel = memo((props) => {
           />
         </div>
 
-        <div className="space-y-3">
-          <div className="text-sm font-semibold text-text-primary">
-            Famous Positions
-          </div>
-          <div className="grid grid-cols-2 gap-2 max-h-40 sm:max-h-48 overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
-            {Object.entries(FAMOUS_POSITIONS).map(([key, pos]) => (
-              <FamousPositionButton
-                key={key}
-                position={pos}
-                onClick={handleFamousPositionClick}
-              />
-            ))}
-          </div>
-        </div>
-
         <div className="h-px bg-border/50" />
-
         <PieceSelector pieceStyle={pieceStyle} setPieceStyle={setPieceStyle} />
         <DisplayOptions
           showCoords={showCoords}
