@@ -1,5 +1,8 @@
-import { drawCoordinates, parseFEN, getCoordinateParams } from './';
+// Internal utilities
+import { drawCoordinates, getCoordinateParams, parseFEN } from './';
 import { logger } from './logger';
+
+// Constants
 import { EXPORT_MODE_CONFIG, QUALITY_PRESETS } from '@/constants';
 
 export const PRINT_DPI = 300;
@@ -204,13 +207,39 @@ function getPieceKey(fenPiece) {
 }
 
 /**
- * Create ultra-high-quality canvas of chess board.
+ * Create ultra-high-quality canvas of chess board for export.
  *
- * Print modes (8x, 16x): Physical size preserved, quality increases pixel density.
- * Social modes (24x, 32x): Fixed 4800px base, scaled up for social media.
+ * This function renders a chess position to a high-resolution canvas suitable for
+ * professional printing or digital display. It supports two export modes:
+ * - Print mode (8x, 16x): Preserves exact physical dimensions with increased pixel density
+ * - Social mode (24x, 32x): Fixed large output optimized for screen viewing
  *
- * @param {Object} config - Export configuration
- * @returns {HTMLCanvasElement} Rendered canvas
+ * @param {Object} config - Export configuration object
+ * @param {number} config.boardSize - Board size in centimeters (4-16cm)
+ * @param {boolean} config.showCoords - Whether to display coordinate labels (a-h, 1-8)
+ * @param {string} config.lightSquare - Light square color (hex, rgb, or color name)
+ * @param {string} config.darkSquare - Dark square color (hex, rgb, or color name)
+ * @param {boolean} config.flipped - Whether to flip board (black's perspective)
+ * @param {string} config.fen - FEN notation string for the position
+ * @param {Object} config.pieceImages - Map of piece keys to loaded Image objects
+ * @param {string} [config.format='png'] - Export format ('png' or 'jpeg')
+ * @param {boolean} [config.showCoordinateBorder=true] - Whether to show borders around coordinates
+ * @param {number} [config.exportQuality=8] - Quality multiplier (8, 16, 24, or 32)
+ * @param {boolean} [config.showThinFrame=false] - Whether to add thin frame around board (8x/16x only)
+ * @returns {Promise<HTMLCanvasElement>} Rendered canvas element
+ * @throws {Error} If configuration is invalid or rendering fails
+ * @example
+ * const config = {
+ *   boardSize: 6,
+ *   showCoords: true,
+ *   lightSquare: '#f0d9b5',
+ *   darkSquare: '#b58863',
+ *   flipped: false,
+ *   fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
+ *   pieceImages: loadedImages,
+ *   exportQuality: 16
+ * };
+ * const canvas = await createUltraQualityCanvas(config);
  */
 export async function createUltraQualityCanvas(config) {
   const boardSizeCm = config.boardSize;
@@ -389,7 +418,7 @@ export async function createUltraQualityCanvas(config) {
     );
   }
 
-  // Draw coordinate border backgrounds and borders if needed
+  // Draw coordinate border backgrounds if needed (for JPEG format)
   if (effectiveCoordBorder) {
     if (format === 'jpeg' || format === 'jpg') {
       ctx.fillStyle = '#FFFFFF';
@@ -401,17 +430,6 @@ export async function createUltraQualityCanvas(config) {
         borderSize
       );
     }
-
-    const borderLineWidth = Math.max(0.5, finalBoardPixels * 0.001);
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = borderLineWidth;
-    ctx.strokeRect(frameOffset, frameOffset, borderSize, finalBoardPixels);
-    ctx.strokeRect(
-      frameOffset + borderSize,
-      frameOffset + finalBoardPixels,
-      finalBoardPixels,
-      borderSize
-    );
   }
 
   // Draw main board border
