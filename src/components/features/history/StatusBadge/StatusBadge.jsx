@@ -1,6 +1,6 @@
 import { memo } from 'react';
+import { calculateStatus } from '@/utils';
 import { Circle, Zap, AlertCircle } from 'lucide-react';
-import { calculateStatus } from '@/utils/historyUtils';
 
 /**
  * @param {Object} props

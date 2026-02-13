@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-
 import { usePieceImages } from '@/hooks';
 import {
   parseFEN,

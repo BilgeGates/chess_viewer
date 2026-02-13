@@ -1,6 +1,5 @@
 import { memo, useState, useEffect } from 'react';
 import { X, Copy, Trash2, Check } from 'lucide-react';
-import { validateFEN } from '@/utils';
 
 const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
   const [clipboardHistory, setClipboardHistory] = useState([]);
@@ -99,7 +98,7 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
               <div className="space-y-3">
                 {clipboardHistory.map((item, index) => (
                   <div
-                    key={index}
+                    key={`${item.fen}-${item.timestamp}`}
                     className="bg-bg border border-border rounded-lg p-4 hover:border-accent/50 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">

@@ -1,1 +1,1 @@
-export { default as ChessBoard } from './ChessBoard';
+export { default } from './ChessBoard.jsx';

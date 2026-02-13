@@ -1,1 +1,1 @@
-export { default } from './DisplayOptions';
+export { default } from './DisplayOptions.jsx';

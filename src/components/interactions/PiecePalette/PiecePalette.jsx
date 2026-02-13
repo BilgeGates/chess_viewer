@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { PALETTE_PIECES, getPieceImageKey } from '@/constants';
-import DraggablePiece from '@/components/interactions/DraggablePiece';
+import { DraggablePiece } from '@/components/interactions';
 
 const PiecePalette = memo(({ pieceImages, isLoading, className = '' }) => {
   const whitePieces = PALETTE_PIECES.filter((p) => p.color === 'w');

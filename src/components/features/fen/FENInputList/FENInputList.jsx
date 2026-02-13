@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
-import { Check, Clipboard, Star, Trash2, AlertCircle } from 'lucide-react';
 import { validateFEN } from '@/utils';
+import { Check, Clipboard, Star, Trash2, AlertCircle } from 'lucide-react';
 
 const FENInputRow = memo(
   ({

@@ -1,1 +1,1 @@
-export { default as SearchableSelect } from './SearchableSelect';
+export { default } from './SearchableSelect.jsx';

@@ -1,7 +1,6 @@
-import { Settings, Printer, Share2 } from 'lucide-react';
-
 import { Modal, Button, Input } from '@/components/ui';
 import { QUALITY_PRESETS } from '@/constants';
+import { Settings, Printer, Share2 } from 'lucide-react';
 
 const ExportOptionsDialog = ({
   isOpen,

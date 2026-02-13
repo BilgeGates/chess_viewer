@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import ColorSwatch from './ColorSwatch';
+import { ColorSwatch } from '@/components/features/ColorPicker/parts';
 
 const ColorPalettes = React.memo(
   ({ activePalette, setActivePalette, tempColor, onColorSelect }) => {

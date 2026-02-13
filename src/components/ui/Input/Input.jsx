@@ -1,6 +1,6 @@
 import React, { useId } from 'react';
-import { AlertCircle } from 'lucide-react';
 import { getInputClasses, classNames, cn } from '@/utils';
+import { AlertCircle } from 'lucide-react';
 
 const Input = React.memo(
   ({

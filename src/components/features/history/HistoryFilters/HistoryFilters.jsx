@@ -1,4 +1,5 @@
 import { memo, useState, useCallback } from 'react';
+import { CustomSelect, DatePicker } from '@/components/ui';
 import {
   Search,
   Filter,
@@ -10,13 +11,6 @@ import {
   Download,
   MousePointer
 } from 'lucide-react';
-import DatePicker from '@/components/ui/DatePicker';
-import CustomSelect from '@/components/ui/CustomSelect';
-
-/**
- * @typedef {import('@/utils/historyUtils').FilterOptions} FilterOptions
- * @typedef {import('@/utils/historyUtils').StatusLevel} StatusLevel
- */
 
 /**
  * @param {Object} props

@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import ColorInput from './parts/ColorInput';
+import { ColorInput } from '@/components/features/ColorPicker/parts';
 import PickerModal from './PickerModal';
 import { useColorConversion, useColorState } from '@/hooks';
 import { Palette } from 'lucide-react';

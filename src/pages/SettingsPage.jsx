@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Palette, Download } from 'lucide-react';
+import { ThemeCustomization, ExportCustomization } from '@/pages/settings';
 import { useLocalStorage } from '@/hooks';
-import { ThemeCustomization } from './settings';
-import { ExportCustomization } from './settings';
+import { ArrowLeft, Palette, Download, Save } from 'lucide-react';
 
 const tabs = [
   { id: 'theme', label: 'Theme Customization', icon: Palette },
@@ -48,21 +47,31 @@ const SettingsPage = memo(() => {
       {/* Header */}
       <header className="flex-shrink-0 bg-surface border-b border-border">
         <div className="px-6 py-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleBack}
+                className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-hover rounded-xl transition-colors group"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-5 h-5 text-accent group-hover:text-accent-hover transition-colors" />
+                <span className="text-sm font-semibold text-text-secondary group-hover:text-text-primary">
+                  Back
+                </span>
+              </button>
+              <div className="h-8 w-px bg-border" />
+              <h1 className="text-2xl font-display font-bold text-text-primary">
+                Settings
+              </h1>
+            </div>
             <button
               onClick={handleBack}
-              className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-hover rounded-xl transition-colors group"
-              aria-label="Go back"
+              className="px-6 py-2.5 bg-warning hover:bg-warning/90 text-bg rounded-xl font-semibold transition-all shadow-glow-sm flex items-center gap-2"
+              aria-label="Save and close"
             >
-              <ArrowLeft className="w-5 h-5 text-accent group-hover:text-accent-hover transition-colors" />
-              <span className="text-sm font-semibold text-text-secondary group-hover:text-text-primary">
-                Back
-              </span>
+              <Save className="w-4 h-4" />
+              <span>Save</span>
             </button>
-            <div className="h-8 w-px bg-border" />
-            <h1 className="text-2xl font-display font-bold text-text-primary">
-              Settings
-            </h1>
           </div>
         </div>
       </header>

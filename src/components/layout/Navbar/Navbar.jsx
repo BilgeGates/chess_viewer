@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HelpCircle, Moon, Sun } from 'lucide-react';
-import HelpCenterDrawer from '@/components/features/HelpCenter/HelpCenter';
+import HelpCenter from '@/components/features/HelpCenter';
 import Logo from '@/assets/Logo.png';
+import { HelpCircle, Moon, Sun } from 'lucide-react';
 
 const Navbar = ({ theme, toggleTheme }) => {
   const [scrolled, setScrolled] = useState(false);
@@ -98,12 +98,8 @@ const Navbar = ({ theme, toggleTheme }) => {
         </div>
       </nav>
 
-      {/* Help Center Drawer */}
-      <HelpCenterDrawer
-        isOpen={isHelpOpen}
-        onClose={handleCloseHelp}
-        theme={theme}
-      />
+      {/* Help Center */}
+      <HelpCenter isOpen={isHelpOpen} onClose={handleCloseHelp} theme={theme} />
     </>
   );
 };

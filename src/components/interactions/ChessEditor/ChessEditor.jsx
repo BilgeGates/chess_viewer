@@ -1,12 +1,13 @@
 import { memo, useCallback, useEffect } from 'react';
-import { RotateCcw, X } from 'lucide-react';
-
+import {
+  DndProvider,
+  InteractiveBoard,
+  PiecePalette,
+  TrashZone,
+  CustomDragLayer
+} from '@/components/interactions';
 import { usePieceImages, useInteractiveBoard } from '@/hooks';
-import DndProvider from '@/components/interactions/DndProvider';
-import InteractiveBoard from '@/components/interactions/InteractiveBoard';
-import PiecePalette from '@/components/interactions/PiecePalette';
-import TrashZone from '@/components/interactions/TrashZone';
-import CustomDragLayer from '@/components/interactions/CustomDragLayer';
+import { RotateCcw, X } from 'lucide-react';
 
 const FIXED_BOARD_SIZE = 400;
 const RANK_GUTTER = 20;

@@ -1,1 +1,1 @@
-export { default } from './ControlPanel';
+export { default } from './ControlPanel.jsx';

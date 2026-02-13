@@ -1,9 +1,8 @@
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useDrop } from 'react-dnd';
-
 import { ItemTypes } from '@/constants';
-import DroppableSquare from '@/components/interactions/DroppableSquare';
-import { areBoardsEqual } from '@/utils/boardUtils';
+import { DroppableSquare } from '@/components/interactions';
+import { areBoardsEqual } from '@/utils';
 
 const InteractiveBoard = memo(
   ({

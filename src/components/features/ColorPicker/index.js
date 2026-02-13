@@ -1,4 +1,2 @@
-export { default as ColorPicker } from './ColorPicker';
-export { default as PickerModal } from './PickerModal';
-export * from './parts';
-export * from './views';
+export { default as ColorPicker } from './ColorPicker.jsx';
+export { default as PickerModal } from './PickerModal.jsx';

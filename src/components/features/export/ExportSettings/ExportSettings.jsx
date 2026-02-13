@@ -1,6 +1,5 @@
-import { Settings } from 'lucide-react';
-
 import { Button } from '@/components/ui';
+import { Settings } from 'lucide-react';
 
 /**
  * Button to open export settings configuration.

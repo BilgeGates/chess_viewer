@@ -1,6 +1,5 @@
 import React from 'react';
-
-import BoardSquare from '@/components/board/BoardSquare';
+import BoardSquare from '../BoardSquare';
 
 // Shallow board comparison to avoid deep-equal on every render
 function arePropsEqual(prevProps, nextProps) {

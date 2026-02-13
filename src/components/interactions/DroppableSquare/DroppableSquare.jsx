@@ -1,8 +1,7 @@
 import { memo, useCallback } from 'react';
 import { useDrop } from 'react-dnd';
-
-import { ItemTypes } from '@/constants/dragDropConstants';
-import DraggablePiece from '@/components/interactions/DraggablePiece';
+import { ItemTypes } from '@/constants';
+import { DraggablePiece } from '@/components/interactions';
 
 const DroppableSquare = memo(
   ({

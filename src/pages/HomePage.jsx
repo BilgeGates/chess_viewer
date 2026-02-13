@@ -136,6 +136,9 @@ const HomePage = () => {
       }
     };
 
+    // Initial check on mount
+    handleStorageChange();
+
     // Listen for custom storage event (same tab)
     window.addEventListener('storage', handleStorageChange);
 

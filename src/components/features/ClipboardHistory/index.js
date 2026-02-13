@@ -1,1 +1,1 @@
-export { default as ClipboardHistory } from './ClipboardHistory';
+export { default } from './ClipboardHistory.jsx';

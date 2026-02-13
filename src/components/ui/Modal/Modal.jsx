@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
-import { X } from 'lucide-react';
 import { useScrollLock } from '@/hooks';
+import { X } from 'lucide-react';
 
 const Modal = React.memo(
   ({

@@ -76,11 +76,11 @@ const CONTENT = {
     ]
   },
   [SECTIONS.ABOUT]: {
-    title: 'About Chess Diagram Generator',
+    title: 'About FENForsty Pro',
     sections: [
       {
         title: 'Our Mission',
-        content: `Chess Diagram Generator is a professional tool designed for chess players, coaches, authors, and enthusiasts who need to create high-quality chess diagrams quickly and easily. Our mission is to provide the most intuitive and powerful chess diagram creation tool available, completely free and open-source.`
+        content: `FENForsty Pro is a professional tool designed for chess players, coaches, authors, and enthusiasts who need to create high-quality chess diagrams quickly and easily. Our mission is to provide the most intuitive and powerful chess diagram creation tool available, completely free and open-source.`
       },
       {
         title: 'Technology',
@@ -101,7 +101,7 @@ const CONTENT = {
     sections: [
       {
         title: 'Getting Help',
-        content: `If you encounter any issues or have questions about using Chess Diagram Generator, we're here to help. Check the FAQ section first for quick answers to common questions.`
+        content: `If you encounter any issues or have questions about using FENForsty Pro, we're here to help. Check the FAQ section first for quick answers to common questions.`
       },
       {
         title: 'Contact Information',
@@ -126,7 +126,7 @@ const CONTENT = {
     sections: [
       {
         title: 'What browsers are supported?',
-        content: `Chess Diagram Generator works on all modern browsers including Google Chrome, Mozilla Firefox, Safari, Microsoft Edge, and Opera. We recommend using the latest version of your browser for the best experience.`
+        content: `FENForsty Pro works on all modern browsers including Google Chrome, Mozilla Firefox, Safari, Microsoft Edge, and Opera. We recommend using the latest version of your browser for the best experience.`
       },
       {
         title: 'Is my data saved?',
@@ -134,7 +134,7 @@ const CONTENT = {
       },
       {
         title: 'Can I use this offline?',
-        content: `Yes! Chess Diagram Generator is a Progressive Web App (PWA). Once loaded, basic functionality works offline. Install it to your device for a native app-like experience.`
+        content: `Yes! FENForsty Pro is a Progressive Web App (PWA). Once loaded, basic functionality works offline. Install it to your device for a native app-like experience.`
       },
       {
         title: 'What is FEN notation?',
@@ -163,7 +163,7 @@ const CONTENT = {
     sections: [
       {
         title: 'Data Collection',
-        content: `Chess Diagram Generator does not collect, store, or transmit any personal data to external servers. All data processing happens locally in your browser.`
+        content: `FENForsty Pro does not collect, store, or transmit any personal data to external servers. All data processing happens locally in your browser.`
       },
       {
         title: 'Local Storage',
@@ -188,7 +188,7 @@ const CONTENT = {
     sections: [
       {
         title: 'License',
-        content: `Chess Diagram Generator is released under a non-commercial open-source license. You are free to use, modify, and distribute the software for non-commercial purposes.`
+        content: `FENForsty Pro is released under a non-commercial open-source license. You are free to use, modify, and distribute the software for non-commercial purposes.`
       },
       {
         title: 'Acceptable Use',

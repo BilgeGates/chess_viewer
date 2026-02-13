@@ -1,9 +1,8 @@
-import React, { useRef, useState, useEffect, memo } from 'react';
-
+import { useRef, useState, useEffect, memo } from 'react';
 import { usePieceImages } from '@/hooks';
 import { parseFEN, logger } from '@/utils';
 
-const MiniChessPreview = memo(
+const MiniPreview = memo(
   ({
     fen,
     lightSquare = '#f0d9b5',
@@ -140,6 +139,6 @@ const MiniChessPreview = memo(
   }
 );
 
-MiniChessPreview.displayName = 'MiniChessPreview';
+MiniPreview.displayName = 'MiniPreview';
 
-export default MiniChessPreview;
+export default MiniPreview;

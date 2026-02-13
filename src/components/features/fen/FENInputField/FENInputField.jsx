@@ -1,4 +1,7 @@
 import { memo, useState, useEffect, useCallback } from 'react';
+import { validateFEN } from '@/utils';
+import { useFENBatch } from '@/contexts';
+import ClipboardHistory from '@/components/features/ClipboardHistory';
 import {
   Copy,
   CheckCircle,
@@ -8,9 +11,6 @@ import {
   Heart,
   List
 } from 'lucide-react';
-import { validateFEN } from '@/utils';
-import { useFENBatch } from '@/contexts/FENBatchContext';
-import ClipboardHistory from '@/components/features/ClipboardHistory/ClipboardHistory';
 
 const FENInputField = memo(
   ({
@@ -268,7 +268,7 @@ const FENInputField = memo(
                 className={`
                   w-full px-3 py-2
                   bg-surface/50 text-text-primary 
-                  font-mono text-[11px] leading-tight resize-none min-h-[60px]
+                  font-mono text-[12px] leading-tight resize-none min-h-[80px]
                   focus-visible:outline-none focus:outline-none outline-none 
                   transition-all border-0
                   ${error ? 'text-error' : ''}
@@ -280,7 +280,7 @@ const FENInputField = memo(
 
               <button
                 onClick={onAdvancedClick}
-                className="absolute bottom-2 right-2 text-[10px] text-accent/80 hover:text-accent font-semibold transition-colors underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded px-1"
+                className="absolute bottom-2 right-2 text-[12px] text-accent/80 hover:text-accent font-semibold transition-colors underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded px-1"
                 type="button"
                 aria-label="Open advanced FEN input modal"
               >

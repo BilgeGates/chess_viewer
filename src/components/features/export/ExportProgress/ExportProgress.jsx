@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FileImage, Pause, Play, XCircle } from 'lucide-react';
-
 import { Modal } from '@/components/ui';
+import { FileImage, Pause, Play, XCircle } from 'lucide-react';
 
 const ExportProgress = React.memo(
   ({

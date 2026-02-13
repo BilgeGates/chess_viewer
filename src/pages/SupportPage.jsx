@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   MessageSquare,
   ExternalLink,
@@ -6,7 +7,6 @@ import {
   HelpCircle,
   ChevronDown
 } from 'lucide-react';
-import { useState } from 'react';
 
 const SupportPage = () => {
   return (

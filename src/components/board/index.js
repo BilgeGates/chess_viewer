@@ -1,4 +1,4 @@
-export { BoardGrid } from './BoardGrid';
-export { BoardSquare } from './BoardSquare';
-export { ChessBoard } from './ChessBoard';
-export { MiniPreview, MiniPreview as MiniChessPreview } from './MiniPreview';
+export { default as BoardGrid } from './BoardGrid';
+export { default as BoardSquare } from './BoardSquare';
+export { default as ChessBoard } from './ChessBoard';
+export { default as MiniPreview } from './MiniPreview';

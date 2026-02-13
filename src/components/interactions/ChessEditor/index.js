@@ -1,1 +1,1 @@
-export { default as ChessEditor } from './ChessEditor';
+export { default } from './ChessEditor.jsx';

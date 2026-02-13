@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import { useDrop } from 'react-dnd';
-
 import { ItemTypes } from '@/constants';
 
 const TrashZone = memo(({ onDrop, className = '', minimal = false }) => {

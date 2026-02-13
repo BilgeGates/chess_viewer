@@ -1,1 +1,1 @@
-export { default as BoardGrid } from './BoardGrid';
+export { default } from './BoardGrid.jsx';

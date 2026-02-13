@@ -27,8 +27,8 @@ const AboutPage = () => {
             About
           </h1>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto leading-relaxed">
-            Professional chess diagram generator for players, coaches, and
-            content creators
+            Professional FENForsty Pro for players, coaches, and content
+            creators
           </p>
         </div>
 

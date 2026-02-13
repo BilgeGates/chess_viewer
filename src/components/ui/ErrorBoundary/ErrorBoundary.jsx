@@ -1,8 +1,6 @@
 import React from 'react';
-
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-
 import { logger } from '@/utils';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 function ErrorFallback(props) {
   const { error, resetErrorBoundary } = props;

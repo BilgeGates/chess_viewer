@@ -1,6 +1,5 @@
-import { Palette } from 'lucide-react';
-
 import { Button } from '@/components/ui';
+import { Palette } from 'lucide-react';
 
 /**
  * Button to open theme customization.
