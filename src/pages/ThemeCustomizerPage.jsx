@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BOARD_THEMES } from '@/constants';
+import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '@/utils';
 import {
   ArrowLeft,
   Check,
@@ -14,10 +16,9 @@ import {
   Settings as SettingsIcon,
   RotateCcw,
   Download,
-  Upload
+  Upload,
+  Save
 } from 'lucide-react';
-import { BOARD_THEMES } from '@/constants';
-import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '@/utils';
 
 const MAX_TOTAL_PRESETS = 48;
 const STANDARD_PRESETS_COUNT = 19;
@@ -135,8 +136,8 @@ const BoardPreview = memo(({ light, dark }) => {
   const ranks = [8, 7, 6, 5, 4, 3, 2, 1];
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   return (
-    <div className="flex items-center justify-center min-h-0 h-full select-none">
-      <div className="inline-flex flex-col">
+    <div className="flex items-center justify-center min-h-0 h-full select-none p-4">
+      <div className="inline-flex flex-col bg-surface/30 p-6 rounded-2xl border border-border/30 shadow-2xl backdrop-blur-sm">
         <div className="flex">
           <div
             className="flex flex-col flex-shrink-0"
@@ -145,7 +146,7 @@ const BoardPreview = memo(({ light, dark }) => {
             {ranks.map((n) => (
               <div
                 key={n}
-                className="flex items-center justify-center text-[12px] font-bold text-text-primary"
+                className="flex items-center justify-center text-[13px] font-bold text-text-primary/80"
                 style={{ height: CELL_SIZE_EXPR }}
               >
                 {n}
@@ -153,7 +154,7 @@ const BoardPreview = memo(({ light, dark }) => {
             ))}
           </div>
           <div
-            className="grid grid-cols-8 overflow-hidden border border-border"
+            className="grid grid-cols-8 overflow-hidden border-2 border-border/50 shadow-xl rounded-lg"
             style={{
               width: BOARD_SIZE_EXPR,
               height: BOARD_SIZE_EXPR,
@@ -167,7 +168,7 @@ const BoardPreview = memo(({ light, dark }) => {
               return (
                 <div
                   key={`sq-${row}-${col}`}
-                  className="transition-colors duration-200"
+                  className="transition-colors duration-300"
                   style={{
                     backgroundColor: isLight ? light : dark,
                     outline: '1px solid transparent'
@@ -181,7 +182,7 @@ const BoardPreview = memo(({ light, dark }) => {
           {files.map((l) => (
             <div
               key={l}
-              className="text-[12px] font-bold text-text-primary text-center mt-1"
+              className="text-[13px] font-bold text-text-primary/80 text-center mt-2"
               style={{ width: CELL_SIZE_EXPR }}
             >
               {l}
@@ -220,10 +221,10 @@ const PresetCard = memo(
         onDragOver={onDragOver}
         onDrop={(e) => onDrop?.(e, preset)}
         aria-label={`Apply ${preset.name} theme`}
-        className={`group relative rounded-lg transition-all duration-200 overflow-hidden ${isActive ? 'ring-2 ring-accent shadow-md scale-[1.02]' : 'hover:scale-[1.03] hover:shadow-sm'} ${editMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        className={`group relative rounded-xl transition-all duration-300 overflow-hidden ${isActive ? 'ring-2 ring-accent shadow-lg scale-[1.05]' : 'hover:scale-[1.06] hover:shadow-md'} ${editMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
       >
-        <div className="relative overflow-hidden rounded-lg">
-          <div className="flex w-full h-12" aria-hidden="true">
+        <div className="relative overflow-hidden rounded-xl border border-white/10">
+          <div className="flex w-full h-14" aria-hidden="true">
             <div
               className="flex-1 transition-colors duration-300"
               style={{ backgroundColor: preset.light }}
@@ -235,19 +236,20 @@ const PresetCard = memo(
           </div>
           {!editMode && (
             <div
-              className="absolute inset-0 bg-black/60 flex items-center justify-center transition-transform duration-300"
+              className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70 flex items-center justify-center transition-all duration-300"
               style={{
-                transform: hovered ? 'translateX(0)' : 'translateX(100%)'
+                transform: hovered ? 'translateX(0)' : 'translateX(100%)',
+                opacity: hovered ? 1 : 0
               }}
             >
-              <span className="text-white text-[10px] font-bold tracking-wide px-1 text-center">
+              <span className="text-white text-[11px] font-extrabold tracking-wide px-2 text-center drop-shadow-md">
                 {preset.name}
               </span>
             </div>
           )}
           {isActive && !editMode && (
-            <div className="absolute top-1 right-1 w-4 h-4 bg-accent rounded-full flex items-center justify-center shadow">
-              <Check className="w-2.5 h-2.5 text-bg" strokeWidth={3} />
+            <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-accent rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 animate-in zoom-in duration-200">
+              <Check className="w-3 h-3 text-bg" strokeWidth={3} />
             </div>
           )}
         </div>
@@ -295,11 +297,11 @@ const AddPresetCard = memo(({ onClick, disabled }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label="Add new preset"
-      className={`group relative rounded-lg transition-all duration-200 overflow-hidden border-2 border-dashed ${disabled ? 'border-border/30 opacity-50 cursor-not-allowed' : 'border-border/60 hover:border-accent/60 hover:scale-[1.03]'}`}
+      className={`group relative rounded-xl transition-all duration-300 overflow-hidden border-2 border-dashed ${disabled ? 'border-border/30 opacity-50 cursor-not-allowed' : 'border-border/70 hover:border-accent/70 hover:scale-[1.06] hover:shadow-md'}`}
     >
-      <div className="relative overflow-hidden rounded-md">
-        <div className="flex w-full h-12 bg-surface items-center justify-center">
-          <Plus className="w-4 h-4 text-text-muted/50 group-hover:text-accent transition-colors" />
+      <div className="relative overflow-hidden rounded-xl">
+        <div className="flex w-full h-14 bg-surface/50 items-center justify-center">
+          <Plus className="w-5 h-5 text-text-muted/60 group-hover:text-accent transition-all duration-200 group-hover:scale-110" />
         </div>
         {!disabled && (
           <div
@@ -326,11 +328,11 @@ const CustomEntryCard = memo(({ isActive, onClick }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label="Create custom theme"
-      className={`group relative rounded-lg transition-all duration-200 overflow-hidden ${isActive ? 'ring-2 ring-accent shadow-md scale-[1.02]' : 'hover:scale-[1.03] hover:shadow-sm'}`}
+      className={`group relative rounded-xl transition-all duration-300 overflow-hidden ${isActive ? 'ring-2 ring-accent shadow-lg scale-[1.05]' : 'hover:scale-[1.06] hover:shadow-md'}`}
     >
-      <div className="relative overflow-hidden rounded-lg">
+      <div className="relative overflow-hidden rounded-xl border border-white/10">
         <div
-          className="flex w-full h-12"
+          className="flex w-full h-14"
           style={{
             background:
               'linear-gradient(135deg, #f43f5e 0%, #a855f7 25%, #3b82f6 50%, #22d3ee 75%, #f59e0b 100%)'
@@ -338,15 +340,20 @@ const CustomEntryCard = memo(({ isActive, onClick }) => {
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-black/60 flex items-center justify-center transition-transform duration-300"
-          style={{ transform: hovered ? 'translateX(0)' : 'translateX(100%)' }}
+          className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70 flex items-center justify-center transition-all duration-300"
+          style={{
+            transform: hovered ? 'translateX(0)' : 'translateX(100%)',
+            opacity: hovered ? 1 : 0
+          }}
         >
-          <Wand2 className="w-3 h-3 text-white mr-1" />
-          <span className="text-white text-[10px] font-bold">Custom</span>
+          <Wand2 className="w-3.5 h-3.5 text-white mr-1" />
+          <span className="text-white text-[11px] font-extrabold drop-shadow-md">
+            Custom
+          </span>
         </div>
         {isActive && (
-          <div className="absolute top-1 right-1 w-4 h-4 bg-accent rounded-full flex items-center justify-center shadow">
-            <Check className="w-2.5 h-2.5 text-bg" strokeWidth={3} />
+          <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-accent rounded-full flex items-center justify-center shadow-lg border-2 border-white/20 animate-in zoom-in duration-200">
+            <Check className="w-3 h-3 text-bg" strokeWidth={3} />
           </div>
         )}
       </div>
@@ -355,183 +362,206 @@ const CustomEntryCard = memo(({ isActive, onClick }) => {
 });
 CustomEntryCard.displayName = 'CustomEntryCard';
 
-const CustomTab = memo(({ currentLight, currentDark, onColorChange }) => {
-  const [activeSquare, setActiveSquare] = useState('light');
-  const canvasRef = useRef(null);
-  const isDragging = useRef(false);
-  const currentValue = activeSquare === 'light' ? currentLight : currentDark;
-  const [tempColor, setTempColor] = useState(currentValue);
+const CustomTab = memo(
+  ({
+    currentLight,
+    currentDark,
+    onColorChange,
+    themeName,
+    onThemeNameChange,
+    isEditMode
+  }) => {
+    const [activeSquare, setActiveSquare] = useState('light');
+    const canvasRef = useRef(null);
+    const isDragging = useRef(false);
+    const currentValue = activeSquare === 'light' ? currentLight : currentDark;
+    const [tempColor, setTempColor] = useState(currentValue);
 
-  useEffect(() => {
-    setTempColor(currentValue);
-  }, [currentValue]);
+    useEffect(() => {
+      setTempColor(currentValue);
+    }, [currentValue]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width,
-      h = canvas.height;
-    const rgb = hexToRgb(tempColor);
-    if (!rgb) return;
-    const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-    const hueRgb = hsvToRgb(hsv.h, 100, 100);
-    const gH = ctx.createLinearGradient(0, 0, w, 0);
-    gH.addColorStop(0, 'white');
-    gH.addColorStop(1, `rgb(${hueRgb.r},${hueRgb.g},${hueRgb.b})`);
-    ctx.fillStyle = gH;
-    ctx.fillRect(0, 0, w, h);
-    const gV = ctx.createLinearGradient(0, 0, 0, h);
-    gV.addColorStop(0, 'rgba(0,0,0,0)');
-    gV.addColorStop(1, 'rgba(0,0,0,1)');
-    ctx.fillStyle = gV;
-    ctx.fillRect(0, 0, w, h);
-  }, [tempColor]);
-
-  const pickColorAt = useCallback(
-    (e) => {
+    useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.max(
-        0,
-        Math.min(
-          canvas.width - 1,
-          ((e.clientX - rect.left) / rect.width) * canvas.width
-        )
-      );
-      const y = Math.max(
-        0,
-        Math.min(
-          canvas.height - 1,
-          ((e.clientY - rect.top) / rect.height) * canvas.height
-        )
-      );
       const ctx = canvas.getContext('2d');
-      const [r, g, b] = ctx.getImageData(x, y, 1, 1).data;
-      const newColor = rgbToHex(r, g, b);
-      setTempColor(newColor);
-      if (activeSquare === 'light') onColorChange(newColor, currentDark);
-      else onColorChange(currentLight, newColor);
-    },
-    [activeSquare, currentLight, currentDark, onColorChange]
-  );
-
-  const handleCanvasMouseDown = useCallback(
-    (e) => {
-      isDragging.current = true;
-      pickColorAt(e);
-    },
-    [pickColorAt]
-  );
-  const handleCanvasMouseMove = useCallback(
-    (e) => {
-      if (isDragging.current) pickColorAt(e);
-    },
-    [pickColorAt]
-  );
-  const handleCanvasMouseUp = useCallback(() => {
-    isDragging.current = false;
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('mouseup', handleCanvasMouseUp);
-    return () => window.removeEventListener('mouseup', handleCanvasMouseUp);
-  }, [handleCanvasMouseUp]);
-
-  const handleHueChange = useCallback(
-    (e) => {
-      const hue = parseFloat(e.target.value);
+      const w = canvas.width,
+        h = canvas.height;
       const rgb = hexToRgb(tempColor);
       if (!rgb) return;
       const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-      const newRgb = hsvToRgb(hue, hsv.s, hsv.v);
-      const newColor = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
-      setTempColor(newColor);
-      if (activeSquare === 'light') onColorChange(newColor, currentDark);
-      else onColorChange(currentLight, newColor);
-    },
-    [tempColor, activeSquare, currentLight, currentDark, onColorChange]
-  );
+      const hueRgb = hsvToRgb(hsv.h, 100, 100);
+      const gH = ctx.createLinearGradient(0, 0, w, 0);
+      gH.addColorStop(0, 'white');
+      gH.addColorStop(1, `rgb(${hueRgb.r},${hueRgb.g},${hueRgb.b})`);
+      ctx.fillStyle = gH;
+      ctx.fillRect(0, 0, w, h);
+      const gV = ctx.createLinearGradient(0, 0, 0, h);
+      gV.addColorStop(0, 'rgba(0,0,0,0)');
+      gV.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = gV;
+      ctx.fillRect(0, 0, w, h);
+    }, [tempColor]);
 
-  const getCurrentHue = useCallback(() => {
-    const rgb = hexToRgb(tempColor);
-    return rgb ? rgbToHsv(rgb.r, rgb.g, rgb.b).h : 0;
-  }, [tempColor]);
+    const pickColorAt = useCallback(
+      (e) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.max(
+          0,
+          Math.min(
+            canvas.width - 1,
+            ((e.clientX - rect.left) / rect.width) * canvas.width
+          )
+        );
+        const y = Math.max(
+          0,
+          Math.min(
+            canvas.height - 1,
+            ((e.clientY - rect.top) / rect.height) * canvas.height
+          )
+        );
+        const ctx = canvas.getContext('2d');
+        const [r, g, b] = ctx.getImageData(x, y, 1, 1).data;
+        const newColor = rgbToHex(r, g, b);
+        setTempColor(newColor);
+        if (activeSquare === 'light') onColorChange(newColor, currentDark);
+        else onColorChange(currentLight, newColor);
+      },
+      [activeSquare, currentLight, currentDark, onColorChange]
+    );
 
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2 p-1 bg-surface rounded-lg border border-border">
-        {['light', 'dark'].map((sq) => (
-          <button
-            key={sq}
-            onClick={() => setActiveSquare(sq)}
-            className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${activeSquare === sq ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
+    const handleCanvasMouseDown = useCallback(
+      (e) => {
+        isDragging.current = true;
+        pickColorAt(e);
+      },
+      [pickColorAt]
+    );
+    const handleCanvasMouseMove = useCallback(
+      (e) => {
+        if (isDragging.current) pickColorAt(e);
+      },
+      [pickColorAt]
+    );
+    const handleCanvasMouseUp = useCallback(() => {
+      isDragging.current = false;
+    }, []);
+
+    useEffect(() => {
+      window.addEventListener('mouseup', handleCanvasMouseUp);
+      return () => window.removeEventListener('mouseup', handleCanvasMouseUp);
+    }, [handleCanvasMouseUp]);
+
+    const handleHueChange = useCallback(
+      (e) => {
+        const hue = parseFloat(e.target.value);
+        const rgb = hexToRgb(tempColor);
+        if (!rgb) return;
+        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+        const newRgb = hsvToRgb(hue, hsv.s, hsv.v);
+        const newColor = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+        setTempColor(newColor);
+        if (activeSquare === 'light') onColorChange(newColor, currentDark);
+        else onColorChange(currentLight, newColor);
+      },
+      [tempColor, activeSquare, currentLight, currentDark, onColorChange]
+    );
+
+    const getCurrentHue = useCallback(() => {
+      const rgb = hexToRgb(tempColor);
+      return rgb ? rgbToHsv(rgb.r, rgb.g, rgb.b).h : 0;
+    }, [tempColor]);
+
+    return (
+      <div className="flex flex-col gap-4">
+        {isEditMode && (
+          <div className="bg-surface rounded-lg p-3 border border-border">
+            <label className="block text-xs font-bold text-text-secondary mb-2">
+              Theme Name
+            </label>
+            <input
+              type="text"
+              value={themeName || ''}
+              onChange={(e) => onThemeNameChange?.(e.target.value)}
+              placeholder="Enter theme name..."
+              className="w-full px-3 py-2 bg-surface-elevated border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
+            />
+          </div>
+        )}
+        <div className="flex gap-2 p-1 bg-surface rounded-lg border border-border">
+          {['light', 'dark'].map((sq) => (
+            <button
+              key={sq}
+              onClick={() => setActiveSquare(sq)}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${activeSquare === sq ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
+            >
+              <div
+                className="w-4 h-4 rounded border border-white/20 shadow-sm"
+                style={{
+                  backgroundColor: sq === 'light' ? currentLight : currentDark
+                }}
+              />
+              {sq.charAt(0).toUpperCase() + sq.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div className="bg-surface rounded-lg p-3 border border-border">
+          <canvas
+            ref={canvasRef}
+            width={280}
+            height={140}
+            onMouseDown={handleCanvasMouseDown}
+            onMouseMove={handleCanvasMouseMove}
+            className="w-full rounded-md cursor-crosshair border border-border/50"
+            style={{ touchAction: 'none' }}
+          />
+        </div>
+        <div className="bg-surface rounded-lg p-3 border border-border">
+          <div className="flex justify-between text-xs text-text-muted mb-2">
+            <span className="font-bold">Hue</span>
+            <span className="font-mono bg-surface-elevated px-2 py-0.5 rounded text-[10px]">
+              {Math.round(getCurrentHue())}°
+            </span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="360"
+            value={getCurrentHue()}
+            onChange={handleHueChange}
+            className="w-full h-3 rounded-full cursor-pointer appearance-none"
+            style={{
+              background:
+                'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)'
+            }}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div
+            className={`flex items-center gap-2 p-2 rounded-lg border ${activeSquare === 'light' ? 'border-accent bg-accent/5' : 'border-border bg-surface'}`}
           >
             <div
-              className="w-4 h-4 rounded border border-white/20 shadow-sm"
-              style={{
-                backgroundColor: sq === 'light' ? currentLight : currentDark
-              }}
+              className="w-8 h-8 rounded shadow border border-white/10"
+              style={{ backgroundColor: currentLight }}
             />
-            {sq.charAt(0).toUpperCase() + sq.slice(1)}
-          </button>
-        ))}
-      </div>
-      <div className="bg-surface rounded-lg p-3 border border-border">
-        <canvas
-          ref={canvasRef}
-          width={280}
-          height={180}
-          onMouseDown={handleCanvasMouseDown}
-          onMouseMove={handleCanvasMouseMove}
-          className="w-full rounded-md cursor-crosshair border border-border/50"
-          style={{ touchAction: 'none' }}
-        />
-      </div>
-      <div className="bg-surface rounded-lg p-3 border border-border">
-        <div className="flex justify-between text-xs text-text-muted mb-2">
-          <span className="font-bold">Hue</span>
-          <span className="font-mono bg-surface-elevated px-2 py-0.5 rounded text-[10px]">
-            {Math.round(getCurrentHue())}°
-          </span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="360"
-          value={getCurrentHue()}
-          onChange={handleHueChange}
-          className="w-full h-3 rounded-full cursor-pointer appearance-none"
-          style={{
-            background:
-              'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)'
-          }}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div
-          className={`flex items-center gap-2 p-2 rounded-lg border ${activeSquare === 'light' ? 'border-accent bg-accent/5' : 'border-border bg-surface'}`}
-        >
+            <span className="text-xs font-bold text-text-secondary">Light</span>
+          </div>
           <div
-            className="w-8 h-8 rounded shadow border border-white/10"
-            style={{ backgroundColor: currentLight }}
-          />
-          <span className="text-xs font-bold text-text-secondary">Light</span>
-        </div>
-        <div
-          className={`flex items-center gap-2 p-2 rounded-lg border ${activeSquare === 'dark' ? 'border-accent bg-accent/5' : 'border-border bg-surface'}`}
-        >
-          <div
-            className="w-8 h-8 rounded shadow border border-white/10"
-            style={{ backgroundColor: currentDark }}
-          />
-          <span className="text-xs font-bold text-text-secondary">Dark</span>
+            className={`flex items-center gap-2 p-2 rounded-lg border ${activeSquare === 'dark' ? 'border-accent bg-accent/5' : 'border-border bg-surface'}`}
+          >
+            <div
+              className="w-8 h-8 rounded shadow border border-white/10"
+              style={{ backgroundColor: currentDark }}
+            />
+            <span className="text-xs font-bold text-text-secondary">Dark</span>
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 CustomTab.displayName = 'CustomTab';
 
 const SettingsTab = memo(
@@ -670,11 +700,12 @@ const ThemeCustomizerPage = memo(() => {
   const [editMode, setEditMode] = useState(false);
   const [editingPresetId, setEditingPresetId] = useState(null);
   const [draggedPreset, setDraggedPreset] = useState(null);
+  const [customThemeName, setCustomThemeName] = useState('');
 
   const isCustomActive = !presets.some(
     (p) => p.light === previewLight && p.dark === previewDark
   );
-  const hasChanges = previewLight !== savedLight || previewDark !== savedDark;
+
   const totalPages = Math.ceil((presets.length + 1) / PRESETS_PER_PAGE);
   const startIndex = (currentPage - 1) * PRESETS_PER_PAGE;
   const endIndex = startIndex + PRESETS_PER_PAGE;
@@ -719,6 +750,7 @@ const ThemeCustomizerPage = memo(() => {
     };
     setPresets((prev) => [...prev, newPreset]);
     setEditingPresetId(newPreset.id);
+    setCustomThemeName(newPreset.name);
     setRightTab('custom');
   }, [canAddPreset, presets, previewLight, previewDark]);
 
@@ -760,6 +792,7 @@ const ThemeCustomizerPage = memo(() => {
     setEditingPresetId(preset.id);
     setPreviewLight(preset.light);
     setPreviewDark(preset.dark);
+    setCustomThemeName(preset.name || '');
     setRightTab('custom');
   }, []);
 
@@ -770,11 +803,13 @@ const ThemeCustomizerPage = memo(() => {
       if (editingPresetId !== null)
         setPresets((prev) =>
           prev.map((p) =>
-            p.id === editingPresetId ? { ...p, light, dark } : p
+            p.id === editingPresetId
+              ? { ...p, light, dark, name: customThemeName || p.name }
+              : p
           )
         );
     },
-    [editingPresetId]
+    [editingPresetId, customThemeName]
   );
 
   const handleSave = useCallback(() => {
@@ -923,16 +958,14 @@ const ThemeCustomizerPage = memo(() => {
                   <span className="hidden sm:inline">Apply</span>
                 </button>
               )}
-              {!editMode && (
-                <button
-                  onClick={handleSave}
-                  disabled={!hasChanges}
-                  className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${hasChanges ? 'bg-accent hover:bg-accent-hover text-bg shadow-md active:scale-95' : 'bg-surface-elevated text-text-muted cursor-not-allowed opacity-50'}`}
-                >
-                  <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="hidden xs:inline">Save</span>
-                </button>
-              )}
+              <button
+                onClick={handleSave}
+                className="flex-shrink-0 px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 bg-warning hover:bg-warning/90 text-bg shadow-md active:scale-95"
+                aria-label="Save and close"
+              >
+                <Save className="w-4 h-4" />
+                <span className="hidden sm:inline">Save</span>
+              </button>
             </div>
           </div>
         </div>
@@ -941,54 +974,56 @@ const ThemeCustomizerPage = memo(() => {
         <div className="h-full px-3 sm:px-4 lg:px-6 py-4 sm:py-5 max-w-7xl mx-auto">
           <div className="h-full flex flex-col bg-surface-elevated rounded-lg border border-border/50 overflow-hidden">
             <div className="flex-1 grid lg:grid-cols-[1fr,1fr] gap-0 overflow-hidden">
-              <div className="p-6 border-r border-border/30 flex items-center justify-center">
+              <div className="p-8 border-r border-border/30 bg-gradient-to-br from-surface/30 to-surface/10 flex items-center justify-center">
                 <BoardPreview light={previewLight} dark={previewDark} />
               </div>
-              <div className="flex flex-col min-h-0 overflow-hidden">
-                <div className="flex-shrink-0 p-4 pb-0">
-                  <div className="flex gap-1 p-1 bg-surface rounded-lg border border-border/50">
+              <div className="flex flex-col min-h-0 overflow-hidden bg-surface/20">
+                <div className="flex-shrink-0 p-5 pb-0">
+                  <div className="flex gap-1.5 p-1.5 bg-surface/80 rounded-xl border border-border/50 shadow-sm backdrop-blur-sm">
                     <button
                       onClick={() => {
                         setRightTab('main');
                         setEditingPresetId(null);
                       }}
-                      className={`flex-1 py-2 text-sm font-bold rounded-md transition-all flex items-center justify-center gap-1.5 ${rightTab === 'main' ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${rightTab === 'main' ? 'bg-accent text-bg shadow-md scale-105' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
                     >
                       <Palette className="w-4 h-4" />
-                      Main
+                      <span>Main</span>
                     </button>
                     <button
                       onClick={() => setRightTab('custom')}
-                      className={`flex-1 py-2 text-sm font-bold rounded-md transition-all flex items-center justify-center gap-1.5 ${rightTab === 'custom' ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${rightTab === 'custom' ? 'bg-accent text-bg shadow-md scale-105' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
                     >
                       <Wand2 className="w-4 h-4" />
-                      Custom
+                      <span>Custom</span>
                     </button>
                     <button
                       onClick={() => setRightTab('settings')}
-                      className={`flex-1 py-2 text-sm font-bold rounded-md transition-all flex items-center justify-center gap-1.5 ${rightTab === 'settings' ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${rightTab === 'settings' ? 'bg-accent text-bg shadow-md scale-105' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
                     >
                       <SettingsIcon className="w-4 h-4" />
-                      Settings
+                      <span>Settings</span>
                     </button>
                   </div>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 pt-3">
+                <div className="flex-1 overflow-y-auto p-5 pt-4">
                   {rightTab === 'main' && (
                     <>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Palette className="w-4 h-4 text-accent" />
-                        <h2 className="text-sm font-bold text-text-primary">
+                      <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-border/30">
+                        <div className="p-2 bg-accent/10 rounded-lg border border-accent/20">
+                          <Palette className="w-4 h-4 text-accent" />
+                        </div>
+                        <h2 className="text-base font-bold text-text-primary">
                           {editMode ? 'Edit Presets' : 'Theme Presets'}
                         </h2>
                         {editMode && (
-                          <span className="ml-auto text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20">
+                          <span className="ml-auto text-[11px] font-extrabold text-accent bg-accent/15 px-3 py-1 rounded-full border border-accent/30 shadow-sm">
                             Edit Mode
                           </span>
                         )}
                       </div>
                       <div
-                        className="grid grid-cols-4 gap-2"
+                        className="grid grid-cols-4 gap-3"
                         role="group"
                         aria-label="Theme preset options"
                       >
@@ -1058,6 +1093,9 @@ const ThemeCustomizerPage = memo(() => {
                             ? handleEditColorChange
                             : handleCustomColorChange
                         }
+                        themeName={customThemeName}
+                        onThemeNameChange={setCustomThemeName}
+                        isEditMode={editMode && editingPresetId !== null}
                       />
                     </div>
                   )}
