@@ -1,6 +1,6 @@
 import { memo, useState, useEffect, useRef, useCallback } from 'react';
-import { Sliders } from 'lucide-react';
 import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '@/utils';
+import { Sliders } from 'lucide-react';
 
 const ThemeAdvancedPickerView = memo(
   ({
