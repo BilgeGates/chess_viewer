@@ -1,11 +1,12 @@
+// Internal utilities
 import {
-  createUltraQualityCanvas,
   calculateExportSize,
+  createUltraQualityCanvas,
+  estimateFileSizes,
+  getExportMode,
   getMaxCanvasSize,
   sanitizeFileName,
-  getExportMode,
-  shouldForceCoordinateBorder,
-  estimateFileSizes
+  shouldForceCoordinateBorder
 } from './';
 
 let exportState = {
@@ -107,13 +108,13 @@ export function getExportInfo(config) {
     exportWidth: exportSize.width,
     exportHeight: exportSize.height,
     requestedQuality: exportQuality,
-    actualQuality: exportSize.actualQuality,
+    actualQuality: exportSize.scaleFactor,
     maxCanvasSize: maxSize,
     willBeReduced: exportSize.width > maxSize || exportSize.height > maxSize,
     fileSizeEstimate: fileSizes,
     mode: mode,
-    physicalSizeCm: exportSize.baseSizeCm,
-    effectiveDPI: exportSize.dpi,
+    physicalSizeCm: exportSize.physicalSizeCm,
+    effectiveDPI: exportSize.effectiveDPI,
     forceCoordinateBorder: shouldForceCoordinateBorder(exportQuality)
   };
 }
