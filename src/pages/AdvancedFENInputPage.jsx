@@ -9,10 +9,10 @@ import {
 } from '@/components/features';
 import { PieceSelector } from '@/components/features/Fen';
 import { ThemeSelector } from '@/components/features/Theme';
-import { useChessBoard, usePieceImages, useTheme } from '@/hooks';
-import { useFENBatch } from '@/contexts';
-import { validateFEN, logger } from '@/utils';
 import { ADVANCED_FEN_CONFIG } from '@/constants';
+import { useFENBatch } from '@/contexts';
+import { useChessBoard, usePieceImages, useTheme } from '@/hooks';
+import { validateFEN, logger } from '@/utils';
 import {
   ArrowLeft,
   Trash2,
@@ -27,7 +27,8 @@ import {
   Eye,
   Heart,
   Copy,
-  FlipVertical2
+  FlipVertical2,
+  Save
 } from 'lucide-react';
 
 const {
@@ -311,8 +312,18 @@ const AdvancedFENInputPage = memo(
     }, [location.state, fens]);
 
     const handleBack = useCallback(() => {
+      // Ensure all settings are saved before closing
+      try {
+        localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(favorites));
+        localStorage.setItem(
+          'advanced-fen-position-settings',
+          JSON.stringify(positionSettings)
+        );
+      } catch (err) {
+        logger.warn('Failed to save settings:', err);
+      }
       navigate(-1);
-    }, [navigate]);
+    }, [navigate, favorites, positionSettings]);
 
     const removeFenInput = (index) => {
       // Only remove if index is within batch list
@@ -496,15 +507,25 @@ const AdvancedFENInputPage = memo(
                 </span>
               </div>
 
-              {hasValidFens && (
+              <div className="flex items-center gap-3">
+                {hasValidFens && (
+                  <button
+                    onClick={handleApply}
+                    className="px-6 py-2.5 bg-accent hover:bg-accent-hover text-bg rounded-xl font-semibold transition-all shadow-glow-sm flex items-center gap-2"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Apply Current</span>
+                  </button>
+                )}
                 <button
-                  onClick={handleApply}
-                  className="px-6 py-2.5 bg-accent hover:bg-accent-hover text-bg rounded-xl font-semibold transition-all shadow-glow-sm flex items-center gap-2"
+                  onClick={handleBack}
+                  className="px-6 py-2.5 bg-warning hover:bg-warning/90 text-bg rounded-xl font-semibold transition-all shadow-glow-sm flex items-center gap-2"
+                  aria-label="Save and close"
                 >
-                  <Check className="w-4 h-4" />
-                  <span>Apply Current</span>
+                  <Save className="w-4 h-4" />
+                  <span>Save</span>
                 </button>
-              )}
+              </div>
             </div>
           </div>
         </header>
