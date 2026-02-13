@@ -1,4 +1,4 @@
-# Chess Viewer - Professional chess diagram generator
+# FENForsty Pro - Professional FENForsty Pro
 # https://chess-viewer-site.vercel.app
 
 User-agent: *
