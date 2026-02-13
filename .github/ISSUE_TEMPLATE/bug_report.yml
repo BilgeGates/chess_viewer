@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug or issue with Chess Diagram Generator
+description: Report a bug or issue with FENForsty Pro
 title: '[Bug]: '
 labels: ['bug', 'needs-triage']
 assignees:
@@ -11,7 +11,7 @@ body:
       value: |
         ## 🐛 Thanks for reporting a bug!
 
-        Your feedback helps us improve Chess Diagram Generator. Please provide detailed information about the issue you encountered.
+        Your feedback helps us improve FENForsty Pro. Please provide detailed information about the issue you encountered.
 
         **Before submitting:**
         - Search existing issues to avoid duplicates
@@ -246,3 +246,4 @@ body:
         - Using VPN connection
         - Have Dark Reader extension enabled
         - Custom board size set to 1200px
+
