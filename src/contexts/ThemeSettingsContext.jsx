@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback
-} from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 
 const ThemeSettingsContext = createContext(null);
 
@@ -155,16 +149,6 @@ export const ThemeSettingsProvider = ({ children }) => {
       {children}
     </ThemeSettingsContext.Provider>
   );
-};
-
-export const useThemeSettings = () => {
-  const context = useContext(ThemeSettingsContext);
-  if (!context) {
-    throw new Error(
-      'useThemeSettings must be used within a ThemeSettingsProvider'
-    );
-  }
-  return context;
 };
 
 export default ThemeSettingsContext;
