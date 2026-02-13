@@ -1,10 +1,11 @@
-# Chess Diagram Generator - Roadmap
+# FENForsty Pro - Roadmap
 
 Potential future features. No timeline commitments.
 
 ---
 
 ## Implemented (v3.5.2)
+
 - FEN parsing and validation
 - Canvas board rendering
 - PNG/JPEG export (up to 12,800x12,800px)
@@ -25,11 +26,13 @@ Potential future features. No timeline commitments.
 ## Not Yet Implemented
 
 ### Low Effort
+
 - [ ] Dark mode toggle
 - [ ] URL-based position sharing (?fen=...)
 - [ ] Keyboard shortcuts
 
 ### Medium Effort
+
 - [ ] SVG export
 - [ ] Custom piece set upload
 - [ ] Undo/redo for board edits
@@ -37,6 +40,7 @@ Potential future features. No timeline commitments.
 - [ ] PGN import
 
 ### High Effort
+
 - [ ] Screen reader accessibility
 - [ ] Offline mode (PWA)
 - [ ] Position database
@@ -46,6 +50,7 @@ Potential future features. No timeline commitments.
 ---
 
 ## Known Technical Debt
+
 - Canvas not accessible to screen readers
 - No unit test coverage
 - Export memory issues on Safari/iOS
@@ -55,6 +60,7 @@ Potential future features. No timeline commitments.
 ---
 
 ## Not Planned
+
 - Move animation
 - Game analysis
 - Backend/database
