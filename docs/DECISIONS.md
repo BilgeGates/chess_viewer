@@ -20,14 +20,18 @@ Records of key architectural and technical decisions.
 ## Overview
 
 ### Purpose
+
 This document serves as a historical record of architectural decisions, providing context for:
+
 - Why certain technologies were chosen
 - Trade-offs that were considered
 - Alternative approaches that were rejected
 - Lessons learned during development
 
 ### Decision Format
+
 Each decision follows this structure:
+
 - **Status:** Accepted / Rejected / Deprecated / Superseded
 - **Context:** What problem are we solving?
 - **Decision:** What did we decide?
@@ -39,17 +43,22 @@ Each decision follows this structure:
 ## Decision Log
 
 ### ADR-001: Use React for UI Framework
+
 **Date:** 2025-12-27  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need a modern, performant framework for building an interactive chess board application with complex state management.
 
 #### Decision
+
 Use React 18+ (built with React 19.x) as the primary UI framework.
 
 #### Consequences
+
 **Positive:**
+
 - Large ecosystem and community support
 - Excellent performance with hooks and memoization
 - Strong TypeScript support (future-ready)
@@ -57,11 +66,13 @@ Use React 18+ (built with React 19.x) as the primary UI framework.
 - Rich developer tools
 
 **Negative:**
+
 - Learning curve for contributors unfamiliar with React
 - Bundle size larger than vanilla JS
 - Runtime overhead compared to compiled frameworks
 
 #### Alternatives Considered
+
 1. **Vue.js** - Rejected: Smaller ecosystem, team more familiar with React
 2. **Svelte** - Rejected: Less mature ecosystem, harder to find contributors
 3. **Vanilla JavaScript** - Rejected: Would require building own state management
@@ -69,17 +80,22 @@ Use React 18+ (built with React 19.x) as the primary UI framework.
 ---
 
 ### ADR-002: Use HTML5 Canvas for Board Rendering
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need to render chess boards that can be exported as high-quality images up to 12,800×12,800px.
 
 #### Decision
+
 Use HTML5 Canvas API instead of DOM-based rendering (SVG or HTML elements).
 
 #### Consequences
+
 **Positive:**
+
 - Direct pixel manipulation for exports
 - Better performance for high-resolution rendering
 - Easier image export (toBlob, toDataURL)
@@ -87,17 +103,20 @@ Use HTML5 Canvas API instead of DOM-based rendering (SVG or HTML elements).
 - Consistent rendering across browsers
 
 **Negative:**
+
 - Less accessible than DOM-based solutions
 - No built-in hover/click detection on pieces
 - Requires manual state management for interactions
 - Screen readers cannot directly access canvas content
 
 **Mitigation:**
+
 - Provide ARIA descriptions for board positions
 - Use semantic HTML around canvas
 - Future: Consider SVG option for accessibility
 
 #### Alternatives Considered
+
 1. **SVG** - Rejected: Harder to export as raster images, performance issues at high resolutions
 2. **DOM (div-based)** - Rejected: Poor export quality, performance issues with large boards
 3. **WebGL** - Rejected: Overkill for 2D chess board, browser compatibility concerns
@@ -105,17 +124,22 @@ Use HTML5 Canvas API instead of DOM-based rendering (SVG or HTML elements).
 ---
 
 ### ADR-003: Zero-Backend Architecture
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
-Users need a chess diagram generator without concerns about data privacy or requiring internet connectivity.
+
+Users need a FENForsty Pro without concerns about data privacy or requiring internet connectivity.
 
 #### Decision
+
 Build a completely client-side application with no backend server.
 
 #### Consequences
+
 **Positive:**
+
 - Complete user privacy - no data collection
 - Works offline after initial load
 - No hosting costs for backend
@@ -124,6 +148,7 @@ Build a completely client-side application with no backend server.
 - Easy to deploy (static hosting)
 
 **Negative:**
+
 - Cannot share positions between devices without manual export
 - No cloud storage for history/favorites
 - Limited to browser storage capacity
@@ -131,11 +156,13 @@ Build a completely client-side application with no backend server.
 - No usage analytics (intentional)
 
 **Mitigation:**
+
 - Use localStorage for persistence
 - Provide export/import functionality
 - Clear documentation about data storage
 
 #### Alternatives Considered
+
 1. **Backend with Database** - Rejected: Privacy concerns, complexity, hosting costs
 2. **Hybrid (Optional Backend)** - Rejected: Adds complexity, still requires maintenance
 3. **Peer-to-Peer** - Deferred: Interesting for future, but complex to implement
@@ -143,17 +170,22 @@ Build a completely client-side application with no backend server.
 ---
 
 ### ADR-004: Use Tailwind CSS for Styling
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need a scalable, maintainable styling solution that supports rapid UI development.
 
 #### Decision
+
 Use Tailwind CSS utility-first framework.
 
 #### Consequences
+
 **Positive:**
+
 - Rapid UI development with utility classes
 - Consistent design system
 - Small production bundle (PurgeCSS)
@@ -162,12 +194,14 @@ Use Tailwind CSS utility-first framework.
 - Responsive design made easy
 
 **Negative:**
+
 - Learning curve for utility-first approach
 - Verbose className attributes
 - Custom designs require Tailwind configuration
 - Harder to override styles in some cases
 
 #### Alternatives Considered
+
 1. **CSS Modules** - Rejected: More boilerplate, harder to maintain consistency
 2. **Styled Components** - Rejected: Runtime overhead, larger bundle
 3. **Vanilla CSS** - Rejected: Hard to maintain, no design system
@@ -175,33 +209,41 @@ Use Tailwind CSS utility-first framework.
 ---
 
 ### ADR-005: Client-Side FEN Parsing Only
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need to validate and parse FEN notation for chess positions.
 
 #### Decision
+
 Implement FEN parsing entirely in JavaScript on the client side.
 
 #### Consequences
+
 **Positive:**
+
 - No server dependency
 - Instant validation feedback
 - Works offline
 - Easy to test and debug
 
 **Negative:**
+
 - Cannot leverage server-side chess engines
 - Limited to FEN validation (no move validation)
 - All parsing logic in bundle
 
 **Trade-offs:**
+
 - Simple FEN parsing is lightweight (~2KB)
 - Full chess engine (chess.js) would add ~80KB
 - Current approach prioritizes simplicity over chess rules validation
 
 #### Alternatives Considered
+
 1. **Use chess.js library** - Rejected: Too heavy for our needs, we only need FEN parsing
 2. **Server-side validation** - Rejected: Conflicts with zero-backend architecture
 3. **WebAssembly chess engine** - Deferred: Interesting for future, adds complexity
@@ -209,17 +251,22 @@ Implement FEN parsing entirely in JavaScript on the client side.
 ---
 
 ### ADR-006: No Database, Use LocalStorage
+
 **Date:** 2025-12-29  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need to persist user preferences, history, and favorites across sessions.
 
 #### Decision
+
 Use browser localStorage API for all data persistence.
 
 #### Consequences
+
 **Positive:**
+
 - No backend required
 - Synchronous API (easier to use)
 - Available in all modern browsers
@@ -227,6 +274,7 @@ Use browser localStorage API for all data persistence.
 - Fast read/write operations
 
 **Negative:**
+
 - Data is device-specific (no sync)
 - Limited to ~5MB total storage
 - Can be cleared by user/browser
@@ -234,12 +282,14 @@ Use browser localStorage API for all data persistence.
 - No automatic backup
 
 **Best Practices:**
+
 - Limit history to 50 most recent positions
 - Compress favorites if list grows large
 - Provide export/import functionality
 - Handle localStorage quota exceeded errors
 
 #### Alternatives Considered
+
 1. **IndexedDB** - Rejected: Overkill for simple key-value storage
 2. **Cookies** - Rejected: Size limitations (4KB), sent with every request
 3. **SessionStorage** - Rejected: Doesn't persist across browser sessions
@@ -247,17 +297,22 @@ Use browser localStorage API for all data persistence.
 ---
 
 ### ADR-007: PNG and JPEG Export Only (v3.x)
+
 **Date:** 2025-12-29  
 **Status:** ✅ Accepted (SVG planned for v4.0)
 
 #### Context
+
 Users need to export chess diagrams in various formats for different use cases.
 
 #### Decision
+
 Support PNG and JPEG export formats initially, defer SVG to v4.0.
 
 #### Consequences
+
 **Positive:**
+
 - Raster formats work everywhere
 - Easy to implement with Canvas API
 - Predictable file sizes
@@ -265,18 +320,21 @@ Support PNG and JPEG export formats initially, defer SVG to v4.0.
 - JPEG provides size/quality trade-off
 
 **Negative:**
+
 - Not resolution-independent (SVG would be)
 - Large file sizes at ultra-HD resolutions
 - Cannot edit exported diagrams
 - No text searchability in exports
 
 **Rationale:**
+
 - 90% of use cases covered by PNG/JPEG
 - SVG export requires significant refactoring
 - Canvas → PNG/JPEG is straightforward
 - Can add SVG in future without breaking changes
 
 #### Alternatives Considered
+
 1. **SVG Only** - Rejected: Harder to implement, raster formats still needed
 2. **PDF Export** - Deferred: Requires additional library, less common use case
 3. **Multiple Formats at Once** - Deferred: Adds complexity to UI
@@ -284,17 +342,22 @@ Support PNG and JPEG export formats initially, defer SVG to v4.0.
 ---
 
 ### ADR-008: Piece Images from Lichess (SVG)
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need high-quality chess piece images that scale well and are open-source.
 
 #### Decision
+
 Use SVG piece sets from Lichess, which are MIT-licensed.
 
 #### Consequences
+
 **Positive:**
+
 - Excellent quality at any size
 - Open-source (MIT license)
 - Multiple style options (27+ sets)
@@ -303,17 +366,20 @@ Use SVG piece sets from Lichess, which are MIT-licensed.
 - Community-maintained and battle-tested
 
 **Negative:**
+
 - External dependency on Lichess design
 - Need to bundle all piece sets
 - SVG parsing overhead (minimal)
 
 **Implementation:**
+
 - Store SVG pieces in `/public/pieces/`
 - Organize by piece set name
 - Lazy load piece sets on demand
 - Cache loaded images in memory
 
 #### Alternatives Considered
+
 1. **Custom PNG Pieces** - Rejected: Poor scaling, large file sizes
 2. **Icon Fonts** - Rejected: Limited customization, accessibility issues
 3. **Unicode Chess Symbols** - Rejected: Inconsistent rendering across browsers/OS
@@ -321,17 +387,22 @@ Use SVG piece sets from Lichess, which are MIT-licensed.
 ---
 
 ### ADR-009: Single-Page Application (No Routing)
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Application is focused on a single task: creating chess diagrams.
 
 #### Decision
+
 Build as a single-page application without client-side routing.
 
 #### Consequences
+
 **Positive:**
+
 - Simpler architecture
 - Faster load time (no route code splitting)
 - Better user experience (no page reloads)
@@ -339,6 +410,7 @@ Build as a single-page application without client-side routing.
 - Smaller bundle size
 
 **Negative:**
+
 - No deep linking to specific boards/settings
 - Cannot bookmark specific states
 - Browser back button doesn't work as expected
@@ -347,6 +419,7 @@ Build as a single-page application without client-side routing.
 **Note:** Added basic static pages (About, Support) via separate HTML files.
 
 #### Alternatives Considered
+
 1. **React Router** - Rejected: Unnecessary for single-focused app
 2. **Multi-page site** - Rejected: Worse UX, more complex state management
 3. **Hash routing** - Rejected: Ugly URLs, still unnecessary complexity
@@ -354,17 +427,22 @@ Build as a single-page application without client-side routing.
 ---
 
 ### ADR-010: No Authentication System
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Zero-backend architecture means no user accounts or authentication.
 
 #### Decision
+
 Do not implement any authentication or user management system.
 
 #### Consequences
+
 **Positive:**
+
 - Maximum privacy for users
 - No password management
 - No security vulnerabilities from auth
@@ -372,6 +450,7 @@ Do not implement any authentication or user management system.
 - Simpler architecture
 
 **Negative:**
+
 - Cannot sync across devices
 - Cannot implement cloud features
 - No user-specific analytics
@@ -381,6 +460,7 @@ Do not implement any authentication or user management system.
 This decision aligns with our privacy-first approach and keeps the application simple and focused.
 
 #### Alternatives Considered
+
 1. **OAuth (Google/GitHub)** - Rejected: Conflicts with privacy-first philosophy
 2. **Anonymous IDs** - Rejected: Still tracking, requires backend
 3. **Optional Auth** - Rejected: Adds complexity, most users wouldn't use it
@@ -388,17 +468,22 @@ This decision aligns with our privacy-first approach and keeps the application s
 ---
 
 ### ADR-011: Vite as Build Tool
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need a modern, fast build tool that works well with React.
 
 #### Decision
+
 Use Vite instead of Create React App or Webpack.
 
 #### Consequences
+
 **Positive:**
+
 - Extremely fast HMR (Hot Module Replacement)
 - Modern ES modules in development
 - Optimized production builds
@@ -407,11 +492,13 @@ Use Vite instead of Create React App or Webpack.
 - Built-in TypeScript support
 
 **Negative:**
+
 - Newer tool (less Stack Overflow solutions)
 - Some plugins may not be available
 - Learning curve if familiar with Webpack
 
 #### Alternatives Considered
+
 1. **Create React App** - Rejected: Slower, webpack-based, being deprecated
 2. **Next.js** - Rejected: Overkill, includes SSR we don't need
 3. **Webpack directly** - Rejected: Too much configuration
@@ -419,17 +506,22 @@ Use Vite instead of Create React App or Webpack.
 ---
 
 ### ADR-012: No Analytics or Tracking
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Privacy-first approach requires decision on user analytics.
 
 #### Decision
+
 Do not implement any analytics, tracking, or telemetry.
 
 #### Consequences
+
 **Positive:**
+
 - Complete user privacy
 - No cookies/tracking consent needed
 - Faster page load (no tracking scripts)
@@ -437,6 +529,7 @@ Do not implement any analytics, tracking, or telemetry.
 - Builds trust with users
 
 **Negative:**
+
 - Cannot measure user behavior
 - Cannot track feature usage
 - Cannot identify bugs through error tracking
@@ -446,6 +539,7 @@ Do not implement any analytics, tracking, or telemetry.
 We prioritize user privacy over product metrics. Issues will be reported via GitHub, not discovered through analytics.
 
 #### Alternatives Considered
+
 1. **Privacy-focused analytics (Plausible)** - Rejected: Still tracking, still scripts
 2. **Anonymized error tracking** - Rejected: Users should report errors manually
 3. **Opt-in analytics** - Rejected: Adds complexity, most users would opt out
@@ -453,17 +547,22 @@ We prioritize user privacy over product metrics. Issues will be reported via Git
 ---
 
 ### ADR-013: Vercel for Hosting
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need reliable, fast hosting for static site with global CDN.
 
 #### Decision
+
 Deploy to Vercel with automatic deployments from GitHub.
 
 #### Consequences
+
 **Positive:**
+
 - Automatic deployments from Git
 - Global CDN for fast load times
 - Free for open-source projects
@@ -472,6 +571,7 @@ Deploy to Vercel with automatic deployments from GitHub.
 - Zero configuration needed
 
 **Negative:**
+
 - Vendor lock-in (mitigated by static site)
 - Limited customization vs. own server
 - Subject to Vercel's terms of service
@@ -479,6 +579,7 @@ Deploy to Vercel with automatic deployments from GitHub.
 **Note:** Static site can be deployed anywhere if needed (Netlify, GitHub Pages, etc.)
 
 #### Alternatives Considered
+
 1. **Netlify** - Similar to Vercel, chosen Vercel for better Vite support
 2. **GitHub Pages** - Rejected: Less flexible, no automatic builds
 3. **Self-hosted** - Rejected: Unnecessary complexity for static site
@@ -486,17 +587,22 @@ Deploy to Vercel with automatic deployments from GitHub.
 ---
 
 ### ADR-014: Mobile-First Responsive Design
+
 **Date:** 2025-12-29  
 **Status:** ✅ Accepted
 
 #### Context
+
 Users access application from various devices (desktop, tablet, mobile).
 
 #### Decision
+
 Use mobile-first responsive design approach with Tailwind breakpoints.
 
 #### Consequences
+
 **Positive:**
+
 - Better mobile UX
 - Progressive enhancement approach
 - Smaller base CSS (mobile styles)
@@ -504,26 +610,35 @@ Use mobile-first responsive design approach with Tailwind breakpoints.
 - Better performance on mobile
 
 **Negative:**
+
 - Desktop-first developers may find it less intuitive
 - Requires thinking about mobile constraints first
 
 **Implementation:**
+
 ```css
 /* Mobile first (default) */
-.board { width: 100%; }
+.board {
+  width: 100%;
+}
 
 /* Tablet and up */
 @media (min-width: 768px) {
-  .board { width: 600px; }
+  .board {
+    width: 600px;
+  }
 }
 
 /* Desktop and up */
 @media (min-width: 1024px) {
-  .board { width: 800px; }
+  .board {
+    width: 800px;
+  }
 }
 ```
 
 #### Alternatives Considered
+
 1. **Desktop-first** - Rejected: Mobile users would get worse experience
 2. **Separate mobile site** - Rejected: Harder to maintain, worse UX
 3. **Mobile-only** - Rejected: Desktop users are significant portion
@@ -531,37 +646,46 @@ Use mobile-first responsive design approach with Tailwind breakpoints.
 ---
 
 ### ADR-015: Semantic Versioning
+
 **Date:** 2025-12-28  
 **Status:** ✅ Accepted
 
 #### Context
+
 Need clear versioning strategy for releases and changelog.
 
 #### Decision
+
 Follow Semantic Versioning (SemVer 2.0.0): MAJOR.MINOR.PATCH
 
 **Rules:**
+
 - **MAJOR:** Breaking changes, incompatible API changes
 - **MINOR:** New features, backwards-compatible
 - **PATCH:** Bug fixes, backwards-compatible
 
 #### Consequences
+
 **Positive:**
+
 - Clear version meaning
 - Users understand impact of updates
 - Industry standard
 - Works well with npm/package.json
 
 **Negative:**
+
 - Requires discipline to follow
 - Can be subjective what counts as "breaking"
 
 **Examples:**
+
 - v1.0.0 → v2.0.0: Removed localStorage keys
 - v2.0.0 → v2.1.0: Added download feature
 - v2.1.0 → v2.1.1: Fixed export bug
 
 #### Alternatives Considered
+
 1. **Date-based versioning** - Rejected: Doesn't convey impact of changes
 2. **Simple incrementing** - Rejected: No semantic meaning
 3. **Custom scheme** - Rejected: Would confuse users
@@ -572,26 +696,28 @@ Follow Semantic Versioning (SemVer 2.0.0): MAJOR.MINOR.PATCH
 
 ### Summary Table
 
-| Technology | Decision | Status | Version |
-|-----------|----------|--------|---------|
-| **Framework** | React | ✅ Accepted | 19.x |
-| **Build Tool** | Vite | ✅ Accepted | Latest |
-| **Styling** | Tailwind CSS | ✅ Accepted | 3.3.5 |
-| **Rendering** | HTML5 Canvas | ✅ Accepted | Native |
-| **State** | React Hooks | ✅ Accepted | Built-in |
-| **Storage** | localStorage | ✅ Accepted | Native |
-| **Hosting** | Vercel | ✅ Accepted | - |
-| **Icons** | Lucide React | ✅ Accepted | Latest |
-| **Pieces** | Lichess SVG | ✅ Accepted | - |
+| Technology     | Decision     | Status      | Version  |
+| -------------- | ------------ | ----------- | -------- |
+| **Framework**  | React        | ✅ Accepted | 19.x     |
+| **Build Tool** | Vite         | ✅ Accepted | Latest   |
+| **Styling**    | Tailwind CSS | ✅ Accepted | 3.3.5    |
+| **Rendering**  | HTML5 Canvas | ✅ Accepted | Native   |
+| **State**      | React Hooks  | ✅ Accepted | Built-in |
+| **Storage**    | localStorage | ✅ Accepted | Native   |
+| **Hosting**    | Vercel       | ✅ Accepted | -        |
+| **Icons**      | Lucide React | ✅ Accepted | Latest   |
+| **Pieces**     | Lichess SVG  | ✅ Accepted | -        |
 
 ---
 
 ## Architecture Decisions
 
 ### Component Architecture
+
 **Decision:** Atomic design pattern with clear separation of concerns.
 
 **Structure:**
+
 ```
 components/
 ├── board/        # Chess board rendering
@@ -604,6 +730,7 @@ components/
 ```
 
 **Rationale:**
+
 - Clear separation makes code easier to find
 - Atomic components are highly reusable
 - Follows React best practices
@@ -612,9 +739,11 @@ components/
 ---
 
 ### State Management
+
 **Decision:** React Hooks only, no external state management library.
 
 **Rationale:**
+
 - Application state is relatively simple
 - Context API sufficient for global state
 - useState/useReducer handle local state well
@@ -627,9 +756,11 @@ components/
 ## Performance Decisions
 
 ### Optimization Strategy
+
 **Decision:** Optimize for perceived performance and bundle size.
 
 **Key Techniques:**
+
 1. **React.memo** for expensive components
 2. **useMemo/useCallback** for heavy calculations
 3. **Lazy loading** for modals and non-critical features
@@ -637,6 +768,7 @@ components/
 5. **Image caching** for piece sets
 
 **Target Metrics:**
+
 - First Contentful Paint < 1s
 - Time to Interactive < 3s
 - Bundle size < 500KB gzipped
@@ -646,9 +778,11 @@ components/
 ## UX/UI Decisions
 
 ### Design Philosophy
+
 **Decision:** Minimalist, functional design prioritizing usability.
 
 **Principles:**
+
 1. **Clarity over cleverness** - UI should be obvious
 2. **Consistency** - Similar actions look similar
 3. **Feedback** - User always knows what's happening
@@ -658,9 +792,11 @@ components/
 ---
 
 ### Color Themes
+
 **Decision:** Provide multiple board themes with user customization.
 
 **Rationale:**
+
 - Different users have different preferences
 - Traditional chess colors may have low contrast
 - Customization increases user engagement
@@ -671,9 +807,11 @@ components/
 ## Security Decisions
 
 ### No Backend = Minimal Attack Surface
+
 **Decision:** Client-side only architecture eliminates most security concerns.
 
 **Security Benefits:**
+
 - No SQL injection
 - No server-side vulnerabilities
 - No authentication attacks
@@ -681,6 +819,7 @@ components/
 - No DDoS targets
 
 **Remaining Concerns:**
+
 - XSS (mitigated by React's built-in protections)
 - Dependency vulnerabilities (monitored via Dependabot)
 - Client-side code tampering (acceptable for this use case)
@@ -688,9 +827,11 @@ components/
 ---
 
 ### Dependency Security
+
 **Decision:** Automated monitoring and updates via Dependabot.
 
 **Process:**
+
 1. Dependabot creates PRs for security updates
 2. Review and test changes
 3. Merge within 48 hours if critical
@@ -703,21 +844,25 @@ components/
 ### Decisions to Revisit
 
 #### 1. SVG Export (Planned v4.0)
+
 **Current:** PNG/JPEG only  
 **Future:** Add SVG export option  
 **Rationale:** User demand, resolution independence, editability
 
 #### 2. Backend (Maybe v5.0+)
+
 **Current:** Zero-backend  
 **Future:** Optional backend for cloud sync  
 **Rationale:** User requests for cross-device sync, but must remain optional
 
 #### 3. Progressive Web App (Planned v4.x)
+
 **Current:** Standard web app  
 **Future:** Full PWA with offline support  
 **Rationale:** Better mobile experience, offline functionality
 
 #### 4. WebAssembly (Maybe v5.0+)
+
 **Current:** JavaScript FEN parsing  
 **Future:** WASM for better performance  
 **Rationale:** Performance boost for complex operations
@@ -727,6 +872,7 @@ components/
 ## Decision Review Process
 
 ### When to Review Decisions
+
 - Major version updates (v4.0, v5.0)
 - Significant user feedback
 - Technology changes (React 20, new browser APIs)
@@ -734,6 +880,7 @@ components/
 - Security concerns
 
 ### How to Propose Changes
+
 1. Open GitHub Discussion with proposal
 2. Reference existing ADR being challenged
 3. Provide rationale and evidence
@@ -745,17 +892,20 @@ components/
 ## Lessons Learned
 
 ### What Went Well
+
 1. ✅ **Zero-backend** - Users love the privacy
 2. ✅ **Tailwind CSS** - Rapid UI development
 3. ✅ **React Hooks** - Simple state management
 4. ✅ **Canvas rendering** - Excellent export quality
 
 ### What Could Be Improved
+
 1. ⚠️ **Canvas accessibility** - Need better screen reader support
 2. ⚠️ **Bundle size** - Could be smaller with more optimization
 3. ⚠️ **Testing** - Need more automated tests
 
 ### What We'd Do Differently
+
 1. 🔄 Consider SVG rendering from start for accessibility
 2. 🔄 Add automated testing earlier in development
 3. 🔄 Document decisions sooner (this file!)
