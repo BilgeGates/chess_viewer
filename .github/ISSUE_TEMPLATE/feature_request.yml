@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature or enhancement for Chess Diagram Generator
+description: Suggest a new feature or enhancement for FENForsty Pro
 title: '[Feature]: '
 labels: ['enhancement', 'needs-review']
 assignees:
@@ -11,7 +11,7 @@ body:
       value: |
         ## 💡 Thanks for suggesting a feature!
 
-        Your ideas help shape the future of Chess Diagram Generator. Please provide detailed information about your feature request.
+        Your ideas help shape the future of FENForsty Pro. Please provide detailed information about your feature request.
 
         **Before submitting:**
         - Check existing feature requests to avoid duplicates
@@ -205,7 +205,7 @@ body:
       options:
         - label: I have searched existing feature requests to avoid duplicates
           required: true
-        - label: This feature aligns with Chess Diagram Generator's core purpose
+        - label: This feature aligns with FENForsty Pro's core purpose
           required: true
         - label: I have provided sufficient detail for the feature to be understood
           required: true
@@ -227,3 +227,4 @@ body:
         - Related to issue #123
         - This is a common feature in Lichess and Chess.com
         - Would make the tool competitive with professional chess software
+
