@@ -17,3 +17,6 @@ export {
   getScrollLockCount,
   forceUnlockScroll
 } from './useScrollLock';
+
+// Context hooks re-exports for convenience
+export { useFENBatch, useThemeSettings } from '@/contexts';
