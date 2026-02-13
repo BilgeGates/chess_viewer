@@ -43,11 +43,13 @@ Currently tracking **0** high priority issues.
 **Status:** 🟡 Open - Planned for v4.0
 
 **Workaround:**
+
 - Text descriptions provided via ARIA labels
 - FEN notation available for screen readers
 - Consider using "View as Grid" mode when implemented (v4.0)
 
 **Related:**
+
 - [ACCESSIBILITY.md](ACCESSIBILITY.md)
 
 ---
@@ -64,6 +66,7 @@ Currently tracking **0** high priority issues.
 **Status:** 🟡 Open - Browser limitation
 
 **Technical Details:**
+
 ```javascript
 // Safari limit
 maxDimension: 16384px
@@ -77,11 +80,13 @@ area: 163.84 MP     ✅ Under area limit
 ```
 
 **Workaround:**
+
 - Use Chrome, Firefox, or Edge for ultra-HD exports
 - Limit Safari exports to 16× maximum
 - Application warns users on Safari when selecting 32×
 
 **Related:**
+
 - [EXPORT_PIPELINE.md - Browser Limitations](EXPORT_PIPELINE.md#browser-limitations)
 
 ---
@@ -98,6 +103,7 @@ area: 163.84 MP     ✅ Under area limit
 **Status:** 🟡 Open - Investigating
 
 **Workaround:**
+
 - Scroll down after opening keyboard
 - Use "Done" on keyboard to close it
 - Rotate to landscape for more space
@@ -118,12 +124,14 @@ area: 163.84 MP     ✅ Under area limit
 **Status:** 🟡 Open - Investigating
 
 **Steps to Reproduce:**
+
 1. Open Advanced FEN Input modal
 2. Enable Multi-FEN/Gallery mode
 3. Enter multiple FEN positions
 4. Some preview thumbnails may show empty boards
 
 **Workaround:**
+
 - Click on individual positions to verify
 - Use single-FEN mode for critical exports
 
@@ -143,12 +151,14 @@ area: 163.84 MP     ✅ Under area limit
 **Status:** 🟡 Open - Investigating
 
 **Steps to Reproduce:**
+
 1. Open Theme settings
 2. Click on a color to open advanced picker
 3. Move mouse rapidly across the color gradient
 4. Canvas may show visual glitches
 
 **Workaround:**
+
 - Use preset colors instead
 - Enter hex values directly
 - Move mouse slowly in picker
@@ -171,6 +181,7 @@ area: 163.84 MP     ✅ Under area limit
 **Status:** 🟢 Open - Low priority
 
 **Workaround:**
+
 - Export important positions
 - Use Favorites for positions you want to keep
 
@@ -190,6 +201,7 @@ area: 163.84 MP     ✅ Under area limit
 **Status:** 🟢 Open - Enhancement
 
 **Workaround:**
+
 - Use standard sizes (600-1000px) for best results
 - Toggle coordinates off if unreadable
 
@@ -219,20 +231,24 @@ area: 163.84 MP     ✅ Under area limit
 ### Safari
 
 #### Issue: Clipboard API Limited
+
 **Problem:** Safari restricts clipboard access more than other browsers.
 
 **Impact:** "Copy to Clipboard" may not work without explicit user gesture.
 
 **Workaround:**
+
 - Click copy button directly (don't use keyboard shortcut)
 - Grant clipboard permissions when prompted
 
 #### Issue: localStorage Quota in Private Mode
+
 **Problem:** Private browsing limits localStorage to ~10MB.
 
 **Impact:** History and favorites may not save in private mode.
 
 **Workaround:**
+
 - Use normal browsing mode
 - Or export positions manually
 
@@ -241,6 +257,7 @@ area: 163.84 MP     ✅ Under area limit
 ### Firefox
 
 #### Issue: Canvas Export Slightly Slower
+
 **Problem:** Firefox's canvas toBlob() is ~10-20% slower than Chrome.
 
 **Impact:** Export takes slightly longer.
@@ -254,11 +271,13 @@ area: 163.84 MP     ✅ Under area limit
 ### Mobile Browsers
 
 #### Issue: Large Exports May Timeout
+
 **Problem:** Exporting 32× (512MB memory) may crash on low-end mobile devices.
 
 **Impact:** App may reload, losing unsaved work.
 
 **Workaround:**
+
 - Use lower quality settings on mobile (Low/Medium)
 - Export on desktop for ultra-HD
 - Close other apps to free memory
@@ -278,6 +297,7 @@ These are intentional design decisions, not bugs.
 **Reason:** Privacy-first architecture (see [ADR-003](DECISIONS.md#adr-003-zero-backend-architecture))
 
 **Alternatives:**
+
 - Export positions as files
 - Share FEN strings via email/messaging
 - Use browser sync if available (Chrome, Firefox)
@@ -291,6 +311,7 @@ These are intentional design decisions, not bugs.
 **Reason:** We're a diagram generator, not a chess engine.
 
 **Examples:**
+
 ```
 rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 ✅ Valid starting position
@@ -303,6 +324,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 ```
 
 **If you need move validation:**
+
 - Use [Lichess Analysis](https://lichess.org/analysis)
 - Use [Chess.com Analysis](https://www.chess.com/analysis)
 - Use chess.js library in your own code
@@ -316,6 +338,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 **Reason:** Prevent localStorage bloat and performance issues.
 
 **Workaround:**
+
 - Use Favorites for important positions (unlimited)
 - Export history before clearing
 
@@ -330,6 +353,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 **Status:** ⏳ Planned for v4.0.0
 
 **Workaround:**
+
 - Export ultra-HD PNG for print quality
 - Use vector graphics software to trace if needed
 
@@ -339,11 +363,12 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 
 **Limitation:** Cannot animate moves or replay games.
 
-**Reason:** Static diagram generator, not a chess viewer/player.
+**Reason:** Static diagram generator, not a FENForsty Pro/player.
 
 **Status:** ⏳ May consider in v5.0+
 
 **Alternatives:**
+
 - [Lichess](https://lichess.org) - Full game analysis
 - [Chess.com](https://chess.com) - Game replay
 - [ChessBase](https://chessbase.com) - Professional analysis
@@ -359,6 +384,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 **Problem:** Export fails or produces corrupted image.
 
 **Solutions:**
+
 1. Refresh the page and try again
 2. Use lower quality setting
 3. Clear browser cache: `Ctrl+Shift+Delete`
@@ -373,6 +399,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 **Problem:** Application is slow or laggy.
 
 **Solutions:**
+
 1. Close other browser tabs
 2. Disable browser extensions temporarily
 3. Reduce board size (use 600px instead of 1200px)
@@ -387,6 +414,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 **Problem:** Board looks distorted or colors are wrong.
 
 **Solutions:**
+
 1. Check browser zoom is at 100%
 2. Disable browser color filters/night mode
 3. Reset theme to default
@@ -398,6 +426,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 ### Recovery Commands
 
 #### Clear All Data
+
 ```javascript
 // Open browser console (F12) and run:
 localStorage.clear();
@@ -405,6 +434,7 @@ location.reload();
 ```
 
 #### Export All History
+
 ```javascript
 // Save history before clearing
 const history = JSON.parse(localStorage.getItem('fenHistory') || '[]');
@@ -413,6 +443,7 @@ console.log(JSON.stringify(history, null, 2));
 ```
 
 #### Reset Specific Settings
+
 ```javascript
 // Reset theme only
 localStorage.removeItem('theme');
@@ -441,6 +472,7 @@ localStorage.removeItem('fenHistory');
 **GitHub Issues:** [Create New Issue](https://github.com/BilgeGates/chess_viewer/issues/new)
 
 **Include:**
+
 - **Version:** Check footer (e.g., v3.5.1)
 - **Browser:** Chrome 120, Safari 17, etc.
 - **OS:** Windows 11, macOS 14, etc.
@@ -452,6 +484,7 @@ localStorage.removeItem('fenHistory');
 - **Console errors:** Open DevTools (F12), check Console tab
 
 **Example Report:**
+
 ```markdown
 **Bug:** Export fails with "Out of memory" error
 
@@ -461,6 +494,7 @@ localStorage.removeItem('fenHistory');
 **Export Settings:** PNG, 32× quality
 
 **Steps:**
+
 1. Load starting position
 2. Set board size to 1200px
 3. Click Export → PNG → Ultra (32×)
@@ -471,8 +505,10 @@ localStorage.removeItem('fenHistory');
 
 **Console Error:**
 ```
+
 RangeError: Invalid array length
-    at createExportCanvas (canvasExporter.js:45)
+at createExportCanvas (canvasExporter.js:45)
+
 ```
 
 **Screenshots:** [attached]
@@ -513,16 +549,19 @@ Statistics are not actively tracked. See sections above for current open issues.
 Issues planned for upcoming releases:
 
 ### v3.6.0 (Q1 2026)
+
 - [ ] Fix mobile keyboard overlap
 - [ ] Add history limit notification
 - [ ] Improve coordinate scaling
 
 ### v4.0.0 (Q2 2026)
+
 - [ ] Add SVG export (addresses limitation #4)
 - [ ] Improve canvas accessibility
 - [ ] Add grid view mode for screen readers
 
 ### v5.0.0 (Future)
+
 - [ ] Consider animation support
 - [ ] Optional cloud sync (with consent)
 - [ ] Advanced export options
@@ -532,16 +571,19 @@ Issues planned for upcoming releases:
 ## Help & Support
 
 ### Documentation
+
 - [FAQ](FAQ.md) - Frequently asked questions
 - [Troubleshooting](FAQ.md#troubleshooting) - Common problems
 - [Export Guide](EXPORT_PIPELINE.md) - Export system details
 - [Performance Guide](PERFORMANCE.md) - Optimization tips
 
 ### Community
+
 - [GitHub Discussions](https://github.com/BilgeGates/chess_viewer/discussions) - Ask questions
 - [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues) - Report bugs
 
 ### Contact
+
 - **Email:** [darkdeveloperassistant@gmail.com](mailto:darkdeveloperassistant@gmail.com)
 - **Response time:** 24-48 hours (business days)
 
@@ -556,12 +598,12 @@ Found a bug? Want to fix it?
 3. Create a fix
 4. Submit a pull request
 5. Reference the issue number
-**All contributions welcome!** 🙏
+   **All contributions welcome!** 🙏
 
 ---
 
 **Last Updated:** January 18, 2026  
-**Version:** 3.5.2 
+**Version:** 3.5.2
 **Maintainer:** [@BilgeGates](https://github.com/BilgeGates)
 
 **Note:** This document is actively maintained. Issues are updated as they're discovered, fixed, or deprioritized.
