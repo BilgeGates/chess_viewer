@@ -1,8 +1,8 @@
 import { memo, useCallback, useState, useEffect, useRef } from 'react';
-import { Palette, Wand2 } from 'lucide-react';
 import { BOARD_THEMES } from '@/constants';
 import { useIntersectionObserver } from '@/hooks';
 import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '@/utils';
+import { Palette, Wand2 } from 'lucide-react';
 
 const ThemePresetButton = memo(({ themeKey, theme, isActive, onClick }) => {
   const { ref, isVisible } = useIntersectionObserver({
