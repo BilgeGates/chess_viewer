@@ -1,4 +1,4 @@
-# Chess Diagram Generator - FAQ
+# FENForsty Pro - FAQ
 
 Common questions and answers.
 
