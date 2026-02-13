@@ -1,6 +1,22 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext
+} from 'react';
 
 const ThemeSettingsContext = createContext(null);
+
+export const useThemeSettings = () => {
+  const context = useContext(ThemeSettingsContext);
+  if (!context) {
+    throw new Error(
+      'useThemeSettings must be used within ThemeSettingsProvider'
+    );
+  }
+  return context;
+};
 
 const defaultSettings = {
   autoApply: false,
