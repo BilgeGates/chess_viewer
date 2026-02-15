@@ -63,6 +63,6 @@
     "postcss": "^8.4.31",
     "prettier": "^3.2.2",
     "source-map-explorer": "^2.5.3",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^4.1.18"
   }
 }
