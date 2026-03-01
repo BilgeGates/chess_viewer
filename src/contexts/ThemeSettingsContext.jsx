@@ -18,6 +18,7 @@ function getAudioCtx() {
   return _sharedAudioCtx;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useThemeSettings = () => {
   const context = useContext(ThemeSettingsContext);
   if (!context) {
@@ -60,8 +61,6 @@ export const ThemeSettingsProvider = ({ children }) => {
     }
   });
 
-  // Apply animation setting to CSS
-  useEffect(() => {
   // Merge all DOM-class/style mutations into a single effect keyed on the
   // three settings that affect the document root. Avoids 3 separate effect
   // evaluations on every settings change.
