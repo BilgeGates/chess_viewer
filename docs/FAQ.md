@@ -66,10 +66,14 @@ Only the piece placement field is required. Others default to standard values.
 
 ### Resolution
 
-- 8× scale: 3,200×3,200px
-- 16× scale: 6,400×6,400px
-- 24× scale: 9,600×9,600px
-- 32× scale: 12,800×12,800px (max)
+Print mode resolutions depend on board size selection (4 cm, 6 cm, 8 cm):
+
+| Quality | Mode | Example dimension (8 cm) |
+|---|---|---|
+| 8× | Print | 7,552 × 7,552 px |
+| 16× | Print | 15,104 × 15,104 px |
+| 24× | Social | 18,112 × 18,112 px |
+| 32× | Social | 24,192 × 24,192 px |
 
 ### Export Issues
 
@@ -101,13 +105,13 @@ Only the piece placement field is required. Others default to standard values.
 
 ## Known Limitations
 
-- **No offline support** - Requires internet for piece images
-- **No keyboard shortcuts** - Planned for future
-- **No SVG export** - PNG/JPEG only
-- **No PGN import** - FEN only
+- **No keyboard shortcuts** — Planned for future
+- **No SVG export** — PNG/JPEG only
+- **No PGN import** — FEN only
 - **No arrow/highlight annotations**
-- **Safari memory limits** - Large exports may fail on Safari/iOS
-- **No WCAG compliance** - Canvas not accessible to screen readers
+- **Safari memory limits** — 24×/32× Social exports may fail on Safari/iOS
+- **No WCAG compliance** — Canvas content not accessible to screen readers
+- **No cross-device sync** — All data stored locally in browser
 
 ---
 
@@ -157,4 +161,5 @@ MIT License - Commercial use, modification, distribution allowed.
 
 ---
 
-**Last Updated:** January 18, 2026
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0

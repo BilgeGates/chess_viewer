@@ -6,842 +6,341 @@ Guide to state management architecture in FENForsty Pro.
 
 ## Table of Contents
 
-- [Overview](#-overview)
-- [State Architecture](#-state-architecture)
-- [Global State](#-global-state)
-- [Component State](#-component-state)
-- [Derived State](#-derived-state)
-- [State Persistence](#-state-persistence)
-- [State Updates](#-state-updates)
-- [Performance Optimization](#-performance-optimization)
-- [Best Practices](#-best-practices)
-- [Common Patterns](#-common-patterns)
+- [Overview](#overview)
+- [State Categories](#state-categories)
+- [Global State — Context API](#global-state--context-api)
+- [Hook-Based State](#hook-based-state)
+- [Component State](#component-state)
+- [State Persistence](#state-persistence)
+- [Derived State](#derived-state)
+- [Performance Optimisations](#performance-optimisations)
+- [Best Practices](#best-practices)
 
 ---
 
 ## Overview
 
-### Philosophy
-
-FENForsty Pro uses **React Hooks only** for state management - no external libraries (Redux, MobX, Zustand, etc.).
+FENForsty Pro uses **React hooks and the Context API exclusively** for state management. No external state libraries (Redux, Zustand, MobX, etc.) are used.
 
 **Reasons:**
 
-- Application state is relatively simple
-- React's built-in tools are sufficient
+- Application state complexity is well within React's built-in scope
 - Smaller bundle size
-- Less complexity for contributors
+- No additional abstractions for contributors to learn
+- Context covers the two pieces of cross-tree state (theme settings, FEN batch list)
 
-### State Categories
+---
+
+## State Categories
 
 ```
-State Types
+State
 │
 ├── Component State (useState)
-│   ├── UI state (modals, dropdowns)
-│   ├── Form inputs
-│   └── Temporary values
+│   ├── Modal open/closed flags
+│   ├── Form field values
+│   └── Temporary / ephemeral UI state
 │
-├── Global State (Context API)
-│   ├── Board configuration
-│   ├── User preferences
-│   └── Application settings
+├── Cross-Tree State (Context API)
+│   ├── ThemeSettingsContext  — color picker preferences, recent colors
+│   └── FENBatchContext       — batch FEN list
 │
 ├── Persisted State (localStorage)
-│   ├── History
-│   ├── Favorites
-│   └── Settings
+│   ├── FEN history            (key: 'fen-history')
+│   ├── FEN history archive    (key: 'fen-history-archive')
+│   ├── Board theme colors     (key: 'chess-light-square', 'chess-dark-square')
+│   ├── Theme settings         (key: 'themeSettings')
+│   ├── Recent colors          (key: 'recentColors')
+│   ├── Batch FEN list         (key: 'fenBatchList')
+│   └── App color scheme       (key: 'chess-theme' → 'light' | 'dark')
 │
 └── Derived State (useMemo)
-    ├── Parsed FEN
-    ├── Board array
-    └── Computed values
+    ├── Parsed FEN → 8×8 board array
+    ├── Filtered / sorted history list
+    └── Computed colour values
 ```
 
 ---
 
-## State Architecture
+## Global State — Context API
 
-### High-Level State Flow
+### ThemeSettingsContext
 
+**File:** `src/contexts/ThemeSettingsContext.jsx`  
+**Hook:** `useThemeSettings()`
+
+Manages color-picker UI preferences and the list of recently used colors. Does **not** manage board square colors (those are handled by `useTheme`).
+
+**Default settings:**
+
+```javascript
+const defaultSettings = {
+  autoApply: false,
+  showRGB: true,
+  enableAnimations: true,
+  showColorNames: false,
+  enableKeyboardShortcuts: true,
+  showHexValues: true,
+  enableSoundEffects: false,
+  compactMode: false,
+  showRecentColors: true,
+  enableColorBlindMode: false
+};
 ```
-┌─────────────────────────────────────────┐
-│           User Interactions             │
-│  (clicks, types, selects options)       │
-└──────────────────┬──────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────┐
-│         Event Handlers                  │
-│  (onClick, onChange, onSubmit)          │
-└──────────────────┬──────────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────────┐
-│      State Update Functions             │
-│  (setState, setters from hooks)         │
-└──────────────────┬──────────────────────┘
-                   │
-                   ├──────────────────────┐
-                   │                      │
-                   ▼                      ▼
-         ┌─────────────────┐    ┌──────────────────┐
-         │  Component      │    │  localStorage    │
-         │  Re-render      │    │  Persistence     │
-         └────────┬────────┘    └──────────────────┘
-                  │
-                  ▼
-         ┌─────────────────┐
-         │  Canvas         │
-         │  Re-draw        │
-         └─────────────────┘
-```
+
+**Side effects applied to `<html>`:**
+
+| Setting | DOM effect |
+|---|---|
+| `enableAnimations: false` | Adds `no-animations` class; sets `--transition-speed: 0s` |
+| `compactMode: true` | Adds `compact-mode` class |
+| `enableColorBlindMode: true` | Adds `color-blind-mode` class |
+
+**Provided values:**
+
+| Value | Type | Description |
+|---|---|---|
+| `settings` | object | Current settings object |
+| `updateSetting(key, value)` | function | Update one setting |
+| `updateSettings(obj)` | function | Replace full settings object |
+| `resetSettings()` | function | Restore defaults |
+| `recentColors` | string[] | Up to 12 recent hex colors |
+| `addRecentColor(hex)` | function | Prepend color, trim to 12 |
+| `clearRecentColors()` | function | Clear recent colors list |
+| `playSound(type)` | function | Play UI sound (if enabled) |
+
+**Persistence:** settings and recentColors are written to localStorage on every change.
 
 ---
 
-## Global State
+### FENBatchContext
 
-### Board Configuration State
+**File:** `src/contexts/FENBatchContext.jsx`  
+**Hook:** `useFENBatch()`
 
-Located in `src/hooks/useChessBoard.js`
+Manages the ordered list of FEN strings used for batch export on the Advanced FEN Input page.
 
-```javascript
-const useChessBoard = () => {
-  // Core board state
-  const [fen, setFen] = useState(DEFAULT_FEN);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [showCoordinates, setShowCoordinates] = useState(true);
-  const [boardSize, setBoardSize] = useState(800);
+**Provided values:**
 
-  // Parse FEN into board array (derived state)
-  const board = useMemo(() => parseFEN(fen), [fen]);
+| Value | Type | Description |
+|---|---|---|
+| `batchList` | string[] | Current list of valid FEN strings |
+| `addToBatch(fen)` | function → boolean | Add FEN if valid and not duplicate |
+| `removeFromBatch(index)` | function | Remove entry by index |
+| `clearBatch()` | function | Empty the list |
+| `updateBatchItem(index, fen)` | function → boolean | Replace entry if valid |
 
-  // Validation state
-  const [isValid, setIsValid] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
+**Persistence:** `batchList` is written to `localStorage` key `'fenBatchList'` on every change.
 
-  return {
-    fen,
-    setFen,
-    board,
-    isFlipped,
-    setIsFlipped,
-    showCoordinates,
-    setShowCoordinates,
-    boardSize,
-    setBoardSize,
-    isValid,
-    errorMessage
-  };
-};
-```
-
-**State Properties:**
-
-| Property          | Type        | Default           | Purpose                |
-| ----------------- | ----------- | ----------------- | ---------------------- |
-| `fen`             | string      | Starting position | Current board position |
-| `isFlipped`       | boolean     | false             | Board orientation      |
-| `showCoordinates` | boolean     | true              | Show rank/file labels  |
-| `boardSize`       | number      | 800               | Display size in pixels |
-| `board`           | Array[8][8] | -                 | Parsed board array     |
-| `isValid`         | boolean     | true              | FEN validity           |
-| `errorMessage`    | string      | ''                | Validation error       |
+**Validation:** Every write checks `validateFEN(fen)` before accepting the value.
 
 ---
 
-### Theme State
+## Hook-Based State
 
-Located in `src/hooks/useTheme.js`
+### useChessBoard
 
-```javascript
-const useTheme = () => {
-  const [theme, setTheme] = useState(() => {
-    // Load from localStorage or use default
-    const saved = localStorage.getItem('theme');
-    return saved ? JSON.parse(saved) : DEFAULT_THEME;
-  });
+**File:** `src/hooks/useChessBoard.js`
 
-  const [pieceSet, setPieceSet] = useState(() => {
-    const saved = localStorage.getItem('pieceSet');
-    return saved || 'alpha';
-  });
-
-  // Persist to localStorage on change
-  useEffect(() => {
-    localStorage.setItem('theme', JSON.stringify(theme));
-  }, [theme]);
-
-  useEffect(() => {
-    localStorage.setItem('pieceSet', pieceSet);
-  }, [pieceSet]);
-
-  return {
-    theme,
-    setTheme,
-    pieceSet,
-    setPieceSet
-  };
-};
-```
-
-**Theme Structure:**
+Simple memoised FEN parser. Does **not** hold multiple state values — it takes a `fen` string and returns a stable `board` array.
 
 ```javascript
-const theme = {
-  id: 'classic',
-  name: 'Classic',
-  lightSquare: '#f0d9b5',
-  darkSquare: '#b58863',
-  coordinateColor: '#000000',
-  backgroundColor: '#312e2b',
-  showBorder: true,
-  borderColor: '#000000'
-};
+// Signature
+function useChessBoard(fen: string): string[][]
+
+// Usage
+const board = useChessBoard(fen); // 8×8 array, '' = empty square
 ```
+
+Returns `createEmptyBoard()` on invalid or empty FEN.
 
 ---
 
-### History State
+### useTheme
 
-Located in `src/hooks/useFENHistory.js`
+**File:** `src/hooks/useTheme.js`
+
+Manages board square colors (light square color and dark square color), current theme name, and theme change history.
+
+**Returned values:**
+
+| Value | Type | Description |
+|---|---|---|
+| `lightSquare` | string | Hex color for light squares (default `#f0d9b5`) |
+| `darkSquare` | string | Hex color for dark squares (default `#b58863`) |
+| `currentTheme` | string | Name of active theme preset or `'custom'` |
+| `themeHistory` | object[] | Recent theme changes |
+| `setLightSquare(hex)` | function | Update light square color |
+| `setDarkSquare(hex)` | function | Update dark square color |
+| `applyTheme(preset)` | function | Apply a named theme preset |
+
+**Persistence:** Colors saved to `localStorage` keys `'chess-light-square'` and `'chess-dark-square'`. Also attempts cloud storage via `window.storage` if available.
+
+**Cross-tab sync:** Listens to the `storage` event to keep color state consistent across browser tabs.
+
+---
+
+### useFENHistory
+
+**File:** `src/hooks/useFENHistory.js`
+
+The most complex hook in the codebase. Manages the full FEN history lifecycle including active entries, archiving, filtering, and drag-session tracking.
+
+**Parameters:**
 
 ```javascript
-const useFENHistory = () => {
-  const [history, setHistory] = useState(() => {
-    const saved = localStorage.getItem('fenHistory');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('fenFavorites');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  // Add to history (limit to 50 items)
-  const addToHistory = useCallback((fen) => {
-    setHistory((prev) => {
-      const newHistory = [fen, ...prev.filter((f) => f !== fen)];
-      const limited = newHistory.slice(0, 50);
-      localStorage.setItem('fenHistory', JSON.stringify(limited));
-      return limited;
-    });
-  }, []);
-
-  // Toggle favorite
-  const toggleFavorite = useCallback((fen) => {
-    setFavorites((prev) => {
-      const newFavorites = prev.includes(fen)
-        ? prev.filter((f) => f !== fen)
-        : [...prev, fen];
-      localStorage.setItem('fenFavorites', JSON.stringify(newFavorites));
-      return newFavorites;
-    });
-  }, []);
-
-  return {
-    history,
-    favorites,
-    addToHistory,
-    toggleFavorite,
-    clearHistory: () => {
-      setHistory([]);
-      localStorage.removeItem('fenHistory');
-    },
-    clearFavorites: () => {
-      setFavorites([]);
-      localStorage.removeItem('fenFavorites');
-    }
-  };
-};
+const historyApi = useFENHistory(fen, onFavoriteStatusChange);
 ```
+
+**Key returned values:**
+
+| Value | Description |
+|---|---|
+| `fenHistory` | Current active history entries |
+| `archive` | Archived (inactive) entries |
+| `filters` / `archiveFilters` | Active filter state |
+| `isLoadingArchive` | Async loading flag |
+| `addToHistory(fen)` | Add new FEN entry |
+| `toggleFavorite(id)` | Mark/unmark as favorite |
+| `removeEntry(id)` | Delete entry |
+| `clearHistory()` | Delete all entries |
+| `archiveEntries(ids)` | Move entries to archive |
+| `reactivateEntry(id)` | Move archived entry back |
+| `filteredHistory` | Memoised filtered list |
+| `startDragSession(fen)` | Begin inactivity timer (60s) |
+| `endDragSession()` | Commit drag session to history |
+
+**Persistence:** History is written to `localStorage` key `'fen-history'` with a 300ms debounce. Archive is managed separately via `archiveManager.js`.
+
+**Auto-archival:** Inactive entries are automatically moved to the archive by `performAutoArchival` on a periodic timer.
+
+---
+
+### useInteractiveBoard
+
+**File:** `src/hooks/useInteractiveBoard.js`
+
+Manages the 8×8 board array for the drag-and-drop board editor (`ChessEditor`).
+
+**Parameters:**
+
+```javascript
+const api = useInteractiveBoard(initialFen, onFenChange);
+```
+
+**Key returned values:**
+
+| Value | Description |
+|---|---|
+| `board` | Current 8×8 board array |
+| `boardKey` | Incremented key that forces re-mount on reset |
+| `syncFromFen(fen)` | Update board from external FEN change |
+| `movePiece(from, to)` | Move piece between squares |
+| `placePiece(square, piece)` | Place piece on square |
+| `removePiece(square)` | Remove piece from square |
+| `clearBoard()` | Empty all squares |
+| `resetBoard(fen)` | Reset to a given FEN |
+
+Internally converts the board array to FEN using `boardUtils.boardToFEN` and calls `onFenChange` whenever the position changes.
+
+---
+
+### useColorState
+
+**File:** `src/hooks/useColorState.js`
+
+Local state for a single color picker instance.
+
+**Returned values:** `hexInput`, `tempColor`, `copiedText`, `activePalette`, `isOpen`, and handlers: `handleColorSelect`, `handleRandom`, `handleReset`, `handleCopy`, `toggleOpen`, `closeModal`.
+
+---
+
+### Other Hooks
+
+| Hook | Purpose |
+|---|---|
+| `useCanvasPicker` | Canvas-based color sampling from chess board |
+| `useColorConversion` | HSV ↔ RGB ↔ Hex color format conversion |
+| `useLocalStorage` | Generic typed localStorage getter/setter with JSON serialisation |
+| `useNotifications` | Toast notification queue (add, dismiss, auto-expire) |
+| `useOutsideClick` | Ref + event listener for detecting clicks outside an element |
+| `usePieceImages` | Loads and caches all piece SVG images for the selected piece set |
+| `usePerformance` | Optional performance timing markers (dev only) |
+| `useScrollLock` | Locks `<body>` scroll when a modal is open |
+| `useIntersectionObserver` | Wrapper for `IntersectionObserver` used in virtualised lists |
 
 ---
 
 ## Component State
 
-### Modal State Pattern
+Modal visibility, form field values, and other ephemeral UI state are kept as `useState` local to the component that owns them. Examples:
 
 ```javascript
-const ControlPanel = () => {
-  // Each modal has its own state
-  const [showThemeModal, setShowThemeModal] = useState(false);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
+// Modal open/close
+const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  return (
-    <>
-      <button onClick={() => setShowThemeModal(true)}>Themes</button>
+// Form input
+const [fenInput, setFenInput] = useState('');
 
-      {showThemeModal && (
-        <ThemeModal
-          isOpen={showThemeModal}
-          onClose={() => setShowThemeModal(false)}
-        />
-      )}
-    </>
-  );
-};
-```
-
-**Why component state for modals?**
-
-- Modals are UI-only state
-- No need to share across components
-- Simpler than global state
-- Automatically cleaned up on unmount
-
----
-
-### Form Input State
-
-```javascript
-const FENInput = ({ value, onChange }) => {
-  // Local input state for immediate feedback
-  const [localValue, setLocalValue] = useState(value);
-  const [isValid, setIsValid] = useState(true);
-
-  // Debounce updates to parent
-  const debouncedOnChange = useMemo(() => debounce(onChange, 300), [onChange]);
-
-  const handleChange = (e) => {
-    const newValue = e.target.value;
-    setLocalValue(newValue);
-
-    // Validate
-    const valid = validateFEN(newValue);
-    setIsValid(valid);
-
-    // Update parent if valid
-    if (valid) {
-      debouncedOnChange(newValue);
-    }
-  };
-
-  return (
-    <input
-      value={localValue}
-      onChange={handleChange}
-      className={isValid ? 'valid' : 'invalid'}
-    />
-  );
-};
-```
-
----
-
-### Loading State Pattern
-
-```javascript
-const ExportButton = ({ format, quality, onExport }) => {
-  const [isExporting, setIsExporting] = useState(false);
-  const [progress, setProgress] = useState(0);
-
-  const handleExport = async () => {
-    setIsExporting(true);
-    setProgress(0);
-
-    try {
-      await onExport(format, quality, (p) => setProgress(p));
-      // Success notification
-    } catch (error) {
-      // Error handling
-    } finally {
-      setIsExporting(false);
-      setProgress(0);
-    }
-  };
-
-  return (
-    <button onClick={handleExport} disabled={isExporting}>
-      {isExporting ? `Exporting... ${progress}%` : 'Export'}
-    </button>
-  );
-};
-```
-
----
-
-## Derived State
-
-### What is Derived State?
-
-State that can be **computed** from other state - should not be stored separately.
-
-### Board Array from FEN
-
-```javascript
-// ❌ Bad: Storing both FEN and board array
-const [fen, setFen] = useState(DEFAULT_FEN);
-const [board, setBoard] = useState(parseFEN(DEFAULT_FEN));
-
-// Need to sync manually
-const updateFEN = (newFen) => {
-  setFen(newFen);
-  setBoard(parseFEN(newFen)); // Easy to forget!
-};
-
-// ✅ Good: Derive board from FEN
-const [fen, setFen] = useState(DEFAULT_FEN);
-const board = useMemo(() => parseFEN(fen), [fen]);
-```
-
-### Piece Count
-
-```javascript
-// Derive piece counts from board
-const pieceCounts = useMemo(() => {
-  const counts = {};
-
-  board.forEach((row) => {
-    row.forEach((piece) => {
-      if (piece) {
-        counts[piece] = (counts[piece] || 0) + 1;
-      }
-    });
-  });
-
-  return counts;
-}, [board]);
-```
-
-### Export Filename
-
-```javascript
-// Derive filename from state
-const exportFilename = useMemo(() => {
-  const date = new Date().toISOString().split('T')[0];
-  const position = fen.split(' ')[0].replace(/\//g, '-');
-  return `chess-${date}-${position}.png`;
-}, [fen]);
+// Dropdown
+const [selectedFormat, setSelectedFormat] = useState('png');
 ```
 
 ---
 
 ## State Persistence
 
-### localStorage Pattern
+All persistence uses `localStorage`. On pages that also support an optional `window.storage` interface (a cloud storage shim), both are written with localStorage as the guaranteed fallback.
 
-```javascript
-// Custom hook for persisted state
-const useLocalStorage = (key, defaultValue) => {
-  const [value, setValue] = useState(() => {
-    try {
-      const saved = localStorage.getItem(key);
-      return saved ? JSON.parse(saved) : defaultValue;
-    } catch (error) {
-      console.error(`Error loading ${key}:`, error);
-      return defaultValue;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error(`Error saving ${key}:`, error);
-    }
-  }, [key, value]);
-
-  return [value, setValue];
-};
-
-// Usage
-const [theme, setTheme] = useLocalStorage('theme', DEFAULT_THEME);
-```
-
-### What to Persist
-
-**DO persist:**
-
-- ✅ User preferences (theme, piece set)
-- ✅ History and favorites
-- ✅ Display settings (coordinates, flipped)
-- ✅ Last used FEN
-
-**DON'T persist:**
-
-- ❌ Modal open/closed states
-- ❌ Loading states
-- ❌ Temporary form inputs
-- ❌ Derived state
+| localStorage Key | Owner Hook / Context | Data |
+|---|---|---|
+| `chess-theme` | `App.jsx` | `'light'` or `'dark'` |
+| `chess-light-square` | `useTheme` | Hex color string |
+| `chess-dark-square` | `useTheme` | Hex color string |
+| `themeSettings` | `ThemeSettingsContext` | Settings object (JSON) |
+| `recentColors` | `ThemeSettingsContext` | Array of hex strings (JSON) |
+| `fenBatchList` | `FENBatchContext` | Array of FEN strings (JSON) |
+| `fen-history` | `useFENHistory` | Array of history entries (JSON) |
+| `fen-history-archive` | `archiveManager` | Array of archived entries (JSON) |
 
 ---
 
-## State Updates
+## Derived State
 
-### Immutable Updates
-
-```javascript
-// ❌ Bad: Mutating state
-const addToHistory = (fen) => {
-  history.push(fen); // Mutates array!
-  setHistory(history);
-};
-
-// ✅ Good: Creating new array
-const addToHistory = (fen) => {
-  setHistory((prev) => [...prev, fen]);
-};
-
-// ✅ Good: Functional updates
-const addToHistory = (fen) => {
-  setHistory((prev) => {
-    const newHistory = [fen, ...prev.filter((f) => f !== fen)];
-    return newHistory.slice(0, 50);
-  });
-};
-```
-
-### Batch Updates
+Expensive computations are memoised with `useMemo` to avoid redundant recalculation:
 
 ```javascript
-// Multiple state updates in same event handler
-const handleExport = async () => {
-  // These will batch automatically in React 18+
-  setIsExporting(true);
-  setProgress(0);
-  setError(null);
+// FEN → board array (useChessBoard)
+const board = useMemo(() => parseFEN(fen), [fen]);
 
-  // Only one re-render!
-};
-```
+// History filtering (useFENHistory)
+const filteredHistory = useMemo(() => applyFilters(fenHistory, filters), [fenHistory, filters]);
 
-### Async Updates
-
-```javascript
-const loadFENFromFile = async (file) => {
-  setLoading(true);
-
-  try {
-    const text = await file.text();
-    const fen = extractFEN(text);
-
-    if (validateFEN(fen)) {
-      setFen(fen);
-      addToHistory(fen);
-      showNotification('Position loaded successfully');
-    } else {
-      setError('Invalid FEN in file');
-    }
-  } catch (error) {
-    setError('Failed to read file');
-  } finally {
-    setLoading(false);
-  }
-};
+// Color conversion (useColorConversion)
+const rgb = useMemo(() => hexToRgb(hex), [hex]);
 ```
 
 ---
 
-## Performance Optimization
+## Performance Optimisations
 
-### Memoization
-
-```javascript
-// Memoize expensive computations
-const parsedBoard = useMemo(() => {
-  console.log('Parsing FEN...');
-  return parseFEN(fen);
-}, [fen]); // Only recompute when FEN changes
-
-// Memoize callbacks
-const handleThemeChange = useCallback((newTheme) => {
-  setTheme(newTheme);
-  localStorage.setItem('theme', JSON.stringify(newTheme));
-}, []); // Stable function reference
-```
-
-### Component Memoization
-
-```javascript
-// Prevent unnecessary re-renders
-const ChessBoard = React.memo(
-  ({ fen, theme, pieceSet }) => {
-    // Heavy canvas rendering
-    return <canvas ref={canvasRef} />;
-  },
-  (prevProps, nextProps) => {
-    // Custom comparison
-    return (
-      prevProps.fen === nextProps.fen &&
-      prevProps.theme.id === nextProps.theme.id &&
-      prevProps.pieceSet === nextProps.pieceSet
-    );
-  }
-);
-```
-
-### Lazy State Initialization
-
-```javascript
-// ❌ Bad: Expensive initialization runs every render
-const [theme, setTheme] = useState(
-  JSON.parse(localStorage.getItem('theme')) || DEFAULT_THEME
-);
-
-// ✅ Good: Function only runs once
-const [theme, setTheme] = useState(() => {
-  const saved = localStorage.getItem('theme');
-  return saved ? JSON.parse(saved) : DEFAULT_THEME;
-});
-```
+- `useCallback` on all event handlers exposed from hooks to keep stable references for memoised child components
+- `useFENHistory` uses a `fenHistoryRef` to avoid stale closure issues in callbacks that would otherwise recreate on every render
+- `FENBatchContext.addToBatch` has an empty dependency array — it uses a functional updater (`setBatchList(prev => ...)`) so it never needs to capture `batchList`
+- History persistence is debounced 300ms to avoid thrashing localStorage on rapid state changes
+- `ThemeSettingsContext` merges all DOM class mutations into a single `useEffect` keyed on `enableAnimations`, `compactMode`, and `enableColorBlindMode`
 
 ---
 
 ## Best Practices
 
-### 1. Keep State Minimal
-
-```javascript
-// ❌ Bad: Storing redundant state
-const [fen, setFen] = useState('...');
-const [board, setBoard] = useState([...]);
-const [pieceCount, setPieceCount] = useState(32);
-
-// ✅ Good: Derive what you can
-const [fen, setFen] = useState('...');
-const board = useMemo(() => parseFEN(fen), [fen]);
-const pieceCount = useMemo(() => countPieces(board), [board]);
-```
-
-### 2. Co-locate State
-
-```javascript
-// Keep state close to where it's used
-const ThemeSelector = () => {
-  // Only ThemeSelector needs this
-  const [selectedTheme, setSelectedTheme] = useState(null);
-
-  return <div>{/* Theme selection UI */}</div>;
-};
-```
-
-### 3. Lift State When Needed
-
-```javascript
-// If multiple components need same state, lift it up
-const App = () => {
-  const [theme, setTheme] = useState(DEFAULT_THEME);
-
-  return (
-    <>
-      <ChessBoard theme={theme} />
-      <ThemeSelector theme={theme} onChange={setTheme} />
-    </>
-  );
-};
-```
-
-### 4. Use Proper Data Structures
-
-```javascript
-// ❌ Bad: Array for favorites (O(n) lookup)
-const [favorites, setFavorites] = useState([]);
-const isFavorite = (fen) => favorites.includes(fen);
-
-// ✅ Good: Set for favorites (O(1) lookup)
-const [favorites, setFavorites] = useState(new Set());
-const isFavorite = (fen) => favorites.has(fen);
-```
+1. **Use the provided hooks rather than reading from localStorage directly.** All persistence logic is encapsulated in the hooks and contexts.
+2. **Do not put UI state inside the context.** Contexts hold only data that many components across the tree need.
+3. **Always use `useCallback` for handlers passed as props** to memoised components to avoid unnecessary re-renders.
+4. **Validate FEN before any state update.** All write operations in `FENBatchContext` and `useFENHistory` call `validateFEN` first.
+5. **Functional updaters for cross-callback state.** When a `useCallback` with an empty dependency array needs to read state, always use `setState(prev => ...)`.
 
 ---
 
-## Common Patterns
-
-### Toggle Pattern
-
-```javascript
-const [isOpen, setIsOpen] = useState(false);
-
-// Simple toggle
-const toggle = () => setIsOpen((prev) => !prev);
-
-// Toggle with callback
-const toggleModal = useCallback(() => {
-  setIsOpen((prev) => !prev);
-}, []);
-```
-
-### Multi-Field Form Pattern
-
-```javascript
-const [formData, setFormData] = useState({
-  lightSquare: '#f0d9b5',
-  darkSquare: '#b58863',
-  coordinateColor: '#000000'
-});
-
-// Update single field
-const updateField = (field, value) => {
-  setFormData((prev) => ({
-    ...prev,
-    [field]: value
-  }));
-};
-
-// Update multiple fields
-const updateTheme = (newTheme) => {
-  setFormData((prev) => ({
-    ...prev,
-    ...newTheme
-  }));
-};
-```
-
-### List Management Pattern
-
-```javascript
-const [items, setItems] = useState([]);
-
-// Add item
-const addItem = (item) => {
-  setItems((prev) => [...prev, item]);
-};
-
-// Remove item
-const removeItem = (id) => {
-  setItems((prev) => prev.filter((item) => item.id !== id));
-};
-
-// Update item
-const updateItem = (id, updates) => {
-  setItems((prev) =>
-    prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
-  );
-};
-```
-
-### Async State Pattern
-
-```javascript
-const [state, setState] = useState({
-  data: null,
-  loading: false,
-  error: null
-});
-
-const fetchData = async () => {
-  setState({ data: null, loading: true, error: null });
-
-  try {
-    const data = await api.fetch();
-    setState({ data, loading: false, error: null });
-  } catch (error) {
-    setState({ data: null, loading: false, error });
-  }
-};
-```
-
----
-
-## State Flow Diagram
-
-```
-User Action
-    │
-    ▼
-Event Handler
-    │
-    ├─→ setState (component state)
-    │       │
-    │       ▼
-    │   Re-render
-    │       │
-    │       ▼
-    │   Canvas redraw
-    │
-    ├─→ localStorage.setItem (persist)
-    │
-    └─→ Context.update (global state)
-            │
-            ▼
-        All consumers re-render
-```
-
----
-
-## Debugging State
-
-### React DevTools
-
-```javascript
-// Name your hooks for better debugging
-const useChessBoard = () => {
-  useDebugValue('ChessBoard State');
-  // ...
-};
-```
-
-### State Logging
-
-```javascript
-// Log state changes
-useEffect(() => {
-  console.log('FEN changed:', fen);
-}, [fen]);
-
-// Log render count
-const renderCount = useRef(0);
-useEffect(() => {
-  renderCount.current++;
-  console.log(`Component rendered ${renderCount.current} times`);
-});
-```
-
----
-
-## Testing State
-
-### Unit Testing
-
-```javascript
-import { renderHook, act } from '@testing-library/react-hooks';
-
-test('useChessBoard updates FEN', () => {
-  const { result } = renderHook(() => useChessBoard());
-
-  act(() => {
-    result.current.setFen(NEW_FEN);
-  });
-
-  expect(result.current.fen).toBe(NEW_FEN);
-  expect(result.current.board).toEqual(parseFEN(NEW_FEN));
-});
-```
-
----
-
-## Migration Guide
-
-### From Class Components
-
-```javascript
-// Before (class component)
-class ChessBoard extends React.Component {
-  state = {
-    fen: DEFAULT_FEN,
-    isFlipped: false
-  };
-
-  updateFEN = (fen) => {
-    this.setState({ fen });
-  };
-}
-
-// After (functional component with hooks)
-const ChessBoard = () => {
-  const [fen, setFen] = useState(DEFAULT_FEN);
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const updateFEN = (fen) => {
-    setFen(fen);
-  };
-};
-```
-
----
-
-**Last Updated:** January 5, 2026  
-**Version:** 3.5.2  
-**Maintainer:** [@BilgeGates](https://github.com/BilgeGates)
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0

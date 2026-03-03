@@ -40,13 +40,12 @@ Currently tracking **0** high priority issues.
 **Affected Versions:** All versions  
 **Browsers:** All  
 **Reported:** 2025-12-28  
-**Status:** 🟡 Open - Planned for v4.0
+**Status:** 🟡 Open - Planned for future release
 
 **Workaround:**
 
 - Text descriptions provided via ARIA labels
 - FEN notation available for screen readers
-- Consider using "View as Grid" mode when implemented (v4.0)
 
 **Related:**
 
@@ -58,7 +57,7 @@ Currently tracking **0** high priority issues.
 
 **Issue:** Safari has a maximum canvas size of 16,384×16,384px, lower than other browsers.
 
-**Impact:** Cannot export at 32× scale (12,800px) on Safari. Maximum is 16× scale (6,400px).
+**Impact:** Cannot export at 24× or 32× Social quality on Safari/iOS. Maximum safe export is 16× Print.
 
 **Affected Versions:** All versions  
 **Browsers:** Safari (macOS, iOS)  
@@ -67,16 +66,11 @@ Currently tracking **0** high priority issues.
 
 **Technical Details:**
 
-```javascript
-// Safari limit
-maxDimension: 16384px
-maxArea: 268 MP
-
-// Our 32× export
-dimension: 12800px  ✅ Under dimension limit
-area: 163.84 MP     ✅ Under area limit
-
-// But Safari still blocks it in some cases
+```
+Safari limit:   16,384 px max dimension, 268 MP max area
+24× Social:     18,112 × 18,112 px = 327 MP  ❌ Exceeds area limit
+32× Social:     24,192 × 24,192 px = 585 MP  ❌ Exceeds area limit
+16× Print @8cm: 15,104 × 15,104 px = 228 MP  ✅ Within limit
 ```
 
 **Workaround:**
@@ -108,7 +102,7 @@ area: 163.84 MP     ✅ Under area limit
 - Use "Done" on keyboard to close it
 - Rotate to landscape for more space
 
-**Planned Fix:** v3.6.0 - Adjust layout on keyboard open
+**Planned Fix:** Adjust layout on keyboard open
 
 ---
 
@@ -118,24 +112,23 @@ area: 163.84 MP     ✅ Under area limit
 
 **Impact:** Users cannot preview positions before batch export.
 
-**Affected Versions:** v3.5.0+  
+**Affected Versions:** v5.0.0+  
 **Browsers:** All  
 **Reported:** 2026-01-18  
 **Status:** 🟡 Open - Investigating
 
 **Steps to Reproduce:**
 
-1. Open Advanced FEN Input modal
-2. Enable Multi-FEN/Gallery mode
-3. Enter multiple FEN positions
-4. Some preview thumbnails may show empty boards
+1. Open Advanced FEN Input page (`/advanced-fen`)
+2. Enter multiple FEN positions
+3. Some preview thumbnails may show empty boards
 
 **Workaround:**
 
 - Click on individual positions to verify
 - Use single-FEN mode for critical exports
 
-**Planned Fix:** v3.6.0
+**Planned Fix:** Under investigation
 
 ---
 
@@ -145,7 +138,7 @@ area: 163.84 MP     ✅ Under area limit
 
 **Impact:** Difficult to select precise colors in advanced picker mode.
 
-**Affected Versions:** v3.5.0+  
+**Affected Versions:** v5.0.0+  
 **Browsers:** All (more common on Firefox)  
 **Reported:** 2026-01-18  
 **Status:** 🟡 Open - Investigating
@@ -185,7 +178,7 @@ area: 163.84 MP     ✅ Under area limit
 - Export important positions
 - Use Favorites for positions you want to keep
 
-**Planned Fix:** v3.6.0 - Add notification when limit reached
+**Planned Fix:** Add notification when history limit reached
 
 ---
 
@@ -205,7 +198,7 @@ area: 163.84 MP     ✅ Under area limit
 - Use standard sizes (600-1000px) for best results
 - Toggle coordinates off if unreadable
 
-**Planned Fix:** v3.7.0 - Dynamic font scaling
+**Planned Fix:** Dynamic font scaling (already partially addressed in v5.0.0 — border and font sizes now scale proportionally with board pixels)
 
 ---
 
@@ -350,7 +343,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 
 **Reason:** Complex to implement with current Canvas-based architecture.
 
-**Status:** ⏳ Planned for v4.0.0
+**Status:** ⏳ Not yet implemented
 
 **Workaround:**
 
@@ -365,7 +358,7 @@ KKKKKKKK/8/8/8/8/8/8/kkkkkkkk w - - 0 1
 
 **Reason:** Static diagram generator, not a FENForsty Pro/player.
 
-**Status:** ⏳ May consider in v5.0+
+**Status:** 🚫 Not planned
 
 **Alternatives:**
 
@@ -473,7 +466,7 @@ localStorage.removeItem('fenHistory');
 
 **Include:**
 
-- **Version:** Check footer (e.g., v3.5.1)
+- **Version:** Check `package.json` (currently v5.0.0)
 - **Browser:** Chrome 120, Safari 17, etc.
 - **OS:** Windows 11, macOS 14, etc.
 - **Steps to reproduce:**
@@ -488,7 +481,7 @@ localStorage.removeItem('fenHistory');
 ```markdown
 **Bug:** Export fails with "Out of memory" error
 
-**Version:** v3.5.1
+**Version:** v5.0.0
 **Browser:** Chrome 120 on Windows 11
 **Board Size:** 1200px
 **Export Settings:** PNG, 32× quality
@@ -524,23 +517,27 @@ Statistics are not actively tracked. See sections above for current open issues.
 
 ## Recently Fixed Issues
 
-### v3.5.1 (2026-01-04)
+### v5.0.0 (2026-02-13)
 
-✅ **Fixed:** Pieces missing in exported images  
-✅ **Fixed:** Coordinate font too small  
-✅ **Fixed:** Border missing on exports
+✅ **Fixed:** Export dimension bug — board size selection now produces correct physical dimensions  
+✅ **Fixed:** Coordinate system positioning — labels now scale proportionally  
+✅ **Fixed:** Circular export dependency issues  
 
-### v3.5.0 (2026-01-03)
+### v4.0.0 (2026-02-02)
 
-✅ **Fixed:** FEN parsing edge cases  
-✅ **Fixed:** Export scaling issues on high-DPI  
-✅ **Fixed:** Cross-browser UI inconsistencies
+✅ **Fixed:** PWA manifest and installability  
+✅ **Fixed:** Service worker and offline caching  
 
-### v3.0.0 (2026-01-02)
+### v3.5.4 (2026-02-01)
 
-✅ **Fixed:** Color picker accuracy issues  
-✅ **Fixed:** Theme switching bugs  
-✅ **Fixed:** Export quality inconsistencies
+✅ **Fixed:** ThemeModal piece preview rendering  
+✅ **Fixed:** AdvancedFENInputModal board preview  
+
+### v3.5.2 (2026-01-18)
+
+✅ **Fixed:** Console logs replaced with logger utility  
+✅ **Fixed:** setTimeout memory leaks  
+✅ **Fixed:** Coordinates display and export alignment
 
 ---
 
@@ -548,23 +545,18 @@ Statistics are not actively tracked. See sections above for current open issues.
 
 Issues planned for upcoming releases:
 
-### v3.6.0 (Q1 2026)
+### Next Release
 
-- [ ] Fix mobile keyboard overlap
+- [ ] Fix mobile keyboard overlap with controls
 - [ ] Add history limit notification
-- [ ] Improve coordinate scaling
+- [ ] SVG export format
+- [ ] URL-based position sharing (`?fen=...`)
 
-### v4.0.0 (Q2 2026)
+### Long-term
 
-- [ ] Add SVG export (addresses limitation #4)
-- [ ] Improve canvas accessibility
-- [ ] Add grid view mode for screen readers
-
-### v5.0.0 (Future)
-
-- [ ] Consider animation support
-- [ ] Optional cloud sync (with consent)
-- [ ] Advanced export options
+- [ ] Full WCAG 2.1 AA accessibility compliance (requires SVG or DOM-based rendering)
+- [ ] Web Worker for off-thread export rendering
+- [ ] Optional cloud sync (with explicit user consent)
 
 ---
 
@@ -602,8 +594,8 @@ Found a bug? Want to fix it?
 
 ---
 
-**Last Updated:** January 18, 2026  
-**Version:** 3.5.2
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0  
 **Maintainer:** [@BilgeGates](https://github.com/BilgeGates)
 
-**Note:** This document is actively maintained. Issues are updated as they're discovered, fixed, or deprioritized.
+**Note:** This document is actively maintained. Issues are updated as they are discovered, fixed, or deprioritised.

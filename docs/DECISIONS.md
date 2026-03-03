@@ -299,7 +299,7 @@ Use browser localStorage API for all data persistence.
 ### ADR-007: PNG and JPEG Export Only (v3.x)
 
 **Date:** 2025-12-29  
-**Status:** ✅ Accepted (SVG planned for v4.0)
+**Status:** ✅ Accepted
 
 #### Context
 
@@ -307,7 +307,7 @@ Users need to export chess diagrams in various formats for different use cases.
 
 #### Decision
 
-Support PNG and JPEG export formats initially, defer SVG to v4.0.
+Support PNG and JPEG export formats initially, defer SVG to a future release.
 
 #### Consequences
 
@@ -700,7 +700,7 @@ Follow Semantic Versioning (SemVer 2.0.0): MAJOR.MINOR.PATCH
 | -------------- | ------------ | ----------- | -------- |
 | **Framework**  | React        | ✅ Accepted | 19.x     |
 | **Build Tool** | Vite         | ✅ Accepted | Latest   |
-| **Styling**    | Tailwind CSS | ✅ Accepted | 3.3.5    |
+| **Styling**    | Tailwind CSS | ✅ Accepted | 3.4.x    |
 | **Rendering**  | HTML5 Canvas | ✅ Accepted | Native   |
 | **State**      | React Hooks  | ✅ Accepted | Built-in |
 | **Storage**    | localStorage | ✅ Accepted | Native   |
@@ -843,7 +843,7 @@ components/
 
 ### Decisions to Revisit
 
-#### 1. SVG Export (Planned v4.0)
+#### 1. SVG Export (Planned)
 
 **Current:** PNG/JPEG only  
 **Future:** Add SVG export option  
@@ -855,10 +855,10 @@ components/
 **Future:** Optional backend for cloud sync  
 **Rationale:** User requests for cross-device sync, but must remain optional
 
-#### 3. Progressive Web App (Planned v4.x)
+#### 3. Progressive Web App
 
-**Current:** Standard web app  
-**Future:** Full PWA with offline support  
+**Current:** PWA manifest added in v4.0.0  
+**Future:** Full offline support with service worker  
 **Rationale:** Better mobile experience, offline functionality
 
 #### 4. WebAssembly (Maybe v5.0+)
@@ -873,7 +873,7 @@ components/
 
 ### When to Review Decisions
 
-- Major version updates (v4.0, v5.0)
+- Major version updates (v5.0, v6.0)
 - Significant user feedback
 - Technology changes (React 20, new browser APIs)
 - Performance issues
@@ -924,6 +924,6 @@ Want to propose a new decision or challenge an existing one?
 
 ---
 
-**Last Updated:** January 5, 2026  
-**Version:** 3.5.2  
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0  
 **Maintainer:** [@BilgeGates](https://github.com/BilgeGates)

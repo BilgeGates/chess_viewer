@@ -446,10 +446,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 | Version   | Status                  | Security Updates |
 | --------- | ----------------------- | ---------------- |
-| v3.5.x    | Active                  | Yes              |
-| v3.0.x    | Supported until 2026-06 | Yes              |
-| v1.x-v2.x | Deprecated              | No               |
+| v5.0.x    | Active                  | Yes              |
+| v4.0.x    | Supported until 2026-09 | Yes              |
+| v3.5.x    | Supported until 2026-06 | Security only    |
+| v1.x–v3.0.x | Deprecated            | No               |
 
 ---
 
+**Last Updated:** March 3, 2026  
 **© 2026 Khatai Huseynzada. MIT License.**

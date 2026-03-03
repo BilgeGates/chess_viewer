@@ -403,28 +403,43 @@ r3k2r/ppp2ppp/2n1b3/3pp3/2BPP3/2N2N2/PPP2PPP/R1BQK2R w KQkq d6 0 7
 
 ## Validation Rules
 
+**Source file:** `src/utils/validation.js` — `isValidFENFormat(fen)`.  
+Re-exported as `validateFEN` from `src/utils/index.js` and used throughout hooks and contexts.
+
 ### Basic Validation
 
 ```javascript
-const validateFEN = (fen) => {
+// src/utils/validation.js
+export function isValidFENFormat(fen) {
+  if (!fen || typeof fen !== 'string') return false;
+
   const parts = fen.trim().split(/\s+/);
-  
-  // Must have 6 fields
-  if (parts.length !== 6) return false;
-  
-  const [position, color, castling, enPassant, halfmove, fullmove] = parts;
-  
-  // Validate each field
-  return (
-    validatePosition(position) &&
-    validateColor(color) &&
-    validateCastling(castling) &&
-    validateEnPassant(enPassant) &&
-    validateHalfmove(halfmove) &&
-    validateFullmove(fullmove)
-  );
-};
+  // Accepts 1–6 fields (position-only FEN is valid for display purposes)
+  if (parts.length < 1 || parts.length > 6) return false;
+
+  const position = parts[0];
+  const ranks = position.split('/');
+  if (ranks.length !== 8) return false;
+
+  for (const rank of ranks) {
+    let squareCount = 0;
+    for (const char of rank) {
+      if (/[1-8]/.test(char)) {
+        squareCount += parseInt(char, 10);
+      } else if (/[pnbrqkPNBRQK]/.test(char)) {
+        squareCount += 1;
+      } else {
+        return false;  // invalid character
+      }
+    }
+    if (squareCount !== 8) return false;
+  }
+
+  return true;
+}
 ```
+
+**Note:** The validator accepts FEN strings with 1–6 fields. A position-only FEN (no color/castling/etc.) is considered valid for display purposes. Full 6-field FEN is required for strict chess legality checks.
 
 ### Position Validation
 
@@ -559,48 +574,60 @@ rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3
 
 ## Parser Implementation
 
+**Source files:** `src/utils/fenParser.js` (parse) and `src/utils/boardUtils.js` (board-to-FEN).
+
 ### Parse FEN to Board Array
 
+The actual implementation uses **empty string** `''` for empty squares (not `null`).
+Valid piece characters are stored in a `Set` for O(1) lookup, and valid digit characters in another `Set`.
+
 ```javascript
-const parseFEN = (fen) => {
-  const [position] = fen.split(' ');
-  const ranks = position.split('/');
-  
+// src/utils/fenParser.js
+export function parseFEN(fenString) {
+  const parts = fenString.trim().split(/\s+/);
+  const position = parts[0];
+  const rows = position.split('/');
+
   const board = [];
-  
-  for (const rank of ranks) {
-    const row = [];
-    
-    for (const char of rank) {
-      if (char >= '1' && char <= '8') {
-        // Empty squares
-        const count = parseInt(char);
-        for (let i = 0; i < count; i++) {
-          row.push(null);
+
+  for (const row of rows) {
+    const boardRow = [];
+
+    for (const char of row) {
+      if (VALID_DIGITS.has(char)) {
+        const emptySquares = parseInt(char, 10);
+        for (let i = 0; i < emptySquares; i++) {
+          boardRow.push('');  // empty string, not null
         }
       } else {
-        // Piece
-        row.push(char);
+        boardRow.push(char);  // piece letter, e.g. 'K', 'p'
       }
     }
-    
-    board.push(row);
+
+    board.push(boardRow);
   }
-  
-  return board;
-};
+
+  return board;  // string[][8][8]
+}
 ```
+
+Returns an 8×8 array of strings:  `''` = empty square, piece letter (`'K'`, `'p'`, etc.) = occupied.
+
+A memoised wrapper around this function is provided by the `useChessBoard(fen)` hook.
 
 ### Board Array to FEN
 
+The reverse conversion is in `src/utils/boardUtils.js`:
+
 ```javascript
-const boardToFEN = (board, color, castling, enPassant, halfmove, fullmove) => {
+// src/utils/boardUtils.js
+export function boardToFEN(board) {
   const ranks = board.map(row => {
     let rankStr = '';
     let emptyCount = 0;
-    
+
     for (const square of row) {
-      if (square === null) {
+      if (square === '') {
         emptyCount++;
       } else {
         if (emptyCount > 0) {
@@ -610,19 +637,17 @@ const boardToFEN = (board, color, castling, enPassant, halfmove, fullmove) => {
         rankStr += square;
       }
     }
-    
-    if (emptyCount > 0) {
-      rankStr += emptyCount;
-    }
-    
+
+    if (emptyCount > 0) rankStr += emptyCount;
     return rankStr;
   });
-  
-  const position = ranks.join('/');
-  
-  return `${position} ${color} ${castling} ${enPassant} ${halfmove} ${fullmove}`;
-};
+
+  // Appends default suffix 'w - - 0 1' for display purposes
+  return ranks.join('/') + ' w - - 0 1';
+}
 ```
+
+Used by `useInteractiveBoard` to convert the drag-and-drop board state back to a FEN string.
 
 ---
 
@@ -691,6 +716,6 @@ const boardToFEN = (board, color, castling, enPassant, halfmove, fullmove) => {
 
 ---
 
-**Last Updated:** January 5, 2026  
-**Version:** 3.5.1  
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0  
 **Maintainer:** [@BilgeGates](https://github.com/BilgeGates)

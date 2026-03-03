@@ -1,113 +1,157 @@
 # Performance
 
-Performance considerations for FENForsty Pro.
+Performance considerations and implemented optimisations for FENForsty Pro.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Implemented Optimisations](#implemented-optimisations)
+- [Code Splitting](#code-splitting)
+- [Memory Usage](#memory-usage)
+- [Browser Canvas Limits](#browser-canvas-limits)
+- [Known Performance Issues](#known-performance-issues)
+- [Performance Utilities](#performance-utilities)
 
 ---
 
 ## Overview
 
-Canvas-based rendering with React. No performance benchmarks have been run.
+FENForsty Pro is a client-side only application that performs canvas-based rendering and exports high-resolution images. Performance concerns fall into two areas:
+
+1. **Render performance** — keeping the interactive board and UI responsive during editing
+2. **Export performance** — generating very large canvases (up to 24,192×24,192 px) without crashing
 
 ---
 
-## Implemented Optimizations
+## Implemented Optimisations
 
 ### React.memo
 
-Used on several components:
+The following components are wrapped with `React.memo` to prevent unnecessary re-renders when parent state changes:
 
-- ChessBoard
-- BoardSquare
-- MiniChessPreview
-- Various control components
+- `ChessBoard`
+- `BoardSquare`
+- `MiniPreview`
+- Feature panel components receiving stable props
 
 ### useMemo / useCallback
 
-Used in hooks for:
+Used throughout the codebase:
 
-- Parsed board state
-- Theme objects
-- Export callbacks
+- `useChessBoard` — memoises FEN → 8×8 board array conversion
+- `useFENHistory` — memoises filtered history list (`filteredHistory`)
+- All event handlers in context providers use `useCallback` with strict dependency arrays
+- `FENBatchContext.addToBatch` uses an empty dep array + functional updater to remain stable across renders
 
-### Code Splitting
+### Debouncing
 
-**Not implemented.** Modals are imported synchronously.
+- FEN history persistence — written to localStorage with a 300 ms debounce to avoid thrashing on rapid state changes
+- `performance.js` exports a generic `debounce(fn, wait)` utility used for input handlers
 
-Future improvement: Use React.lazy for modals:
+### Throttling
 
-- ThemeModal
-- FENHistoryModal
-- ExportSettingsModal
-- AdvancedFENInputModal
+`performance.js` exports:
+
+- `throttle(fn, limit)` — time-based throttle
+- `rafThrottle(fn)` — `requestAnimationFrame`-based throttle with a `.cancel()` method, used for drag handlers to keep them in sync with the browser paint cycle
+
+### Piece Image Caching
+
+`pieceImageCache.js` caches loaded `HTMLImageElement` instances by piece-set key. Images are loaded once per piece-set and reused for both display rendering and export. This avoids repeated network requests and re-decoding.
+
+### Export Pause/Resume
+
+The export loop in `canvasExporter.js` supports pausing (`pauseExport()`) and cancellation (`cancelExport()`). Without this, a 32× export would block any interactivity for the full duration of rendering.
+
+### History Archiving
+
+Inactive FEN history entries are automatically moved to a separate archive (`fen-history-archive` in localStorage) by `archiveManager.js`. This keeps the active history list small and avoids performance degradation in virtualised lists with thousands of entries.
+
+### Virtualised Lists
+
+`react-window` is used for rendering large FEN history and batch lists to avoid mounting thousands of DOM nodes.
 
 ---
 
-## Known Performance Issues
+## Code Splitting
 
-### Large Exports
+All page components are lazy-loaded via `React.lazy`:
 
-- 32x scale (12,800x12,800px) uses ~500MB memory
-- Can crash low-RAM devices or Safari
-- Progress not shown during processing
+```javascript
+const HomePage = lazy(() => import('@/pages/HomePage'));
+const FENHistoryPage = lazy(() => import('@/pages/FENHistoryPage'));
+const AdvancedFENInputPage = lazy(() => import('@/pages/AdvancedFENInputPage'));
+// etc.
+```
 
-### Canvas Rendering
-
-- Full redraw on any change
-- No partial updates implemented
-- No off-screen canvas caching
-
-### Piece Image Loading
-
-- Loads all pieces in selected set at startup
-- No lazy loading per piece
-- Cached in browser after first load
+A single `<Suspense>` boundary in `Router.jsx` shows a chess-themed loading spinner while the page chunk loads. This reduces the initial bundle size and defers loading of heavy pages until they are visited.
 
 ---
 
 ## Memory Usage
 
-| Export Scale | Resolution    | Approx. Memory |
-| ------------ | ------------- | -------------- |
-| 8x           | 3,200x3,200   | ~40MB          |
-| 16x          | 6,400x6,400   | ~160MB         |
-| 24x          | 9,600x9,600   | ~370MB         |
-| 32x          | 12,800x12,800 | ~660MB         |
+Export memory is dominated by the canvas pixel buffer (`width × height × 4 bytes RGBA`):
+
+| Quality | Approx. Resolution | Approx. Memory |
+|---|---|---|
+| 8× @ 4 cm | 3,776 × 3,776 px | ~54 MB |
+| 8× @ 8 cm | 7,552 × 7,552 px | ~216 MB |
+| 16× @ 6 cm | 11,328 × 11,328 px | ~487 MB |
+| 24× (Social) | 18,112 × 18,112 px | ~1.24 GB |
+| 32× (Social) | 24,192 × 24,192 px | ~2.22 GB |
+
+**Note:** 24× and 32× Social exports may exhaust available memory on devices with less than 4 GB RAM and are very likely to fail on iOS/Safari due to the WebKit canvas area limit.
 
 ---
 
-## Browser Limits
+## Browser Canvas Limits
 
-| Browser | Max Canvas Size               |
-| ------- | ----------------------------- |
-| Chrome  | 32,767x32,767                 |
-| Firefox | 32,767x32,767                 |
-| Safari  | 16,384x16,384 (or 268MP area) |
-| Edge    | 32,767x32,767                 |
+| Browser | Max Dimension | Notes |
+|---|---|---|
+| Chrome / Edge | 32,767 px | Chromium limit |
+| Firefox | 32,767 px | |
+| Safari | 16,384 px | Also limited to 268 MP total area |
 
-Safari may fail on 32x exports.
-
----
-
-## Not Implemented
-
-- Performance monitoring
-- Lighthouse CI in build
-- Bundle size tracking
-- Web Vitals reporting
-- Service worker caching
-- Image preloading
-- Virtual scrolling for history
+`getMaxCanvasSize()` in `utils/index.js` detects and returns the safe maximum for the current browser. The export system sets `willBeReduced: true` when the requested dimensions exceed this cap.
 
 ---
 
-## Recommendations
+## Known Performance Issues
 
-1. Add Lighthouse CI to track regressions
-2. Add bundle size limit checks
-3. Implement off-screen canvas for caching
-4. Add lazy loading for piece sets
-5. Add progress reporting for exports
+### Large Exports on Safari
+
+Safari enforces a 16,384 px and 268 MP canvas limit. Exports at 24× or 32× Social mode will fail or produce a blank image. This is a browser limitation with no workaround other than using a Chromium-based browser.
+
+### Canvas Full Redraw
+
+The interactive chess board (`ChessBoard`) redraws the entire canvas on every prop change. There is no partial update or dirty-checking. For the display board this is acceptable (64 squares × one `fillRect` each is fast), but it means any prop change triggers the full draw cycle.
+
+### No Web Worker for Export
+
+All canvas rendering during export runs on the main thread. On slow devices, very large exports (16× and above) may cause the UI to become unresponsive despite the async progress animation. Web Worker offloading is not implemented.
+
+### Sequential Batch Export
+
+Batch export processes positions one at a time in sequence. There is a small `setTimeout` delay between positions to yield to the browser event loop, but large batches will still occupy the tab for an extended period.
 
 ---
 
-**Last Updated:** January 18, 2026
+## Performance Utilities
+
+`src/utils/performance.js` exports:
+
+| Export | Signature | Description |
+|---|---|---|
+| `debounce` | `(fn, wait = 300) => fn` | Returns a debounced version of `fn` |
+| `throttle` | `(fn, limit = 300) => fn` | Returns a time-throttled version of `fn` |
+| `rafThrottle` | `(fn) => fn & { cancel() }` | Returns an rAF-throttled version with a cancel method |
+| `lazyLoadImages` | `(selector, options) => cleanup` | Sets up `IntersectionObserver` for lazy image loading |
+
+`src/hooks/usePerformance.js` wraps `performance.mark` / `performance.measure` for timing individual operations during development.
+
+---
+
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0

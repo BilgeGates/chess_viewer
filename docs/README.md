@@ -1,6 +1,6 @@
-# FENForsty Pro Documentation
+# FENForsty Pro — Documentation
 
-Technical documentation for FENForsty Pro.
+Technical documentation for FENForsty Pro v5.0.0.
 
 ---
 
@@ -8,25 +8,25 @@ Technical documentation for FENForsty Pro.
 
 ### Core Documentation
 
-- **[Architecture](ARCHITECTURE.md)** - System design and folder structure
-- **[State Management](STATE_MANAGEMENT.md)** - React state patterns
-- **[Decisions](DECISIONS.md)** - Architectural decision records
+- **[Architecture](ARCHITECTURE.md)** — System design, folder structure, component groups, routing
+- **[State Management](STATE_MANAGEMENT.md)** — React hooks, Context API patterns, localStorage persistence
+- **[Decisions](DECISIONS.md)** — Architectural decision records (ADRs)
 
 ### Technical References
 
-- **[Export Pipeline](EXPORT_PIPELINE.md)** - Export system documentation
-- **[Performance](PERFORMANCE.md)** - Performance considerations
-- **[Accessibility](ACCESSIBILITY.md)** - Current accessibility status (limited)
-- **[FEN Notation](FEN.md)** - FEN notation reference
-- **[Known Issues](KNOWN_ISSUES.md)** - Tracked issues and limitations
-- **[Design Errors](DESIGN_ERRORS_ANALYSIS.md)** - Identified issues and fixes
+- **[Export Pipeline](EXPORT_PIPELINE.md)** — Canvas export system, quality modes, API reference
+- **[Performance](PERFORMANCE.md)** — Implemented optimisations, memory usage, browser limits
+- **[Accessibility](ACCESSIBILITY.md)** — Current accessibility status
+- **[FEN Notation](FEN.md)** — FEN format reference and parser implementation
+- **[Known Issues](KNOWN_ISSUES.md)** — Tracked issues and limitations
+- **[Design Errors Analysis](DESIGN_ERRORS_ANALYSIS.md)** — Identified design issues and fixes
 
 ### Project Information
 
-- **[Changelog](CHANGELOG.md)** - Version history
-- **[FAQ](FAQ.md)** - Common questions
-- **[Linting Setup](LINTING_SETUP.md)** - Code quality tools
-- **[Roadmap](ROADMAP.md)** - Planned features
+- **[Changelog](CHANGELOG.md)** — Version history (v1.0.0 → v5.0.0)
+- **[FAQ](FAQ.md)** — Common questions
+- **[Linting Setup](LINTING_SETUP.md)** — ESLint, Prettier, Husky, commitlint configuration
+- **[Roadmap](ROADMAP.md)** — Implemented features and planned work
 
 ---
 
@@ -34,44 +34,43 @@ Technical documentation for FENForsty Pro.
 
 ### For Developers
 
-1. Read [Architecture](ARCHITECTURE.md) for system overview
-2. Review [State Management](STATE_MANAGEMENT.md) for patterns
-3. Check [Known Issues](KNOWN_ISSUES.md) before development
+1. Read [Architecture](ARCHITECTURE.md) for a full system overview and file structure
+2. Review [State Management](STATE_MANAGEMENT.md) for hook and context patterns
+3. Check [Known Issues](KNOWN_ISSUES.md) before starting work
+4. See [Export Pipeline](EXPORT_PIPELINE.md) for canvas/export details
 
 ### For Contributors
 
-1. Review [Decisions](DECISIONS.md) for context
-2. Check [Design Errors](DESIGN_ERRORS_ANALYSIS.md) for open issues
-3. Follow code style in existing files
+1. Review [Decisions](DECISIONS.md) for context on why things are built the way they are
+2. Check [Design Errors Analysis](DESIGN_ERRORS_ANALYSIS.md) for open design issues
+3. Follow code style in existing files — zero ESLint warnings enforced in CI
 
 ---
 
-## Current Status
+## Current Status (v5.0.0)
 
 ### What Works
 
 - FEN parsing and validation
-- Canvas board rendering
-- PNG/JPEG export (up to 12,800x12,800px)
-- Multiple piece sets and themes
-- Board flip and coordinate toggle
-- Local storage for history/favorites
+- Canvas board rendering with 23+ piece sets and 12+ themes
+- Interactive drag-and-drop board editor
+- PNG/JPEG export up to 24,192×24,192 px (Social 32×)
+- Print mode with physical dimension accuracy (DPI-correct output)
+- Batch export of multiple FEN positions
+- FEN history with archive, filtering, and favorites
+- Light/dark color scheme with `prefers-color-scheme` support
+- PWA manifest
+- Settings page, FEN history page, advanced FEN input page
+- All pages lazy-loaded with code splitting
 
 ### Known Limitations
 
-- No WCAG accessibility compliance
-- Canvas not accessible to screen readers
-- No keyboard shortcuts
-- No offline support
-- Safari has export limitations (see Known Issues)
-
-### Recent Fixes (v3.5.2)
-
-- Console logs replaced with logger utility
-- setTimeout memory leak cleanup
-- Error boundary added
-- Basic ARIA labels on key components
-- Centralized error handling utility
+- No WCAG accessibility compliance for canvas content (screen readers cannot access board)
+- 24×/32× Social exports may fail on Safari/iOS (canvas area limit)
+- No keyboard shortcuts for board actions
+- No SVG export
+- No unit or integration test coverage
+- `export/` and `Export/` (and similar pairs) directories duplicated in `features/` due to case-insensitive filesystem
 
 ---
 
@@ -83,4 +82,5 @@ Technical documentation for FENForsty Pro.
 
 ---
 
-**Last Updated:** January 18, 2026
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0

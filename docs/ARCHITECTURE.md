@@ -1,4 +1,4 @@
-# FENForsty Pro - Architecture Documentation
+# FENForsty Pro — Architecture Documentation
 
 ## Table of Contents
 
@@ -8,6 +8,7 @@
 - [Core Components](#core-components)
 - [Data Flow](#data-flow)
 - [State Management](#state-management)
+- [Routing](#routing)
 - [Canvas Rendering](#canvas-rendering)
 - [Export System](#export-system)
 
@@ -15,14 +16,16 @@
 
 ## Project Overview
 
-A React-based web application that renders chess positions from FEN notation and exports them as images using HTML5 Canvas.
+A React-based web application that renders chess positions from FEN notation, supports interactive drag-and-drop board editing, and exports high-resolution images via HTML5 Canvas.
 
 **Core Principles:**
 
-- Component-based architecture
-- Functional components with hooks
-- Canvas-based rendering
-- Immutable state management
+- Component-based architecture with feature-domain grouping
+- Functional components with React hooks exclusively
+- Canvas-based board rendering and image export
+- Zero-backend — all state persisted in localStorage
+- Lazy-loaded pages for faster initial load
+- Dual context providers for theme settings and FEN batch processing
 
 ---
 
@@ -30,197 +33,250 @@ A React-based web application that renders chess positions from FEN notation and
 
 ### Frontend
 
-- **React 19.x** - UI library
-- **React Hooks** - useState, useEffect, useCallback, useMemo, useRef
+- **React 19.x** — UI library with hooks
+- **React Router DOM 7.x** — Client-side routing
+- **Framer Motion 12.x** — Animations
+- **React DnD 16.x** — Drag-and-drop piece interaction
+- **react-window 2.x** — Virtualised list rendering for history
+- **Lucide React / React Icons** — Icon libraries
 
 ### Styling
 
-- **Tailwind CSS** - Utility classes
+- **Tailwind CSS 3.x** — Utility-first CSS
+- **PostCSS / Autoprefixer** — CSS build pipeline
+
+### Build & Tooling
+
+- **Vite 6.x** — Build tool and dev server
+- **ESLint 9.x** with React/hooks plugins — Linting
+- **Prettier** — Code formatting
+- **Husky + lint-staged** — Pre-commit hooks
+- **commitlint** — Conventional commit enforcement
 
 ### Browser APIs
 
-- **HTML5 Canvas API** - Board and piece rendering
-- **Blob & URL APIs** - Image export and download
+- **HTML5 Canvas API** — Board rendering and image export
+- **Blob & URL APIs** — Image download
+- **localStorage** — State persistence
+- **Clipboard API** — Copy image to clipboard
 
 ---
 
 ## Project Structure
 
 ```
-chess_viewer/
+chessviewer/
 │
 ├── public/
-│   └── index.html
+│   ├── manifest.json          # PWA manifest
+│   ├── robots.txt
+│   └── sitemap.xml
 │
 ├── src/
+│   ├── App.jsx                # Root component — light/dark theme & layout
+│   ├── index.jsx              # Application entry point
+│   ├── index.css              # Global styles
+│   │
+│   ├── routes/
+│   │   └── Router.jsx         # React Router with lazy-loaded pages
+│   │
+│   ├── pages/                 # Page-level components
+│   │   ├── HomePage.jsx       # Main board + controls
+│   │   ├── AboutPage.jsx      # About / credits
+│   │   ├── DownloadPage.jsx   # PWA install guide
+│   │   ├── SupportPage.jsx    # Help & support
+│   │   ├── SettingsPage.jsx   # Application settings
+│   │   ├── FENHistoryPage.jsx # FEN history browser
+│   │   ├── AdvancedFENInputPage.jsx # Multi-FEN batch editor
+│   │   ├── ThemeCustomizerPage.jsx  # Full-page theme editor
+│   │   ├── NotFoundPage.jsx   # 404 page
+│   │   ├── index.js
+│   │   └── settings/
+│   │       ├── ExportCustomization.jsx
+│   │       ├── ThemeCustomization.jsx
+│   │       └── index.js
 │   │
 │   ├── components/
+│   │   ├── index.js
 │   │   │
-│   │   ├── board/                    # Chess board rendering components
-│   │   │   ├── BoardSquare.jsx      # Individual square component
-│   │   │   ├── BoardGrid.jsx        # Board grid layout
-│   │   │   ├── ChessBoard.jsx       # Main board with canvas rendering
-│   │   │   ├── MiniChessPreview.jsx # Thumbnail preview
-│   │   │   └── index.js             # Barrel exports
+│   │   ├── board/             # Chess board rendering components
+│   │   │   ├── BoardGrid/     # Board grid layout
+│   │   │   ├── BoardSquare/   # Individual square
+│   │   │   ├── ChessBoard/    # Main board with canvas rendering
+│   │   │   ├── MiniPreview/   # Thumbnail preview for history
+│   │   │   └── index.js
 │   │   │
-│   │   ├── common/                   # Shared/common components
-│   │   │   │
-│   │   │   ├── ui/                   # UI primitive components
-│   │   │   │   ├── Badge.jsx        # Badge component
-│   │   │   │   ├── Button.jsx       # Button with variants
-│   │   │   │   ├── Card.jsx         # Card container
-│   │   │   │   ├── Checkbox.jsx     # Checkbox input
-│   │   │   │   ├── Input.jsx        # Text input field
-│   │   │   │   ├── Modal.jsx        # Modal dialog with accessibility
-│   │   │   │   ├── Select.jsx       # Dropdown select
-│   │   │   │   ├── SearchableSelect.jsx  # Searchable dropdown
-│   │   │   │   ├── RangeSlider.jsx  # Range slider input
-│   │   │   │   └── index.js         # Barrel exports
-│   │   │   │
-│   │   │   ├── ActionButtons.jsx    # Export action buttons
-│   │   │   ├── ControlPanel.jsx     # Main control panel
-│   │   │   ├── DisplayOptions.jsx   # Display settings
-│   │   │   ├── ErrorBoundary.jsx    # Error boundary wrapper
-│   │   │   ├── NotificationContainer.jsx  # Toast notifications
-│   │   │   ├── UserGuide.jsx        # User guide component
-│   │   │   └── index.js             # Barrel exports
+│   │   ├── features/          # Feature-domain components
+│   │   │   ├── ActionButtons/ # Export / copy action buttons
+│   │   │   ├── ClipboardHistory/ # Clipboard copy history
+│   │   │   ├── ColorPicker/   # Board color picker
+│   │   │   │   ├── parts/     # ColorCanvas, HueSlider, ColorInput, etc.
+│   │   │   │   ├── views/     # ThemeMainView, ThemeAdvancedPickerView, ThemeSettingsView
+│   │   │   │   └── PickerModal.jsx
+│   │   │   ├── ControlPanel/  # Board controls (flip, reset, etc.)
+│   │   │   ├── DisplayOptions/ # Show/hide display options
+│   │   │   ├── Export/        # Export settings, progress, size control
+│   │   │   │   ├── BoardSizeControl/
+│   │   │   │   ├── ExportOptionsDialog/
+│   │   │   │   ├── ExportProgress/
+│   │   │   │   ├── ExportSettings/
+│   │   │   │   └── index.js
+│   │   │   ├── Fen/           # FEN input and related components
+│   │   │   │   ├── BoardPreview/
+│   │   │   │   ├── FENInputField/
+│   │   │   │   ├── FENInputList/
+│   │   │   │   ├── PieceSelector/
+│   │   │   │   └── index.js
+│   │   │   ├── HelpCenter/    # In-app help panel
+│   │   │   ├── History/       # FEN history UI
+│   │   │   │   ├── ConfirmationModal/
+│   │   │   │   ├── HistoryFilters/
+│   │   │   │   ├── StatusBadge/
+│   │   │   │   └── index.js
+│   │   │   ├── Theme/         # Theme preset selector
+│   │   │   │   └── ThemeSelector.jsx
+│   │   │   ├── UserGuide/     # Onboarding user guide
+│   │   │   └── index.js
 │   │   │
-│   │   ├── features/                 # Feature-based modules
-│   │   │   │
-│   │   │   ├── export/              # Export functionality
-│   │   │   │   ├── BoardSizeControl.jsx     # Board size settings
-│   │   │   │   ├── ExportProgress.jsx       # Export progress indicator
-│   │   │   │   ├── ExportSettings.jsx       # Export configuration
-│   │   │   │   ├── ExportSettingsModal.jsx  # Export modal
-│   │   │   │   └── index.js                 # Barrel exports
-│   │   │   │
-│   │   │   ├── theme/               # Theme management
-│   │   │   │   ├── ThemeSelector.jsx        # Theme picker
-│   │   │   │   ├── ThemeModal.jsx           # Theme configuration modal
-│   │   │   │   └── index.js                 # Barrel exports
-│   │   │   │
-│   │   │   ├── fen/                 # FEN notation features
-│   │   │   │   ├── AdvancedFENInputModal.jsx  # Advanced FEN editor
-│   │   │   │   ├── FENHistoryModal.jsx        # FEN history browser
-│   │   │   │   ├── FENInputField.jsx          # FEN input field
-│   │   │   │   ├── FamousPositionButton.jsx   # Famous positions
-│   │   │   │   ├── PieceSelector.jsx          # Piece style picker
-│   │   │   │   ├── BoardPreview.jsx           # Board preview
-│   │   │   │   ├── FENInputList.jsx           # FEN list component
-│   │   │   │   └── index.js                   # Barrel exports
-│   │   │   │
-│   │   │   ├── color-picker/        # Color picker feature
-│   │   │   │   ├── parts/           # Color picker sub-components
-│   │   │   │   │   ├── ColorCanvas.jsx
-│   │   │   │   │   ├── ColorInput.jsx
-│   │   │   │   │   ├── ColorPalettes.jsx
-│   │   │   │   │   ├── ColorSwatch.jsx
-│   │   │   │   │   └── HueSlider.jsx
-│   │   │   │   │
-│   │   │   │   ├── views/           # Color picker views
-│   │   │   │   │   ├── ThemeMainView.jsx
-│   │   │   │   │   ├── ThemeAdvancedPickerView.jsx
-│   │   │   │   │   └── ThemeSettingsView.jsx
-│   │   │   │   │
-│   │   │   │   ├── ColorPicker.jsx  # Main color picker
-│   │   │   │   ├── PickerModal.jsx  # Color picker modal
-│   │   │   │   └── index.js         # Barrel exports
-│   │   │   │
-│   │   │   └── index.js             # Feature barrel exports
+│   │   ├── interactions/      # Drag-and-drop interaction components
+│   │   │   ├── ChessEditor/   # Full interactive board editor
+│   │   │   ├── CustomDragLayer/ # Custom DnD drag preview layer
+│   │   │   ├── DndProvider/   # React DnD context (HTML5 + touch backends)
+│   │   │   ├── DraggablePiece/ # Draggable piece wrapper
+│   │   │   ├── DroppableSquare/ # Droppable board square
+│   │   │   ├── InteractiveBoard/ # Board with drag-and-drop enabled
+│   │   │   ├── PiecePalette/  # Piece selection palette for board editing
+│   │   │   ├── TrashZone/     # Drop zone to remove pieces
+│   │   │   └── index.js
 │   │   │
-│   │   ├── layout/                   # Layout components
-│   │   │   ├── Navbar.jsx           # Navigation bar
-│   │   │   ├── Footer.jsx           # Footer
-│   │   │   └── index.js             # Barrel exports
+│   │   ├── layout/            # App-level layout components
+│   │   │   ├── Navbar/        # Navigation bar (hidden on tool pages)
+│   │   │   └── index.js
 │   │   │
-│   │   └── index.js                 # Main components barrel export
+│   │   └── ui/                # Reusable UI primitives
+│   │       ├── Badge/
+│   │       ├── Button/
+│   │       ├── Card/
+│   │       ├── Checkbox/
+│   │       ├── CustomSelect/
+│   │       ├── DatePicker/
+│   │       ├── ErrorBoundary/
+│   │       ├── Input/
+│   │       ├── Modal/
+│   │       ├── NotificationContainer/
+│   │       ├── RangeSlider/
+│   │       ├── SearchableSelect/
+│   │       ├── Select/
+│   │       └── index.js
 │   │
-│   ├── pages/                        # Page components
-│   │   ├── HomePage.jsx             # Main application page
-│   │   ├── AboutPage.jsx            # About page
-│   │   ├── DownloadPage.jsx         # PWA download page
-│   │   ├── SupportPage.jsx          # Support/help page
-│   │   └── index.js                 # Barrel exports
+│   ├── contexts/              # React context providers
+│   │   ├── ThemeSettingsContext.jsx  # Color picker settings & recent colors
+│   │   ├── FENBatchContext.jsx       # Batch FEN list with localStorage
+│   │   └── index.js
 │   │
-│   ├── hooks/                        # Custom React hooks
-│   │   ├── useChessBoard.js         # Board state management
-│   │   ├── usePieceImages.js        # Piece image loading
-│   │   ├── useFENHistory.js         # FEN history management
-│   │   ├── useTheme.js              # Theme state hook
-│   │   ├── useNotifications.js      # Notification system
-│   │   ├── useColorState.js         # Color state management
-│   │   ├── useColorConversion.js    # Color format conversion
-│   │   ├── useCanvasPicker.js       # Canvas color picker
-│   │   ├── useLocalStorage.js       # LocalStorage persistence
-│   │   ├── useOutsideClick.js       # Outside click detection
-│   │   ├── usePerformance.js        # Performance monitoring
-│   │   ├── useIntersectionObserver.js  # Intersection observer
-│   │   └── index.js                 # Barrel exports
+│   ├── hooks/                 # Custom React hooks
+│   │   ├── useCanvasPicker.js
+│   │   ├── useChessBoard.js
+│   │   ├── useColorConversion.js
+│   │   ├── useColorState.js
+│   │   ├── useFENHistory.js
+│   │   ├── useInteractiveBoard.js
+│   │   ├── useIntersectionObserver.js
+│   │   ├── useLocalStorage.js
+│   │   ├── useNotifications.js
+│   │   ├── useOutsideClick.js
+│   │   ├── usePerformance.js
+│   │   ├── usePieceImages.js
+│   │   ├── useScrollLock.js
+│   │   ├── useTheme.js
+│   │   └── index.js
 │   │
-│   ├── utils/                        # Utility functions
-│   │   ├── fenParser.js             # FEN parsing logic
-│   │   ├── colorUtils.js            # Color manipulation
-│   │   ├── coordinateCalculations.js # Board calculations
-│   │   ├── canvasExporter.js        # Canvas export utilities
-│   │   ├── advancedExport.js        # Advanced export features
-│   │   ├── imageOptimizer.js        # Image optimization
-│   │   ├── errorHandler.js          # Error handling
-│   │   ├── logger.js                # Logging utility
-│   │   ├── performance.js           # Performance utilities
-│   │   ├── validation.js            # Input validation
-│   │   ├── classNames.js            # CSS class utilities
-│   │   └── index.js                 # Barrel exports
+│   ├── utils/                 # Pure utility functions
+│   │   ├── advancedExport.js
+│   │   ├── archiveManager.js
+│   │   ├── boardUtils.js
+│   │   ├── canvasExporter.js
+│   │   ├── classNames.js
+│   │   ├── colorUtils.js
+│   │   ├── coordinateCalculations.js
+│   │   ├── errorHandler.js
+│   │   ├── eventUtils.js
+│   │   ├── fenParser.js
+│   │   ├── historyUtils.js
+│   │   ├── imageOptimizer.js
+│   │   ├── logger.js
+│   │   ├── performance.js
+│   │   ├── pieceImageCache.js
+│   │   ├── validation.js
+│   │   └── index.js
 │   │
-│   ├── contexts/                     # React contexts
-│   │   ├── ThemeSettingsContext.jsx # Theme settings context
-│   │   └── index.js                 # Barrel exports
-│   │
-│   ├── constants/                    # Application constants
-│   │   ├── chessConstants.js        # Chess-related constants
-│   │   └── index.js                 # Barrel exports
-│   │
-│   ├── routes/                       # Routing configuration
-│   │   └── Router.jsx               # React Router setup
-│   │
-│   ├── App.jsx                       # Root application component
-│   ├── index.js                      # Application entry point
-│   └── index.css                     # Global styles
+│   └── constants/
+│       ├── chessConstants.js  # Piece sets, FEN defaults, board constants
+│       ├── dragDropConstants.js # DnD item types
+│       └── index.js
 │
-├── docs/                             # Documentation
-├── dist/                             # Vite build output (gitignored)
-├── package.json                      # Dependencies
-├── vite.config.js                    # Vite configuration
-├── tailwind.config.js               # Tailwind configuration
-└── README.md                         # Project readme
+├── docs/                      # Documentation
+├── dist/                      # Vite build output (gitignored)
+├── index.html                 # HTML entry point
+├── package.json
+├── vite.config.js
+├── tailwind.config.js
+├── jsconfig.json              # Path alias (@/ → src/)
+└── eslint.config.js
 ```
 
-### Architecture Principles
+---
 
-**1. Feature-Based Organization**
+## Architecture Principles
 
-- Components organized by feature domain (export, theme, fen, color-picker)
-- Each feature is self-contained with its own components
-- Common/shared components separated from feature-specific ones
+### 1. Feature-Based Component Organisation
 
-**2. Separation of Concerns**
+Components are grouped by feature domain inside `src/components/features/`:
 
-- UI primitives (`common/ui/`) - Reusable basic components
-- Common components (`common/`) - Shared business logic components
-- Features (`features/`) - Domain-specific functionality
-- Hooks, utils, contexts at root level for global access
+| Group | Contents |
+|---|---|
+| `ActionButtons` | Primary export/copy action buttons |
+| `ClipboardHistory` | Clipboard copy history panel |
+| `ColorPicker` | Board color picker with views and parts |
+| `ControlPanel` | Board flip, reset, and control buttons |
+| `DisplayOptions` | Coordinates, labels display toggles |
+| `Export` | Export settings, dialog, progress, size control |
+| `Fen` | FEN input field, input list, board preview, piece selector |
+| `HelpCenter` | In-app help content |
+| `History` | FEN history list, filters, status badge, confirmation modal |
+| `Theme` | Board theme preset selector |
+| `UserGuide` | First-time user onboarding guide |
 
-**3. Barrel Exports**
+### 2. Separation of Concerns
 
-- Each directory has an `index.js` for clean imports
-- Example: `import { Button, Modal } from 'components/common'`
+- **`ui/`** — Pure UI primitives (Button, Modal, Input, etc.) with no business logic
+- **`board/`** — Chess board rendering components
+- **`interactions/`** — Drag-and-drop board editing layer
+- **`features/`** — Domain-specific feature panels
+- **`layout/`** — App shell components (Navbar)
+- **`hooks/`** — Stateful logic extracted into reusable hooks
+- **`utils/`** — Pure, side-effect-free functions
+- **`contexts/`** — React contexts for cross-tree state sharing
 
-**4. Component Classification**
+### 3. Barrel Exports
 
-- **UI Primitives**: Button, Input, Modal, Select, etc.
-- **Common Components**: ErrorBoundary, NotificationContainer, UserGuide
-- **Feature Components**: Export, Theme, FEN, Color-picker specific
-- **Layout Components**: Navbar, Footer
-- **Page Components**: Full page views
+Every directory has an `index.js` for clean, stable imports:
+
+```javascript
+// Example
+import { Button, Modal } from '@/components/ui';
+import { FENInputField } from '@/components/features/Fen';
+import { useChessBoard, useFENHistory } from '@/hooks';
+```
+
+### 4. Path Aliases
+
+`jsconfig.json` defines `@/` as an alias for `src/`, used consistently throughout:
+
+```javascript
+import { parseFEN } from '@/utils';
+import { ChessBoard } from '@/components/board';
+```
 
 ---
 
@@ -228,17 +284,33 @@ chess_viewer/
 
 ### App.jsx
 
-Root component that manages global state.
+Root application component. Responsibilities:
 
-**Key State:**
+- Manages light/dark color-scheme state (`theme`: `'light' | 'dark'`)
+- Reads initial theme from `window.__INITIAL_THEME__` → localStorage → `prefers-color-scheme`
+- Applies `data-theme` attribute to `<html>` via `useLayoutEffect`
+- Wraps the app in `<ThemeSettingsProvider>` and `<FENBatchProvider>`
+- Renders `<Navbar>` conditionally (hidden on tool pages: `/settings`, `/fen-history`, `/advanced-fen`)
+- Contains skip-to-main-content link for keyboard accessibility
 
 ```javascript
-const [fen, setFen] = useState(STARTING_FEN);
-const [boardTheme, setBoardTheme] = useState('brown');
-const [pieceSet, setPieceSet] = useState('cburnett');
-const [flipped, setFlipped] = useState(false);
-const [showCoords, setShowCoords] = useState(true);
+const TOOL_PAGES = ['/settings', '/fen-history', '/advanced-fen'];
 ```
+
+### Router.jsx
+
+All pages are lazy-loaded with `React.lazy` and wrapped in a single `<Suspense>` boundary with a chess-themed loading spinner. Routes:
+
+| Path | Component |
+|---|---|
+| `/` | `HomePage` |
+| `/about` | `AboutPage` |
+| `/download` | `DownloadPage` |
+| `/support` | `SupportPage` |
+| `/settings` | `SettingsPage` |
+| `/fen-history` | `FENHistoryPage` |
+| `/advanced-fen` | `AdvancedFENInputPage` |
+| `*` | `NotFoundPage` |
 
 ### ChessBoard.jsx
 
@@ -246,307 +318,96 @@ Renders the chess board using HTML5 Canvas.
 
 **Responsibilities:**
 
-- Parse FEN string
-- Draw board squares
-- Render pieces from images
-- Draw coordinates (a-h, 1-8)
-- Handle board flipping
+- Accepts a FEN string, parses it via `useChessBoard`, and draws pieces on canvas
+- Draws board squares with configurable light/dark colors
+- Draws piece images loaded via `usePieceImages`
+- Optionally draws rank/file coordinate labels
+- Handles board flipping (renders from Black's perspective)
 
-**Key Methods:**
+### ChessEditor (interactions/)
 
-- `drawBoard()` - Renders squares
-- `drawPieces()` - Draws piece images
-- `drawCoordinates()` - Adds labels
-- `clearCanvas()` - Clears before redraw
-
-**Canvas Dimensions:**
-
-- Default: 400×400 px
-- Export: Up to 12,800×12,800 px (32× scale)
-
-### ControlPanel.jsx
-
-UI controls for board manipulation.
-
-**Features:**
-
-- Flip board
-- Toggle coordinates
-- Reset position
-- Quick actions
-
-### FenInput.jsx
-
-Input field with FEN validation.
-
-**Features:**
-
-- Real-time validation
-- Error messages
-- Copy/paste support
-- Debounced validation (300ms)
-
-**Validation Rules:**
-
-- Correct piece notation (prnbqkPRNBQK)
-- 8 ranks separated by `/`
-- Numbers for empty squares
-- Valid active color (w/b)
-- Valid castling rights (KQkq)
-
-### ThemeSelector.jsx
-
-Board color theme selector.
-
-**Available Themes:**
-
-- Brown (classic)
-- Blue
-- Green
-- Wood
-- Grey
-- Purple
-- Red
-- Orange
-- Pink
-- Marble
-- Neon
-- High Contrast
-
-**Theme Structure:**
-
-```javascript
-{
-  name: 'Brown',
-  light: '#f0d9b5',
-  dark: '#b58863'
-}
-```
-
-### PieceSelector.jsx
-
-Chess piece style selector.
-
-**Available Sets:**
-
-- Alpha
-- CBurnett (default)
-- Merida
-- Leipzig
-- Companion
-- Fantasy
-- Spatial
-- Shapes
-- Pixel
-- Maestro
-- Governor
-- Cardinal
-- And more...
-
-### ExportPanel.jsx
-
-Image export controls.
-
-**Features:**
-
-- Format selection (PNG/JPEG)
-- Scale slider (8×–32×)
-- Resolution preview
-- File size estimate
-- Download button
-
-**Export Options:**
-
-```javascript
-{
-  format: 'png' | 'jpeg',
-  scale: 8 | 16 | 24 | 32,
-  quality: 0.95 // for JPEG
-}
-```
+Full interactive board editor combining `InteractiveBoard`, `PiecePalette`, and `TrashZone`. Uses React DnD for drag-and-drop piece movement. Driven by `useInteractiveBoard` hook which maintains an 8×8 board array and converts it to/from FEN via `boardUtils.boardToFEN`.
 
 ---
 
 ## Data Flow
 
-### User Interaction Flow:
-
 ```
-User Action → Event Handler → State Update → Component Re-render → Canvas Redraw
+User Input (FEN text / drag-drop)
+        │
+        ▼
+   Validation (utils/validation.js)
+        │
+        ▼
+   State Update (hook setState / context dispatch)
+        │
+        ├─────────────────────────┐
+        ▼                         ▼
+  Component re-render       localStorage persist
+        │                         (debounced 300ms)
+        ▼
+  Canvas re-draw
+  (ChessBoard / canvasExporter)
 ```
-
-### Example: Changing Theme
-
-1. User selects theme
-2. `setBoardTheme('blue')` updates state
-3. React re-renders `ChessBoard`
-4. `useEffect` detects change
-5. Canvas redraws with new colors
-
-### Example: Exporting Image
-
-1. User clicks "Export PNG"
-2. Create temporary canvas
-3. Scale canvas (e.g., 16× = 6,400×6,400 px)
-4. Redraw at high resolution
-5. Convert to blob: `canvas.toBlob()`
-6. Download via `URL.createObjectURL()`
-7. Temporary canvas is disposed
 
 ---
 
 ## State Management
 
-### State Location
+See [STATE_MANAGEMENT.md](STATE_MANAGEMENT.md) for the full guide.
 
-**Local Component State:**
+**Summary:**
 
-- UI state (modals, dropdowns)
-- Temporary values
-- Animation states
-
-**Lifted State (App.jsx):**
-
-- FEN string
-- Board theme
-- Piece set
-- Board orientation
-- Coordinate visibility
-
-**Pattern:**
-
-- Simple prop drilling (2-3 levels)
-- No global state library needed
-- Immutable updates only
-
-### State Update Pattern
-
-All state updates use immutable patterns:
-
-```javascript
-// ✅ Correct
-setFen(newFen);
-
-// ❌ Wrong (mutating state)
-fen = newFen;
-```
+| Layer | Tool | Examples |
+|---|---|---|
+| Component state | `useState` | Modal open/close, form values |
+| Derived state | `useMemo` | Parsed FEN → board array |
+| Cross-tree state | Context API | Theme settings, FEN batch list |
+| Persistence | localStorage | FEN history, theme, settings |
+| Drag state | React DnD | Piece being dragged |
 
 ---
 
 ## Canvas Rendering
 
-### Rendering Pipeline
+### Display Rendering (ChessBoard)
 
-The board is rendered in layers:
+- Canvas size determined by the `size` prop (pixels)
+- Board drawn with `fillRect` per square
+- Pieces drawn with `drawImage` from cached HTMLImageElements
+- Coordinate labels drawn with `fillText`
 
-1. **Background Layer** - Board squares
-2. **Coordinate Layer** - File/rank labels
-3. **Piece Layer** - Chess pieces
+### Export Rendering (canvasExporter)
 
-### Drawing Board Squares
+- A separate off-screen canvas is created at export dimensions
+- Export dimensions calculated via `calculateExportSize` from `coordinateCalculations.js`
+- Supports pause/resume/cancel via module-level `exportState` object
+- Progress reported via `onProgress(0–100)` callback
 
-```javascript
-for (let rank = 0; rank < 8; rank++) {
-  for (let file = 0; file < 8; file++) {
-    const isLight = (rank + file) % 2 === 0;
-    ctx.fillStyle = isLight ? theme.light : theme.dark;
-    ctx.fillRect(file * squareSize, rank * squareSize, squareSize, squareSize);
-  }
-}
-```
+**Quality levels and maximum resolutions:**
 
-### Drawing Pieces
-
-```javascript
-const pieceImage = new Image();
-pieceImage.src = `/pieces/${pieceSet}/${pieceName}.png`;
-pieceImage.onload = () => {
-  ctx.drawImage(pieceImage, x, y, size, size);
-};
-```
-
-### Coordinate System
-
-- **Files**: a-h (left to right)
-- **Ranks**: 8-1 (top to bottom in FEN, bottom to top visually)
-- **Flipped board**: Reverses both axes
+| Mode | Quality | Max Resolution |
+|---|---|---|
+| Print | 8× | ~3,776–7,552 px depending on board size |
+| Print | 16× | ~5,664–15,104 px depending on board size |
+| Social | 24× | 18,112 × 18,112 px |
+| Social | 32× | 24,192 × 24,192 px |
 
 ---
 
 ## Export System
 
-### High-Resolution Export
+See [EXPORT_PIPELINE.md](EXPORT_PIPELINE.md) for the full technical reference.
 
-The export engine creates a temporary off-screen canvas:
+**Flow:**
 
-```javascript
-const exportCanvas = document.createElement('canvas');
-const scale = 16; // 8×, 16×, 24×, or 32×
-exportCanvas.width = 400 * scale;
-exportCanvas.height = 400 * scale;
-const ctx = exportCanvas.getContext('2d');
-ctx.scale(scale, scale);
-
-// Draw board at high resolution
-drawBoard(ctx);
-drawPieces(ctx);
-
-// Export
-exportCanvas.toBlob((blob) => {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'chess-position.png';
-  link.click();
-}, 'image/png');
-```
-
-### Resolution Scaling
-
-| Scale | Resolution    | Use Case         |
-| ----- | ------------- | ---------------- |
-| 8×    | 3,200×3,200   | Web/Social       |
-| 16×   | 6,400×6,400   | HD/Presentations |
-| 24×   | 9,600×9,600   | Print (300 DPI)  |
-| 32×   | 12,800×12,800 | Large Posters    |
+1. User configures quality, format (PNG/JPEG), and board size in `ExportSettings`
+2. `ActionButtons` triggers `exportBoardAsImage` from `canvasExporter.js`
+3. `ExportProgress` displays real-time progress via callback
+4. On completion the image is downloaded via `<a download>` or copied to clipboard via the Clipboard API
+5. For batch export, `advancedExport.js` iterates the FEN list from `FENBatchContext`
 
 ---
 
-## Performance
-
-### Optimization Techniques:
-
-1. **Memoization**
-   - `useMemo` for expensive calculations
-   - `useCallback` for event handlers
-
-2. **Canvas Rendering**
-   - Only redraw when state changes
-   - Clear canvas efficiently: `clearRect()`
-
-3. **Image Preloading**
-   - Preload all piece images on mount
-   - Cache loaded images in memory
-
-4. **UI Responsiveness**
-   - Export button disabled during processing
-
-5. **Lazy Rendering**
-   - Coordinates only drawn when enabled
-   - Hidden UI elements not rendered
-
-### Memory Management
-
-- Dispose of temporary canvases after export
-- Revoke blob URLs: `URL.revokeObjectURL()`
-- Remove event listeners on unmount
-
----
-
-## Browser Compatibility
-
-Modern browsers with Canvas API support should work. Application uses standard HTML5 features.
-
----
-
-**Last Updated:** January 2026
+**Last Updated:** March 3, 2026  
+**Version:** 5.0.0
