@@ -13,7 +13,6 @@ export const useOutsideClick = (ref, handler, enabled = true) => {
     if (!enabled) return;
 
     const handleClickOutside = (event) => {
-      // Check if ref exists and click is outside
       if (ref.current && !ref.current.contains(event.target)) {
         handler(event);
       }
@@ -25,12 +24,10 @@ export const useOutsideClick = (ref, handler, enabled = true) => {
       }
     };
 
-    // Add event listeners
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
 
-    // Cleanup
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
