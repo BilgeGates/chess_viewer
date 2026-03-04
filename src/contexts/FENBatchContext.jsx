@@ -9,6 +9,12 @@ import { validateFEN } from '@/utils';
 
 const FENBatchContext = createContext(null);
 
+/**
+ * Access the nearest FENBatchContext value.
+ *
+ * @returns {Object} Batch context with list and mutation helpers
+ * @throws {Error} If used outside a FENBatchProvider
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useFENBatch = () => {
   const context = useContext(FENBatchContext);
@@ -18,6 +24,12 @@ export const useFENBatch = () => {
   return context;
 };
 
+/**
+ * Manages a list of FEN strings for batch export operations with localStorage persistence.
+ *
+ * @param {{ children: React.ReactNode }} props
+ * @returns {JSX.Element}
+ */
 export const FENBatchProvider = ({ children }) => {
   const [batchList, setBatchList] = useState(() => {
     try {
@@ -28,11 +40,17 @@ export const FENBatchProvider = ({ children }) => {
     }
   });
 
-  // Persist to localStorage
   useEffect(() => {
     localStorage.setItem('fenBatchList', JSON.stringify(batchList));
   }, [batchList]);
 
+  /**
+   * Add a validated FEN string to the batch list.
+   * Uses a functional updater to maintain a stable callback reference.
+   *
+   * @param {string} fen - FEN string to add
+   * @returns {boolean} True if the FEN was added, false if invalid or duplicate
+   */
   const addToBatch = useCallback(
     (fen) => {
       if (!fen || !validateFEN(fen)) {
@@ -53,14 +71,29 @@ export const FENBatchProvider = ({ children }) => {
     [] // stable — no batchList dependency
   );
 
+  /**
+   * Remove an entry from the batch list by index.
+   *
+   * @param {number} index - Index of the entry to remove
+   */
   const removeFromBatch = useCallback((index) => {
     setBatchList((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
+  /**
+   * Remove all entries from the batch list.
+   */
   const clearBatch = useCallback(() => {
     setBatchList([]);
   }, []);
 
+  /**
+   * Replace an entry in the batch list at the given index with a new validated FEN.
+   *
+   * @param {number} index - Index of the entry to update
+   * @param {string} newFen - Replacement FEN string
+   * @returns {boolean} True if updated, false if newFen is invalid
+   */
   const updateBatchItem = useCallback((index, newFen) => {
     if (!newFen || !validateFEN(newFen)) {
       return false;
