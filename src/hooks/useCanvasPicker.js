@@ -10,7 +10,6 @@ import { hexToRgb, rgbToHsv, hsvToRgb, rgbToHex } from '@/utils';
  * @returns {Object} Canvas interaction handlers
  */
 export const useCanvasPicker = (canvasRef, currentColor) => {
-  // Draw color picker canvas
   const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -40,12 +39,10 @@ export const useCanvasPicker = (canvasRef, currentColor) => {
     ctx.fillRect(0, 0, width, height);
   }, [canvasRef, currentColor]);
 
-  // Redraw when color changes
   useEffect(() => {
     drawCanvas();
   }, [drawCanvas]);
 
-  // Handle canvas click
   const handleCanvasClick = useCallback(
     (e, onColorSelect) => {
       const canvas = canvasRef.current;
