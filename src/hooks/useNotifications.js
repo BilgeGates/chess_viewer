@@ -1,8 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 /**
- * Toast notification system
- * @returns {Object} Notification methods
+ * Toast notification system hook.
+ *
+ * @returns {{ notifications: Array, success: Function, error: Function, info: Function, warning: Function, removeNotification: Function }}
  */
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -15,6 +16,11 @@ export const useNotifications = () => {
     };
   }, []);
 
+  /**
+   * Remove a notification by its ID and cancel its auto-dismiss timer.
+   *
+   * @param {number} id - Notification ID to remove
+   */
   const removeNotification = useCallback((id) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
     if (timeoutRefs.current[id]) {
@@ -23,6 +29,13 @@ export const useNotifications = () => {
     }
   }, []);
 
+  /**
+   * Add a new notification to the stack.
+   *
+   * @param {string} message - Notification message
+   * @param {'info'|'success'|'error'|'warning'} type - Notification type
+   * @param {number} duration - Auto-dismiss delay in milliseconds (0 = persistent)
+   */
   const addNotification = useCallback(
     (message, type = 'info', duration = 3000) => {
       const id = Date.now() + Math.random();
@@ -39,6 +52,12 @@ export const useNotifications = () => {
     [removeNotification]
   );
 
+  /**
+   * Show a success notification.
+   *
+   * @param {string} message - Message to display
+   * @param {number} duration - Auto-dismiss delay in milliseconds
+   */
   const success = useCallback(
     (message, duration = 3000) => {
       addNotification(message, 'success', duration);
@@ -46,6 +65,12 @@ export const useNotifications = () => {
     [addNotification]
   );
 
+  /**
+   * Show an error notification.
+   *
+   * @param {string} message - Message to display
+   * @param {number} duration - Auto-dismiss delay in milliseconds
+   */
   const error = useCallback(
     (message, duration = 4000) => {
       addNotification(message, 'error', duration);
@@ -53,6 +78,12 @@ export const useNotifications = () => {
     [addNotification]
   );
 
+  /**
+   * Show an informational notification.
+   *
+   * @param {string} message - Message to display
+   * @param {number} duration - Auto-dismiss delay in milliseconds
+   */
   const info = useCallback(
     (message, duration = 3000) => {
       addNotification(message, 'info', duration);
@@ -60,6 +91,12 @@ export const useNotifications = () => {
     [addNotification]
   );
 
+  /**
+   * Show a warning notification.
+   *
+   * @param {string} message - Message to display
+   * @param {number} duration - Auto-dismiss delay in milliseconds
+   */
   const warning = useCallback(
     (message, duration = 3500) => {
       addNotification(message, 'warning', duration);
