@@ -2,24 +2,24 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { logger } from '@/utils/logger';
 
 /**
- * PERFORMANCE OPTIMIZED: useLocalStorage with debounced writes
- * Prevents main thread blocking from excessive localStorage writes
+ * localStorage hook with debounced writes to prevent main-thread blocking.
+ *
+ * @template T
+ * @param {string} key - localStorage key
+ * @param {T} initialValue - Default value when key is absent
+ * @returns {[T, Function]} Stored value and setter function
  */
 export const useLocalStorage = (key, initialValue) => {
-  // Debounce timeout ref
   const debounceTimeoutRef = useRef(null);
   const pendingValueRef = useRef(null);
 
-  // State to store our value
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === 'undefined') {
       return initialValue;
     }
 
     try {
-      // Get from local storage by key
       const item = window.localStorage.getItem(key);
-      // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
       logger.error(`Error loading ${key} from localStorage:`, error);
@@ -27,7 +27,12 @@ export const useLocalStorage = (key, initialValue) => {
     }
   });
 
-  // Debounced write to localStorage - prevents blocking main thread
+  /**
+   * Write a value to localStorage after a 300 ms debounce.
+   *
+   * @param {string} key - localStorage key
+   * @param {*} value - Value to persist
+   */
   const debouncedWrite = useCallback((key, value) => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
@@ -40,23 +45,18 @@ export const useLocalStorage = (key, initialValue) => {
         try {
           window.localStorage.setItem(key, JSON.stringify(value));
           pendingValueRef.current = null;
-
           // Dispatch storage event to notify other components (same tab)
           window.dispatchEvent(new Event('storage'));
         } catch (storageError) {
-          // Handle quota exceeded error gracefully
           if (storageError.name === 'QuotaExceededError') {
             logger.warn(
               `localStorage quota exceeded for key: ${key}. Clearing old data.`
             );
-            // Try to clear some space by removing old items
             try {
               const keys = Object.keys(window.localStorage);
               if (keys.length > 0) {
                 window.localStorage.removeItem(keys[0]);
-                // Retry once after clearing
                 window.localStorage.setItem(key, JSON.stringify(value));
-                // Dispatch event after successful retry
                 window.dispatchEvent(new Event('storage'));
               }
             } catch (retryError) {
@@ -70,13 +70,11 @@ export const useLocalStorage = (key, initialValue) => {
           }
         }
       }
-    }, 300); // 300ms debounce - balances responsiveness with performance
+    }, 300);
   }, []);
 
-  // Cleanup effect to flush pending writes on unmount
   useEffect(() => {
     return () => {
-      // Flush any pending write immediately on unmount
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
         if (pendingValueRef.current !== null && typeof window !== 'undefined') {
@@ -93,8 +91,12 @@ export const useLocalStorage = (key, initialValue) => {
     };
   }, [key]);
 
-  // Return a wrapped version of useState's setter function that
-  // persists the new value to localStorage (debounced).
+  /**
+   * Update the stored value and persist it to localStorage.
+   * Accepts a value or a function (same API as useState).
+   *
+   * @param {T | function(T): T} value - New value or updater function
+   */
   const setValue = useCallback(
     (value) => {
       try {
@@ -102,10 +104,7 @@ export const useLocalStorage = (key, initialValue) => {
         const valueToStore =
           value instanceof Function ? value(storedValue) : value;
 
-        // Save state immediately (instant UI update)
         setStoredValue(valueToStore);
-
-        // Write to localStorage with debounce (prevents main thread blocking)
         debouncedWrite(key, valueToStore);
       } catch (error) {
         logger.error(`Error in setValue for ${key}:`, error);
@@ -117,7 +116,15 @@ export const useLocalStorage = (key, initialValue) => {
   return [storedValue, setValue];
 };
 
-// Advanced hook with window.storage API integration
+/**
+ * localStorage hook with optional cloud storage (window.storage) integration.
+ *
+ * @template T
+ * @param {string} key - Storage key
+ * @param {T} initialValue - Default value when key is absent
+ * @param {boolean} [useCloudStorage=false] - Whether to also read/write window.storage
+ * @returns {[T, Function, boolean]} Stored value, async setter, and loading flag
+ */
 export const useHybridStorage = (
   key,
   initialValue,
@@ -126,7 +133,6 @@ export const useHybridStorage = (
   const [storedValue, setStoredValue] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load from storage on mount
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
@@ -157,7 +163,11 @@ export const useHybridStorage = (
     loadData();
   }, [key, useCloudStorage]);
 
-  // Save to storage
+  /**
+   * Update the stored value and persist to localStorage and optionally cloud storage.
+   *
+   * @param {T | function(T): T} value - New value or updater function
+   */
   const setValue = async (value) => {
     try {
       const valueToStore =
