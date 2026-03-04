@@ -3,7 +3,10 @@ import { PIECE_MAP } from '@/constants';
 import { logger } from '@/utils/logger';
 
 /**
- * Load piece images with caching and retry logic
+ * Loads chess piece SVG images with caching, abort support, and retry logic.
+ *
+ * @param {string} pieceStyle - Piece set name (e.g., 'cburnett')
+ * @returns {{ pieceImages: Object, isLoading: boolean, error: string|null, loadProgress: number }}
  */
 export const usePieceImages = (pieceStyle) => {
   const [pieceImages, setPieceImages] = useState({});
@@ -16,10 +19,8 @@ export const usePieceImages = (pieceStyle) => {
   const currentStyleRef = useRef(pieceStyle);
 
   useEffect(() => {
-    // Update current style ref
     currentStyleRef.current = pieceStyle;
 
-    // Abort previous loading if still in progress
     if (loadingRef.current && abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -33,7 +34,6 @@ export const usePieceImages = (pieceStyle) => {
 
       const cacheKey = styleToLoad;
 
-      // Check cache
       if (cacheRef.current[cacheKey]) {
         // Only update state if this is still the current style
         if (currentStyleRef.current === styleToLoad) {
@@ -45,7 +45,6 @@ export const usePieceImages = (pieceStyle) => {
         return;
       }
 
-      // Create new abort controller for this load operation
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
 
@@ -57,7 +56,6 @@ export const usePieceImages = (pieceStyle) => {
 
       const loadPromises = entries.map(([key, value]) => {
         return new Promise((resolve) => {
-          // Check if aborted before starting
           if (abortController.signal.aborted) {
             resolve();
             return;
@@ -76,7 +74,6 @@ export const usePieceImages = (pieceStyle) => {
           };
 
           const attemptLoad = () => {
-            // Check if aborted before each attempt
             if (abortController.signal.aborted) {
               cleanup();
               resolve();
@@ -173,7 +170,6 @@ export const usePieceImages = (pieceStyle) => {
     loadPieces();
 
     return () => {
-      // Cleanup on unmount or style change
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -185,7 +181,10 @@ export const usePieceImages = (pieceStyle) => {
 };
 
 /**
- * Create placeholder image
+ * Create a canvas-drawn placeholder image for a chess piece.
+ *
+ * @param {string} pieceName - FEN key used as label on the placeholder
+ * @returns {HTMLImageElement} Placeholder image element
  */
 const createPlaceholder = (pieceName) => {
   logger.log('Creating placeholder for:', pieceName);
