@@ -14,6 +14,21 @@ const RANK_GUTTER = 20;
 const BOARD_SIZE_EXPR = 'min(52vh, 46vw)';
 const CELL_SIZE_EXPR = `calc(${BOARD_SIZE_EXPR} / 8)`;
 
+/**
+ * Drag-and-drop chess position editor combining the interactive board, piece palette,
+ * trash zone, and optional coordinate labels.
+ * @param {Object} props
+ * @param {string} props.fen - Current FEN string
+ * @param {Function} props.onFenChange - Called with a new FEN string when the board changes
+ * @param {string} props.pieceStyle - Active piece set identifier
+ * @param {boolean} [props.showCoords] - Whether coordinate labels are rendered
+ * @param {string} props.lightSquare - Hex color for light squares
+ * @param {string} props.darkSquare - Hex color for dark squares
+ * @param {boolean} [props.flipped] - Whether to render from Black's perspective
+ * @param {number} [props.boardSize=400] - Board size in pixels
+ * @param {string} [props.className=''] - Additional CSS classes
+ * @returns {JSX.Element}
+ */
 const ChessEditor = memo(
   ({
     fen,
@@ -42,6 +57,11 @@ const ChessEditor = memo(
       syncFromFen(fen);
     }, [fen, syncFromFen]);
 
+    /**
+     * Moves a piece from the trash drop to the board handler.
+     * @param {number} row - Row of the piece to remove
+     * @param {number} col - Column of the piece to remove
+     */
     const handleTrashDrop = useCallback(
       (row, col) => {
         handlePieceRemove(row, col);
@@ -49,6 +69,10 @@ const ChessEditor = memo(
       [handlePieceRemove]
     );
 
+    /**
+     * Renders file (column) coordinate labels below the board.
+     * @returns {JSX.Element}
+     */
     const renderFileCoordinates = () => {
       const files = flipped
         ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
@@ -69,6 +93,10 @@ const ChessEditor = memo(
       );
     };
 
+    /**
+     * Renders rank (row) coordinate labels to the left of the board.
+     * @returns {JSX.Element}
+     */
     const renderRankCoordinates = () => {
       const ranks = flipped
         ? ['1', '2', '3', '4', '5', '6', '7', '8']
