@@ -1,6 +1,15 @@
 import { memo } from 'react';
 import { Check } from 'lucide-react';
 
+/**
+ * Circular/square color swatch button with a check mark when selected.
+ * @param {Object} props
+ * @param {string} props.color - Hex color value of the swatch
+ * @param {boolean} props.isSelected - Whether this swatch is the active selection
+ * @param {Function} props.onClick - Called with the swatch `color` when clicked
+ * @param {'sm'|'md'|'lg'} [props.size='md'] - Swatch size
+ * @returns {JSX.Element}
+ */
 const ColorSwatch = memo(
   ({ color, isSelected, onClick, size = 'md' }) => {
     const sizes = {
