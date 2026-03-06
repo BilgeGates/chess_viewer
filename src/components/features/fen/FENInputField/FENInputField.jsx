@@ -12,6 +12,20 @@ import {
   List
 } from 'lucide-react';
 
+/**
+ * FEN string input field with copy, paste, batch-add, favorites, and clipboard history actions.
+ * @param {Object} props
+ * @param {string} props.fen - Current FEN string value
+ * @param {Function} props.onChange - Called on every keystroke
+ * @param {Function} [props.onBlur] - Called when the field loses focus
+ * @param {string} [props.error] - Validation error message
+ * @param {Function} [props.onCopy] - Copies the FEN to clipboard
+ * @param {Function} [props.onPaste] - Pastes FEN from clipboard
+ * @param {boolean} [props.copySuccess] - Briefly true after a successful copy
+ * @param {Function} [props.onAdvancedClick] - Navigates to the advanced FEN input page
+ * @param {Function} [props.onNotification] - Called with `(message, type)` to surface a toast
+ * @returns {JSX.Element}
+ */
 const FENInputField = memo(
   ({
     fen,
