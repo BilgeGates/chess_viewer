@@ -13,6 +13,9 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
   const [clipboardHistory, setClipboardHistory] = useState([]);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
+  /**
+   * Reloads clipboard history from localStorage whenever the drawer opens.
+   */
   useEffect(() => {
     if (isOpen) {
       loadHistory();
