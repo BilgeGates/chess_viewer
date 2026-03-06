@@ -2,6 +2,22 @@ import { memo, useCallback } from 'react';
 import { validateFEN } from '@/utils';
 import { Check, Clipboard, Star, Trash2, AlertCircle } from 'lucide-react';
 
+/**
+ * Single FEN row in the batch input list: text field with paste, favorite, and delete actions.
+ * @param {Object} props
+ * @param {number} props.index - 0-based row index
+ * @param {string} props.fen - FEN string value for this row
+ * @param {string} [props.error] - Validation error message
+ * @param {boolean} [props.isDuplicate] - Whether this FEN duplicates another row
+ * @param {boolean} [props.isFavorite] - Whether this FEN is in the favorites list
+ * @param {boolean} [props.isPasted] - Whether this row was just pasted
+ * @param {boolean} props.canDelete - Whether the delete button is enabled
+ * @param {Function} props.onUpdate - Called with `(index, newFen)` on input change
+ * @param {Function} props.onPaste - Called with `index` to paste from clipboard
+ * @param {Function} props.onToggleFavorite - Called with the FEN string to toggle its favorite status
+ * @param {Function} props.onDelete - Called with `index` to remove this row
+ * @returns {JSX.Element}
+ */
 const FENInputRow = memo(
   ({
     index,
@@ -122,6 +138,22 @@ const FENInputRow = memo(
 
 FENInputRow.displayName = 'FENInputRow';
 
+/**
+ * Scrollable list of FENInputRow fields for multi-position batch input.
+ * @param {Object} props
+ * @param {string[]} props.fens - Array of FEN strings
+ * @param {number} props.maxFens - Maximum number of allowed rows
+ * @param {Record<number, string>} props.fenErrors - Map of row index to validation error
+ * @param {boolean} [props.duplicateWarning] - Whether to display a duplicate warning
+ * @param {string[]} props.favorites - Array of favorited FEN strings
+ * @param {number|null} [props.pastedIndex] - Index of the most recently pasted row
+ * @param {Function} props.onUpdateFen - Called with `(index, value)` when a row changes
+ * @param {Function} props.onAddFen - Adds a new empty row
+ * @param {Function} props.onRemoveFen - Called with `index` to remove a row
+ * @param {Function} props.onToggleFavorite - Called with a FEN string to toggle its favorite status
+ * @param {Function} props.onPaste - Called with `index` to paste from clipboard
+ * @returns {JSX.Element}
+ */
 const FENInputList = memo(
   ({
     fens,
