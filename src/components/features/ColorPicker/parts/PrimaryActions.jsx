@@ -1,6 +1,16 @@
 import React, { useCallback } from 'react';
 import { Copy, RotateCcw, Shuffle } from 'lucide-react';
 
+/**
+ * Row of randomize, reset, and copy action buttons for the color picker.
+ * @param {Object} props
+ * @param {Function} props.onRandom - Selects a random color
+ * @param {Function} props.onReset - Resets to the original color
+ * @param {Function} props.onCopy - Copies the current hex value to clipboard
+ * @param {string} props.copiedText - The last copied hex value (used to show a copied indicator)
+ * @param {string} props.tempColor - The currently selected (not yet applied) hex value
+ * @returns {JSX.Element}
+ */
 const PrimaryActions = React.memo(
   ({ onRandom, onReset, onCopy, copiedText, tempColor }) => {
     const handleRandomClick = useCallback(() => {
