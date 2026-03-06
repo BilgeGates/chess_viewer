@@ -1,5 +1,13 @@
 import React, { useState, useCallback, useMemo } from 'react';
 
+/**
+ * Draggable hue-selection slider rendered as a spectrum strip.
+ * @param {Object} props
+ * @param {number} props.value - Current HSV hue value (0–360)
+ * @param {Function} props.onChange - Called with the new hue when the slider moves
+ * @param {Function} props.getCurrentHue - Returns the current hue value from the parent's state
+ * @returns {JSX.Element}
+ */
 const HueSlider = React.memo(
   ({ value: _value, onChange, getCurrentHue }) => {
     const [isDragging, setIsDragging] = useState(false);
