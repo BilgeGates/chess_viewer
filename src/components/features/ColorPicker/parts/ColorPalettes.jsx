@@ -1,6 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
 import { ColorSwatch } from '@/components/features/ColorPicker/parts';
 
+/**
+ * Tabbed color palette grid with predefined swatches.
+ * @param {Object} props
+ * @param {string} props.activePalette - Key of the currently selected palette tab
+ * @param {Function} props.setActivePalette - Updates the active palette tab
+ * @param {string} props.tempColor - Currently hovered/selected color hex
+ * @param {Function} props.onColorSelect - Called with a hex string when a swatch is clicked
+ * @returns {JSX.Element}
+ */
 const ColorPalettes = React.memo(
   ({ activePalette, setActivePalette, tempColor, onColorSelect }) => {
     const COLOR_PALETTES = useMemo(
