@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { CheckCircle, ChevronDown, SearchX } from 'lucide-react';
 
+/**
+ * Searchable dropdown select with real-time filtering.
+ * @param {Object} props
+ * @param {{id: string, name: string}[]} props.options - Available options
+ * @param {string} [props.value] - Currently selected option id
+ * @param {Function} props.onChange - Called with the selected option id
+ * @param {string} [props.label] - Visible label above the control
+ * @param {string} [props.placeholder='Search...'] - Search input placeholder
+ * @param {string} [props.emptyMessage='No results found'] - Message shown when filtering yields no results
+ * @returns {JSX.Element}
+ */
 const SearchableSelect = ({
   options,
   value,
