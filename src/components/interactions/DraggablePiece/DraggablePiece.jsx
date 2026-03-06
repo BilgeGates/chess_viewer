@@ -3,6 +3,19 @@ import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { ItemTypes, getPieceImageKey } from '@/constants';
 
+/**
+ * Draggable chess piece image powered by react-dnd.
+ * Suppresses the native HTML5 drag image in favour of CustomDragLayer.
+ * @param {Object} props
+ * @param {string} props.piece - FEN character identifying the piece
+ * @param {HTMLImageElement|null} [props.pieceImage] - Preloaded piece image element
+ * @param {number} [props.row] - Source row (undefined when dragged from the palette)
+ * @param {number} [props.col] - Source column (undefined when dragged from the palette)
+ * @param {boolean} [props.isFromPalette=false] - True when this piece lives in the piece palette
+ * @param {string} [props.size='85%'] - CSS size string for the image
+ * @param {boolean} [props.disabled=false] - Prevents dragging when true
+ * @returns {JSX.Element}
+ */
 const DraggablePiece = memo(
   ({
     piece,
