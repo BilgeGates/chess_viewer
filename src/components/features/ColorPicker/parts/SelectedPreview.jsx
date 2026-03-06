@@ -1,6 +1,15 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Check, Copy, CheckCheck } from 'lucide-react';
 
+/**
+ * Preview card showing the selected color with copy and apply action buttons.
+ * @param {Object} props
+ * @param {string} props.tempColor - Currently selected (temp) hex color
+ * @param {Function} props.getRgbValues - Returns `{r, g, b}` for the temp color
+ * @param {Function} props.onCopy - Copies the hex value to clipboard
+ * @param {Function} props.onApply - Applies the temp color as the committed value
+ * @returns {JSX.Element}
+ */
 const SelectedPreview = React.memo(
   ({ tempColor, getRgbValues, onCopy, onApply }) => {
     const [copied, setCopied] = useState(false);
