@@ -3,6 +3,20 @@ import { useDrop } from 'react-dnd';
 import { ItemTypes } from '@/constants';
 import { DraggablePiece } from '@/components/interactions';
 
+/**
+ * A single interactive chess square that accepts piece drops via react-dnd.
+ * @param {Object} props
+ * @param {number} props.row - 0-based board row
+ * @param {number} props.col - 0-based board column
+ * @param {string} props.piece - FEN character of the occupying piece, or empty string
+ * @param {boolean} props.isLight - Whether this is a light-colored square
+ * @param {string} props.lightColor - Hex color for light squares
+ * @param {string} props.darkColor - Hex color for dark squares
+ * @param {HTMLImageElement|null} props.pieceImage - Preloaded image for the piece, or null
+ * @param {Function} [props.onDrop] - Called with `(piece, fromRow, fromCol, toRow, toCol, isFromPalette)`
+ * @param {boolean} [props.isLoading] - Whether piece images are still loading
+ * @returns {JSX.Element}
+ */
 const DroppableSquare = memo(
   ({
     row,
