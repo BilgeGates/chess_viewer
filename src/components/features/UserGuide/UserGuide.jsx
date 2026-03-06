@@ -18,6 +18,10 @@ import {
   Layers
 } from 'lucide-react';
 
+/**
+ * Collapsible user guide with export quality explanations, keyboard shortcuts, and tips.
+ * @returns {JSX.Element}
+ */
 const UserGuide = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
