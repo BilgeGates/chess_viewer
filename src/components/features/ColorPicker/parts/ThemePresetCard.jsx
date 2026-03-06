@@ -1,6 +1,18 @@
 import { memo } from 'react';
 import { Check } from 'lucide-react';
 
+/**
+ * Clickable card for a single built-in color theme preset.
+ * @param {Object} props
+ * @param {Object} props.theme - Theme object with `light` and `dark` color keys
+ * @param {string} props.themeKey - Unique identifier for this preset
+ * @param {boolean} props.isActive - Whether this preset is currently applied
+ * @param {boolean} props.isHovered - Whether this card is being hovered
+ * @param {Function} props.onHover - Called with the theme object when the card is entered
+ * @param {Function} props.onLeave - Called when the cursor leaves the card
+ * @param {Function} props.onClick - Called with `(themeKey, theme)` when the card is selected
+ * @returns {JSX.Element}
+ */
 const ThemePresetCard = memo(
   ({ theme, themeKey, isActive, isHovered, onHover, onLeave, onClick }) => {
     return (
