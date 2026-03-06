@@ -4,6 +4,15 @@ import PickerModal from './PickerModal';
 import { useColorConversion, useColorState } from '@/hooks';
 import { Palette } from 'lucide-react';
 
+/**
+ * Inline color picker: hex text input with a popover canvas/palette picker.
+ * @param {Object} props
+ * @param {string} [props.label] - Label displayed above the picker
+ * @param {string} [props.value='#3B82F6'] - Controlled hex color value
+ * @param {Function} props.onChange - Called with a new hex string when the color is applied
+ * @param {string} [props.className=''] - Additional CSS classes for the container
+ * @returns {JSX.Element}
+ */
 const ColorPicker = ({
   label,
   value = '#3B82F6',
