@@ -1,3 +1,11 @@
+/**
+ * Inline badge for labelling status, categories, or counts.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Badge content
+ * @param {'default'|'primary'|'success'|'warning'|'danger'|'purple'} [props.variant='default'] - Color variant
+ * @param {'sm'|'md'|'lg'} [props.size='md'] - Size variant
+ * @returns {JSX.Element}
+ */
 const Badge = ({ children, variant = 'default', size = 'md' }) => {
   const variants = {
     default: 'bg-surface-hover text-text-secondary',
