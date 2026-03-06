@@ -1,6 +1,14 @@
 import { memo, useState, useEffect } from 'react';
 import { X, Copy, Trash2, Check } from 'lucide-react';
 
+/**
+ * Modal drawer showing FEN strings previously copied to the clipboard.
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Whether the drawer is visible
+ * @param {Function} props.onClose - Called when the drawer should close
+ * @param {Function} [props.onSelectFen] - Called with a FEN string when the user selects an entry
+ * @returns {JSX.Element|null}
+ */
 const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
   const [clipboardHistory, setClipboardHistory] = useState([]);
   const [copiedIndex, setCopiedIndex] = useState(null);
@@ -11,6 +19,9 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
     }
   }, [isOpen]);
 
+  /**
+   * Loads clipboard history from localStorage into component state.
+   */
   const loadHistory = () => {
     try {
       const saved = localStorage.getItem('fenClipboardHistory');
@@ -21,6 +32,12 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
     }
   };
 
+  /**
+   * Copies the given FEN string to the clipboard and briefly shows a check indicator.
+   * @param {string} fen - FEN string to copy
+   * @param {number} index - Index of the entry in the list (used for the copied indicator)
+   * @returns {Promise<void>}
+   */
   const handleCopy = async (fen, index) => {
     try {
       await navigator.clipboard.writeText(fen);
@@ -31,12 +48,20 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
     }
   };
 
+  /**
+   * Removes an entry from the clipboard history.
+   * @param {number} index - Index of the entry to remove
+   */
   const handleRemove = (index) => {
     const updated = clipboardHistory.filter((_, i) => i !== index);
     setClipboardHistory(updated);
     localStorage.setItem('fenClipboardHistory', JSON.stringify(updated));
   };
 
+  /**
+   * Selects a FEN and closes the drawer.
+   * @param {string} fen - The selected FEN string
+   */
   const handleSelect = (fen) => {
     if (onSelectFen) {
       onSelectFen(fen);
@@ -44,6 +69,9 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
     }
   };
 
+  /**
+   * Prompts the user, then removes all entries from the clipboard history.
+   */
   const handleClearAll = () => {
     if (window.confirm('Clear all clipboard history?')) {
       setClipboardHistory([]);
@@ -55,17 +83,14 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="bg-surface border border-border rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col animate-scale-in">
-          {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <div>
               <h2 className="text-xl font-display font-bold text-text-primary">
@@ -84,7 +109,6 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
             </button>
           </div>
 
-          {/* Content */}
           <div className="flex-1 overflow-y-auto p-6">
             {clipboardHistory.length === 0 ? (
               <div className="text-center py-12">
@@ -151,7 +175,6 @@ const ClipboardHistory = memo(({ isOpen, onClose, onSelectFen }) => {
             )}
           </div>
 
-          {/* Footer */}
           {clipboardHistory.length > 0 && (
             <div className="px-6 py-4 border-t border-border">
               <button
