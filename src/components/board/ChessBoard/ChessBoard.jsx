@@ -8,12 +8,24 @@ import {
   logger
 } from '@/utils';
 
+/**
+ * Returns an empty 8×8 board array (all squares set to empty string).
+ * @returns {string[][]}
+ */
 function createEmptyBoard() {
   return Array(8)
     .fill(null)
     .map(() => Array(8).fill(''));
 }
 
+/**
+ * Calculates the pixel bounds for a single board square.
+ * @param {number} rowIndex - 0-based display row (may differ from logical row when flipped)
+ * @param {number} colIndex - 0-based display column
+ * @param {number} borderSize - Coordinate border width in pixels
+ * @param {number} squareSize - Width/height of a single square in pixels
+ * @returns {{x: number, y: number, width: number, height: number, centerX: number, centerY: number}}
+ */
 function getSquareBounds(rowIndex, colIndex, borderSize, squareSize) {
   const x0 = Math.round(borderSize + colIndex * squareSize);
   const x1 = Math.round(borderSize + (colIndex + 1) * squareSize);
@@ -30,6 +42,20 @@ function getSquareBounds(rowIndex, colIndex, borderSize, squareSize) {
   };
 }
 
+/**
+ * Canvas chess board with HiDPI rendering, coordinate labels, and piece images.
+ * Exposes `getPieceImages`, `getBoardState`, and `getCanvas` via an imperative ref.
+ * @param {Object} props
+ * @param {string} props.fen - FEN string to display
+ * @param {string} props.pieceStyle - Piece set identifier
+ * @param {boolean} props.showCoords - Whether to render coordinate labels on the border
+ * @param {string} props.lightSquare - Hex color for light squares
+ * @param {string} props.darkSquare - Hex color for dark squares
+ * @param {number} props.boardSize - Board canvas size in CSS pixels (excluding border)
+ * @param {boolean} [props.flipped] - Whether to render the board from Black's perspective
+ * @param {React.Ref} ref - Forwarded ref to access `getPieceImages`, `getBoardState`, `getCanvas`
+ * @returns {JSX.Element}
+ */
 const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
   const {
     fen,
@@ -72,6 +98,9 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
     getCanvas: () => canvasRef.current
   }));
 
+  /**
+   * Renders the full board (background, pieces, coordinates) onto the canvas.
+   */
   const drawBoard = useCallback(() => {
     if (!canvasRef.current || board.length === 0 || isLoading) {
       return;
@@ -208,6 +237,10 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
     };
   }, [drawBoard]);
 
+  /**
+   * Generates an accessible description of the current board position for screen readers.
+   * @returns {string}
+   */
   function getBoardDescription() {
     if (!fen) {
       return 'Empty chess board';
