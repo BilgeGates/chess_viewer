@@ -2,6 +2,27 @@ import { useState } from 'react';
 import { ThemeSettingsView } from './views';
 import { X, ArrowLeft } from 'lucide-react';
 
+/**
+ * Floating color picker modal with main, palettes, and settings views.
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Whether the modal is visible
+ * @param {string} props.tempColor - Currently selected (uncommitted) color hex
+ * @param {React.RefObject<HTMLCanvasElement>} props.canvasRef - Ref for the color canvas
+ * @param {string} props.activePalette - Active color palette tab key
+ * @param {Function} props.setActivePalette - Updates the active palette tab
+ * @param {string} props.copiedText - Last copied color hex (used for copy indicator)
+ * @param {Function} props.onClose - Closes the modal
+ * @param {Function} props.onCanvasClick - Handles click on the canvas to pick a color
+ * @param {Function} props.onHueChange - Handles hue slider changes
+ * @param {Function} props.onColorSelect - Handles selecting a color swatch
+ * @param {Function} props.onRandom - Selects a random color
+ * @param {Function} props.onReset - Resets to the original color
+ * @param {Function} props.onCopy - Copies the hex value to clipboard
+ * @param {Function} props.onApply - Applies the selected color
+ * @param {Function} props.getCurrentHue - Returns the current HSV hue value
+ * @param {Function} props.getRgbValues - Returns `{r, g, b}` for the current color
+ * @returns {JSX.Element|null}
+ */
 const PickerModal = ({
   isOpen,
   tempColor,
