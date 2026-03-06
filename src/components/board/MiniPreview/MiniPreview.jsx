@@ -2,6 +2,16 @@ import { useRef, useState, useEffect, memo } from 'react';
 import { usePieceImages } from '@/hooks';
 import { parseFEN, logger } from '@/utils';
 
+/**
+ * Canvas-rendered miniature chess board preview.
+ * @param {Object} props
+ * @param {string} props.fen - FEN string to visualise
+ * @param {string} [props.lightSquare='#f0d9b5'] - Hex color for light squares
+ * @param {string} [props.darkSquare='#b58863'] - Hex color for dark squares
+ * @param {string} [props.pieceStyle='cburnett'] - Piece set identifier
+ * @param {number} [props.size=160] - Canvas base size in CSS pixels (doubled for HiDPI)
+ * @returns {JSX.Element}
+ */
 const MiniPreview = memo(
   ({
     fen,
