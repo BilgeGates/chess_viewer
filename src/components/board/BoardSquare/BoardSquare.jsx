@@ -1,5 +1,11 @@
 import { memo } from 'react';
 
+/**
+ * Custom memo comparator — re-renders only when visually relevant props change.
+ * @param {Object} prevProps - Previous props
+ * @param {Object} nextProps - Next props
+ * @returns {boolean} True if the component should NOT re-render
+ */
 function arePropsEqual(prevProps, nextProps) {
   return (
     prevProps.piece === nextProps.piece &&
@@ -10,6 +16,17 @@ function arePropsEqual(prevProps, nextProps) {
   );
 }
 
+/**
+ * Renders a single chess board square with its piece image.
+ * @param {Object} props
+ * @param {boolean} props.isLight - Whether this is a light-colored square
+ * @param {string} props.lightSquare - Hex color for light squares
+ * @param {string} props.darkSquare - Hex color for dark squares
+ * @param {string} props.piece - FEN piece character, or empty string for an empty square
+ * @param {Object} props.pieceImages - Map of piece keys to preloaded Image elements
+ * @param {boolean} props.isLoading - Whether piece images are still loading
+ * @returns {JSX.Element}
+ */
 const BoardSquare = memo(function BoardSquare(props) {
   const { isLight, lightSquare, darkSquare, piece, pieceImages, isLoading } =
     props;
