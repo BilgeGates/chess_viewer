@@ -3,6 +3,13 @@ import { DndProvider as ReactDndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 
+/**
+ * Wraps the subtree with the appropriate react-dnd backend — HTML5 for pointer
+ * devices, TouchBackend (with mouse fallback) for touch devices.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Subtree that needs drag-and-drop support
+ * @returns {JSX.Element}
+ */
 const DndProvider = ({ children }) => {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
