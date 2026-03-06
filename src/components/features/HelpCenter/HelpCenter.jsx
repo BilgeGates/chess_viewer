@@ -214,6 +214,13 @@ const CONTENT = {
   }
 };
 
+/**
+ * Slide-in help drawer with tabbed sections and full-text search.
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Whether the drawer is visible
+ * @param {Function} props.onClose - Called when the drawer should close
+ * @returns {JSX.Element|null}
+ */
 const HelpCenterDrawer = memo(({ isOpen, onClose }) => {
   const [activeSection, setActiveSection] = useState(SECTIONS.FEATURES);
   const [searchQuery, setSearchQuery] = useState('');
@@ -245,6 +252,10 @@ const HelpCenterDrawer = memo(({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  /**
+   * Returns JSX for the active section or filtered search results.
+   * @returns {JSX.Element}
+   */
   const renderContent = () => {
     // Show search results if there's a query
     if (searchQuery.trim() && filteredContent) {
