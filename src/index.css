@@ -608,6 +608,76 @@
   padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
 
+/* Palette section: justify-between and minHeight only apply on large screens */
+@media (min-width: 1024px) {
+  .palette-section {
+    justify-content: space-between;
+    min-height: var(--palette-min-h, auto);
+  }
+}
+
+/* ===== MOBILE / TOUCH IMPROVEMENTS ===== */
+
+/* Safe area padding for notched / home-indicator phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .h-screen,
+  [class*='min-h-screen'] {
+    /* Use dynamic viewport height when available (avoids browser chrome overlap) */
+    min-height: 100dvh;
+  }
+}
+
+/* Prevent text size inflation on mobile Safari */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Ensure tap targets are at least 44x44px for accessibility */
+@media (pointer: coarse) {
+  button,
+  a,
+  [role='button'] {
+    min-height: 44px;
+  }
+}
+
+/* Smooth momentum scrolling on iOS */
+.overflow-y-auto,
+.overflow-y-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Remove hover effects on touch devices to avoid sticky hover states */
+@media (hover: none) {
+  .card:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-primary:hover {
+    transform: none;
+  }
+
+  .btn-secondary:hover {
+    transform: none;
+  }
+}
+
+/* Palette section: justify-between and minHeight only apply on large screens */
+@media (min-width: 1024px) {
+  .palette-section {
+    justify-content: space-between;
+    min-height: var(--palette-min-h, auto);
+  }
+}
+
 /* ===== UTILITIES LAYER ===== */
 @layer utilities {
   input[type='number']::-webkit-inner-spin-button,
