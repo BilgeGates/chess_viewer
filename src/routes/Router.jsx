@@ -1,7 +1,5 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-
-// Lazy load pages for better performance
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const DownloadPage = lazy(() => import('@/pages/DownloadPage'));
@@ -10,16 +8,10 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
 const FENHistoryPage = lazy(() => import('@/pages/FENHistoryPage'));
 const AdvancedFENInputPage = lazy(() => import('@/pages/AdvancedFENInputPage'));
-
-// Simple loading fallback
-const PageLoader = () => (
-  <div
-    className="flex items-center justify-center min-h-[70vh]"
-    role="status"
-    aria-label="Loading page"
-  >
+/** Suspense fallback spinner displayed while lazy page chunks load. */
+function PageLoader() {
+  return <div className="flex items-center justify-center min-h-[70vh]" role="status" aria-label="Loading page">
     <div className="text-center">
-      {/* Elegant Chess-Themed Spinner */}
       <div className="relative w-20 h-20 mx-auto mb-6">
         <div className="absolute inset-0 rounded-2xl border-4 border-accent/20" />
         <div className="absolute inset-0 rounded-2xl border-4 border-accent border-t-transparent animate-spin" />
@@ -31,12 +23,15 @@ const PageLoader = () => (
         Loading...
       </p>
     </div>
-  </div>
-);
-
-const AppRoutes = () => {
-  return (
-    <Suspense fallback={<PageLoader />}>
+  </div>;
+}
+/**
+ * Defines all client-side routes wrapped in a Suspense boundary.
+ *
+ * @returns {JSX.Element}
+ */
+function AppRoutes() {
+  return <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -47,8 +42,6 @@ const AppRoutes = () => {
         <Route path="/advanced-fen" element={<AdvancedFENInputPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-    </Suspense>
-  );
-};
-
+    </Suspense>;
+}
 export default AppRoutes;
