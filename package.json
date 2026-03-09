@@ -2,6 +2,7 @@
   "name": "chessviewer",
   "version": "5.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@9.15.4",
   "engines": {
     "node": ">=20.0.0",
