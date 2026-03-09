@@ -9,7 +9,7 @@ const STORAGE_KEY = 'chess-viewer-settings';
  * @param {Function} [props.onSettingsChange] - Called when any setting value changes
  * @returns {JSX.Element}
  */
-const ThemeSettingsView = ({ onSettingsChange }) => {
+function ThemeSettingsView({ onSettingsChange }) {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -50,10 +50,17 @@ const ThemeSettingsView = ({ onSettingsChange }) => {
     }
   }, [settings, onSettingsChange]);
 
+  /**
+   * Toggles a boolean setting by its key.
+   * @param {string} key - Setting key to toggle
+   */
   const handleToggle = useCallback((key) => {
     setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
+  /**
+   * Resets all settings to their default values.
+   */
   const handleReset = useCallback(() => {
     const defaults = {
       reduceAnimations: false,
