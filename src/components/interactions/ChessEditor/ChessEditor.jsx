@@ -11,7 +11,7 @@ import { RotateCcw, X } from 'lucide-react';
 
 const FIXED_BOARD_SIZE = 400;
 const RANK_GUTTER = 20;
-const BOARD_SIZE_EXPR = 'min(52vh, 46vw)';
+const BOARD_SIZE_EXPR = 'min(52vh, 80vw, 540px)';
 const CELL_SIZE_EXPR = `calc(${BOARD_SIZE_EXPR} / 8)`;
 
 /**
@@ -29,8 +29,7 @@ const CELL_SIZE_EXPR = `calc(${BOARD_SIZE_EXPR} / 8)`;
  * @param {string} [props.className=''] - Additional CSS classes
  * @returns {JSX.Element}
  */
-const ChessEditor = memo(
-  ({
+const ChessEditor = memo(function ChessEditor({
     fen,
     onFenChange,
     pieceStyle,
@@ -40,7 +39,7 @@ const ChessEditor = memo(
     flipped,
     boardSize = FIXED_BOARD_SIZE,
     className = ''
-  }) => {
+  }) {
     const { pieceImages, isLoading, loadProgress } = usePieceImages(pieceStyle);
 
     const {
@@ -168,7 +167,14 @@ const ChessEditor = memo(
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 flex-1 min-w-0">
+          <div
+            className="flex flex-col flex-1 min-w-0 lg:justify-between pb-4 palette-section"
+            style={{
+              '--palette-min-h': showCoords
+                ? `calc(${BOARD_SIZE_EXPR} + ${RANK_GUTTER}px)`
+                : BOARD_SIZE_EXPR
+            }}
+          >
             <PiecePalette pieceImages={pieceImages} isLoading={isLoading} />
 
             <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center sm:justify-between">
