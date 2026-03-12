@@ -1,49 +1,19 @@
-// Utility functions exports
-
-// Logging utility
 export * from './logger';
-
-// Error handling
 export * from './errorHandler';
-
-// Color utilities
-export * from './colorUtils';
-
-// FEN parser
+export * from './themeCustomization';
+export * from './colorConversions';
+export * from './colorOperations';
 export * from './fenParser';
-
-// Coordinate calculations
 export * from './coordinateCalculations';
-
-// Canvas exporter
 export * from './canvasExporter';
-
-// Image optimizer
 export * from './imageOptimizer';
-
-// Validation utilities
+export * from './canvasRenderer';
 export * from './validation';
-
-// Class name utilities
 export * from './classNames';
-
-// Performance utilities
 export * from './performance';
-
-// History utilities
 export * from './historyUtils';
-
-// Archive manager
 export * from './archiveManager';
-
-// Passive event options (distinct from performance utils)
 export * from './eventUtils';
-
-// Board utilities
 export * from './boardUtils';
-
-// Piece image cache
 export * from './pieceImageCache';
-
-// Error handling utilities (distinct from general error handler)
-export * from './errorHandler';
+export * from './svgExporter';

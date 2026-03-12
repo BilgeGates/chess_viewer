@@ -1,4 +1,3 @@
-// Custom hooks exports
 export { useChessBoard } from './useChessBoard';
 export { usePieceImages } from './usePieceImages';
 export { useFENHistory } from './useFENHistory';
@@ -12,11 +11,5 @@ export { useCanvasPicker } from './useCanvasPicker';
 export { useOutsideClick } from './useOutsideClick';
 export { useIntersectionObserver } from './useIntersectionObserver';
 export { useDebounce, useIdleCallback } from './usePerformance';
-export {
-  useScrollLock,
-  getScrollLockCount,
-  forceUnlockScroll
-} from './useScrollLock';
-
-// Context hooks re-exports for convenience
+export { useScrollLock, getScrollLockCount, forceUnlockScroll } from './useScrollLock';
 export { useFENBatch, useThemeSettings } from '@/contexts';
