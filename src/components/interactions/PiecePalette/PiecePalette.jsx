@@ -10,7 +10,7 @@ import { DraggablePiece } from '@/components/interactions';
  * @param {string} [props.className=''] - Additional CSS classes
  * @returns {JSX.Element}
  */
-const PiecePalette = memo(({ pieceImages, isLoading, className = '' }) => {
+const PiecePalette = memo(function PiecePalette({ pieceImages, isLoading, className = '' }) {
   const whitePieces = PALETTE_PIECES.filter((p) => p.color === 'w');
   const blackPieces = PALETTE_PIECES.filter((p) => p.color === 'b');
 
@@ -34,7 +34,7 @@ const PiecePalette = memo(({ pieceImages, isLoading, className = '' }) => {
                   border border-border/50 hover:border-accent/50
                   flex items-center justify-center
                   transition-all duration-150
-                  hover:scale-105
+                  hover:scale-[1.04]
                   ${isLoading ? 'opacity-50' : ''}
                 `}
                 title={p.name}
@@ -43,7 +43,7 @@ const PiecePalette = memo(({ pieceImages, isLoading, className = '' }) => {
                   piece={p.piece}
                   pieceImage={pieceImage}
                   isFromPalette={true}
-                  size="70%"
+                  size="60%"
                   disabled={isLoading || !pieceImage}
                 />
               </div>
@@ -80,11 +80,6 @@ const PiecePalette = memo(({ pieceImages, isLoading, className = '' }) => {
         {renderPieceGroup(blackPieces, 'Black')}
       </div>
 
-      <div className="text-xs text-text-muted px-1 space-y-0.5 sm:space-y-1 hidden sm:block">
-        <p>• Drag from palette to add</p>
-        <p>• Drag on board to move</p>
-        <p>• Drag off board to remove</p>
-      </div>
     </div>
   );
 });
