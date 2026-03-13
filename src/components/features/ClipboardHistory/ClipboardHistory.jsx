@@ -1,5 +1,9 @@
-import { memo, useState, useEffect } from 'react';
-import { X, Copy, Trash2, Check } from 'lucide-react';
+import { memo, useEffect, useState } from 'react';
+
+import { Check, Copy, Trash2, X } from 'lucide-react';
+
+import { logger } from '@/utils/logger';
+import { safeJSONParse } from '@/utils/validation';
 
 /**
  * Modal drawer showing FEN strings previously copied to the clipboard.
@@ -9,7 +13,11 @@ import { X, Copy, Trash2, Check } from 'lucide-react';
  * @param {Function} [props.onSelectFen] - Called with a FEN string when the user selects an entry
  * @returns {JSX.Element|null}
  */
-const ClipboardHistory = memo(function ClipboardHistory({ isOpen, onClose, onSelectFen }) {
+const ClipboardHistory = memo(function ClipboardHistory({
+  isOpen,
+  onClose,
+  onSelectFen
+}) {
   const [clipboardHistory, setClipboardHistory] = useState([]);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
@@ -25,8 +33,8 @@ const ClipboardHistory = memo(function ClipboardHistory({ isOpen, onClose, onSel
   const loadHistory = () => {
     try {
       const saved = localStorage.getItem('fenClipboardHistory');
-      const history = saved ? JSON.parse(saved) : [];
-      setClipboardHistory(history);
+      const history = safeJSONParse(saved, []);
+      setClipboardHistory(Array.isArray(history) ? history : []);
     } catch {
       setClipboardHistory([]);
     }
@@ -44,7 +52,7 @@ const ClipboardHistory = memo(function ClipboardHistory({ isOpen, onClose, onSel
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      logger.error('Failed to copy:', err);
     }
   };
 
