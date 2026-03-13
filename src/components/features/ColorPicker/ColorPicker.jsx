@@ -1,26 +1,20 @@
-import { useRef, useEffect } from 'react';
-import { ColorInput } from '@/components/features/ColorPicker/parts';
-import PickerModal from './PickerModal';
-import { useColorConversion, useColorState } from '@/hooks';
+import { useEffect, useRef } from 'react';
+
 import { Palette } from 'lucide-react';
+
+import { ColorInput } from '@/components/features/ColorPicker/parts';
+import { useColorConversion, useColorState } from '@/hooks';
+
+import PickerModal from './PickerModal';
+
 /**
  * @param {Object} props
  * @returns {JSX.Element}
  */
-function ColorPicker({
-  label,
-  value = '#3B82F6',
-  onChange,
-  className = ''
-}) {
+function ColorPicker({ label, value = '#3B82F6', onChange, className = '' }) {
   const pickerRef = useRef(null);
   const canvasRef = useRef(null);
-  const {
-    hexToRgb,
-    rgbToHex,
-    rgbToHsv,
-    hsvToRgb
-  } = useColorConversion();
+  const { hexToRgb, rgbToHex, rgbToHsv, hsvToRgb } = useColorConversion();
   const {
     hexInput,
     setHexInput,
@@ -38,7 +32,7 @@ function ColorPicker({
     closeModal
   } = useColorState(value);
   useEffect(() => {
-    const handleClickOutside = e => {
+    const handleClickOutside = (e) => {
       if (pickerRef.current && !pickerRef.current.contains(e.target)) {
         closeModal();
       }
@@ -72,23 +66,23 @@ function ColorPicker({
       ctx.fillRect(0, 0, width, height);
     }
   }, [isOpen, tempColor, hexToRgb, rgbToHsv, hsvToRgb]);
-  const handleCanvasClick = e => {
+  const handleCanvasClick = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width * canvas.width;
-    const y = (e.clientY - rect.top) / rect.height * canvas.height;
+    const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
     const ctx = canvas.getContext('2d');
     const imageData = ctx.getImageData(x, y, 1, 1).data;
     const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
     handleColorSelect(hex);
   };
-  const handleHueChange = e => {
+  const handleHueChange = (e) => {
     const hue = parseFloat(e.target.value);
     const rgb = hsvToRgb(hue, 100, 100);
     const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
     handleColorSelect(hex);
   };
-  const handleHexChange = e => {
+  const handleHexChange = (e) => {
     let hex = e.target.value.trim();
     if (!hex.startsWith('#')) hex = '#' + hex;
     setHexInput(hex);
@@ -110,15 +104,42 @@ function ColorPicker({
     const rgb = hexToRgb(tempColor);
     return rgb ? `${rgb.r}, ${rgb.g}, ${rgb.b}` : '0, 0, 0';
   };
-  return <div className={`space-y-2 ${className}`} ref={pickerRef}>
-      {label && <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+  return (
+    <div className={`space-y-2 ${className}`} ref={pickerRef}>
+      {label && (
+        <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
           <Palette className="w-4 h-4 text-blue-400" />
           {label}
-        </label>}
+        </label>
+      )}
       <div className="relative">
-        <ColorInput value={value} hexInput={hexInput} onHexChange={handleHexChange} onToggle={toggleOpen} getRgbValues={getRgbValues} />
-        <PickerModal isOpen={isOpen} tempColor={tempColor} canvasRef={canvasRef} activePalette={activePalette} setActivePalette={setActivePalette} copiedText={copiedText} onClose={closeModal} onCanvasClick={handleCanvasClick} onHueChange={handleHueChange} onColorSelect={handleColorSelect} onRandom={handleRandom} onReset={() => handleReset(value)} onCopy={() => handleCopy(tempColor)} onApply={handleApply} getCurrentHue={getCurrentHue} getRgbValues={getRgbValues} />
+        <ColorInput
+          value={value}
+          hexInput={hexInput}
+          onHexChange={handleHexChange}
+          onToggle={toggleOpen}
+          getRgbValues={getRgbValues}
+        />
+        <PickerModal
+          isOpen={isOpen}
+          tempColor={tempColor}
+          canvasRef={canvasRef}
+          activePalette={activePalette}
+          setActivePalette={setActivePalette}
+          copiedText={copiedText}
+          onClose={closeModal}
+          onCanvasClick={handleCanvasClick}
+          onHueChange={handleHueChange}
+          onColorSelect={handleColorSelect}
+          onRandom={handleRandom}
+          onReset={() => handleReset(value)}
+          onCopy={() => handleCopy(tempColor)}
+          onApply={handleApply}
+          getCurrentHue={getCurrentHue}
+          getRgbValues={getRgbValues}
+        />
       </div>
-    </div>;
+    </div>
+  );
 }
 export default ColorPicker;
