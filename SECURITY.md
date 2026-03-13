@@ -300,16 +300,44 @@ After a fix is released, we will:
 
 - React DND 16.0.1|------|-----------|----------|--------|
 
-- Lucide React 0.469.0| 2026-01-04 | Internal Review | 0 critical, 0 high | ✅ Clear |
+- Lucide React 0.469.0| 2026-03-12 | Source Code Audit | 6 findings (0 critical, 6 high) | ✅ Fixed |
 
-- Canvg 4.0.2| 2025-12-28 | Dependency Audit | 1 moderate (qs) | ✅ Fixed in v3.5.1 |
+- Canvg 4.0.2| 2026-01-04 | Internal Review | 0 critical, 0 high | ✅ Clear |
 
-**Development:**
+**Development:**| 2025-12-28 | Dependency Audit | 1 moderate (qs) | ✅ Fixed in v3.5.1 |
 
 - Vite 6.3.5
 - Tailwind CSS 3.3.5
 - ESLint 9.39.2
 - Prettier 3.2.2
+
+**2026-03-12 Audit Findings (all fixed in this release):**
+
+1. **CSP `'unsafe-inline'` on script-src** — Inline `<script>` blocks in `index.html`
+   allowed any injected script tag to execute. Fixed by extracting both inline scripts
+   to dedicated static files (`/public/theme-init.js`, `/public/preload-cleanup.js`),
+   enabling a strict `script-src 'self'` policy.
+
+2. **Prototype-pollution via `JSON.parse` on localStorage** — All 22 raw `JSON.parse`
+   calls on untrusted localStorage strings were replaced with `safeJSONParse`, which
+   uses a reviver to drop `__proto__`, `constructor`, and `prototype` keys, and
+   validates the parsed type before use.
+
+3. **Missing FEN length guard** — `isValidFENFormat` had no upper bound, enabling
+   resource-exhaustion via extremely long input. Fixed with a `MAX_FEN_LENGTH = 256`
+   guard applied before any regex or string parsing.
+
+4. **`console.*` leaks in production** — Eight `console.error`/`console.warn` calls
+   in component and page code exposed internal stack traces in production builds.
+   All replaced with the dev-only `logger` utility (no-ops in production).
+
+5. **Missing HTTP security headers** — `Strict-Transport-Security`, `Cross-Origin-Opener-Policy`,
+   `Cross-Origin-Resource-Policy`, `base-uri 'self'`, and `form-action 'self'` were
+   absent. All added to `vercel.json`.
+
+6. **`window.__INITIAL_THEME__` not validated** — `App.jsx` used `__INITIAL_THEME__`
+   without an allowlist check, allowing a page-scope script to set it to an
+   arbitrary string. Fixed with `VALID_THEMES` Set guard.
 
 All production dependencies are from trusted sources (npm registry, official packages).
 
