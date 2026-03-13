@@ -40,44 +40,12 @@
     <title>FENForsty Pro</title>
   </head>
   <body class="preload">
-    <script>
-      (function () {
-        const getInitialTheme = () => {
-          try {
-            const saved = localStorage.getItem('chess-theme');
-            if (saved && (saved === 'light' || saved === 'dark')) {
-              return saved;
-            }
-          } catch (e) {
-            // localStorage might be blocked
-          }
-
-          if (
-            window.matchMedia &&
-            window.matchMedia('(prefers-color-scheme: light)').matches
-          ) {
-            return 'light';
-          }
-
-          return 'dark';
-        };
-
-        const theme = getInitialTheme();
-        document.documentElement.setAttribute('data-theme', theme);
-
-        window.__INITIAL_THEME__ = theme;
-      })();
-    </script>
+    <script src="/theme-init.js"></script>
 
     <div id="root"></div>
 
     <script type="module" src="/src/index.jsx"></script>
-
-    <script>
-      window.addEventListener('load', () => {
-        document.body.classList.remove('preload');
-      });
-    </script>
+    <script src="/preload-cleanup.js" defer></script>
   </body>
 </html>
 
