@@ -27,6 +27,22 @@ None currently tracked.
 
 Currently tracking **0** high priority issues.
 
+> **Security hardening completed 2026-03-12:**
+> - Inline `<script>` blocks removed from `index.html`; moved to external files
+>   (`/public/theme-init.js`, `/public/preload-cleanup.js`) to allow a strict
+>   `script-src 'self'` CSP without `'unsafe-inline'`.
+> - All `JSON.parse` calls on localStorage data replaced with `safeJSONParse`
+>   (prototype-pollution-safe reviver, typed fallback, schema check before use).
+> - All `console.*` calls in production paths replaced with the dev-only `logger`
+>   utility — no information leaks to the browser console in production builds.
+> - `vercel.json` updated: added `Strict-Transport-Security`, `Cross-Origin-Opener-Policy`,
+>   `Cross-Origin-Resource-Policy`, `base-uri 'self'`, `form-action 'self'`, and an
+>   immutable asset-cache header; removed `'unsafe-inline'` from `script-src`.
+> - `isValidFENFormat` now rejects inputs exceeding `MAX_FEN_LENGTH` (256 chars)
+>   before any parsing begins.
+> - `sanitizeHexColor` now applied consistently before any hex color value is
+>   used from localStorage, preventing CSS injection via stored colour strings.
+
 ---
 
 ## Medium Priority Issues
