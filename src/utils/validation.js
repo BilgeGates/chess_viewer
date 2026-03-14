@@ -1,98 +1,131 @@
 /**
- * Sanitize file name by removing invalid characters.
+ * Maximum allowed length for a FEN string before any parsing attempt.
+ * Standard FEN is ≤ 90 characters; 256 provides headroom while blocking
+ * excessively long inputs that could be used for denial-of-service.
  *
- * @param {string} fileName - Raw file name
- * @returns {string} Safe file name
+ * @type {number}
+ */
+export const MAX_FEN_LENGTH = 256;
+
+/**
+ * Maximum size (bytes) allowed for a single localStorage entry value.
+ * Values exceeding this limit are rejected to prevent storage abuse.
+ *
+ * @type {number}
+ */
+export const MAX_STORAGE_ENTRY_BYTES = 512 * 1024;
+
+/** @type {ReadonlySet<string>} Keys that would pollute the prototype chain. */
+const PROTOTYPE_POISON_KEYS = new Set([
+  '__proto__',
+  'constructor',
+  'prototype'
+]);
+
+/**
+ * Prototype-pollution-safe JSON parser.
+ *
+ * Uses a JSON.parse reviver to drop keys that would pollute the prototype
+ * chain, then returns the parsed value or the provided fallback.
+ *
+ * @template T
+ * @param {string} jsonString - Raw JSON string from an untrusted source
+ * @param {T} [fallback=null] - Value returned when parsing fails or input is invalid
+ * @returns {T|null}
+ */
+export function safeJSONParse(jsonString, fallback = null) {
+  if (!jsonString || typeof jsonString !== 'string') {
+    return fallback;
+  }
+  try {
+    const parsed = JSON.parse(jsonString, (key, value) => {
+      if (key !== '' && PROTOTYPE_POISON_KEYS.has(key)) {
+        return undefined;
+      }
+      return value;
+    });
+    return parsed ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Strips unsafe filename characters and enforces a max length of 100.
+ *
+ * @param {string} fileName
+ * @returns {string} Safe filename (falls back to 'chess-position')
  */
 export function sanitizeFileName(fileName) {
   if (!fileName || typeof fileName !== 'string') {
     return 'chess-position';
   }
-
-  let sanitized = fileName.replace(/[\\/:*?"<>|]/g, '-');
+  let sanitized = fileName.replace(/[\\/:*?"<>|&]/g, '-');
   sanitized = sanitized.replace(/\s+/g, '_');
   sanitized = sanitized.replace(/^\.+/, '');
   sanitized = sanitized.replace(/\.+$/, '');
   sanitized = sanitized.trim();
-
   if (sanitized.length > 100) {
     sanitized = sanitized.substring(0, 100);
   }
-
   if (!sanitized || sanitized.length === 0) {
     return 'chess-position';
   }
-
   return sanitized;
 }
-
 /**
- * Validate and clamp number within range.
+ * Clamps a numeric value to the given range or returns the default.
  *
- * @param {*} value - Value to validate
- * @param {number} min - Minimum value
- * @param {number} max - Maximum value
- * @param {number} defaultValue - Default if invalid
- * @returns {number} Valid number
+ * @param {*} value - Input value
+ * @param {number} min
+ * @param {number} max
+ * @param {number} defaultValue
+ * @returns {number}
  */
 export function validateNumber(value, min, max, defaultValue) {
   const num = parseFloat(value);
-
   if (isNaN(num) || !isFinite(num)) {
     return defaultValue;
   }
-
   if (num < min) {
     return min;
   }
   if (num > max) {
     return max;
   }
-
   return num;
 }
-
 /**
- * Validate board size in centimeters.
- *
- * @param {number} size - Board size in cm
- * @returns {number} Valid board size (4-100cm)
+ * @param {*} size
+ * @returns {number} Clamped board size (4–100, default 8)
  */
 export function validateBoardSize(size) {
   return validateNumber(size, 4, 100, 8);
 }
-
 /**
- * Validate export quality multiplier.
- *
- * @param {number} quality - Quality multiplier
- * @returns {number} Valid quality (1-32x)
+ * @param {*} quality
+ * @returns {number} Clamped quality value (1–32, default 16)
  */
 export function validateExportQuality(quality) {
   return validateNumber(quality, 1, 32, 16);
 }
-
 /**
- * Check if string is valid hex color.
- *
- * @param {string} color - Color string
- * @returns {boolean} True if valid hex color
+ * @param {*} color
+ * @returns {boolean} True if color is a valid 6-digit hex string
  */
 export function isValidHexColor(color) {
   if (!color || typeof color !== 'string') {
     return false;
   }
-
   const hexPattern = /^#[0-9A-Fa-f]{6}$/;
   return hexPattern.test(color);
 }
-
 /**
- * Sanitize hex color with fallback.
+ * Returns the color if it is a valid hex, otherwise returns the fallback.
  *
- * @param {string} color - Color to check
- * @param {string} fallback - Fallback color
- * @returns {string} Valid hex color
+ * @param {string} color
+ * @param {string} [fallback='#ffffff']
+ * @returns {string}
  */
 export function sanitizeHexColor(color, fallback = '#ffffff') {
   if (isValidHexColor(color)) {
@@ -100,38 +133,34 @@ export function sanitizeHexColor(color, fallback = '#ffffff') {
   }
   return fallback;
 }
-
 /**
- * Validate FEN string format.
+ * Validates the piece-placement field of a FEN string.
  *
- * @param {string} fen - FEN string
- * @returns {boolean} True if valid format
+ * @param {string} fen
+ * @returns {boolean}
  */
 export function isValidFENFormat(fen) {
   if (!fen || typeof fen !== 'string') {
     return false;
   }
-
+  if (fen.length > MAX_FEN_LENGTH) {
+    return false;
+  }
   const trimmed = fen.trim();
   const parts = trimmed.split(/\s+/);
   if (parts.length < 1 || parts.length > 6) {
     return false;
   }
-
   const position = parts[0];
   const ranks = position.split('/');
-
   if (ranks.length !== 8) {
     return false;
   }
-
   for (let rankIndex = 0; rankIndex < ranks.length; rankIndex++) {
     const rank = ranks[rankIndex];
     let squareCount = 0;
-
     for (let charIndex = 0; charIndex < rank.length; charIndex++) {
       const char = rank[charIndex];
-
       if (/[1-8]/.test(char)) {
         squareCount = squareCount + parseInt(char, 10);
       } else if (/[pnbrqkPNBRQK]/.test(char)) {
@@ -140,44 +169,43 @@ export function isValidFENFormat(fen) {
         return false;
       }
     }
-
     if (squareCount !== 8) {
       return false;
     }
   }
-
   return true;
 }
-
 /**
- * Sanitize user input.
+ * HTML-encodes a string and truncates it to maxLength.
  *
- * @param {string} input - Raw user input
- * @param {number} maxLength - Maximum length
- * @returns {string} Sanitized string
+ * @param {string} input
+ * @param {number} [maxLength=500]
+ * @returns {string}
  */
 export function sanitizeInput(input, maxLength = 500) {
   if (!input || typeof input !== 'string') {
     return '';
   }
-
-  let sanitized = input.replace(/[<>'"]/g, '');
+  let sanitized = input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
   sanitized = sanitized.trim();
-
   if (sanitized.length > maxLength) {
     sanitized = sanitized.substring(0, maxLength);
   }
-
   return sanitized;
 }
-
 /**
- * Validate piece style name.
+ * Validates that a piece style string exists in the list of valid styles.
  *
- * @param {string} style - Style name
- * @param {string[]} validStyles - Array of valid styles
- * @param {string} defaultStyle - Default style
- * @returns {string} Valid style name
+ * @param {string} style - Style name to validate
+ * @param {string[]} validStyles - Allowed style names
+ * @param {string} [defaultStyle='cburnett']
+ * @returns {string} Validated style or defaultStyle
  */
 export function validatePieceStyle(
   style,
@@ -187,9 +215,7 @@ export function validatePieceStyle(
   if (!style || typeof style !== 'string') {
     return defaultStyle;
   }
-
   const sanitized = sanitizeInput(style, 50);
-
   let isValid = false;
   for (let i = 0; i < validStyles.length; i++) {
     if (validStyles[i] === sanitized) {
@@ -197,10 +223,8 @@ export function validatePieceStyle(
       break;
     }
   }
-
   if (isValid) {
     return sanitized;
   }
-
   return defaultStyle;
 }
