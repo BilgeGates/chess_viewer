@@ -16,6 +16,26 @@ const TOOL_PAGES = ['/settings', '/fen-history', '/advanced-fen'];
 /** @type {ReadonlySet<string>} */
 const VALID_THEMES = new Set(['light', 'dark']);
 
+const THEME_REVEAL_DEFAULT_OFFSET = 24;
+
+/**
+ * Sets CSS variables for circular reveal animation.
+ *
+ * @param {number} x - Reveal origin X in viewport
+ * @param {number} y - Reveal origin Y in viewport
+ */
+function setThemeRevealVars(x, y) {
+  const clampedX = Math.min(Math.max(x, 0), window.innerWidth);
+  const clampedY = Math.min(Math.max(y, 0), window.innerHeight);
+  const maxDx = Math.max(clampedX, window.innerWidth - clampedX);
+  const maxDy = Math.max(clampedY, window.innerHeight - clampedY);
+  const radius = Math.hypot(maxDx, maxDy);
+
+  document.documentElement.style.setProperty('--theme-reveal-x', `${clampedX}px`);
+  document.documentElement.style.setProperty('--theme-reveal-y', `${clampedY}px`);
+  document.documentElement.style.setProperty('--theme-reveal-radius', `${radius}px`);
+}
+
 /**
  * Retrieves the initial theme from various sources.
  * Priority: window variable > localStorage > system preference.
@@ -94,15 +114,52 @@ function App() {
     return () => mediaQuery.removeEventListener('change', handleMediaChange);
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
-  }, []);
+  const toggleTheme = useCallback(
+    (event) => {
+      const nextTheme = theme === 'dark' ? 'light' : 'dark';
+      const prefersReducedMotion = window.matchMedia?.(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+
+      let revealX = window.innerWidth - THEME_REVEAL_DEFAULT_OFFSET;
+      let revealY = THEME_REVEAL_DEFAULT_OFFSET;
+
+      if (event?.currentTarget instanceof Element) {
+        const rect = event.currentTarget.getBoundingClientRect();
+        revealX = rect.left + rect.width / 2;
+        revealY = rect.top + rect.height / 2;
+      }
+
+      setThemeRevealVars(revealX, revealY);
+
+      const startViewTransition = document.startViewTransition?.bind(document);
+      if (!startViewTransition || prefersReducedMotion) {
+        setTheme(nextTheme);
+        return;
+      }
+
+      const transitionDirection = nextTheme === 'light' ? 'to-light' : 'to-dark';
+      document.documentElement.setAttribute(
+        'data-theme-transition',
+        transitionDirection
+      );
+
+      const transition = startViewTransition(() => {
+        setTheme(nextTheme);
+      });
+
+      transition.finished.finally(() => {
+        document.documentElement.removeAttribute('data-theme-transition');
+      });
+    },
+    [theme]
+  );
 
   return (
     <ErrorBoundary>
       <ThemeSettingsProvider>
         <FENBatchProvider>
-          <div className="min-h-screen bg-gradient-to-br from-bg-gradient-start to-bg-gradient-end transition-colors duration-500">
+          <div className="h-full max-h-full overflow-hidden bg-gradient-to-br from-bg-gradient-start to-bg-gradient-end transition-colors duration-500">
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-accent focus:text-bg focus:rounded-xl focus:shadow-glow focus:font-semibold"
@@ -115,7 +172,7 @@ function App() {
             <main
               id="main-content"
               tabIndex={-1}
-              className="focus:outline-none"
+              className="h-full overflow-hidden focus:outline-none"
             >
               <Routes />
             </main>
