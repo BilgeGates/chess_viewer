@@ -1,19 +1,26 @@
-import { Button } from '@/components/ui';
 import { Settings } from 'lucide-react';
+
+import { Button } from '@/components/ui';
+
 /**
  * @param {Object} props
  * @returns {JSX.Element}
  */
-function ExportSettings({
-  onOpenModal
-}) {
-  return <div className="space-y-3">
+function ExportSettings({ onOpenModal }) {
+  return (
+    <div className="space-y-3">
       <label className="block text-sm font-semibold text-text-secondary">
         Export Settings
       </label>
-      <Button onClick={onOpenModal} variant="gradient" icon={Settings} fullWidth>
+      <Button
+        onClick={onOpenModal}
+        variant="gradient"
+        icon={Settings}
+        fullWidth
+      >
         Configure Export
       </Button>
-    </div>;
+    </div>
+  );
 }
 export default ExportSettings;
