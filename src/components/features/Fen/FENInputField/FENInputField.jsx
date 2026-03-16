@@ -1,16 +1,20 @@
-import { memo, useState, useEffect, useCallback } from 'react';
-import { validateFEN } from '@/utils';
-import { useFENBatch } from '@/contexts';
-import ClipboardHistory from '@/components/features/ClipboardHistory';
+import { memo, useCallback, useEffect, useState } from 'react';
+
 import {
-  Copy,
+  AlertCircle,
   CheckCircle,
   Clipboard,
-  AlertCircle,
-  Plus,
+  Copy,
   Heart,
-  List
+  List,
+  Plus
 } from 'lucide-react';
+
+import ClipboardHistory from '@/components/features/ClipboardHistory';
+import { useFENBatch } from '@/contexts';
+import { validateFEN } from '@/utils';
+import { logger } from '@/utils/logger';
+import { safeJSONParse } from '@/utils/validation';
 
 /**
  * FEN string input field with copy, paste, batch-add, favorites, and clipboard history actions.
@@ -26,7 +30,8 @@ import {
  * @param {Function} [props.onNotification] - Called with `(message, type)` to surface a toast
  * @returns {JSX.Element}
  */
-const FENInputField = memo(function FENInputField({
+const FENInputField = memo(
+  function FENInputField({
     fen,
     onChange,
     onBlur,
@@ -41,11 +46,11 @@ const FENInputField = memo(function FENInputField({
     const [isClipboardOpen, setIsClipboardOpen] = useState(false);
     const { addToBatch } = useFENBatch();
 
-    // Load favorite status from localStorage
     useEffect(() => {
       try {
-        const favorites = JSON.parse(
-          localStorage.getItem('favoriteFens') || '{}'
+        const favorites = safeJSONParse(
+          localStorage.getItem('favoriteFens'),
+          {}
         );
         setIsFavorite(!!favorites[fen]);
       } catch {
@@ -59,8 +64,9 @@ const FENInputField = memo(function FENInputField({
 
         if (fen && validateFEN(fen.trim())) {
           try {
-            const history = JSON.parse(
-              localStorage.getItem('fenClipboardHistory') || '[]'
+            const history = safeJSONParse(
+              localStorage.getItem('fenClipboardHistory'),
+              []
             );
 
             const newEntry = {
@@ -78,7 +84,7 @@ const FENInputField = memo(function FENInputField({
               JSON.stringify(updatedHistory)
             );
           } catch (err) {
-            console.error('Failed to save to clipboard history:', err);
+            logger.error('Failed to save to clipboard history:', err);
           }
         }
       }
@@ -117,9 +123,16 @@ const FENInputField = memo(function FENInputField({
       }
 
       try {
-        const favorites = JSON.parse(
-          localStorage.getItem('favoriteFens') || '{}'
+        const rawFavorites = safeJSONParse(
+          localStorage.getItem('favoriteFens'),
+          {}
         );
+        const favorites =
+          rawFavorites &&
+          typeof rawFavorites === 'object' &&
+          !Array.isArray(rawFavorites)
+            ? rawFavorites
+            : {};
         const newFavoriteState = !favorites[trimmedFen];
 
         if (newFavoriteState) {
@@ -153,9 +166,7 @@ const FENInputField = memo(function FENInputField({
       <>
         <div className="space-y-2">
           <div className="bg-surface/50 border border-border rounded-lg overflow-hidden">
-            {/* Toolbar */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-surface-elevated border-b border-border">
-              {/* Clipboard History Button (Icon Only) */}
+            <div className="flex flex-wrap items-center gap-2 px-3 py-2 bg-surface-elevated border-b border-border">
               <button
                 onClick={() => setIsClipboardOpen(true)}
                 className="p-2 rounded-md transition-all bg-surface hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -170,7 +181,6 @@ const FENInputField = memo(function FENInputField({
                 />
               </button>
 
-              {/* Paste Button */}
               <button
                 onClick={onPaste}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all bg-surface hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-accent text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -186,7 +196,6 @@ const FENInputField = memo(function FENInputField({
                 <span>Paste</span>
               </button>
 
-              {/* Copy Button */}
               <button
                 onClick={handleCopyWithHistory}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
@@ -223,7 +232,6 @@ const FENInputField = memo(function FENInputField({
                 )}
               </button>
 
-              {/* Add to Batch Button */}
               <button
                 onClick={handleAddToBatch}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all bg-surface hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-accent text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -239,13 +247,12 @@ const FENInputField = memo(function FENInputField({
                 <span>Add</span>
               </button>
 
-              {/* Favorite Button with Heart Icon */}
               <button
                 onClick={handleToggleFavorite}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md transition-all text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   isFavorite
-                    ? 'bg-red-500/20 text-red-500 border border-red-500/30'
-                    : 'bg-surface hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-red-500'
+                    ? 'bg-error/20 text-error border border-error/30'
+                    : 'bg-surface hover:bg-surface-hover border border-border/50 text-text-secondary hover:text-error'
                 }`}
                 title={
                   isFavorite ? 'Remove from favorites' : 'Add to favorites'
@@ -264,7 +271,6 @@ const FENInputField = memo(function FENInputField({
               </button>
             </div>
 
-            {/* Textarea - Reduced font size and padding */}
             <div className="relative">
               <textarea
                 value={fen}
@@ -274,7 +280,7 @@ const FENInputField = memo(function FENInputField({
                 aria-describedby={error ? 'fen-error' : undefined}
                 aria-invalid={error ? 'true' : 'false'}
                 className={`
-                  w-full px-3 py-2
+                  w-full px-3 py-2 pb-8
                   bg-surface/50 text-text-primary 
                   font-mono text-[12px] leading-tight resize-none min-h-[80px]
                   focus-visible:outline-none focus:outline-none outline-none 
@@ -300,7 +306,7 @@ const FENInputField = memo(function FENInputField({
           {error && (
             <div
               id="fen-error"
-              className="flex items-center gap-2 text-red-400 text-xs mt-1"
+              className="flex items-center gap-2 text-error text-xs mt-1"
               role="alert"
             >
               <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" />
@@ -309,7 +315,6 @@ const FENInputField = memo(function FENInputField({
           )}
         </div>
 
-        {/* Clipboard History Modal */}
         <ClipboardHistory
           isOpen={isClipboardOpen}
           onClose={() => setIsClipboardOpen(false)}
