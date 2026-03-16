@@ -1,6 +1,8 @@
-import { Modal, Button, Input } from '@/components/ui';
+import { Printer, Settings, Share2 } from 'lucide-react';
+
+import { Button, Input, Modal } from '@/components/ui';
 import { QUALITY_PRESETS } from '@/constants';
-import { Settings, Printer, Share2 } from 'lucide-react';
+
 /**
  * @param {Object} props
  * @returns {JSX.Element}
@@ -13,10 +15,18 @@ function ExportOptionsDialog({
   exportQuality,
   setExportQuality
 }) {
-  const printPresets = QUALITY_PRESETS.filter(p => p.mode === 'print');
-  const socialPresets = QUALITY_PRESETS.filter(p => p.mode === 'social');
-  const currentPreset = QUALITY_PRESETS.find(p => p.value === exportQuality);
-  return <Modal isOpen={isOpen} onClose={onClose} title="Export Settings" icon={Settings} iconColor="text-accent" maxWidth="max-w-md">
+  const printPresets = QUALITY_PRESETS.filter((p) => p.mode === 'print');
+  const socialPresets = QUALITY_PRESETS.filter((p) => p.mode === 'social');
+  const currentPreset = QUALITY_PRESETS.find((p) => p.value === exportQuality);
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Export Settings"
+      icon={Settings}
+      iconColor="text-accent"
+      maxWidth="max-w-md"
+    >
       <div className="space-y-5">
         <div className="space-y-3">
           <label className="block text-sm font-semibold text-text-primary">
@@ -29,14 +39,21 @@ function ExportOptionsDialog({
               <span>Print Quality</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {printPresets.map(preset => <button key={preset.value} onClick={() => setExportQuality(preset.value)} className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary'}`} title={preset.description}>
+              {printPresets.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => setExportQuality(preset.value)}
+                  className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary'}`}
+                  title={preset.description}
+                >
                   <div className="flex flex-col items-center gap-0.5">
                     <span>{preset.label}</span>
                     <span className="text-xs opacity-70 font-normal">
                       {preset.value === 8 ? 'Standard' : 'High'}
                     </span>
                   </div>
-                </button>)}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -46,37 +63,55 @@ function ExportOptionsDialog({
               <span>Social / Zoom</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {socialPresets.map(preset => <button key={preset.value} onClick={() => setExportQuality(preset.value)} className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary'}`} title={preset.description}>
+              {socialPresets.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => setExportQuality(preset.value)}
+                  className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary'}`}
+                  title={preset.description}
+                >
                   <div className="flex flex-col items-center gap-0.5">
                     <span>{preset.label}</span>
                     <span className="text-xs opacity-70 font-normal">
                       {preset.value === 24 ? 'Ultra' : 'Maximum'}
                     </span>
                   </div>
-                </button>)}
+                </button>
+              ))}
             </div>
           </div>
 
-          {currentPreset && <div className="p-3 rounded-lg bg-surface-elevated border border-border">
+          {currentPreset && (
+            <div className="p-3 rounded-lg bg-surface-elevated border border-border">
               <p className="text-xs text-text-secondary leading-relaxed">
-                {currentPreset.mode === 'print' ? <>
+                {currentPreset.mode === 'print' ? (
+                  <>
                     <strong className="text-accent font-semibold">
                       Print:
                     </strong>{' '}
                     Board size preserved, pixel density increased for sharp
                     prints.
-                  </> : <>
+                  </>
+                ) : (
+                  <>
                     <strong className="text-accent font-semibold">
                       Social:
                     </strong>{' '}
                     Fixed large output optimized for social media and zooming.
-                  </>}
+                  </>
+                )}
               </p>
-            </div>}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
-          <Input label="File Name" value={fileName} onChange={e => setFileName(e.target.value)} placeholder="board" />
+          <Input
+            label="File Name"
+            value={fileName}
+            onChange={(e) => setFileName(e.target.value)}
+            placeholder="board"
+          />
           <p className="text-xs text-text-muted">
             <span className="font-data font-semibold text-text-secondary">
               {fileName || 'board'}
@@ -89,6 +124,7 @@ function ExportOptionsDialog({
           Done
         </Button>
       </div>
-    </Modal>;
+    </Modal>
+  );
 }
 export default ExportOptionsDialog;
