@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
+
 import { DndProvider as ReactDndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
+
 /**
  * @param {Object} props
  * @returns {JSX.Element}
  */
-function DndProvider({
-  children
-}) {
+function DndProvider({ children }) {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   useEffect(() => {
     const checkTouch = () => {
-      return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches;
+      return (
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia('(pointer: coarse)').matches
+      );
     };
     setIsTouchDevice(checkTouch());
   }, []);
@@ -24,8 +28,10 @@ function DndProvider({
   };
   const Backend = isTouchDevice ? TouchBackend : HTML5Backend;
   const backendOptions = isTouchDevice ? touchBackendOptions : undefined;
-  return <ReactDndProvider backend={Backend} options={backendOptions}>
+  return (
+    <ReactDndProvider backend={Backend} options={backendOptions}>
       {children}
-    </ReactDndProvider>;
+    </ReactDndProvider>
+  );
 }
 export default DndProvider;
