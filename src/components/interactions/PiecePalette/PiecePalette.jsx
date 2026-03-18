@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
-import { PALETTE_PIECES, getPieceImageKey } from '@/constants';
+
 import { DraggablePiece } from '@/components/interactions';
+import { getPieceImageKey, PALETTE_PIECES } from '@/constants';
 
 /**
  * Sidebar palette of all 12 draggable chess pieces (6 white, 6 black).
@@ -10,14 +11,18 @@ import { DraggablePiece } from '@/components/interactions';
  * @param {string} [props.className=''] - Additional CSS classes
  * @returns {JSX.Element}
  */
-const PiecePalette = memo(function PiecePalette({ pieceImages, isLoading, className = '' }) {
+const PiecePalette = memo(function PiecePalette({
+  pieceImages,
+  isLoading,
+  className = ''
+}) {
   const whitePieces = PALETTE_PIECES.filter((p) => p.color === 'w');
   const blackPieces = PALETTE_PIECES.filter((p) => p.color === 'b');
 
   const renderPieceGroup = useCallback(
     (pieces, label) => (
-      <div className="space-y-2">
-        <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wide text-center py-1.5 rounded-md text-white bg-accent border border-accent-hover">
+      <div className="space-y-2 sm:space-y-2.5">
+        <h3 className="text-[11px] sm:text-xs font-bold uppercase tracking-wide text-center py-1.5 rounded-md text-white bg-accent border border-accent-hover">
           {label}
         </h3>
         <div className="grid grid-cols-6 gap-1.5 sm:gap-2">
@@ -29,12 +34,13 @@ const PiecePalette = memo(function PiecePalette({ pieceImages, isLoading, classN
               <div
                 key={p.id}
                 className={`
-                  aspect-square rounded-md sm:rounded-lg
+                  aspect-square rounded-md lg:rounded-lg
                   bg-surface-elevated hover:bg-surface-hover
                   border border-border/50 hover:border-accent/50
                   flex items-center justify-center
                   transition-all duration-150
-                  hover:scale-[1.04]
+                  hover:scale-[1.02]
+                  min-h-[3.8rem] sm:min-h-[4.1rem]
                   ${isLoading ? 'opacity-50' : ''}
                 `}
                 title={p.name}
@@ -43,7 +49,7 @@ const PiecePalette = memo(function PiecePalette({ pieceImages, isLoading, classN
                   piece={p.piece}
                   pieceImage={pieceImage}
                   isFromPalette={true}
-                  size="60%"
+                  size="72%"
                   disabled={isLoading || !pieceImage}
                 />
               </div>
@@ -56,8 +62,8 @@ const PiecePalette = memo(function PiecePalette({ pieceImages, isLoading, classN
   );
 
   return (
-    <div className={`flex flex-col gap-3 sm:gap-4 ${className}`}>
-      <div className="text-xs sm:text-sm font-semibold text-text-primary flex items-center gap-2 px-1">
+    <div className={`flex flex-col gap-3 sm:gap-3.5 ${className}`}>
+      <div className="text-sm font-semibold text-text-primary flex items-center gap-2 px-1">
         <svg
           className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0"
           fill="none"
@@ -75,11 +81,10 @@ const PiecePalette = memo(function PiecePalette({ pieceImages, isLoading, classN
         <span className="sm:hidden">Pieces</span>
       </div>
 
-      <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="flex flex-col gap-2.5 sm:gap-3 2xl:flex-1 2xl:justify-around">
         {renderPieceGroup(whitePieces, 'White')}
         {renderPieceGroup(blackPieces, 'Black')}
       </div>
-
     </div>
   );
 });
