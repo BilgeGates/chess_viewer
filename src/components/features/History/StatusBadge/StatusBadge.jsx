@@ -1,6 +1,9 @@
 import { memo } from 'react';
+
+import { AlertCircle, Circle, Zap } from 'lucide-react';
+
 import { calculateStatus } from '@/utils';
-import { Circle, Zap, AlertCircle } from 'lucide-react';
+
 /**
  * @param {Object} props
  * @returns {JSX.Element}
@@ -12,22 +15,22 @@ const StatusBadge = memo(function StatusBadge({
   const status = calculateStatus(lastActiveAt);
   const statusConfig = {
     green: {
-      bg: 'bg-green-500/15',
-      text: 'text-green-600 dark:text-green-400',
+      bg: 'bg-success/15',
+      text: 'text-success',
       label: 'Fresh',
       icon: Circle,
-      iconClass: 'fill-green-500'
+      iconClass: 'fill-current'
     },
     yellow: {
-      bg: 'bg-yellow-500/15',
-      text: 'text-yellow-600 dark:text-yellow-400',
+      bg: 'bg-warning/15',
+      text: 'text-warning',
       label: 'Aging',
       icon: Zap,
       iconClass: ''
     },
     red: {
-      bg: 'bg-red-500/15',
-      text: 'text-red-600 dark:text-red-400',
+      bg: 'bg-error/15',
+      text: 'text-error',
       label: 'Stale',
       icon: AlertCircle,
       iconClass: ''
@@ -35,10 +38,15 @@ const StatusBadge = memo(function StatusBadge({
   };
   const config = statusConfig[status];
   const IconComponent = config.icon;
-  return <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] sm:text-xs font-semibold ${config.bg} ${config.text} ${className}`} title={config.label}>
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] sm:text-xs font-semibold ${config.bg} ${config.text} ${className}`}
+      title={config.label}
+    >
       <IconComponent className={`w-3 h-3 ${config.iconClass}`} />
       <span className="hidden sm:inline">{config.label}</span>
-    </span>;
+    </span>
+  );
 });
 StatusBadge.displayName = 'StatusBadge';
 export default StatusBadge;
