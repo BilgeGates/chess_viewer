@@ -6,10 +6,13 @@ export { useTheme, useThemePresets } from './useTheme';
 export { useNotifications } from './useNotifications';
 export { useLocalStorage, useHybridStorage } from './useLocalStorage';
 export { useColorState } from './useColorState';
-export { useColorConversion } from './useColorConversion';
 export { useCanvasPicker } from './useCanvasPicker';
 export { useOutsideClick } from './useOutsideClick';
 export { useIntersectionObserver } from './useIntersectionObserver';
 export { useDebounce, useIdleCallback } from './usePerformance';
-export { useScrollLock, getScrollLockCount, forceUnlockScroll } from './useScrollLock';
+export {
+  useScrollLock,
+  getScrollLockCount,
+  forceUnlockScroll
+} from './useScrollLock';
 export { useFENBatch, useThemeSettings } from '@/contexts';
