@@ -1,24 +1,28 @@
-import { useState, useCallback, useEffect, memo } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
+
+import {
+  Archive as ArchiveIcon,
+  ArrowLeft,
+  Clock,
+  Star,
+  Trash2
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 import { MiniPreview } from '@/components/board';
 import {
+  ConfirmationModal,
   HistoryFilters,
-  StatusBadge,
-  ConfirmationModal
+  StatusBadge
 } from '@/components/features/History';
 import { useFENHistory } from '@/hooks';
-import {
-  ArrowLeft,
-  Trash2,
-  Star,
-  Clock,
-  Archive as ArchiveIcon
-} from 'lucide-react';
+import { logger } from '@/utils/logger';
 
 /**
- * Full-page FEN History Manager with Archive Support
+ * Full-page FEN history manager with tabs for active entries, favorites, and archive.
+ * @returns {JSX.Element}
  */
-const FENHistoryPage = memo(() => {
+const FENHistoryPage = memo(function FENHistoryPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('active');
   const [filters, setFilters] = useState({});
@@ -58,7 +62,6 @@ const FENHistoryPage = memo(() => {
     setArchiveFiltersHook(archiveFilters);
   }, [archiveFilters, setArchiveFiltersHook]);
 
-  // Get board colors and piece style from localStorage (reactive state)
   const [lightSquare, setLightSquare] = useState(
     () =>
       localStorage.getItem('chess-light-square')?.replace(/"/g, '') || '#f0d9b5'
@@ -72,7 +75,6 @@ const FENHistoryPage = memo(() => {
       localStorage.getItem('chess-piece-style')?.replace(/"/g, '') || 'cburnett'
   );
 
-  // Listen for theme changes when user navigates back from theme page
   useEffect(() => {
     const handleStorageChange = () => {
       const light = localStorage.getItem('chess-light-square');
@@ -84,18 +86,23 @@ const FENHistoryPage = memo(() => {
       setPieceStyle(style?.replace(/"/g, '') || 'cburnett');
     };
 
-    // Update colors when component mounts
     handleStorageChange();
 
-    // Listen for storage changes
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  /**
+   * Navigates back in browser history.
+   */
   const handleBack = useCallback(() => {
     navigate(-1);
   }, [navigate]);
 
+  /**
+   * Navigates to the home page with the selected FEN pre-loaded.
+   * @param {string} fen - FEN string to load on the home page
+   */
   const handleLoad = useCallback(
     (fen) => {
       navigate('/', { state: { loadFEN: fen } });
@@ -103,11 +110,16 @@ const FENHistoryPage = memo(() => {
     [navigate]
   );
 
+  /**
+   * Deletes or archives a history entry depending on the active tab.
+   * Archive-tab entries prompt a confirmation modal; active/favorites entries move to archive.
+   * @param {number} id - Entry ID to delete or archive
+   * @returns {Promise<void>}
+   */
   const handleDelete = useCallback(
     async (id) => {
       try {
         if (activeTab === 'archive') {
-          // Archive tab: Show confirmation modal
           if (doNotAskAgain) {
             await deleteFromArchive(id);
           } else {
@@ -115,11 +127,10 @@ const FENHistoryPage = memo(() => {
             setShowDeleteModal(true);
           }
         } else {
-          // Active and Favorites tabs: Move to archive
           await archiveHistoryEntries([id]);
         }
       } catch (err) {
-        console.error('Failed to delete:', err);
+        logger.error('Failed to delete:', err);
       }
     },
     [activeTab, deleteFromArchive, archiveHistoryEntries, doNotAskAgain]
@@ -136,7 +147,7 @@ const FENHistoryPage = memo(() => {
       await deleteFromArchive(deleteTargetId);
       setDeleteTargetId(null);
     } catch (err) {
-      console.error('Failed to delete from archive:', err);
+      logger.error('Failed to delete from archive:', err);
     }
   }, [deleteTargetId, deleteFromArchive]);
 
@@ -150,43 +161,60 @@ const FENHistoryPage = memo(() => {
     localStorage.setItem('fen-history-skip-delete-confirm', checked.toString());
   }, []);
 
+  /**
+   * Toggles the favorite status of a history entry.
+   * @param {number} id - Entry ID to toggle
+   * @returns {Promise<void>}
+   */
   const handleToggleFavorite = useCallback(
     async (id) => {
       try {
         await toggleFavorite(id);
       } catch (err) {
-        console.error('Failed to toggle favorite:', err);
+        logger.error('Failed to toggle favorite:', err);
       }
     },
     [toggleFavorite]
   );
 
+  /**
+   * Clears all active history entries after user confirmation.
+   * @returns {Promise<void>}
+   */
   const handleClearAll = useCallback(async () => {
     if (window.confirm('Clear all FEN history? This cannot be undone.')) {
       try {
         await clearHistory();
       } catch (err) {
-        console.error('Failed to clear history:', err);
+        logger.error('Failed to clear history:', err);
       }
     }
   }, [clearHistory]);
 
+  /**
+   * Restores an archived entry to the active history tab.
+   * @param {number} id - Archived entry ID to reactivate
+   * @returns {Promise<void>}
+   */
   const handleReactivate = useCallback(
     async (id) => {
       try {
         await reactivateArchivedEntry(id);
         setActiveTab('active');
       } catch (err) {
-        console.error('Failed to reactivate:', err);
+        logger.error('Failed to reactivate:', err);
       }
     },
     [reactivateArchivedEntry]
   );
 
-  // Get favorites only (never archived)
   const favoritesData = fenHistory.filter((entry) => entry.isFavorite);
 
-  // Apply filters to favorites
+  /**
+   * Applies text, source, and date filters to a list of favorite entries.
+   * @param {Array} entries - Entries to filter
+   * @returns {Array} Filtered entries
+   */
   const applyFavoritesFilters = useCallback(
     (entries) => {
       let filtered = entries;
@@ -231,7 +259,11 @@ const FENHistoryPage = memo(() => {
         ? filteredFavorites
         : fenHistory;
 
-  // Format date as DD.MM.YYYY (no AM/PM)
+  /**
+   * Formats a timestamp as `DD.MM.YYYY`.
+   * @param {number} timestamp - Unix ms timestamp
+   * @returns {string} Formatted date string
+   */
   const formatDate = useCallback((timestamp) => {
     const date = new Date(timestamp);
     const day = String(date.getDate()).padStart(2, '0');
@@ -240,7 +272,11 @@ const FENHistoryPage = memo(() => {
     return `${day}.${month}.${year}`;
   }, []);
 
-  // Format time as HH:mm (24-hour)
+  /**
+   * Formats a timestamp as `HH:mm` (24-hour clock).
+   * @param {number} timestamp - Unix ms timestamp
+   * @returns {string} Formatted time string
+   */
   const formatTime = useCallback((timestamp) => {
     const date = new Date(timestamp);
     const hours = String(date.getHours()).padStart(2, '0');
@@ -248,7 +284,6 @@ const FENHistoryPage = memo(() => {
     return `${hours}:${minutes}`;
   }, []);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -261,8 +296,7 @@ const FENHistoryPage = memo(() => {
   }, [handleBack]);
 
   return (
-    <div className="h-screen flex flex-col bg-bg overflow-hidden">
-      {/* Header - Prominent Back Button */}
+    <div className="h-full max-h-full flex flex-col bg-bg overflow-hidden">
       <header className="flex-shrink-0 bg-surface border-b border-border">
         <div className="px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
@@ -300,7 +334,6 @@ const FENHistoryPage = memo(() => {
           </div>
         </div>
 
-        {/* Tab Navigation */}
         <div className="px-4 sm:px-6 py-2 sm:py-2.5 border-t border-border/50">
           <div className="flex gap-2 items-center">
             <button
@@ -352,7 +385,6 @@ const FENHistoryPage = memo(() => {
         </div>
       </header>
 
-      {/* Filters */}
       <HistoryFilters
         filters={
           activeTab === 'archive'
@@ -372,7 +404,6 @@ const FENHistoryPage = memo(() => {
         showFavoritesCheckbox={activeTab === 'active'}
       />
 
-      {/* Content - Scrollable */}
       <main className="flex-1 overflow-y-auto">
         <div className="px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
           {currentData.length === 0 ? (
@@ -398,10 +429,8 @@ const FENHistoryPage = memo(() => {
               {currentData.map((entry) => (
                 <div
                   key={entry.id}
-                  className="bg-surface border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-accent/5 hover:border-accent/30 hover:scale-[1.02] transition-all duration-300 group flex flex-col"
-                  style={{ minHeight: '200px' }}
+                  className="bg-surface border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-accent/5 hover:border-accent/30 hover:scale-[1.02] transition-all duration-300 group flex flex-col min-h-[200px]"
                 >
-                  {/* Preview - Fixed aspect ratio, uses user's theme */}
                   <div className="aspect-square bg-bg/30 p-2 flex-shrink-0 border-b border-border/30">
                     <div className="w-full h-full overflow-hidden">
                       <MiniPreview
@@ -413,26 +442,20 @@ const FENHistoryPage = memo(() => {
                     </div>
                   </div>
 
-                  {/* Content Area */}
                   <div className="p-3 flex flex-col flex-1 min-h-0">
-                    {/* FEN - Truncated */}
                     <div className="font-mono text-[9px] sm:text-[10px] text-text-muted/70 truncate mb-2">
                       {entry.fen.split(' ')[0]}
                     </div>
 
-                    {/* Status Badge - Not shown in Favorites */}
                     {activeTab === 'active' && entry.lastActiveAt && (
                       <div className="mb-2">
                         <StatusBadge lastActiveAt={entry.lastActiveAt} />
                       </div>
                     )}
 
-                    {/* Spacer */}
                     <div className="flex-1"></div>
 
-                    {/* Footer */}
                     <div className="flex flex-col gap-2">
-                      {/* Timestamp - DD.MM.YYYY format */}
                       {(entry.createdAt ||
                         entry.timestamp ||
                         entry.archivedAt) && (
@@ -456,7 +479,6 @@ const FENHistoryPage = memo(() => {
                         </div>
                       )}
 
-                      {/* Action Buttons */}
                       {activeTab === 'archive' ? (
                         <div className="flex gap-1.5">
                           <button
@@ -517,7 +539,6 @@ const FENHistoryPage = memo(() => {
         </div>
       </main>
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
