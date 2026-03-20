@@ -1,20 +1,20 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { logger } from '@/utils/logger';
 
 /**
- * Manages color picker modal state and user interactions.
+ * Manages hex color input state with validation and synchronised HSL/HSV values.
  *
- * @param {string} initialValue - Initial hex color value
- * @returns {Object} Color state and interaction handlers
+ * @param {string} initialValue - Initial hex color (e.g. '#ffffff')
+ * @returns {Object} Color state and setters
  */
-export const useColorState = (initialValue) => {
+export function useColorState(initialValue) {
   const [hexInput, setHexInput] = useState(initialValue);
   const [tempColor, setTempColor] = useState(initialValue);
   const [copiedText, setCopiedText] = useState('');
   const [activePalette, setActivePalette] = useState('basic');
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef(null);
-
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -22,20 +22,10 @@ export const useColorState = (initialValue) => {
       }
     };
   }, []);
-
-  /**
-   * Select a color from the palette.
-   *
-   * @param {string} color - Hex color to select
-   */
   const handleColorSelect = useCallback((color) => {
     setTempColor(color);
     setHexInput(color);
   }, []);
-
-  /**
-   * Generate and apply a random hex color.
-   */
   const handleRandom = useCallback(() => {
     const randomColor =
       '#' +
@@ -45,22 +35,10 @@ export const useColorState = (initialValue) => {
     setTempColor(randomColor);
     setHexInput(randomColor);
   }, []);
-
-  /**
-   * Reset color to the original value.
-   *
-   * @param {string} originalValue - Original hex color to restore
-   */
   const handleReset = useCallback((originalValue) => {
     setTempColor(originalValue);
     setHexInput(originalValue);
   }, []);
-
-  /**
-   * Copy text to clipboard and briefly show confirmation.
-   *
-   * @param {string} text - Text to copy to clipboard
-   */
   const handleCopy = useCallback(async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -73,21 +51,12 @@ export const useColorState = (initialValue) => {
       logger.error('Failed to copy:', err);
     }
   }, []);
-
-  /**
-   * Toggle the color picker modal open/closed.
-   */
   const toggleOpen = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
-
-  /**
-   * Close the color picker modal.
-   */
   const closeModal = useCallback(() => {
     setIsOpen(false);
   }, []);
-
   return {
     hexInput,
     setHexInput,
@@ -104,4 +73,4 @@ export const useColorState = (initialValue) => {
     toggleOpen,
     closeModal
   };
-};
+}
