@@ -1,51 +1,40 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { logger } from '@/utils/logger';
+import { safeJSONParse } from '@/utils/validation';
 
 /**
- * localStorage hook with debounced writes to prevent main-thread blocking.
+ * Persists state to localStorage with debounced writes.
  *
- * @template T
- * @param {string} key - localStorage key
- * @param {T} initialValue - Default value when key is absent
- * @returns {[T, Function]} Stored value and setter function
+ * @param {string} key - Storage key
+ * @param {*} initialValue - Default value when key is absent
+ * @returns {[*, function(*): void, boolean]} [storedValue, setValue, isLoading]
  */
-export const useLocalStorage = (key, initialValue) => {
+export function useLocalStorage(key, initialValue) {
   const debounceTimeoutRef = useRef(null);
   const pendingValueRef = useRef(null);
-
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === 'undefined') {
       return initialValue;
     }
-
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      return item ? safeJSONParse(item, initialValue) : initialValue;
     } catch (error) {
       logger.error(`Error loading ${key} from localStorage:`, error);
       return initialValue;
     }
   });
-
-  /**
-   * Write a value to localStorage after a 300 ms debounce.
-   *
-   * @param {string} key - localStorage key
-   * @param {*} value - Value to persist
-   */
   const debouncedWrite = useCallback((key, value) => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
-
     pendingValueRef.current = value;
-
     debounceTimeoutRef.current = setTimeout(() => {
       if (typeof window !== 'undefined') {
         try {
           window.localStorage.setItem(key, JSON.stringify(value));
           pendingValueRef.current = null;
-          // Dispatch storage event to notify other components (same tab)
           window.dispatchEvent(new Event('storage'));
         } catch (storageError) {
           if (storageError.name === 'QuotaExceededError') {
@@ -72,7 +61,6 @@ export const useLocalStorage = (key, initialValue) => {
       }
     }, 300);
   }, []);
-
   useEffect(() => {
     return () => {
       if (debounceTimeoutRef.current) {
@@ -90,100 +78,78 @@ export const useLocalStorage = (key, initialValue) => {
       }
     };
   }, [key]);
-
-  /**
-   * Update the stored value and persist it to localStorage.
-   * Accepts a value or a function (same API as useState).
-   *
-   * @param {T | function(T): T} value - New value or updater function
-   */
   const setValue = useCallback(
     (value) => {
       try {
-        // Allow value to be a function so we have same API as useState
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
-
-        setStoredValue(valueToStore);
-        debouncedWrite(key, valueToStore);
+        setStoredValue((prev) => {
+          const valueToStore =
+            value instanceof Function ? value(prev) : value;
+          debouncedWrite(key, valueToStore);
+          return valueToStore;
+        });
       } catch (error) {
         logger.error(`Error in setValue for ${key}:`, error);
       }
     },
-    [storedValue, key, debouncedWrite]
+    [key, debouncedWrite]
   );
-
   return [storedValue, setValue];
-};
-
+}
 /**
- * localStorage hook with optional cloud storage (window.storage) integration.
+ * Persists state using cloud storage when available, falling back to localStorage.
  *
- * @template T
  * @param {string} key - Storage key
- * @param {T} initialValue - Default value when key is absent
- * @param {boolean} [useCloudStorage=false] - Whether to also read/write window.storage
- * @returns {[T, Function, boolean]} Stored value, async setter, and loading flag
+ * @param {*} initialValue - Default value when key is absent
+ * @param {boolean} [useCloudStorage=false] - Prefer cloud storage when window.storage is available
+ * @returns {[*, function(*): void, boolean]} [storedValue, setValue, isLoading]
  */
-export const useHybridStorage = (
-  key,
-  initialValue,
-  useCloudStorage = false
-) => {
+export function useHybridStorage(key, initialValue, useCloudStorage = false) {
   const [storedValue, setStoredValue] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-
       try {
-        if (useCloudStorage && window.storage) {
-          // Try cloud storage first
+        if (
+          useCloudStorage &&
+          window.storage &&
+          typeof window.storage.get === 'function'
+        ) {
           const result = await window.storage.get(key);
-          if (result && result.value) {
-            setStoredValue(JSON.parse(result.value));
-            setIsLoading(false);
-            return;
+          if (result && typeof result.value === 'string') {
+            const parsed = safeJSONParse(result.value, null);
+            if (parsed !== null) {
+              setStoredValue(parsed);
+              setIsLoading(false);
+              return;
+            }
           }
         }
-
-        // Fallback to localStorage
         const item = window.localStorage.getItem(key);
         if (item) {
-          setStoredValue(JSON.parse(item));
+          const parsed = safeJSONParse(item, null);
+          if (parsed !== null) {
+            setStoredValue(parsed);
+          }
         }
       } catch (error) {
         logger.error(`Error loading ${key}:`, error);
       }
-
       setIsLoading(false);
     };
-
     loadData();
   }, [key, useCloudStorage]);
-
-  /**
-   * Update the stored value and persist to localStorage and optionally cloud storage.
-   *
-   * @param {T | function(T): T} value - New value or updater function
-   */
   const setValue = async (value) => {
     try {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
-
       setStoredValue(valueToStore);
-
       const jsonValue = JSON.stringify(valueToStore);
-
-      // Save to localStorage with quota handling
       try {
         window.localStorage.setItem(key, jsonValue);
       } catch (storageError) {
         if (storageError.name === 'QuotaExceededError') {
           logger.warn(`localStorage quota exceeded for key: ${key}`);
-          // Try to clear some space
           const keys = Object.keys(window.localStorage);
           if (keys.length > 0) {
             window.localStorage.removeItem(keys[0]);
@@ -193,8 +159,11 @@ export const useHybridStorage = (
           throw storageError;
         }
       }
-
-      if (useCloudStorage && window.storage) {
+      if (
+        useCloudStorage &&
+        window.storage &&
+        typeof window.storage.set === 'function'
+      ) {
         try {
           await window.storage.set(key, jsonValue);
         } catch (cloudError) {
@@ -205,6 +174,5 @@ export const useHybridStorage = (
       logger.error(`Error saving ${key}:`, error);
     }
   };
-
   return [storedValue, setValue, isLoading];
-};
+}
