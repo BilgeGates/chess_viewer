@@ -1,39 +1,39 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
- * Hook to detect clicks outside of a ref element
- * Useful for closing modals, dropdowns, etc.
+ * Fires `handler` when a click event occurs outside the given `ref` element.
  *
- * @param {React.RefObject} ref - Reference to the element
- * @param {Function} handler - Callback when click outside is detected
- * @param {boolean} enabled - Whether the hook is active (default: true)
+ * @param {React.RefObject} ref - Target element ref
+ * @param {function(MouseEvent): void} handler - Click outside handler
+ * @param {boolean} [enabled=true] - Whether the listener is active
+ * @returns {void}
  */
-export const useOutsideClick = (ref, handler, enabled = true) => {
+export function useOutsideClick(ref, handler, enabled = true) {
+  const handlerRef = useRef(handler);
+  useEffect(() => {
+    handlerRef.current = handler;
+  }, [handler]);
+
   useEffect(() => {
     if (!enabled) return;
-
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
-        handler(event);
+        handlerRef.current(event);
       }
     };
-
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
-        handler(event);
+        handlerRef.current(event);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
-
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [ref, handler, enabled]);
-};
-
+  }, [ref, enabled]);
+}
 export default useOutsideClick;
