@@ -1,13 +1,17 @@
 import {
-  Globe,
   CheckCircle,
-  Smartphone,
   Download,
+  Globe,
   Monitor,
+  Smartphone,
   Tablet
 } from 'lucide-react';
 
-const DownloadPage = () => {
+/**
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
+function DownloadPage() {
   const handleInstallPWA = () => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
       alert('App is already installed!');
@@ -17,11 +21,10 @@ const DownloadPage = () => {
       'To install:\n\n1. Click browser menu (⋮)\n2. Select "Install app"\n3. Follow the prompts'
     );
   };
-
   return (
-    <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Hero */}
+    <div className="h-full max-h-full overflow-hidden pt-16 sm:pt-20 pb-4 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto h-full overflow-y-auto pr-1">
+        {}
         <div className="text-center mb-10 animate-fadeIn">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-5">
             <Download className="w-5 h-5" />
@@ -35,9 +38,9 @@ const DownloadPage = () => {
           </p>
         </div>
 
-        {/* Download Options */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 animate-fadeIn">
-          {/* Web */}
+          {}
           <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01] border border-border">
             <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-5 text-accent">
               <Globe className="w-7 h-7" />
@@ -70,7 +73,7 @@ const DownloadPage = () => {
             </a>
           </div>
 
-          {/* PWA */}
+          {}
           <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01] border-2 border-secondary">
             <div className="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-5 text-secondary">
               <Smartphone className="w-7 h-7" />
@@ -104,7 +107,7 @@ const DownloadPage = () => {
           </div>
         </div>
 
-        {/* Supported Platforms */}
+        {}
         <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fadeIn">
           <h2 className="text-xl font-display font-bold text-text-primary mb-6 text-center">
             Supported Platforms
@@ -137,19 +140,22 @@ const DownloadPage = () => {
       </div>
     </div>
   );
-};
+}
 
-const PlatformCard = ({ icon, title, platforms, browsers }) => (
-  <div className="text-center p-5 rounded-xl bg-surface-elevated border border-border hover:border-accent transition-all duration-200 hover:scale-[1.02]">
-    <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-3 text-accent">
-      {icon}
+function PlatformCard({ icon, title, platforms, browsers }) {
+  return (
+    <div className="text-center p-5 rounded-xl bg-surface-elevated border border-border hover:border-accent transition-all duration-200 hover:scale-[1.02]">
+      <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-3 text-accent">
+        {icon}
+      </div>
+      <h3 className="text-base font-display font-bold text-text-primary mb-2">
+        {title}
+      </h3>
+      <p className="text-sm text-text-secondary font-medium mb-1">
+        {platforms}
+      </p>
+      <p className="text-xs text-text-muted">{browsers}</p>
     </div>
-    <h3 className="text-base font-display font-bold text-text-primary mb-2">
-      {title}
-    </h3>
-    <p className="text-sm text-text-secondary font-medium mb-1">{platforms}</p>
-    <p className="text-xs text-text-muted">{browsers}</p>
-  </div>
-);
-
+  );
+}
 export default DownloadPage;
