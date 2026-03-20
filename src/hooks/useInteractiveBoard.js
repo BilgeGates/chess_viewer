@@ -1,15 +1,16 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
-import { parseFEN, validateFEN, logger } from '@/utils';
-import { createEmptyBoard, boardToFEN, isBoardEmpty } from '@/utils/boardUtils';
+import { useCallback, useMemo, useRef, useState } from 'react';
+
+import { logger, parseFEN, validateFEN } from '@/utils';
+import { boardToFEN, createEmptyBoard, isBoardEmpty } from '@/utils/boardUtils';
 
 /**
- * Manages interactive chess board state with drag-and-drop piece placement.
+ * Manages an interactive chess board with drag-and-drop piece editing.
  *
- * @param {string} initialFen - Initial FEN string for the board position
- * @param {function(string): void} onFenChange - Callback invoked with the new full FEN when the position changes
- * @returns {Object} Board state and interaction handlers
+ * @param {string} initialFen - Starting FEN position
+ * @param {function(string): void} onFenChange - Called whenever the position changes
+ * @returns {Object} Board state and action handlers
  */
-export const useInteractiveBoard = (initialFen, onFenChange) => {
+export function useInteractiveBoard(initialFen, onFenChange) {
   const [board, setBoard] = useState(() => {
     try {
       if (initialFen && validateFEN(initialFen)) {
@@ -20,34 +21,22 @@ export const useInteractiveBoard = (initialFen, onFenChange) => {
     }
     return createEmptyBoard();
   });
-
   const [boardKey, setBoardKey] = useState(0);
   const lastGeneratedFenRef = useRef('');
   const lastExternalFenRef = useRef(initialFen);
-
-  /**
-   * Synchronise the board from an externally provided FEN string.
-   * No-ops if the FEN was generated internally to avoid update loops.
-   *
-   * @param {string} fen - FEN string to apply
-   */
   const syncFromFen = useCallback((fen) => {
     if (fen === lastGeneratedFenRef.current) {
       return;
     }
-
     if (fen === lastExternalFenRef.current) {
       return;
     }
-
     lastExternalFenRef.current = fen;
-
     try {
       if (fen === '8/8/8/8/8/8/8/8 w - - 0 1') {
         setBoard(createEmptyBoard());
         return;
       }
-
       if (fen && validateFEN(fen)) {
         const newBoard = parseFEN(fen);
         if (newBoard && newBoard.length === 8) {
@@ -58,145 +47,84 @@ export const useInteractiveBoard = (initialFen, onFenChange) => {
       logger.error('Failed to sync from FEN:', err);
     }
   }, []);
-
-  /**
-   * Convert the current board array to a full FEN string and notify the parent component.
-   *
-   * @param {string[][]} newBoard - Updated 8x8 board array
-   */
   const notifyFenChange = useCallback(
     (newBoard) => {
       const positionFen = boardToFEN(newBoard);
       const fullFen = `${positionFen} w - - 0 1`;
-
       lastGeneratedFenRef.current = fullFen;
-
       if (onFenChange) {
         onFenChange(fullFen);
       }
     },
     [onFenChange]
   );
-
-  /**
-   * Handle piece drop on board
-   * @param {string} piece - FEN character of the piece
-   * @param {number|undefined} fromRow - Source row
-   * @param {number|undefined} fromCol - Source column
-   * @param {number} toRow - Target row
-   * @param {number} toCol - Target column
-   * @param {boolean} isFromPalette - Whether piece came from palette
-   */
   const handlePieceDrop = useCallback(
     (piece, fromRow, fromCol, toRow, toCol, isFromPalette) => {
       setBoard((prevBoard) => {
         const newBoard = prevBoard.map((row) => [...row]);
-
         if (!isFromPalette && fromRow !== undefined && fromCol !== undefined) {
           newBoard[fromRow][fromCol] = '';
         }
-
         newBoard[toRow][toCol] = piece;
-
         notifyFenChange(newBoard);
-
         return newBoard;
       });
     },
     [notifyFenChange]
   );
-
-  /**
-   * Handle piece removal
-   * @param {number} row - Row of piece to remove
-   * @param {number} col - Column of piece to remove
-   */
   const handlePieceRemove = useCallback(
     (row, col) => {
       setBoard((prevBoard) => {
         const newBoard = prevBoard.map((r) => [...r]);
         newBoard[row][col] = '';
-
         notifyFenChange(newBoard);
-
         return newBoard;
       });
     },
     [notifyFenChange]
   );
-
-  /**
-   * Clear all pieces from the board
-   */
   const clearBoard = useCallback(() => {
     setBoard((prevBoard) => {
       if (isBoardEmpty(prevBoard)) {
         return prevBoard;
       }
-
       const emptyBoard = createEmptyBoard();
       const emptyFen = '8/8/8/8/8/8/8/8 w - - 0 1';
-
       lastGeneratedFenRef.current = emptyFen;
       lastExternalFenRef.current = emptyFen;
-
       if (onFenChange) {
         onFenChange(emptyFen);
       }
-
       return emptyBoard;
     });
   }, [onFenChange]);
-
-  /**
-   * Reset to starting position
-   */
   const resetBoard = useCallback(() => {
     const startingFen =
       'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
     const startingBoard = parseFEN(startingFen);
-
     lastGeneratedFenRef.current = startingFen;
     lastExternalFenRef.current = startingFen;
-
     setBoard(startingBoard);
     setBoardKey((prev) => prev + 1);
-
     if (onFenChange) {
       onFenChange(startingFen);
     }
   }, [onFenChange]);
-
-  /**
-   * Set a specific piece at a position
-   * @param {number} row - Row index
-   * @param {number} col - Column index
-   * @param {string} piece - FEN character or empty string
-   */
   const setPiece = useCallback(
     (row, col, piece) => {
       setBoard((prevBoard) => {
         const newBoard = prevBoard.map((r) => [...r]);
         newBoard[row][col] = piece;
-
         notifyFenChange(newBoard);
-
         return newBoard;
       });
     },
     [notifyFenChange]
   );
-
-  /**
-   * Get the current board position as a full FEN string.
-   *
-   * @type {string}
-   */
   const currentFen = useMemo(() => {
     const positionFen = boardToFEN(board);
     return `${positionFen} w - - 0 1`;
   }, [board]);
-
   return {
     board,
     boardKey,
@@ -208,6 +136,5 @@ export const useInteractiveBoard = (initialFen, onFenChange) => {
     setPiece,
     syncFromFen
   };
-};
-
+}
 export default useInteractiveBoard;
