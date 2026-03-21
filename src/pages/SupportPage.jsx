@@ -1,18 +1,24 @@
 import { useState } from 'react';
+
+import { AnimatePresence, motion } from 'framer-motion';
 import {
-  MessageSquare,
+  BookOpen,
+  ChevronDown,
   ExternalLink,
   Github,
-  BookOpen,
   HelpCircle,
-  ChevronDown
+  MessageSquare
 } from 'lucide-react';
 
-const SupportPage = () => {
+/**
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
+function SupportPage() {
   return (
-    <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Hero */}
+    <div className="h-full max-h-full overflow-hidden pt-16 sm:pt-20 pb-4 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto h-full overflow-y-auto pr-1">
+        {}
         <div className="text-center mb-10 animate-fadeIn">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-info/10 text-info text-sm font-semibold mb-5">
             <HelpCircle className="w-5 h-5" />
@@ -26,7 +32,7 @@ const SupportPage = () => {
           </p>
         </div>
 
-        {/* Support Options */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 animate-fadeIn">
           <SupportCard
             icon={<Github className="w-6 h-6" />}
@@ -52,7 +58,7 @@ const SupportPage = () => {
           />
         </div>
 
-        {/* FAQ */}
+        {}
         <div className="glass-card p-6 sm:p-8 rounded-2xl shadow-lg animate-fadeIn">
           <h2 className="text-xl font-display font-bold text-text-primary mb-6">
             Frequently Asked Questions
@@ -87,69 +93,71 @@ const SupportPage = () => {
       </div>
     </div>
   );
-};
-
-const SupportCard = ({ icon, title, desc, link, linkText, primary }) => (
-  <div
-    className={`glass-card p-5 rounded-xl shadow-md transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${
-      primary ? 'border-2 border-accent' : 'border border-border'
-    }`}
-  >
-    <div
-      className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
-        primary
-          ? 'bg-accent/10 text-accent'
-          : 'bg-surface-elevated text-text-primary'
-      }`}
-    >
-      {icon}
-    </div>
-    <h3 className="text-base font-display font-bold text-text-primary mb-2">
-      {title}
-    </h3>
-    <p className="text-text-muted text-sm mb-4 leading-relaxed">{desc}</p>
-    <a
-      href={link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 ${
-        primary ? 'text-accent' : 'text-text-secondary hover:text-accent'
-      }`}
-    >
-      {linkText}
-      <ExternalLink className="w-4 h-4" />
-    </a>
-  </div>
-);
-
-const FAQItem = ({ q, a }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+}
+/**
+ * @param {Object} props
+ * @returns {JSX.Element}
+ */
+function SupportCard({ icon, title, desc, link, linkText, primary }) {
   return (
-    <div className="border border-border hover:border-accent/50 rounded-xl transition-all duration-200">
+    <div
+      className={`glass-card p-5 rounded-xl shadow-md transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${primary ? 'border-2 border-accent' : 'border border-border'}`}
+    >
+      <div
+        className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${primary ? 'bg-accent/10 text-accent' : 'bg-surface-elevated text-text-primary'}`}
+      >
+        {icon}
+      </div>
+      <h3 className="text-base font-display font-bold text-text-primary mb-2">
+        {title}
+      </h3>
+      <p className="text-text-muted text-sm mb-4 leading-relaxed">{desc}</p>
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 ${primary ? 'text-accent' : 'text-text-secondary hover:text-accent'}`}
+      >
+        {linkText}
+        <ExternalLink className="w-4 h-4" />
+      </a>
+    </div>
+  );
+}
+
+function FAQItem({ q, a }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border border-border hover:border-accent/50 rounded-xl transition-colors duration-200">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-5 py-4 flex items-center justify-between text-left transition-colors duration-200"
         aria-expanded={isOpen}
       >
         <span className="font-semibold text-text-primary pr-4">{q}</span>
-        <ChevronDown
-          className={`w-5 h-5 text-accent shrink-0 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
-        />
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-5 h-5 text-accent shrink-0" />
+        </motion.div>
       </button>
-      <div
-        className={`overflow-hidden transition-all duration-200 ${
-          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <div className="px-5 pb-4 text-text-secondary leading-relaxed text-sm">
-          {a}
-        </div>
-      </div>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 pb-4 text-text-secondary leading-relaxed text-sm">
+              {a}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
-};
-
+}
 export default SupportPage;
