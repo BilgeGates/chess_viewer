@@ -17,9 +17,9 @@ const BoardSquare = memo(function BoardSquare(props) {
   const { isLight, lightSquare, darkSquare, piece, pieceImages, isLoading } =
     props;
   const backgroundColor = isLight ? lightSquare : darkSquare;
-  const color = piece === piece.toUpperCase() ? 'w' : 'b';
-  const pieceKey = color + piece.toUpperCase();
-  const pieceImage = pieceImages[pieceKey];
+  const color = piece && piece === piece.toUpperCase() ? 'w' : 'b';
+  const pieceKey = piece ? color + piece.toUpperCase() : '';
+  const pieceImage = piece ? pieceImages[pieceKey] : null;
   return (
     <div
       className="w-full h-full flex items-center justify-center relative"
