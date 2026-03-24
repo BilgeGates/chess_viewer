@@ -186,18 +186,22 @@ html[data-theme-transition='to-dark'] {
   }
 
   html {
-    @apply overflow-x-hidden w-full;
+    @apply w-full;
     height: min(100vh, 100dvh);
     max-height: min(100vh, 100dvh);
     max-width: 100vw;
+    overflow-x: hidden;
+    overflow-y: hidden;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply overflow-x-hidden w-full;
+    @apply w-full;
     height: min(100vh, 100dvh);
     max-height: min(100vh, 100dvh);
-    overflow: hidden;
+    overflow-x: hidden;
+    /* allow vertical scroll — pages scroll internally via their own container */
+    overflow-y: auto;
     max-width: 100vw;
     @apply antialiased;
     -webkit-font-smoothing: antialiased;
@@ -327,7 +331,8 @@ html[data-theme-transition='to-dark'] {
 #root {
   height: min(100vh, 100dvh);
   max-height: min(100vh, 100dvh);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ===== COMPONENTS LAYER ===== */
@@ -868,6 +873,12 @@ html {
     letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* ===== NOTIFICATION ANIMATIONS ===== */
+@keyframes shrinkWidth {
+  from { width: 100%; }
+  to { width: 0%; }
 }
 
 /* ===== ADVANCED FEN ANIMATIONS ===== */
