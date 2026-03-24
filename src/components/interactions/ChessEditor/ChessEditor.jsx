@@ -126,9 +126,7 @@ const ChessEditor = memo(function ChessEditor({
       <div
         className={`flex flex-col 2xl:flex-row gap-6 2xl:items-start w-full overflow-visible ${className}`}
       >
-        {/* ── Board column ── */}
-        <div className="flex-shrink-0 flex justify-center 2xl:justify-start" style={{ flexShrink: 0 }}>
-          {/* Fixed-size outer container: board + optional rank gutter */}
+        <div className="flex-shrink-0 flex justify-center 2xl:justify-start animate-revealUp stagger-1" style={{ flexShrink: 0 }}>
           <div
             className="relative flex flex-col"
             style={{
@@ -137,10 +135,8 @@ const ChessEditor = memo(function ChessEditor({
                 : `${FIXED_BOARD_SIZE}px`
             }}
           >
-            {/* Rank numbers + board side by side */}
             <div className="flex">
               {showCoords && renderRankCoordinates()}
-              {/* Board: fixed 400×400px */}
               <div
                 style={{
                   width: `${FIXED_BOARD_SIZE}px`,
@@ -161,13 +157,11 @@ const ChessEditor = memo(function ChessEditor({
               </div>
             </div>
 
-            {/* File letters below board */}
             {showCoords && renderFileCoordinates()}
 
-            {/* Loading overlay — covers only board area */}
             {isLoading && (
               <div
-                className="absolute flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50"
+                className="absolute flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50 animate-fadeInScale"
                 style={{
                   top: 0,
                   left: showCoords ? `${RANK_GUTTER}px` : 0,
@@ -180,7 +174,7 @@ const ChessEditor = memo(function ChessEditor({
                     <div className="absolute inset-0 rounded-full border-4 border-border"></div>
                     <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin"></div>
                   </div>
-                  <div className="text-text-primary text-sm font-semibold">
+                  <div className="text-text-primary text-sm font-semibold animate-pulse">
                     Loading pieces {loadProgress}%
                   </div>
                 </div>
@@ -189,56 +183,57 @@ const ChessEditor = memo(function ChessEditor({
           </div>
         </div>
 
-        {/* ── Palette column ── fills all remaining space after the board ── */}
-        <div className="flex flex-col justify-between h-[calc(100%-10px)] gap-4 flex-1">
-        <div>
+        <div className="flex flex-col justify-between h-[calc(100%-10px)] gap-4 flex-1 animate-slideInRight stagger-2">
+          <div>
             <PiecePalette
-            pieceImages={pieceImages}
-            isLoading={isLoading}
-            className="flex-1"
-          />
-        </div>
+              pieceImages={pieceImages}
+              isLoading={isLoading}
+              className="flex-1"
+            />
+          </div>
 
           <div className="flex items-center justify-between">
             <div className='flex gap-4'>
               <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                resetBoard();
-              }}
-              className="
-                flex-1 flex items-center justify-center gap-2 px-4 py-2.5
-                text-sm font-semibold text-bg
-                bg-accent hover:bg-accent-hover
-                border border-accent/20
-                rounded-lg transition-all duration-200
-                hover:scale-105 active:scale-95 shadow-sm
-              "
-              title="Reset to starting position"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Reset</span>
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                clearBoard();
-              }}
-              className="
-                flex-1 flex items-center justify-center gap-2 px-4 py-2.5
-                text-sm font-semibold text-text-secondary
-                bg-surface-elevated hover:bg-surface-hover
-                border border-border
-                rounded-lg transition-all duration-200
-                hover:scale-105 active:scale-95 shadow-sm
-              "
-              title="Clear all pieces"
-            >
-              <X className="w-4 h-4" />
-              <span>Clear</span>
-            </button>
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  resetBoard();
+                }}
+                className="
+                  flex-1 flex items-center justify-center gap-2 px-4 py-2.5
+                  text-sm font-semibold text-bg
+                  bg-accent hover:bg-accent-hover
+                  border border-accent/20
+                  rounded-lg transition-all duration-200
+                  hover:scale-105 active:scale-95 shadow-sm
+                  hover:shadow-md hover:shadow-accent/25
+                "
+                title="Reset to starting position"
+              >
+                <RotateCcw className="w-4 h-4 transition-transform duration-300 hover:rotate-180" />
+                <span>Reset</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  clearBoard();
+                }}
+                className="
+                  flex-1 flex items-center justify-center gap-2 px-4 py-2.5
+                  text-sm font-semibold text-text-secondary
+                  bg-surface-elevated hover:bg-surface-hover
+                  border border-border hover:border-error/40
+                  rounded-lg transition-all duration-200
+                  hover:scale-105 active:scale-95 shadow-sm
+                  hover:text-error
+                "
+                title="Clear all pieces"
+              >
+                <X className="w-4 h-4 transition-transform duration-200 hover:rotate-90" />
+                <span>Clear</span>
+              </button>
             </div>
 
             <div>
