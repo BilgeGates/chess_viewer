@@ -13,6 +13,7 @@ import { Button } from '@/components/ui';
 const ToolPageHeader = memo(function ToolPageHeader({
   title,
   onBack,
+  onSave,
   showSave = true,
   saveLabel = 'Save',
   rightSlot = null
@@ -41,10 +42,10 @@ const ToolPageHeader = memo(function ToolPageHeader({
           {rightSlot ||
             (showSave && (
               <Button
-                onClick={onBack}
+                onClick={onSave ?? onBack}
                 size="sm"
                 icon={Save}
-                className="px-3 sm:px-6 py-2 sm:py-2.5 bg-warning hover:bg-warning/90 text-bg shadow-sm flex-shrink-0"
+                className="px-3 sm:px-6 py-2 sm:py-2.5 bg-accent hover:bg-accent-hover text-bg shadow-sm flex-shrink-0"
                 aria-label="Save and close"
               >
                 <span className="text-xs sm:text-sm">{saveLabel}</span>
