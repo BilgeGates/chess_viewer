@@ -159,7 +159,7 @@ function App() {
     <ErrorBoundary>
       <ThemeSettingsProvider>
         <FENBatchProvider>
-          <div className="h-full max-h-full overflow-hidden bg-gradient-to-br from-bg-gradient-start to-bg-gradient-end transition-colors duration-500">
+          <div className="h-full max-h-full overflow-x-hidden bg-gradient-to-br from-bg-gradient-start to-bg-gradient-end transition-colors duration-500">
             <a
               href="#main-content"
               className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-6 focus:py-3 focus:bg-accent focus:text-bg focus:rounded-xl focus:shadow-glow focus:font-semibold"
@@ -172,7 +172,7 @@ function App() {
             <main
               id="main-content"
               tabIndex={-1}
-              className="h-full overflow-hidden focus:outline-none"
+              className="h-full overflow-x-hidden focus:outline-none"
             >
               <Routes />
             </main>
