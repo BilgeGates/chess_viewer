@@ -1,57 +1,65 @@
-import { useState, useEffect, useMemo, memo } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
+
+import { FileText, Printer, Ruler, Share2 } from 'lucide-react';
+
 import { Input } from '@/components/ui';
 import { QUALITY_PRESETS } from '@/constants';
-import { Printer, Share2, Ruler, FileText } from 'lucide-react';
 
 /**
  * @param {Object} props
- * @param {number} props.boardSize - Current board size in cm
- * @param {Function} props.setBoardSize - Board size setter
  * @returns {JSX.Element}
  */
-const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
+const BoardSizeSection = memo(function BoardSizeSection({
+  boardSize,
+  setBoardSize
+}) {
   const [boardSizeInput, setBoardSizeInput] = useState(boardSize);
   const [boardSizeError, setBoardSizeError] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(null);
-
   const presets = useMemo(
     () => [
-      { label: '4×4', value: 4, desc: 'Small' },
-      { label: '6×6', value: 6, desc: 'Medium' },
-      { label: '8×8', value: 8, desc: 'Large' }
+      {
+        label: '4×4',
+        value: 4,
+        desc: 'Small'
+      },
+      {
+        label: '6×6',
+        value: 6,
+        desc: 'Medium'
+      },
+      {
+        label: '8×8',
+        value: 8,
+        desc: 'Large'
+      }
     ],
     []
   );
-
   useEffect(() => {
     setBoardSizeInput(boardSize);
     const matchingPreset = presets.find((p) => p.value === boardSize);
     setSelectedPreset(matchingPreset ? matchingPreset.value : null);
   }, [boardSize, presets]);
-
   const handlePresetClick = (value) => {
     setSelectedPreset(value);
     setBoardSize(value);
     setBoardSizeInput(value);
     setBoardSizeError('');
   };
-
   const handleCustomInputChange = (e) => {
     const value = e.target.value;
     setSelectedPreset(null);
-
     if (value === '') {
       setBoardSizeInput('');
       setBoardSizeError('');
       return;
     }
-
     if (!/^\d*\.?\d*$/.test(value)) {
       setBoardSizeInput(value);
       setBoardSizeError('Numbers only');
       return;
     }
-
     const numValue = parseFloat(value);
     if (!isNaN(numValue)) {
       setBoardSizeInput(numValue);
@@ -65,7 +73,6 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
       }
     }
   };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -73,17 +80,13 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
         <h3 className="text-sm font-semibold text-text-primary">Board Size</h3>
       </div>
 
-      {/* Preset buttons */}
+      {}
       <div className="grid grid-cols-3 gap-2">
         {presets.map((preset) => (
           <button
             key={preset.value}
             onClick={() => handlePresetClick(preset.value)}
-            className={`flex flex-col items-center justify-center gap-1 px-3 py-3 text-sm font-medium rounded-lg transition-all ${
-              selectedPreset === preset.value
-                ? 'bg-accent text-bg shadow-sm'
-                : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'
-            }`}
+            className={`flex flex-col items-center justify-center gap-1 px-3 py-3 text-sm font-medium rounded-lg transition-all ${selectedPreset === preset.value ? 'bg-accent text-bg shadow-sm' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'}`}
           >
             <span className="font-semibold">{preset.label}</span>
             <span className="text-xs opacity-75">{preset.desc}</span>
@@ -91,7 +94,7 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
         ))}
       </div>
 
-      {/* Custom input - separate section */}
+      {}
       <div className="space-y-2">
         <label className="text-xs font-medium text-text-secondary">
           Custom Size (cm)
@@ -116,162 +119,134 @@ const BoardSizeSection = memo(({ boardSize, setBoardSize }) => {
   );
 });
 BoardSizeSection.displayName = 'BoardSizeSection';
-
 /**
- * Export Customization tab for the Settings page.
- * Manages export quality, board size, and file naming.
- *
  * @param {Object} props
- * @param {number} props.boardSize - Current board size
- * @param {Function} props.setBoardSize - Board size setter
- * @param {string} props.fileName - Current file name
- * @param {Function} props.setFileName - File name setter
- * @param {number} props.exportQuality - Current export quality multiplier
- * @param {Function} props.setExportQuality - Export quality setter
  * @returns {JSX.Element}
  */
-const ExportCustomization = memo(
-  ({
-    boardSize,
-    setBoardSize,
-    fileName,
-    setFileName,
-    exportQuality,
-    setExportQuality
-  }) => {
-    const printPresets = QUALITY_PRESETS.filter((p) => p.mode === 'print');
-    const socialPresets = QUALITY_PRESETS.filter((p) => p.mode === 'social');
-    const currentPreset = QUALITY_PRESETS.find(
-      (p) => p.value === exportQuality
-    );
+const ExportCustomization = memo(function ExportCustomization({
+  boardSize,
+  setBoardSize,
+  fileName,
+  setFileName,
+  exportQuality,
+  setExportQuality
+}) {
+  const printPresets = QUALITY_PRESETS.filter((p) => p.mode === 'print');
+  const socialPresets = QUALITY_PRESETS.filter((p) => p.mode === 'social');
+  const currentPreset = QUALITY_PRESETS.find((p) => p.value === exportQuality);
+  return (
+    <div className="h-full flex flex-col lg:flex-row gap-0 overflow-hidden">
+      {}
+      <div className="flex-1 p-4 lg:p-6 lg:border-r border-border flex flex-col justify-center">
+        <div className="max-w-md mx-auto w-full space-y-6">
+          <BoardSizeSection boardSize={boardSize} setBoardSize={setBoardSize} />
 
-    return (
-      <div className="h-full flex flex-col lg:flex-row gap-0 overflow-hidden">
-        {/* LEFT SIDE - Board Size & File Name */}
-        <div className="flex-1 p-4 lg:p-6 lg:border-r border-border flex flex-col justify-center">
-          <div className="max-w-md mx-auto w-full space-y-6">
-            <BoardSizeSection
-              boardSize={boardSize}
-              setBoardSize={setBoardSize}
+          <div className="h-px bg-border" />
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-accent" />
+              <h3 className="text-sm font-semibold text-text-primary">
+                File Name
+              </h3>
+            </div>
+            <Input
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              placeholder="chess-position"
             />
-
-            <div className="h-px bg-border" />
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-semibold text-text-primary">
-                  File Name
-                </h3>
-              </div>
-              <Input
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-                placeholder="chess-position"
-              />
-              <p className="text-xs text-text-muted">
-                Output:{' '}
-                <span className="font-mono font-medium text-text-secondary">
-                  {fileName || 'board'}
-                </span>
-                .png / .jpeg
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT SIDE - Export Quality */}
-        <div className="flex-1 p-4 lg:p-6 flex flex-col justify-center">
-          <div className="max-w-md mx-auto w-full space-y-5">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Printer className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-semibold text-text-primary">
-                  Print Quality
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {printPresets.map((preset) => (
-                  <button
-                    key={preset.value}
-                    onClick={() => setExportQuality(preset.value)}
-                    className={`px-3 py-3 rounded-lg text-sm font-semibold transition-all ${
-                      exportQuality === preset.value
-                        ? 'bg-accent text-bg shadow-lg shadow-accent/20'
-                        : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'
-                    }`}
-                    title={preset.description}
-                  >
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span>{preset.label}</span>
-                      <span className="text-xs opacity-70 font-normal">
-                        {preset.value === 8 ? 'Standard' : 'High'}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Share2 className="w-4 h-4 text-accent" />
-                <h3 className="text-sm font-semibold text-text-primary">
-                  Social
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {socialPresets.map((preset) => (
-                  <button
-                    key={preset.value}
-                    onClick={() => setExportQuality(preset.value)}
-                    className={`px-3 py-3 rounded-lg text-sm font-semibold transition-all ${
-                      exportQuality === preset.value
-                        ? 'bg-accent text-bg shadow-lg shadow-accent/20'
-                        : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'
-                    }`}
-                    title={preset.description}
-                  >
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span>{preset.label}</span>
-                      <span className="text-xs opacity-70 font-normal">
-                        {preset.value === 24 ? 'Ultra' : 'Maximum'}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {currentPreset && (
-              <div className="p-3 rounded-lg bg-surface border border-border">
-                <p className="text-xs text-text-secondary leading-relaxed">
-                  {currentPreset.mode === 'print' ? (
-                    <>
-                      <strong className="text-accent font-semibold">
-                        Print:
-                      </strong>{' '}
-                      Board size preserved, pixel density increased for sharp
-                      prints.
-                    </>
-                  ) : (
-                    <>
-                      <strong className="text-accent font-semibold">
-                        Social:
-                      </strong>{' '}
-                      Fixed large output optimized for social media and zooming.
-                    </>
-                  )}
-                </p>
-              </div>
-            )}
+            <p className="text-xs text-text-muted">
+              Output:{' '}
+              <span className="font-mono font-medium text-text-secondary">
+                {fileName || 'board'}
+              </span>
+              .png / .jpeg
+            </p>
           </div>
         </div>
       </div>
-    );
-  }
-);
 
+      {}
+      <div className="flex-1 p-4 lg:p-6 flex flex-col justify-center">
+        <div className="max-w-md mx-auto w-full space-y-5">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Printer className="w-4 h-4 text-accent" />
+              <h3 className="text-sm font-semibold text-text-primary">
+                Print Quality
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {printPresets.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => setExportQuality(preset.value)}
+                  className={`px-3 py-3 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
+                  title={preset.description}
+                >
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span>{preset.label}</span>
+                    <span className="text-xs opacity-70 font-normal">
+                      {preset.value === 8 ? 'Standard' : 'High'}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-accent" />
+              <h3 className="text-sm font-semibold text-text-primary">
+                Social
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {socialPresets.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => setExportQuality(preset.value)}
+                  className={`px-3 py-3 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
+                  title={preset.description}
+                >
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span>{preset.label}</span>
+                    <span className="text-xs opacity-70 font-normal">
+                      {preset.value === 24 ? 'Ultra' : 'Maximum'}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {currentPreset && (
+            <div className="p-3 rounded-lg bg-surface border border-border">
+              <p className="text-xs text-text-secondary leading-relaxed">
+                {currentPreset.mode === 'print' ? (
+                  <>
+                    <strong className="text-accent font-semibold">
+                      Print:
+                    </strong>{' '}
+                    Board size preserved, pixel density increased for sharp
+                    prints.
+                  </>
+                ) : (
+                  <>
+                    <strong className="text-accent font-semibold">
+                      Social:
+                    </strong>{' '}
+                    Fixed large output optimized for social media and zooming.
+                  </>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
 ExportCustomization.displayName = 'ExportCustomization';
-
 export default ExportCustomization;
