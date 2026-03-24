@@ -1,182 +1,111 @@
-/**
- * @typedef {Object} HistoryEntry
- * @property {number} id - Unique identifier (timestamp-based)
- * @property {string} fen - FEN notation string
- * @property {number} createdAt - Entry creation timestamp
- * @property {number} lastActiveAt - Last accessed/used timestamp
- * @property {'manual'|'export'|'drag'} source - Entry creation source
- * @property {boolean} isFavorite - Favorite flag
- * @property {string} [dragSessionId] - Drag session ID if applicable
- */
-
-/**
- * @typedef {Object} ArchivedEntry
- * @property {number} id - Original entry ID
- * @property {string} fen - FEN notation string
- * @property {number} createdAt - Original creation timestamp
- * @property {number} lastActiveAt - Last active timestamp before archival
- * @property {number} archivedAt - Archival timestamp
- * @property {'manual'|'export'|'drag'} source - Original source
- * @property {'auto'|'manual'} archiveSource - How entry was archived
- * @property {boolean} isFavorite - Favorite flag
- */
-
-/**
- * @typedef {'green'|'yellow'|'red'} StatusLevel
- */
-
-/**
- * @typedef {Object} FilterOptions
- * @property {string} [fenSearch] - FEN text search string
- * @property {number} [dateFrom] - Start timestamp for date range
- * @property {number} [dateTo] - End timestamp for date range
- * @property {StatusLevel} [status] - Filter by status level
- * @property {'manual'|'export'|'drag'} [source] - Filter by source type
- * @property {boolean} [favoritesOnly] - Show only favorites
- */
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SEVEN_DAYS_MS = 7 * DAY_MS;
 const THIRTY_DAYS_MS = 30 * DAY_MS;
 const NINETY_DAYS_MS = 90 * DAY_MS;
 
 /**
- * Determine the activity status of a history entry based on its age.
+ * Returns a color-coded freshness status for a history entry.
  *
- * @param {number} lastActiveAt - Last active timestamp
- * @returns {StatusLevel}
+ * @param {number} lastActiveAt - Unix timestamp of last activity
+ * @returns {'green'|'yellow'|'red'} Freshness status
  */
-export const calculateStatus = (lastActiveAt) => {
-  const now = Date.now();
-  const age = now - lastActiveAt;
-
+export function calculateStatus(lastActiveAt) {
+  const age = Date.now() - lastActiveAt;
   if (age < SEVEN_DAYS_MS) return 'green';
   if (age < THIRTY_DAYS_MS) return 'yellow';
   return 'red';
-};
+}
 
 /**
- * Return true if an entry has been inactive long enough to be auto-archived.
- *
- * @param {number} lastActiveAt - Last active timestamp
- * @returns {boolean}
+ * @param {number} lastActiveAt - Unix timestamp of last activity
+ * @returns {boolean} True if the entry is old enough to archive (90+ days)
  */
-export const shouldArchive = (lastActiveAt) => {
-  const now = Date.now();
-  const age = now - lastActiveAt;
-  return age >= NINETY_DAYS_MS;
-};
+export function shouldArchive(lastActiveAt) {
+  return Date.now() - lastActiveAt >= NINETY_DAYS_MS;
+}
 
 /**
- * Check if a history entry is eligible for archival (inactive and not a favorite).
- * @param {HistoryEntry} entry - History entry to check
- * @returns {boolean}
+ * @param {{ isFavorite: boolean, lastActiveAt: number }} entry
+ * @returns {boolean} True if the entry is eligible for archiving
  */
-export const canArchive = (entry) => {
+export function canArchive(entry) {
   return !entry.isFavorite && shouldArchive(entry.lastActiveAt);
-};
+}
 
 /**
- * Calculate the number of days remaining before an entry will be auto-archived.
- *
- * @param {number} lastActiveAt - Last active timestamp
- * @returns {number}
+ * @param {number} lastActiveAt - Unix timestamp of last activity
+ * @returns {number} Days remaining until the entry qualifies for archiving
  */
-export const daysUntilArchive = (lastActiveAt) => {
-  const now = Date.now();
-  const age = now - lastActiveAt;
-  const remaining = NINETY_DAYS_MS - age;
+export function daysUntilArchive(lastActiveAt) {
+  const remaining = NINETY_DAYS_MS - (Date.now() - lastActiveAt);
   return Math.max(0, Math.ceil(remaining / DAY_MS));
-};
+}
 
 /**
- * Test whether a single history entry matches all provided filter criteria.
+ * Checks whether a single history entry matches the given filter criteria.
  *
- * @param {HistoryEntry} entry - History entry to check
- * @param {FilterOptions} filters - Filter criteria
+ * @param {Object} entry - History entry
+ * @param {Object} filters - Active filter values
  * @returns {boolean}
  */
-export const matchesFilters = (entry, filters) => {
+export function matchesFilters(entry, filters) {
   if (filters.fenSearch) {
-    const searchLower = filters.fenSearch.toLowerCase();
-    if (!entry.fen.toLowerCase().includes(searchLower)) {
+    if (!entry.fen.toLowerCase().includes(filters.fenSearch.toLowerCase())) {
       return false;
     }
   }
-
-  if (filters.dateFrom && entry.createdAt < filters.dateFrom) {
+  if (filters.dateFrom && entry.createdAt < filters.dateFrom) return false;
+  if (filters.dateTo && entry.createdAt > filters.dateTo) return false;
+  if (
+    filters.status &&
+    calculateStatus(entry.lastActiveAt) !== filters.status
+  ) {
     return false;
   }
-
-  if (filters.dateTo && entry.createdAt > filters.dateTo) {
-    return false;
-  }
-
-  if (filters.status) {
-    const entryStatus = calculateStatus(entry.lastActiveAt);
-    if (entryStatus !== filters.status) {
-      return false;
-    }
-  }
-
-  if (filters.source && entry.source !== filters.source) {
-    return false;
-  }
-
-  if (filters.favoritesOnly && !entry.isFavorite) {
-    return false;
-  }
-
+  if (filters.source && entry.source !== filters.source) return false;
+  if (filters.favoritesOnly && !entry.isFavorite) return false;
   return true;
-};
+}
 
 /**
- * Filter an array of history entries by the given filter criteria.
+ * Filters a list of history entries by the given criteria.
  *
- * @param {HistoryEntry[]} entries - History entries to filter
- * @param {FilterOptions} filters - Filter criteria
- * @returns {HistoryEntry[]}
+ * @param {Object[]} entries - History entries
+ * @param {Object} filters - Active filter values
+ * @returns {Object[]} Filtered entries
  */
-export const applyFilters = (entries, filters) => {
-  if (!filters || Object.keys(filters).length === 0) {
-    return entries;
-  }
-
+export function applyFilters(entries, filters) {
+  if (!filters || Object.keys(filters).length === 0) return entries;
   return entries.filter((entry) => matchesFilters(entry, filters));
-};
+}
 
 /**
- * Split entries into those that remain active and those ready to be archived.
- * Favorites are always kept in the active list.
+ * Splits entries into those that remain active and those ready to archive.
  *
- * @param {HistoryEntry[]} entries - History entries to partition
- * @returns {{active: HistoryEntry[], toArchive: HistoryEntry[]}}
+ * @param {Object[]} entries - History entries
+ * @returns {{ active: Object[], toArchive: Object[] }}
  */
-export const partitionByArchiveStatus = (entries) => {
+export function partitionByArchiveStatus(entries) {
   const active = [];
   const toArchive = [];
-
-  entries.forEach((entry) => {
-    if (entry.isFavorite) {
+  for (const entry of entries) {
+    if (entry.isFavorite || !shouldArchive(entry.lastActiveAt)) {
       active.push(entry);
-    } else if (shouldArchive(entry.lastActiveAt)) {
-      toArchive.push(entry);
     } else {
-      active.push(entry);
+      toArchive.push(entry);
     }
-  });
-
+  }
   return { active, toArchive };
-};
+}
 
 /**
- * Convert an active history entry to an archived entry record.
+ * Converts an active history entry into an archived entry shape.
  *
- * @param {HistoryEntry} entry - History entry to convert
- * @param {'auto'|'manual'} archiveSource - How entry is being archived
- * @returns {ArchivedEntry}
+ * @param {Object} entry - Active history entry
+ * @param {string} [archiveSource='auto'] - How the archiving was triggered
+ * @returns {Object} Archived entry
  */
-export const convertToArchivedEntry = (entry, archiveSource = 'auto') => {
+export function convertToArchivedEntry(entry, archiveSource = 'auto') {
   return {
     id: entry.id,
     fen: entry.fen,
@@ -187,15 +116,15 @@ export const convertToArchivedEntry = (entry, archiveSource = 'auto') => {
     archiveSource,
     isFavorite: entry.isFavorite
   };
-};
+}
 
 /**
- * Restore an archived entry back to an active history entry, resetting its last-active timestamp.
+ * Converts an archived entry back to an active history entry shape.
  *
- * @param {ArchivedEntry} archived - Archived entry to convert
- * @returns {HistoryEntry}
+ * @param {Object} archived - Archived entry
+ * @returns {Object} Active history entry
  */
-export const convertFromArchivedEntry = (archived) => {
+export function convertFromArchivedEntry(archived) {
   return {
     id: archived.id,
     fen: archived.fen,
@@ -204,30 +133,27 @@ export const convertFromArchivedEntry = (archived) => {
     source: archived.source,
     isFavorite: archived.isFavorite
   };
-};
+}
 
 /**
- * Update an entry's lastActiveAt timestamp to the current time.
+ * Returns a copy of the entry with `lastActiveAt` updated to now.
  *
- * @param {HistoryEntry} entry - Entry to update
- * @returns {HistoryEntry}
+ * @param {Object} entry - History entry
+ * @returns {Object} Updated entry
  */
-export const touchEntry = (entry) => {
-  return {
-    ...entry,
-    lastActiveAt: Date.now()
-  };
-};
+export function touchEntry(entry) {
+  return { ...entry, lastActiveAt: Date.now() };
+}
 
 /**
- * Create a new history entry with the current timestamp as its ID.
+ * Creates a new history entry for the given FEN.
  *
  * @param {string} fen - FEN string
- * @param {'manual'|'export'|'drag'} source - Entry source
- * @param {string} [dragSessionId] - Drag session ID if applicable
- * @returns {HistoryEntry}
+ * @param {'manual'|'export'|'drag'} source - How the entry was created
+ * @param {string|null} [dragSessionId=null] - Drag session identifier
+ * @returns {Object} New history entry
  */
-export const createHistoryEntry = (fen, source, dragSessionId = null) => {
+export function createHistoryEntry(fen, source, dragSessionId = null) {
   const now = Date.now();
   return {
     id: now,
@@ -238,24 +164,20 @@ export const createHistoryEntry = (fen, source, dragSessionId = null) => {
     isFavorite: false,
     ...(dragSessionId ? { dragSessionId } : {})
   };
-};
+}
 
 /**
- * Sort history entries by most-recently-active first.
- *
- * @param {HistoryEntry[]} entries - Entries to sort
- * @returns {HistoryEntry[]}
+ * @param {Object[]} entries - History entries
+ * @returns {Object[]} Entries sorted by `lastActiveAt` descending
  */
-export const sortByMostRecent = (entries) => {
+export function sortByMostRecent(entries) {
   return [...entries].sort((a, b) => b.lastActiveAt - a.lastActiveAt);
-};
+}
 
 /**
- * Sort archived entries by archive date, most recently archived first.
- *
- * @param {ArchivedEntry[]} entries - Archived entries to sort
- * @returns {ArchivedEntry[]}
+ * @param {Object[]} entries - Archived entries
+ * @returns {Object[]} Entries sorted by `archivedAt` descending
  */
-export const sortArchivedByArchiveDate = (entries) => {
+export function sortArchivedByArchiveDate(entries) {
   return [...entries].sort((a, b) => b.archivedAt - a.archivedAt);
-};
+}
