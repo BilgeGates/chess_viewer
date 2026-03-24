@@ -52,7 +52,7 @@ function Navbar({ theme, toggleTheme }) {
                 <img
                   src={Logo}
                   alt="Logo"
-                  className="w-8 h-12 sm:w-10 sm:h-14"
+                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                 />
                 <span className="font-display font-bold text-text-primary leading-tight transition-colors duration-200">
                   FENForsty Pro
