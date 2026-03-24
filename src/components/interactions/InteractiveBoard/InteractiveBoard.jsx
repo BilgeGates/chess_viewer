@@ -4,7 +4,6 @@ import { useDrop } from 'react-dnd';
 
 import { DroppableSquare } from '@/components/interactions';
 import { ItemTypes } from '@/constants';
-import { areBoardsEqual } from '@/utils';
 
 /**
  * @param {Object} props
@@ -104,17 +103,6 @@ const InteractiveBoard = memo(
       >
         {squares}
       </div>
-    );
-  },
-  (prevProps, nextProps) => {
-    return (
-      areBoardsEqual(prevProps.board, nextProps.board) &&
-      prevProps.lightSquare === nextProps.lightSquare &&
-      prevProps.darkSquare === nextProps.darkSquare &&
-      prevProps.pieceImages === nextProps.pieceImages &&
-      prevProps.isLoading === nextProps.isLoading &&
-      prevProps.flipped === nextProps.flipped &&
-      prevProps.onPieceDrop === nextProps.onPieceDrop
     );
   }
 );
