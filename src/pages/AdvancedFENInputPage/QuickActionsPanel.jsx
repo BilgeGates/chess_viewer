@@ -1,0 +1,199 @@
+import { memo, useCallback } from 'react';
+
+import { Copy, FlipVertical2 } from 'lucide-react';
+
+import {
+  batchExport,
+  downloadJPEG,
+  downloadPNG,
+  downloadSVG,
+  logger
+} from '@/utils';
+
+/**
+ * @typedef {Object} QuickActionsPanelProps
+ * @property {string} currentFen - The currently active FEN string.
+ * @property {Object} exportConfig - Configuration object passed to export utilities.
+ * @property {string} fileName - Base file name used for exported files.
+ * @property {string[]} validFens - Array of valid FEN strings available for batch export.
+ * @property {Function} onFlip - Callback invoked when the user clicks "Flip Board".
+ * @property {Function} onShowProgress - Callback to show or hide the progress indicator.
+ */
+
+/**
+ * Renders quick-action buttons for flipping the board, copying the FEN,
+ * single-format exports (PNG / JPEG / SVG) and batch exports.
+ *
+ * @param {QuickActionsPanelProps} props
+ * @returns {JSX.Element}
+ */
+const QuickActionsPanel = memo(function QuickActionsPanel({
+  currentFen,
+  exportConfig,
+  fileName,
+  validFens,
+  onFlip,
+  onShowProgress
+}) {
+  /**
+   * Copies the current FEN string to the clipboard.
+   *
+   * @returns {Promise<void>}
+   */
+  const handleCopyFen = useCallback(async function handleCopyFen() {
+    try {
+      await navigator.clipboard.writeText(currentFen);
+    } catch (err) {
+      logger.error('Copy failed:', err);
+    }
+  }, [currentFen]);
+
+  /**
+   * Exports the current position as a PNG.
+   *
+   * @returns {Promise<void>}
+   */
+  const handleExportPng = useCallback(async function handleExportPng() {
+    try {
+      await downloadPNG(exportConfig, fileName);
+    } catch (err) {
+      logger.error('PNG export failed:', err);
+    }
+  }, [exportConfig, fileName]);
+
+  /**
+   * Exports the current position as a JPEG.
+   *
+   * @returns {Promise<void>}
+   */
+  const handleExportJpeg = useCallback(async function handleExportJpeg() {
+    try {
+      await downloadJPEG(exportConfig, fileName);
+    } catch (err) {
+      logger.error('JPEG export failed:', err);
+    }
+  }, [exportConfig, fileName]);
+
+  /**
+   * Exports the current position as an SVG.
+   *
+   * @returns {Promise<void>}
+   */
+  const handleExportSvg = useCallback(async function handleExportSvg() {
+    try {
+      await downloadSVG(exportConfig, fileName);
+    } catch (err) {
+      logger.error('SVG export failed:', err);
+    }
+  }, [exportConfig, fileName]);
+
+  /**
+   * Runs a batch export for all valid positions in a single format.
+   *
+   * @param {'png'|'jpeg'|'svg'} format - Output format for the batch
+   * @param {string} label - Label used in error logging
+   * @returns {Promise<void>}
+   */
+  const handleBatchExport = useCallback(
+    async function handleBatchExport(format, label) {
+      try {
+        onShowProgress(true);
+        await batchExport(
+          {
+            ...exportConfig,
+            fens: validFens
+          },
+          [format],
+          fileName
+        );
+        onShowProgress(false);
+      } catch (err) {
+        logger.error(`${label} failed:`, err);
+        onShowProgress(false);
+      }
+    },
+    [exportConfig, fileName, onShowProgress, validFens]
+  );
+
+  return (
+    <div className="flex flex-col gap-4 flex-1 min-w-[200px] max-w-[280px]">
+      <div className="space-y-2">
+        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          Quick Actions
+        </span>
+        <button
+          onClick={onFlip}
+          className="w-full px-3 py-2 bg-surface-elevated hover:bg-surface-hover border border-border text-text-primary rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2"
+        >
+          <FlipVertical2 className="w-4 h-4" />
+          Flip Board
+        </button>
+        <button
+          onClick={handleCopyFen}
+          className="w-full px-3 py-2 bg-surface-elevated hover:bg-surface-hover border border-border text-text-primary rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2"
+        >
+          <Copy className="w-4 h-4" />
+          Copy FEN
+        </button>
+      </div>
+
+      <div className="border-t border-border" />
+
+      <div className="space-y-2">
+        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          Single Export
+        </span>
+        <button
+          onClick={handleExportPng}
+          className="w-full px-3 py-2.5 bg-warning hover:bg-warning/90 text-bg rounded-lg font-semibold transition-colors text-sm"
+        >
+          Export PNG
+        </button>
+        <button
+          onClick={handleExportJpeg}
+          className="w-full px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-border text-text-primary rounded-lg font-semibold transition-colors text-sm"
+        >
+          Export JPEG
+        </button>
+        <button
+          onClick={handleExportSvg}
+          className="w-full px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-border text-text-secondary rounded-lg font-semibold transition-colors text-sm"
+        >
+          Export SVG
+        </button>
+      </div>
+
+      <div className="border-t border-border" />
+
+      <div className="space-y-2">
+        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          Batch Export
+          <span className="ml-1.5 px-1.5 py-0.5 bg-surface-elevated rounded text-[10px]">
+            {validFens.length}
+          </span>
+        </span>
+        <button
+          onClick={() => handleBatchExport('png', 'Batch PNG')}
+          className="w-full px-3 py-2.5 bg-warning/20 hover:bg-warning/30 border border-warning/30 text-warning rounded-lg font-semibold transition-colors text-sm"
+        >
+          Batch PNG
+        </button>
+        <button
+          onClick={() => handleBatchExport('jpeg', 'Batch JPEG')}
+          className="w-full px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-border text-text-secondary rounded-lg font-semibold transition-colors text-sm"
+        >
+          Batch JPEG
+        </button>
+        <button
+          onClick={() => handleBatchExport('svg', 'Batch SVG')}
+          className="w-full px-3 py-2.5 bg-surface-elevated hover:bg-surface-hover border border-border text-text-secondary rounded-lg font-semibold transition-colors text-sm"
+        >
+          Batch SVG
+        </button>
+      </div>
+    </div>
+  );
+});
+QuickActionsPanel.displayName = 'QuickActionsPanel';
+
+export default QuickActionsPanel;
