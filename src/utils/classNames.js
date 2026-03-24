@@ -1,57 +1,48 @@
-/**
- * Tailwind CSS class name utilities.
- * Provides reusable class combinations and helper functions.
- */
-
 export const classNames = {
   button: {
-    base: 'rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 focus-ring',
+    base: 'rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 focus:outline-none focus:ring-2 focus:ring-accent/50',
     primary:
-      'bg-accent hover:bg-accent/90 text-text-inverse shadow-glow-sm hover:shadow-glow',
+      'bg-accent hover:bg-accent/90 text-bg shadow-sm hover:shadow-glow',
     secondary:
-      'bg-accent-secondary hover:bg-accent-secondary/90 text-text-inverse',
-    success: 'bg-success hover:bg-success/90 text-text-inverse',
-    danger: 'bg-error hover:bg-error/90 text-text-inverse',
+      'bg-secondary hover:bg-secondary/90 text-bg',
+    success: 'bg-success hover:bg-success/90 text-bg',
+    danger: 'bg-error hover:bg-error/90 text-bg',
     outline:
       'bg-transparent hover:bg-surface-hover text-text-primary border border-border',
     ghost:
       'bg-transparent hover:bg-surface-hover text-text-secondary hover:text-text-primary',
     gradient:
-      'bg-gradient-to-r from-accent to-accent-secondary text-text-inverse shadow-glow-sm hover:shadow-glow',
+      'bg-gradient-to-r from-accent to-secondary text-bg shadow-sm hover:shadow-glow',
     size: {
       sm: 'px-3 py-1.5 text-xs',
       md: 'px-5 py-2.5 text-sm',
       lg: 'px-6 py-3 text-base'
     }
   },
-
   card: {
-    base: 'rounded-2xl shadow-elevated',
-    gradient: 'bg-gradient-to-br from-bg-secondary to-bg-primary',
+    base: 'rounded-2xl shadow-md',
+    gradient: 'bg-gradient-to-br from-surface-elevated to-surface',
     glass: 'glass',
-    border: 'border border-border/50 bg-bg-secondary',
+    border: 'border border-border/50 bg-surface-elevated',
     padding: {
       sm: 'p-3 sm:p-4',
       md: 'p-4 sm:p-6',
       lg: 'p-6 sm:p-8'
     }
   },
-
   input: {
     base: 'w-full px-4 py-2.5 bg-surface-hover/50 border border-border rounded-xl text-text-primary placeholder-text-muted transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent',
     error: 'border-error focus:ring-error/50 focus:border-error',
     success: 'border-success focus:ring-success/50 focus:border-success'
   },
-
   modal: {
     overlay: 'fixed inset-0 z-50 flex items-center justify-center p-4',
     container:
-      'card-elevated rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto relative z-10',
+      'bg-surface border border-border rounded-2xl shadow-2xl w-full max-h-[90vh] overflow-y-auto relative z-10',
     header:
-      'sticky top-0 bg-bg-secondary/95 backdrop-blur-lg border-b border-border p-4 flex items-center justify-between z-10',
+      'sticky top-0 bg-surface/95 backdrop-blur-lg border-b border-border p-4 flex items-center justify-between z-10',
     content: 'p-6'
   },
-
   text: {
     heading: {
       h1: 'text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-text-primary',
@@ -66,13 +57,11 @@ export const classNames = {
     },
     label: 'text-sm font-semibold text-text-secondary'
   },
-
   layout: {
     container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-    page: 'min-h-screen bg-bg-primary',
+    page: 'h-screen max-h-screen overflow-hidden bg-bg',
     section: 'py-12 sm:py-16 lg:py-24'
   },
-
   animation: {
     fadeIn: 'animate-fade-in',
     fadeInUp: 'animate-fade-in-up',
@@ -82,33 +71,28 @@ export const classNames = {
     scaleIn: 'animate-scale-in'
   }
 };
-
 /**
- * Combines multiple CSS class names into a single string.
- * Filters out falsy values automatically.
+ * Joins truthy class name strings into a single space-separated string.
  *
- * @param {...string} classes - Class names to combine
- * @returns {string} Combined class string
+ * @param {...string} classes - Class name strings (falsy values are ignored)
+ * @returns {string} Combined class names
  */
 export function cn(...classes) {
   const result = [];
-
   for (let i = 0; i < classes.length; i++) {
     if (classes[i]) {
       result.push(classes[i]);
     }
   }
-
   return result.join(' ');
 }
-
 /**
- * Gets CSS classes for a button component.
+ * Returns combined Tailwind classes for a button element.
  *
- * @param {string} variant - Button variant (primary, secondary, danger, etc.)
- * @param {string} size - Button size (sm, md, lg)
- * @param {string} className - Additional CSS classes
- * @returns {string} Combined button classes
+ * @param {'primary'|'secondary'|'success'|'danger'|'outline'|'ghost'|'gradient'} [variant='primary']
+ * @param {'sm'|'md'|'lg'} [size='md']
+ * @param {string} [className=''] - Additional classes
+ * @returns {string}
  */
 export function getButtonClasses(
   variant = 'primary',
@@ -122,15 +106,14 @@ export function getButtonClasses(
     className
   );
 }
-
 /**
- * Gets CSS classes for a card component.
+ * Returns combined Tailwind classes for a card element.
  *
- * @param {boolean} gradient - Use gradient background
- * @param {boolean} glass - Use frosted glass effect
- * @param {string} padding - Padding size (sm, md, lg)
- * @param {string} className - Additional CSS classes
- * @returns {string} Combined card classes
+ * @param {boolean} [gradient=false] - Use gradient background
+ * @param {boolean} [glass=false] - Use glass background
+ * @param {'sm'|'md'|'lg'} [padding='md']
+ * @param {string} [className=''] - Additional classes
+ * @returns {string}
  */
 export function getCardClasses(
   gradient = false,
@@ -142,7 +125,6 @@ export function getCardClasses(
   const backgroundClass = glass
     ? classNames.card.glass
     : classNames.card.border;
-
   return cn(
     classNames.card.base,
     gradientClass,
@@ -151,22 +133,19 @@ export function getCardClasses(
     className
   );
 }
-
 /**
- * Gets CSS classes for an input field.
+ * Returns combined Tailwind classes for an input element.
  *
- * @param {string} state - Input state (normal, error, success)
- * @param {string} className - Additional CSS classes
- * @returns {string} Combined input classes
+ * @param {'normal'|'error'|'success'} [state='normal']
+ * @param {string} [className=''] - Additional classes
+ * @returns {string}
  */
 export function getInputClasses(state = 'normal', className = '') {
   let stateClass = '';
-
   if (state === 'error') {
     stateClass = classNames.input.error;
   } else if (state === 'success') {
     stateClass = classNames.input.success;
   }
-
   return cn(classNames.input.base, stateClass, className);
 }
