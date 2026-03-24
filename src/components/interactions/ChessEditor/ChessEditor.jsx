@@ -12,9 +12,8 @@ import {
 import { useInteractiveBoard, usePieceImages } from '@/hooks';
 
 const FIXED_BOARD_SIZE = 400;
-const RANK_GUTTER = 20;
-const BOARD_SIZE_EXPR = 'min(56vh, calc(100vw - 88px), 520px)';
-const CELL_SIZE_EXPR = `calc(${BOARD_SIZE_EXPR} / 8)`;
+const RANK_GUTTER = 24;
+const CELL_SIZE = FIXED_BOARD_SIZE / 8; // 50px per cell
 
 /**
  * Drag-and-drop chess position editor combining the interactive board, piece palette,
@@ -46,7 +45,6 @@ const ChessEditor = memo(function ChessEditor({
 
   const {
     board,
-    boardKey,
     handlePieceDrop,
     handlePieceRemove,
     clearBoard,
@@ -80,12 +78,12 @@ const ChessEditor = memo(function ChessEditor({
       : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
     return (
-      <div className="flex" style={{ paddingLeft: RANK_GUTTER }}>
+      <div className="flex mt-1" style={{ paddingLeft: `${RANK_GUTTER}px` }}>
         {files.map((file) => (
           <div
             key={file}
-            className="text-[12px] font-bold text-text-primary text-center mt-1"
-            style={{ width: CELL_SIZE_EXPR }}
+            className="text-[11px] font-semibold text-text-secondary text-center select-none"
+            style={{ width: `${CELL_SIZE}px` }}
           >
             {file}
           </div>
@@ -106,13 +104,13 @@ const ChessEditor = memo(function ChessEditor({
     return (
       <div
         className="flex flex-col flex-shrink-0"
-        style={{ width: RANK_GUTTER }}
+        style={{ width: `${RANK_GUTTER}px` }}
       >
         {ranks.map((rank) => (
           <div
             key={rank}
-            className="flex items-center justify-center text-[12px] font-bold text-text-primary"
-            style={{ height: CELL_SIZE_EXPR }}
+            className="flex items-center justify-center text-[11px] font-bold text-text-secondary select-none"
+            style={{ height: `${CELL_SIZE}px` }}
           >
             {rank}
           </div>
@@ -123,23 +121,34 @@ const ChessEditor = memo(function ChessEditor({
 
   return (
     <DndProvider>
-      <CustomDragLayer pieceImages={pieceImages} boardSize={boardSize} />
+      <CustomDragLayer pieceImages={pieceImages} boardSize={FIXED_BOARD_SIZE} />
 
       <div
-        className={`flex flex-col 2xl:flex-row gap-4 sm:gap-6 2xl:gap-8 2xl:items-stretch ${className}`}
+        className={`flex flex-col 2xl:flex-row gap-6 2xl:items-start w-full overflow-visible ${className}`}
       >
-        <div className="flex-shrink-0 w-full 2xl:w-auto mx-auto 2xl:mx-0">
-          <div className="inline-flex flex-col relative">
+        {/* ── Board column ── */}
+        <div className="flex-shrink-0 flex justify-center 2xl:justify-start" style={{ flexShrink: 0 }}>
+          {/* Fixed-size outer container: board + optional rank gutter */}
+          <div
+            className="relative flex flex-col"
+            style={{
+              width: showCoords
+                ? `${FIXED_BOARD_SIZE + RANK_GUTTER}px`
+                : `${FIXED_BOARD_SIZE}px`
+            }}
+          >
+            {/* Rank numbers + board side by side */}
             <div className="flex">
               {showCoords && renderRankCoordinates()}
+              {/* Board: fixed 400×400px */}
               <div
                 style={{
-                  width: BOARD_SIZE_EXPR,
-                  height: BOARD_SIZE_EXPR
+                  width: `${FIXED_BOARD_SIZE}px`,
+                  height: `${FIXED_BOARD_SIZE}px`,
+                  flexShrink: 0
                 }}
               >
                 <InteractiveBoard
-                  key={boardKey}
                   board={board}
                   lightSquare={lightSquare}
                   darkSquare={darkSquare}
@@ -151,12 +160,23 @@ const ChessEditor = memo(function ChessEditor({
                 />
               </div>
             </div>
+
+            {/* File letters below board */}
             {showCoords && renderFileCoordinates()}
 
+            {/* Loading overlay — covers only board area */}
             {isLoading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50">
+              <div
+                className="absolute flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50"
+                style={{
+                  top: 0,
+                  left: showCoords ? `${RANK_GUTTER}px` : 0,
+                  width: `${FIXED_BOARD_SIZE}px`,
+                  height: `${FIXED_BOARD_SIZE}px`
+                }}
+              >
                 <div className="flex flex-col items-center gap-4">
-                  <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                  <div className="relative w-12 h-12">
                     <div className="absolute inset-0 rounded-full border-4 border-border"></div>
                     <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin"></div>
                   </div>
@@ -169,29 +189,26 @@ const ChessEditor = memo(function ChessEditor({
           </div>
         </div>
 
-        <div
-          className="flex flex-col flex-1 2xl:flex-none 2xl:basis-[24rem] 2xl:max-w-[24rem] min-w-0 gap-3 2xl:gap-4 pb-2 2xl:justify-between palette-section"
-          style={{
-            '--palette-min-h': showCoords
-              ? `calc(${BOARD_SIZE_EXPR} + ${RANK_GUTTER}px)`
-              : BOARD_SIZE_EXPR
-          }}
-        >
-          <PiecePalette
+        {/* ── Palette column ── fills all remaining space after the board ── */}
+        <div className="flex flex-col justify-between h-[calc(100%-10px)] gap-4 flex-1">
+        <div>
+            <PiecePalette
             pieceImages={pieceImages}
             isLoading={isLoading}
-            className="min-w-0 2xl:flex-1"
+            className="flex-1"
           />
+        </div>
 
-          <div className="mt-auto flex flex-wrap sm:flex-nowrap items-stretch gap-2 sm:gap-3">
-            <button
+          <div className="flex items-center justify-between">
+            <div className='flex gap-4'>
+              <button
               type="button"
               onClick={(e) => {
                 e.preventDefault();
                 resetBoard();
               }}
               className="
-                flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5
+                flex-1 flex items-center justify-center gap-2 px-4 py-2.5
                 text-sm font-semibold text-bg
                 bg-accent hover:bg-accent-hover
                 border border-accent/20
@@ -210,7 +227,7 @@ const ChessEditor = memo(function ChessEditor({
                 clearBoard();
               }}
               className="
-                flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5
+                flex-1 flex items-center justify-center gap-2 px-4 py-2.5
                 text-sm font-semibold text-text-secondary
                 bg-surface-elevated hover:bg-surface-hover
                 border border-border
@@ -222,8 +239,9 @@ const ChessEditor = memo(function ChessEditor({
               <X className="w-4 h-4" />
               <span>Clear</span>
             </button>
+            </div>
 
-            <div className="w-full sm:flex-1 min-w-0">
+            <div>
               <TrashZone onDrop={handleTrashDrop} className="h-full w-full" />
             </div>
           </div>
