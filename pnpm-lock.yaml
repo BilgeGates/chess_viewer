@@ -24,7 +24,7 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3
       framer-motion:
-        specifier: ^12.34.0
+        specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       lucide-react:
         specifier: ^0.562.0
