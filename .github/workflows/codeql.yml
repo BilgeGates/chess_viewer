@@ -31,32 +31,34 @@ env:
 
 jobs:
   analyze:
-    name: Security Analysis
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     permissions:
       security-events: write
-      contents: read
+      packages: read
       actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            build-mode: none
+          - language: javascript-typescript
+            build-mode: none
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: javascript-typescript
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
           queries: security-extended,security-and-quality
           config: |
             paths-ignore:
@@ -64,19 +66,7 @@ jobs:
               - dist
               - build
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v4
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
-          category: security-scan
-
-      - name: Upload analysis results
-        if: always()
-        run: |
-          echo "CodeQL analysis completed"
-          echo "Check Security tab for results: https://github.com/${{ github.repository }}/security/code-scanning"
+          category: "/language:${{ matrix.language }}"
