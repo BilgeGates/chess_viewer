@@ -92,16 +92,13 @@ export function calculateExportSize(boardSizeCm, showCoords, exportQuality) {
   const maxCanvasSize = getMaxCanvasSize();
   let actualResolutionPixels;
   let physicalSizeCm;
-  let scaleFactor;
   if (mode === 'print') {
     const baseBoardPixels = cmToPixels(boardSizeCm);
     actualResolutionPixels = baseBoardPixels * exportQuality;
     physicalSizeCm = boardSizeCm;
-    scaleFactor = 1;
   } else {
     const baseBoardPixels = 2400;
-    scaleFactor = exportQuality / 24;
-    actualResolutionPixels = baseBoardPixels * scaleFactor;
+    actualResolutionPixels = baseBoardPixels * (exportQuality / 24);
     physicalSizeCm = null;
   }
   const params = getCoordinateParams(actualResolutionPixels);
