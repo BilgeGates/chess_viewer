@@ -5,7 +5,7 @@ import {
   BookOpen,
   ChevronDown,
   ExternalLink,
-  Github,
+  Github as GithubIcon,
   HelpCircle,
   MessageSquare
 } from 'lucide-react';
