@@ -1,12 +1,7 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "Running pre-commit checks..."
 
-# Run lint-staged
 npx lint-staged
 
-# Check if there are any errors
 if [ $? -ne 0 ]; then
   echo "Pre-commit checks failed. Please fix the issues and try again."
   exit 1
