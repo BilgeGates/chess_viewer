@@ -230,7 +230,7 @@ export const QUALITY_PRESETS = [
   {
     value: 24,
     label: 'Social 24×',
-    description: 'Social media / maximum zoom',
+    description: 'Keeps board size, higher zoom quality',
     mode: 'social',
     forceCoordinateBorder: true,
     estimatedSize: '400-600 KB'
@@ -238,7 +238,7 @@ export const QUALITY_PRESETS = [
   {
     value: 32,
     label: 'Max 32×',
-    description: 'Ultra high resolution',
+    description: 'Keeps board size, maximum zoom quality',
     mode: 'social',
     forceCoordinateBorder: true,
     estimatedSize: '800KB-1.2MB'
@@ -254,9 +254,9 @@ export const EXPORT_MODE_CONFIG = {
   social: {
     fixedBoardPixels: 4800,
     maxPixels: 16384,
-    preservePhysicalSize: false,
+    preservePhysicalSize: true,
     forceCoordinateBorder: true,
-    description: 'Fixed large output for zoom/social media'
+    description: 'Keeps board size with higher zoom quality'
   }
 };
 export const ADVANCED_FEN_CONFIG = {

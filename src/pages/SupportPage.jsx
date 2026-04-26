@@ -5,7 +5,6 @@ import {
   BookOpen,
   ChevronDown,
   ExternalLink,
-  Github as GithubIcon,
   HelpCircle,
   MessageSquare
 } from 'lucide-react';
@@ -35,7 +34,7 @@ function SupportPage() {
         {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 animate-fadeIn">
           <SupportCard
-            icon={<Github className="w-6 h-6" />}
+            icon={<HelpCircle className="w-6 h-6" />}
             title="GitHub Issues"
             desc="Report bugs or features"
             link="https://github.com/BilgeGates/chess_viewer/issues"

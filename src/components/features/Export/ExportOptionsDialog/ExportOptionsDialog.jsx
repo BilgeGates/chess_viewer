@@ -97,7 +97,7 @@ function ExportOptionsDialog({
                     <strong className="text-accent font-semibold">
                       Social:
                     </strong>{' '}
-                    Fixed large output optimized for social media and zooming.
+                    Keeps board size and increases export detail.
                   </>
                 )}
               </p>

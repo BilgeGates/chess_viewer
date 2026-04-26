@@ -1,10 +1,7 @@
-import { EXPORT_MODE_CONFIG } from '@/constants';
-
-import { drawCoordinates, getCoordinateParams } from './coordinateCalculations';
+import { drawCoordinates } from './coordinateCalculations';
 import { parseFEN } from './fenParser';
 import {
-  cmToPixels,
-  getExportMode,
+  calculateExportSize,
   shouldForceCoordinateBorder
 } from './imageOptimizer';
 import { logger } from './logger';
@@ -51,7 +48,6 @@ export async function createUltraQualityCanvas(config) {
   if (exportQuality === undefined || exportQuality === null) {
     exportQuality = 8;
   }
-  const mode = getExportMode(exportQuality);
   const forceCoordBorder = shouldForceCoordinateBorder(exportQuality);
   const effectiveCoordBorder =
     showCoords && (forceCoordBorder || showCoordinateBorder);
@@ -97,17 +93,17 @@ export async function createUltraQualityCanvas(config) {
   }
 
   const imageKeys = Object.keys(pieceImages);
-  const imagePromises = imageKeys.map((key) => waitForPieceImage(pieceImages[key]));
+  const imagePromises = imageKeys.map((key) =>
+    waitForPieceImage(pieceImages[key])
+  );
   await Promise.all(imagePromises);
-  let finalBoardPixels;
-  if (mode === 'print') {
-    finalBoardPixels = cmToPixels(boardSizeCm) * exportQuality;
-  } else {
-    finalBoardPixels =
-      EXPORT_MODE_CONFIG.social.fixedBoardPixels * (exportQuality / 24);
-  }
-  const params = getCoordinateParams(finalBoardPixels);
-  const borderSize = showCoords ? params.borderSize : 0;
+  const exportSize = calculateExportSize(
+    boardSizeCm,
+    showCoords,
+    exportQuality
+  );
+  const finalBoardPixels = exportSize.boardPixels;
+  const borderSize = showCoords ? exportSize.borderSize : 0;
   const showThinFrame = config.showThinFrame || false;
   const shouldShowFrame =
     showThinFrame && (exportQuality === 8 || exportQuality === 16);

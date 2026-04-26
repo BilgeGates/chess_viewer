@@ -4,7 +4,12 @@ import { Palette } from 'lucide-react';
 
 import { ColorInput } from '@/components/features/ColorPicker/parts';
 import { useColorState } from '@/hooks';
-import { hexToRgb, rgbToHex, rgbToHsv, hsvToRgb } from '@/utils/colorConversions';
+import {
+  hexToRgb,
+  rgbToHex,
+  rgbToHsv,
+  hsvToRgb
+} from '@/utils/colorConversions';
 
 import PickerModal from './PickerModal';
 
@@ -65,7 +70,7 @@ function ColorPicker({ label, value = '#3B82F6', onChange, className = '' }) {
       ctx.fillStyle = gradientV;
       ctx.fillRect(0, 0, width, height);
     }
-  }, [isOpen, tempColor, hexToRgb, rgbToHsv, hsvToRgb]);
+  }, [isOpen, tempColor]);
   const handleCanvasClick = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();

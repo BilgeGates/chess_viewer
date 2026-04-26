@@ -1,4 +1,5 @@
-import { memo, useLayoutEffect, useRef } from 'react';
+import { memo } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useDragLayer } from 'react-dnd';
 
@@ -12,34 +13,26 @@ const CustomDragLayer = memo(function CustomDragLayer({
   pieceImages,
   boardSize = 400
 }) {
-  const dragPreviewRef = useRef(null);
-  const { itemType, isDragging, item, currentOffset } = useDragLayer(
-    (monitor) => ({
+  const { itemType, isDragging, item, currentOffset, sourceOffset } =
+    useDragLayer((monitor) => ({
       item: monitor.getItem(),
       itemType: monitor.getItemType(),
       currentOffset: monitor.getClientOffset(),
-      initialOffset: monitor.getInitialClientOffset(),
+      sourceOffset: monitor.getSourceClientOffset(),
       isDragging: monitor.isDragging()
-    })
-  );
-  useLayoutEffect(() => {
-    if (dragPreviewRef.current) {
-      if (isDragging) {
-        dragPreviewRef.current.style.willChange = 'transform';
-      } else {
-        dragPreviewRef.current.style.willChange = 'auto';
-      }
-    }
-  }, [isDragging]);
-  if (!isDragging || itemType !== ItemTypes.PIECE) {
+    }));
+  if (
+    !isDragging ||
+    itemType !== ItemTypes.PIECE ||
+    typeof document === 'undefined'
+  ) {
     return null;
   }
   const pieceImage = pieceImages[item?.pieceKey];
   if (!pieceImage) {
     return null;
   }
-  const SQUARE_SIZE = boardSize / 8;
-  const PIECE_SIZE = Math.round(SQUARE_SIZE * 0.85);
+  const pieceSize = Math.round((boardSize / 8) * 0.85);
   const layerStyles = {
     position: 'fixed',
     pointerEvents: 'none',
@@ -47,35 +40,27 @@ const CustomDragLayer = memo(function CustomDragLayer({
     left: 0,
     top: 0,
     right: 0,
-    bottom: 0,
-    contain: 'strict'
+    bottom: 0
   };
-  const getItemStyles = () => {
-    if (!currentOffset) {
-      return {
-        display: 'none'
-      };
-    }
-    const { x, y } = currentOffset;
-    const halfSize = PIECE_SIZE / 2;
-    const translateX = Math.round(x - halfSize);
-    const translateY = Math.round(y - halfSize);
-    return {
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      transform: `translate3d(${translateX}px, ${translateY}px, 0)`,
-      WebkitTransform: `translate3d(${translateX}px, ${translateY}px, 0)`,
-      width: `${PIECE_SIZE}px`,
-      height: `${PIECE_SIZE}px`,
-      pointerEvents: 'none',
-      backfaceVisibility: 'hidden',
-      WebkitBackfaceVisibility: 'hidden'
-    };
+  const offset = sourceOffset || currentOffset;
+  if (!offset) {
+    return null;
+  }
+  const shift = sourceOffset ? 0 : pieceSize / 2;
+  const x = Math.round(offset.x - shift);
+  const y = Math.round(offset.y - shift);
+  const itemStyles = {
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    transform: `translate3d(${x}px, ${y}px, 0)`,
+    width: `${pieceSize}px`,
+    height: `${pieceSize}px`,
+    pointerEvents: 'none'
   };
-  return (
+  return createPortal(
     <div style={layerStyles} aria-hidden="true">
-      <div ref={dragPreviewRef} style={getItemStyles()}>
+      <div style={itemStyles}>
         <img
           src={pieceImage.src}
           alt=""
@@ -88,13 +73,13 @@ const CustomDragLayer = memo(function CustomDragLayer({
             filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5))',
             pointerEvents: 'none',
             userSelect: 'none',
-            WebkitUserSelect: 'none',
-            imageRendering: 'auto'
+            WebkitUserSelect: 'none'
           }}
           draggable={false}
         />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 });
 CustomDragLayer.displayName = 'CustomDragLayer';

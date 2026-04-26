@@ -90,45 +90,36 @@ function formatFileSize(bytes) {
 export function calculateExportSize(boardSizeCm, showCoords, exportQuality) {
   const mode = getExportMode(exportQuality);
   const maxCanvasSize = getMaxCanvasSize();
-  let actualResolutionPixels;
-  let physicalSizeCm;
-  if (mode === 'print') {
-    const baseBoardPixels = cmToPixels(boardSizeCm);
-    actualResolutionPixels = baseBoardPixels * exportQuality;
-    physicalSizeCm = boardSizeCm;
-  } else {
-    const baseBoardPixels = 2400;
-    actualResolutionPixels = baseBoardPixels * (exportQuality / 24);
-    physicalSizeCm = null;
-  }
-  const params = getCoordinateParams(actualResolutionPixels);
-  const borderSize = showCoords ? params.borderSize : 0;
-  const finalWidth = Math.round(borderSize + actualResolutionPixels);
-  const finalHeight = Math.round(actualResolutionPixels + borderSize);
-  let reducedWidth = finalWidth;
-  let reducedHeight = finalHeight;
-  let actualScaleFactor = 1.0;
-  if (finalWidth > maxCanvasSize || finalHeight > maxCanvasSize) {
-    const maxDim = Math.max(finalWidth, finalHeight);
-    actualScaleFactor = maxCanvasSize / maxDim;
-    reducedWidth = Math.round(finalWidth * actualScaleFactor);
-    reducedHeight = Math.round(finalHeight * actualScaleFactor);
+  const rawBoardPixels = cmToPixels(boardSizeCm) * exportQuality;
+  const coordParams = getCoordinateParams(rawBoardPixels);
+  const rawBorder = showCoords ? coordParams.borderSize : 0;
+  const rawWidth = Math.round(rawBorder + rawBoardPixels);
+  const rawHeight = Math.round(rawBoardPixels + rawBorder);
+  let width = rawWidth;
+  let height = rawHeight;
+  let scaleFactor = 1.0;
+  if (rawWidth > maxCanvasSize || rawHeight > maxCanvasSize) {
+    const maxDim = Math.max(rawWidth, rawHeight);
+    scaleFactor = maxCanvasSize / maxDim;
+    width = Math.round(rawWidth * scaleFactor);
+    height = Math.round(rawHeight * scaleFactor);
     logger.warn(
       'Resolution reduced by ' +
-        (actualScaleFactor * 100).toFixed(1) +
+        (scaleFactor * 100).toFixed(1) +
         '% for browser compatibility'
     );
   }
   return {
-    width: reducedWidth,
-    height: reducedHeight,
-    scaleFactor: actualScaleFactor,
-    baseBoardPixels: actualResolutionPixels,
-    baseWidth: finalWidth,
-    baseHeight: finalHeight,
-    borderSize,
-    physicalSizeCm,
-    effectiveDPI: mode === 'print' ? PRINT_DPI * exportQuality : null,
+    width,
+    height,
+    scaleFactor,
+    boardPixels: Math.round(rawBoardPixels * scaleFactor),
+    baseBoardPixels: rawBoardPixels,
+    baseWidth: rawWidth,
+    baseHeight: rawHeight,
+    borderSize: Math.round(rawBorder * scaleFactor),
+    physicalSizeCm: boardSizeCm,
+    effectiveDPI: Math.round(PRINT_DPI * exportQuality * scaleFactor),
     mode,
     exportQuality
   };

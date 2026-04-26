@@ -26,7 +26,6 @@ const CELL_SIZE = FIXED_BOARD_SIZE / 8; // 50px per cell
  * @param {string} props.lightSquare - Hex color for light squares
  * @param {string} props.darkSquare - Hex color for dark squares
  * @param {boolean} [props.flipped] - Whether to render from Black's perspective
- * @param {number} [props.boardSize=400] - Board size in pixels
  * @param {string} [props.className=''] - Additional CSS classes
  * @returns {JSX.Element}
  */
@@ -38,7 +37,7 @@ const ChessEditor = memo(function ChessEditor({
   lightSquare,
   darkSquare,
   flipped,
-  boardSize = FIXED_BOARD_SIZE,
+  onPieceImagesChange,
   className = ''
 }) {
   const { pieceImages, isLoading, loadProgress } = usePieceImages(pieceStyle);
@@ -55,6 +54,10 @@ const ChessEditor = memo(function ChessEditor({
   useEffect(() => {
     syncFromFen(fen);
   }, [fen, syncFromFen]);
+
+  useEffect(() => {
+    onPieceImagesChange?.(pieceImages);
+  }, [pieceImages, onPieceImagesChange]);
 
   /**
    * Moves a piece from the trash drop to the board handler.
@@ -126,7 +129,10 @@ const ChessEditor = memo(function ChessEditor({
       <div
         className={`flex flex-col 2xl:flex-row gap-6 2xl:items-start w-full overflow-visible ${className}`}
       >
-        <div className="flex-shrink-0 flex justify-center 2xl:justify-start animate-revealUp stagger-1" style={{ flexShrink: 0 }}>
+        <div
+          className="flex-shrink-0 flex justify-center 2xl:justify-start animate-revealUp stagger-1"
+          style={{ flexShrink: 0 }}
+        >
           <div
             className="relative flex flex-col"
             style={{
@@ -193,7 +199,7 @@ const ChessEditor = memo(function ChessEditor({
           </div>
 
           <div className="flex items-center justify-between">
-            <div className='flex gap-4'>
+            <div className="flex gap-4">
               <button
                 type="button"
                 onClick={(e) => {

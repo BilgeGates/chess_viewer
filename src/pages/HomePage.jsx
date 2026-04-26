@@ -1,15 +1,7 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
-import { ChessBoard } from '@/components/board';
 import {
   ActionButtons,
   ControlPanel,
@@ -174,8 +166,8 @@ function HomePage() {
     addCurrentToFavorites
   } = useFENHistory(fen, setIsFavorite);
 
-  const boardRef = useRef(null);
   const addToFavoritesRef = useRef(null);
+  const [pieceImages, setPieceImages] = useState({});
 
   const { notifications, success, error, info, removeNotification } =
     useNotifications();
@@ -196,7 +188,7 @@ function HomePage() {
       darkSquare,
       flipped,
       fen,
-      pieceImages: boardRef.current?.getPieceImages() || {},
+      pieceImages,
       exportQuality
     };
   }, [
@@ -208,6 +200,7 @@ function HomePage() {
     darkSquare,
     flipped,
     fen,
+    pieceImages,
     exportQuality
   ]);
 
@@ -350,19 +343,6 @@ function HomePage() {
     }
   }, []);
 
-  const boardProps = useMemo(
-    () => ({
-      fen,
-      pieceStyle,
-      showCoords,
-      boardSize: 400,
-      lightSquare,
-      darkSquare,
-      flipped
-    }),
-    [fen, pieceStyle, showCoords, lightSquare, darkSquare, flipped]
-  );
-
   /**
    * @param {string} newFen - Updated FEN from editor
    * @returns {void}
@@ -390,13 +370,10 @@ function HomePage() {
                   lightSquare={lightSquare}
                   darkSquare={darkSquare}
                   flipped={flipped}
+                  onPieceImagesChange={setPieceImages}
                   className="2xl:h-full"
                 />
               </div>
-            </div>
-
-            <div className="sr-only" aria-hidden="true">
-              <ChessBoard ref={boardRef} {...boardProps} />
             </div>
 
             <div className="glass-card rounded-xl p-3 sm:p-4 lg:p-5 animate-revealUp stagger-3">
