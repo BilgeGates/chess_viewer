@@ -81,7 +81,7 @@ const PiecePalette = memo(function PiecePalette({
         <span className="sm:hidden">Pieces</span>
       </div>
 
-      <div className="flex flex-col gap-2.5 sm:gap-3 2xl:flex-1 2xl:justify-around">
+      <div className="flex flex-col gap-2.5 sm:gap-3 xl:flex-1 xl:justify-around">
         {renderPieceGroup(whitePieces, 'White')}
         {renderPieceGroup(blackPieces, 'Black')}
       </div>
