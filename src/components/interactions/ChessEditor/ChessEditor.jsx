@@ -13,22 +13,8 @@ import { useInteractiveBoard, usePieceImages } from '@/hooks';
 
 const FIXED_BOARD_SIZE = 400;
 const RANK_GUTTER = 24;
-const CELL_SIZE = FIXED_BOARD_SIZE / 8; // 50px per cell
+const CELL_SIZE = FIXED_BOARD_SIZE / 8;
 
-/**
- * Drag-and-drop chess position editor combining the interactive board, piece palette,
- * trash zone, and optional coordinate labels.
- * @param {Object} props
- * @param {string} props.fen - Current FEN string
- * @param {Function} props.onFenChange - Called with a new FEN string when the board changes
- * @param {string} props.pieceStyle - Active piece set identifier
- * @param {boolean} [props.showCoords] - Whether coordinate labels are rendered
- * @param {string} props.lightSquare - Hex color for light squares
- * @param {string} props.darkSquare - Hex color for dark squares
- * @param {boolean} [props.flipped] - Whether to render from Black's perspective
- * @param {string} [props.className=''] - Additional CSS classes
- * @returns {JSX.Element}
- */
 const ChessEditor = memo(function ChessEditor({
   fen,
   onFenChange,
@@ -59,11 +45,6 @@ const ChessEditor = memo(function ChessEditor({
     onPieceImagesChange?.(pieceImages);
   }, [pieceImages, onPieceImagesChange]);
 
-  /**
-   * Moves a piece from the trash drop to the board handler.
-   * @param {number} row - Row of the piece to remove
-   * @param {number} col - Column of the piece to remove
-   */
   const handleTrashDrop = useCallback(
     (row, col) => {
       handlePieceRemove(row, col);
@@ -71,10 +52,6 @@ const ChessEditor = memo(function ChessEditor({
     [handlePieceRemove]
   );
 
-  /**
-   * Renders file (column) coordinate labels below the board.
-   * @returns {JSX.Element}
-   */
   const renderFileCoordinates = () => {
     const files = flipped
       ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
@@ -95,10 +72,6 @@ const ChessEditor = memo(function ChessEditor({
     );
   };
 
-  /**
-   * Renders rank (row) coordinate labels to the left of the board.
-   * @returns {JSX.Element}
-   */
   const renderRankCoordinates = () => {
     const ranks = flipped
       ? ['1', '2', '3', '4', '5', '6', '7', '8']
@@ -126,128 +99,127 @@ const ChessEditor = memo(function ChessEditor({
     <DndProvider>
       <CustomDragLayer pieceImages={pieceImages} boardSize={FIXED_BOARD_SIZE} />
 
-      <div
-        className={`flex flex-col xl:flex-row gap-6 xl:items-start w-full overflow-visible ${className}`}
-      >
-        <div
-<<<<<<< HEAD
-          className="flex-shrink-0 flex justify-center 2xl:justify-start animate-revealUp stagger-1"
-=======
-          className="flex-shrink-0 flex justify-center xl:justify-start animate-revealUp stagger-1"
->>>>>>> a970615 (style: update responsive classes for layout consistency in ChessEditor)
-          style={{ flexShrink: 0 }}
-        >
-          <div
-            className="relative flex flex-col"
-            style={{
-              width: showCoords
-                ? `${FIXED_BOARD_SIZE + RANK_GUTTER}px`
-                : `${FIXED_BOARD_SIZE}px`
-            }}
-          >
-            <div className="flex">
-              {showCoords && renderRankCoordinates()}
-              <div
-                style={{
-                  width: `${FIXED_BOARD_SIZE}px`,
-                  height: `${FIXED_BOARD_SIZE}px`,
-                  flexShrink: 0
-                }}
-              >
-                <InteractiveBoard
-                  board={board}
-                  lightSquare={lightSquare}
-                  darkSquare={darkSquare}
-                  pieceImages={pieceImages}
-                  isLoading={isLoading}
-                  flipped={flipped}
-                  onPieceDrop={handlePieceDrop}
-                  onPieceRemove={handlePieceRemove}
-                />
-              </div>
-            </div>
-
-            {showCoords && renderFileCoordinates()}
-
-            {isLoading && (
-              <div
-                className="absolute flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50 animate-fadeInScale"
-                style={{
-                  top: 0,
-                  left: showCoords ? `${RANK_GUTTER}px` : 0,
-                  width: `${FIXED_BOARD_SIZE}px`,
-                  height: `${FIXED_BOARD_SIZE}px`
-                }}
-              >
-                <div className="flex flex-col items-center gap-4">
-                  <div className="relative w-12 h-12">
-                    <div className="absolute inset-0 rounded-full border-4 border-border"></div>
-                    <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin"></div>
-                  </div>
-                  <div className="text-text-primary text-sm font-semibold animate-pulse">
-                    Loading pieces {loadProgress}%
-                  </div>
+      <div className={`flex flex-col gap-4 w-full h-full ${className}`}>
+        {/* Yuxarı hissə: board + palette yan-yana */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start w-full min-h-0 flex-1">
+          {/* Board */}
+          <div className="flex-shrink-0 flex justify-center w-full sm:w-auto">
+            <div
+              className="relative flex flex-col"
+              style={{
+                width: showCoords
+                  ? `${FIXED_BOARD_SIZE + RANK_GUTTER}px`
+                  : `${FIXED_BOARD_SIZE}px`
+              }}
+            >
+              <div className="flex">
+                {showCoords && renderRankCoordinates()}
+                <div
+                  style={{
+                    width: `${FIXED_BOARD_SIZE}px`,
+                    height: `${FIXED_BOARD_SIZE}px`,
+                    flexShrink: 0
+                  }}
+                >
+                  <InteractiveBoard
+                    board={board}
+                    lightSquare={lightSquare}
+                    darkSquare={darkSquare}
+                    pieceImages={pieceImages}
+                    isLoading={isLoading}
+                    flipped={flipped}
+                    onPieceDrop={handlePieceDrop}
+                    onPieceRemove={handlePieceRemove}
+                  />
                 </div>
               </div>
-            )}
-          </div>
-        </div>
 
-        <div className="flex flex-col justify-between h-[calc(100%-10px)] gap-4 flex-1 animate-slideInRight stagger-2">
-          <div>
-            <PiecePalette
-              pieceImages={pieceImages}
-              isLoading={isLoading}
-              className="flex-1"
-            />
+              {showCoords && renderFileCoordinates()}
+
+              {isLoading && (
+                <div
+                  className="absolute flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50 animate-fadeInScale"
+                  style={{
+                    top: 0,
+                    left: showCoords ? `${RANK_GUTTER}px` : 0,
+                    width: `${FIXED_BOARD_SIZE}px`,
+                    height: `${FIXED_BOARD_SIZE}px`
+                  }}
+                >
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="relative w-12 h-12">
+                      <div className="absolute inset-0 rounded-full border-4 border-border"></div>
+                      <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin"></div>
+                    </div>
+                    <div className="text-text-primary text-sm font-semibold animate-pulse">
+                      Loading pieces {loadProgress}%
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  resetBoard();
-                }}
-                className="
-                  flex-1 flex items-center justify-center gap-2 px-4 py-2.5
-                  text-sm font-semibold text-bg
-                  bg-accent hover:bg-accent-hover
-                  border border-accent/20
-                  rounded-lg transition-all duration-200
-                  hover:scale-105 active:scale-95 shadow-sm
-                  hover:shadow-md hover:shadow-accent/25
-                "
-                title="Reset to starting position"
-              >
-                <RotateCcw className="w-4 h-4 transition-transform duration-300 hover:rotate-180" />
-                <span>Reset</span>
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  clearBoard();
-                }}
-                className="
-                  flex-1 flex items-center justify-center gap-2 px-4 py-2.5
-                  text-sm font-semibold text-text-secondary
-                  bg-surface-elevated hover:bg-surface-hover
-                  border border-border hover:border-error/40
-                  rounded-lg transition-all duration-200
-                  hover:scale-105 active:scale-95 shadow-sm
-                  hover:text-error
-                "
-                title="Clear all pieces"
-              >
-                <X className="w-4 h-4 transition-transform duration-200 hover:rotate-90" />
-                <span>Clear</span>
-              </button>
+          {/* Palette + düymələr */}
+          <div
+            className="flex flex-col justify-between gap-4 flex-1 w-full sm:w-auto min-w-0"
+            style={{ minHeight: `${FIXED_BOARD_SIZE}px` }}
+          >
+            <div className="flex-1">
+              <PiecePalette
+                pieceImages={pieceImages}
+                isLoading={isLoading}
+                className="w-full"
+              />
             </div>
 
-            <div>
-              <TrashZone onDrop={handleTrashDrop} className="h-full w-full" />
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex gap-3 flex-1">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    resetBoard();
+                  }}
+                  className="
+                    flex-1 flex items-center justify-center gap-2 px-4 py-2.5
+                    text-sm font-semibold text-bg
+                    bg-accent hover:bg-accent-hover
+                    border border-accent/20
+                    rounded-lg transition-all duration-200
+                    hover:scale-105 active:scale-95 shadow-sm
+                    hover:shadow-md hover:shadow-accent/25
+                  "
+                  title="Reset to starting position"
+                >
+                  <RotateCcw className="w-4 h-4 transition-transform duration-300 hover:rotate-180" />
+                  <span>Reset</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    clearBoard();
+                  }}
+                  className="
+                    flex-1 flex items-center justify-center gap-2 px-4 py-2.5
+                    text-sm font-semibold text-text-secondary
+                    bg-surface-elevated hover:bg-surface-hover
+                    border border-border hover:border-error/40
+                    rounded-lg transition-all duration-200
+                    hover:scale-105 active:scale-95 shadow-sm
+                    hover:text-error
+                  "
+                  title="Clear all pieces"
+                >
+                  <X className="w-4 h-4 transition-transform duration-200 hover:rotate-90" />
+                  <span>Clear</span>
+                </button>
+              </div>
+
+              <div className="flex-shrink-0">
+                <TrashZone onDrop={handleTrashDrop} className="h-full w-full" />
+              </div>
             </div>
           </div>
         </div>
