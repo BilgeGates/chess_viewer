@@ -56,17 +56,22 @@ export function clearPieceCache() {
  * @param {Record<string, string>} PIECE_MAP - Map of piece keys to SVG filenames
  * @returns {Promise<Object>} Resolved piece image map
  */
-export async function preloadPieceStyle(pieceStyle, PIECE_MAP) {
+export async function preloadPieceStyle(pieceStyle, PIECE_MAP, onProgress) {
   const cached = getCachedPieces(pieceStyle);
   if (cached) {
+    onProgress?.(100);
     return cached;
   }
   if (loadingPromises.has(pieceStyle)) {
-    return loadingPromises.get(pieceStyle);
+    return loadingPromises.get(pieceStyle).then((images) => {
+      onProgress?.(100);
+      return images;
+    });
   }
   markStyleLoading(pieceStyle);
   const images = {};
   const keys = Object.keys(PIECE_MAP);
+  let loaded = 0;
   const promise = Promise.all(
     keys.map(
       (key) =>
@@ -81,10 +86,14 @@ export async function preloadPieceStyle(pieceStyle, PIECE_MAP) {
             '.svg';
           img.onload = function () {
             images[key] = img;
+            loaded++;
+            onProgress?.(Math.round((loaded / keys.length) * 100));
             resolve();
           };
           img.onerror = function () {
             images[key] = null;
+            loaded++;
+            onProgress?.(Math.round((loaded / keys.length) * 100));
             resolve();
           };
           img.src = url;

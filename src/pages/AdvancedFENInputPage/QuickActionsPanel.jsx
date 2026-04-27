@@ -2,13 +2,7 @@ import { memo, useCallback } from 'react';
 
 import { Copy, FlipVertical2 } from 'lucide-react';
 
-import {
-  batchExport,
-  downloadJPEG,
-  downloadPNG,
-  downloadSVG,
-  logger
-} from '@/utils';
+import { downloadJPEG, downloadPNG, downloadSVG, logger } from '@/utils';
 
 /**
  * @typedef {Object} QuickActionsPanelProps
@@ -17,7 +11,9 @@ import {
  * @property {string} fileName - Base file name used for exported files.
  * @property {string[]} validFens - Array of valid FEN strings available for batch export.
  * @property {Function} onFlip - Callback invoked when the user clicks "Flip Board".
- * @property {Function} onShowProgress - Callback to show or hide the progress indicator.
+ * @property {Function} onExportStart - Called when an export starts.
+ * @property {Function} onExportProgress - Called with progress updates.
+ * @property {Function} onExportFinish - Called when export work ends.
  */
 
 /**
@@ -33,59 +29,88 @@ const QuickActionsPanel = memo(function QuickActionsPanel({
   fileName,
   validFens,
   onFlip,
-  onShowProgress
+  onExportStart,
+  onExportProgress,
+  onExportFinish
 }) {
   /**
    * Copies the current FEN string to the clipboard.
    *
    * @returns {Promise<void>}
    */
-  const handleCopyFen = useCallback(async function handleCopyFen() {
-    try {
-      await navigator.clipboard.writeText(currentFen);
-    } catch (err) {
-      logger.error('Copy failed:', err);
-    }
-  }, [currentFen]);
+  const handleCopyFen = useCallback(
+    async function handleCopyFen() {
+      try {
+        await navigator.clipboard.writeText(currentFen);
+      } catch (err) {
+        logger.error('Copy failed:', err);
+      }
+    },
+    [currentFen]
+  );
 
   /**
    * Exports the current position as a PNG.
    *
    * @returns {Promise<void>}
    */
-  const handleExportPng = useCallback(async function handleExportPng() {
-    try {
-      await downloadPNG(exportConfig, fileName);
-    } catch (err) {
-      logger.error('PNG export failed:', err);
-    }
-  }, [exportConfig, fileName]);
+  const handleExportPng = useCallback(
+    async function handleExportPng() {
+      try {
+        onExportStart?.('png');
+        await downloadPNG(exportConfig, fileName, (progress, label) => {
+          onExportProgress?.(progress, 'png', label);
+        });
+      } catch (err) {
+        logger.error('PNG export failed:', err);
+      } finally {
+        onExportFinish?.();
+      }
+    },
+    [exportConfig, fileName, onExportFinish, onExportProgress, onExportStart]
+  );
 
   /**
    * Exports the current position as a JPEG.
    *
    * @returns {Promise<void>}
    */
-  const handleExportJpeg = useCallback(async function handleExportJpeg() {
-    try {
-      await downloadJPEG(exportConfig, fileName);
-    } catch (err) {
-      logger.error('JPEG export failed:', err);
-    }
-  }, [exportConfig, fileName]);
+  const handleExportJpeg = useCallback(
+    async function handleExportJpeg() {
+      try {
+        onExportStart?.('jpeg');
+        await downloadJPEG(exportConfig, fileName, (progress, label) => {
+          onExportProgress?.(progress, 'jpeg', label);
+        });
+      } catch (err) {
+        logger.error('JPEG export failed:', err);
+      } finally {
+        onExportFinish?.();
+      }
+    },
+    [exportConfig, fileName, onExportFinish, onExportProgress, onExportStart]
+  );
 
   /**
    * Exports the current position as an SVG.
    *
    * @returns {Promise<void>}
    */
-  const handleExportSvg = useCallback(async function handleExportSvg() {
-    try {
-      await downloadSVG(exportConfig, fileName);
-    } catch (err) {
-      logger.error('SVG export failed:', err);
-    }
-  }, [exportConfig, fileName]);
+  const handleExportSvg = useCallback(
+    async function handleExportSvg() {
+      try {
+        onExportStart?.('svg');
+        await downloadSVG(exportConfig, fileName, (progress, label) => {
+          onExportProgress?.(progress, 'svg', label);
+        });
+      } catch (err) {
+        logger.error('SVG export failed:', err);
+      } finally {
+        onExportFinish?.();
+      }
+    },
+    [exportConfig, fileName, onExportFinish, onExportProgress, onExportStart]
+  );
 
   /**
    * Runs a batch export for all valid positions in a single format.
@@ -97,22 +122,46 @@ const QuickActionsPanel = memo(function QuickActionsPanel({
   const handleBatchExport = useCallback(
     async function handleBatchExport(format, label) {
       try {
-        onShowProgress(true);
-        await batchExport(
-          {
+        onExportStart?.(format);
+        for (let i = 0; i < validFens.length; i++) {
+          const fen = validFens[i];
+          const numberedName =
+            validFens.length > 1 ? `${fileName}-${i + 1}` : fileName;
+          const config = {
             ...exportConfig,
-            fens: validFens
-          },
-          [format],
-          fileName
-        );
-        onShowProgress(false);
+            fen
+          };
+          const reportProgress = (progress, _label) => {
+            const totalProgress =
+              ((i + progress / 100) / validFens.length) * 100;
+            onExportProgress?.(
+              totalProgress,
+              format,
+              `${i + 1}/${validFens.length}`
+            );
+          };
+          if (format === 'png') {
+            await downloadPNG(config, numberedName, reportProgress);
+          } else if (format === 'jpeg') {
+            await downloadJPEG(config, numberedName, reportProgress);
+          } else if (format === 'svg') {
+            await downloadSVG(config, numberedName, reportProgress);
+          }
+        }
       } catch (err) {
         logger.error(`${label} failed:`, err);
-        onShowProgress(false);
+      } finally {
+        onExportFinish?.();
       }
     },
-    [exportConfig, fileName, onShowProgress, validFens]
+    [
+      exportConfig,
+      fileName,
+      onExportFinish,
+      onExportProgress,
+      onExportStart,
+      validFens
+    ]
   );
 
   return (

@@ -12,7 +12,14 @@ import {
 import { ADVANCED_FEN_CONFIG } from '@/constants';
 import { useFENBatch } from '@/contexts';
 import { useChessBoard, usePieceImages, useTheme } from '@/hooks';
-import { logger, validateFEN } from '@/utils';
+import {
+  cancelExport,
+  getFENValidationError,
+  logger,
+  pauseExport,
+  resumeExport,
+  validateFEN
+} from '@/utils';
 import { safeJSONParse } from '@/utils/validation';
 
 import BoardDisplay from './BoardDisplay';
@@ -101,10 +108,13 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
   );
   const [showThinFrame, setShowThinFrame] = useState(initialShowThinFrame);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const exportProgress = 0;
-  const currentFormat = '';
+  const [exportState, setExportState] = useState({
+    isExporting: false,
+    progress: 0,
+    currentFormat: '',
+    status: ''
+  });
   const [isPaused, setIsPaused] = useState(false);
-  const [showProgress, setShowProgress] = useState(false);
   const theme = useTheme({
     initialLight: initialLightSquare,
     initialDark: initialDarkSquare
@@ -154,13 +164,16 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
         setPieceStyle(settings.pieceStyle ?? initialSettings.pieceStyle);
         setBoardSize(settings.boardSize ?? initialSettings.boardSize);
         setFileName(settings.fileName ?? initialSettings.fileName);
-        setExportQuality(settings.exportQuality ?? initialSettings.exportQuality);
+        setExportQuality(
+          settings.exportQuality ?? initialSettings.exportQuality
+        );
         setShowCoordsLocal(settings.showCoords ?? initialSettings.showCoords);
         setShowCoordinateBorder(
-          settings.showCoordinateBorder ??
-            initialSettings.showCoordinateBorder
+          settings.showCoordinateBorder ?? initialSettings.showCoordinateBorder
         );
-        setShowThinFrame(settings.showThinFrame ?? initialSettings.showThinFrame);
+        setShowThinFrame(
+          settings.showThinFrame ?? initialSettings.showThinFrame
+        );
         setIsFlipped(settings.isFlipped ?? false);
         setShowCoordinates(settings.showCoordinates ?? true);
         if (settings.lightSquare && settings.darkSquare) {
@@ -220,8 +233,10 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
     const errors = {};
     fens.forEach((fen, index) => {
       const trimmed = fen.trim();
-      if (trimmed && !validateFEN(trimmed))
-        errors[index] = 'Invalid FEN notation';
+      if (trimmed) {
+        const error = getFENValidationError(trimmed);
+        if (error) errors[index] = error;
+      }
     });
     setFenErrors(errors);
     const validCount = fens.filter((f) => f.trim() && validateFEN(f)).length;
@@ -423,8 +438,36 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
     lightSquare: theme.lightSquare,
     darkSquare: theme.darkSquare,
     flipped: isFlipped,
-    quality: exportQuality
+    pieceImages,
+    exportQuality
   };
+
+  function handleExportStart(format) {
+    setIsPaused(false);
+    setExportState({
+      isExporting: true,
+      progress: 0,
+      currentFormat: format,
+      status: 'Preparing'
+    });
+  }
+
+  function handleExportProgress(progress, format, status) {
+    setExportState({
+      isExporting: true,
+      progress,
+      currentFormat: format,
+      status: status || ''
+    });
+  }
+
+  function handleExportFinish() {
+    setExportState((prev) => ({
+      ...prev,
+      isExporting: false,
+      progress: 100
+    }));
+  }
 
   /**
    * Switches the editor back to the positions tab.
@@ -517,6 +560,7 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
    * @returns {void}
    */
   function handlePauseExport() {
+    pauseExport();
     setIsPaused(true);
   }
 
@@ -526,6 +570,7 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
    * @returns {void}
    */
   function handleResumeExport() {
+    resumeExport();
     setIsPaused(false);
   }
 
@@ -535,7 +580,11 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
    * @returns {void}
    */
   function handleCancelExportProgress() {
-    setShowProgress(false);
+    cancelExport();
+    setExportState((prev) => ({
+      ...prev,
+      isExporting: false
+    }));
   }
 
   /**
@@ -640,7 +689,9 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
                           fileName={fileName}
                           validFens={validFens}
                           onFlip={handleFlipBoard}
-                          onShowProgress={setShowProgress}
+                          onExportStart={handleExportStart}
+                          onExportProgress={handleExportProgress}
+                          onExportFinish={handleExportFinish}
                         />
                       </div>
                     </div>
@@ -672,11 +723,13 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
         </div>
       </main>
 
-      {showProgress && (
+      {exportState.isExporting && (
         <ExportProgress
-          progress={exportProgress}
-          total={validFens.length}
-          currentFormat={currentFormat}
+          isExporting={exportState.isExporting}
+          progress={exportState.progress}
+          currentFormat={exportState.currentFormat}
+          statusText={exportState.status}
+          config={exportConfig}
           isPaused={isPaused}
           onPause={handlePauseExport}
           onResume={handleResumeExport}

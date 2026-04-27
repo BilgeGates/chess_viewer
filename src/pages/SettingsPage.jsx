@@ -1,11 +1,15 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 
-import { Download, Palette } from 'lucide-react';
+import { Database, Download, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ToolPageHeader } from '@/components/layout';
 import { useLocalStorage } from '@/hooks';
-import { ExportCustomization, ThemeCustomization } from '@/pages/settings';
+import {
+  DataManagement,
+  ExportCustomization,
+  ThemeCustomization
+} from '@/pages/settings';
 
 const pageTabs = [
   {
@@ -19,6 +23,12 @@ const pageTabs = [
     label: 'Export Customization',
     shortLabel: 'Export',
     icon: Download
+  },
+  {
+    id: 'data',
+    label: 'Data Management',
+    shortLabel: 'Data',
+    icon: Database
   }
 ];
 /**
@@ -58,7 +68,9 @@ const SettingsPage = memo(function SettingsPage() {
                 onClick={() => setActiveTab(id)}
                 className={`px-3 sm:px-5 py-2.5 sm:py-3 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold transition-all duration-300 border-b-2 whitespace-nowrap hover:scale-105 active:scale-95 ${activeTab === id ? 'text-accent border-accent bg-accent/5 scale-105' : 'text-text-secondary hover:text-text-primary border-transparent hover:bg-surface-hover'}`}
               >
-                <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 ${activeTab === id ? 'scale-110' : ''}`} />
+                <Icon
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 ${activeTab === id ? 'scale-110' : ''}`}
+                />
                 <span className="sm:hidden">{shortLabel}</span>
                 <span className="hidden sm:inline">{label}</span>
               </button>
@@ -84,6 +96,11 @@ const SettingsPage = memo(function SettingsPage() {
                 exportQuality={exportQuality}
                 setExportQuality={setExportQuality}
               />
+            </div>
+          )}
+          {activeTab === 'data' && (
+            <div className="h-full animate-pageEnter">
+              <DataManagement />
             </div>
           )}
         </div>

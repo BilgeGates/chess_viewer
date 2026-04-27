@@ -21,7 +21,7 @@ Performance considerations and implemented optimisations for FENForsty Pro.
 FENForsty Pro is a client-side only application that performs canvas-based rendering and exports high-resolution images. Performance concerns fall into two areas:
 
 1. **Render performance** — keeping the interactive board and UI responsive during editing
-2. **Export performance** — generating very large canvases (up to 24,192×24,192 px) without crashing
+2. **Export performance** — generating large canvases while keeping browser limits visible to the user
 
 ---
 
@@ -59,11 +59,11 @@ Used throughout the codebase:
 
 ### Piece Image Caching
 
-`pieceImageCache.js` caches loaded `HTMLImageElement` instances by piece-set key. Images are loaded once per piece-set and reused for both display rendering and export. This avoids repeated network requests and re-decoding.
+`pieceImageCache.js` caches loaded `HTMLImageElement` instances by piece-set key. `usePieceImages` uses the same cache, so the editor, preview, and export code do not reload the same piece set separately.
 
 ### Export Pause/Resume
 
-The export loop in `canvasExporter.js` supports pausing (`pauseExport()`) and cancellation (`cancelExport()`). Without this, a 32× export would block any interactivity for the full duration of rendering.
+The export loop in `canvasExporter.js` supports pausing (`pauseExport()`) and cancellation (`cancelExport()`). Progress now follows real export stages such as preparation, canvas rendering, encoding, and download.
 
 ### History Archiving
 
@@ -94,25 +94,25 @@ A single `<Suspense>` boundary in `Router.jsx` shows a chess-themed loading spin
 
 Export memory is dominated by the canvas pixel buffer (`width × height × 4 bytes RGBA`):
 
-| Quality | Approx. Resolution | Approx. Memory |
-|---|---|---|
-| 8× @ 4 cm | 3,776 × 3,776 px | ~54 MB |
-| 8× @ 8 cm | 7,552 × 7,552 px | ~216 MB |
-| 16× @ 6 cm | 11,328 × 11,328 px | ~487 MB |
-| 24× (Social) | 18,112 × 18,112 px | ~1.24 GB |
-| 32× (Social) | 24,192 × 24,192 px | ~2.22 GB |
+| Quality    | Approx. Resolution | Approx. Memory |
+| ---------- | ------------------ | -------------- |
+| 8× @ 4 cm  | 3,776 × 3,776 px   | ~54 MB         |
+| 8× @ 8 cm  | 7,552 × 7,552 px   | ~216 MB        |
+| 16× @ 6 cm | 11,328 × 11,328 px | ~487 MB        |
+| 24× @ 4 cm | 11,328 × 11,328 px | ~489 MB        |
+| 32× @ 4 cm | 15,104 × 15,104 px | ~870 MB        |
 
-**Note:** 24× and 32× Social exports may exhaust available memory on devices with less than 4 GB RAM and are very likely to fail on iOS/Safari due to the WebKit canvas area limit.
+**Note:** 24× and 32× exports keep the selected board size and increase pixel density. The progress dialog shows a memory estimate before and during large exports.
 
 ---
 
 ## Browser Canvas Limits
 
-| Browser | Max Dimension | Notes |
-|---|---|---|
-| Chrome / Edge | 32,767 px | Chromium limit |
-| Firefox | 32,767 px | |
-| Safari | 16,384 px | Also limited to 268 MP total area |
+| Browser       | Max Dimension | Notes                             |
+| ------------- | ------------- | --------------------------------- |
+| Chrome / Edge | 32,767 px     | Chromium limit                    |
+| Firefox       | 32,767 px     |                                   |
+| Safari        | 16,384 px     | Also limited to 268 MP total area |
 
 `getMaxCanvasSize()` in `utils/index.js` detects and returns the safe maximum for the current browser. The export system sets `willBeReduced: true` when the requested dimensions exceed this cap.
 
@@ -122,11 +122,11 @@ Export memory is dominated by the canvas pixel buffer (`width × height × 4 byt
 
 ### Large Exports on Safari
 
-Safari enforces a 16,384 px and 268 MP canvas limit. Exports at 24× or 32× Social mode will fail or produce a blank image. This is a browser limitation with no workaround other than using a Chromium-based browser.
+Safari enforces a 16,384 px and 268 MP canvas limit. Very large exports can fail or produce a blank image. The export size helper reduces dimensions when the browser limit is reached.
 
 ### Canvas Full Redraw
 
-The interactive chess board (`ChessBoard`) redraws the entire canvas on every prop change. There is no partial update or dirty-checking. For the display board this is acceptable (64 squares × one `fillRect` each is fast), but it means any prop change triggers the full draw cycle.
+The main editor uses DOM squares for interaction. Canvas rendering is kept for export and small preview areas. The hidden export-only board render was removed, so normal page navigation has less background work.
 
 ### No Web Worker for Export
 
@@ -134,7 +134,7 @@ All canvas rendering during export runs on the main thread. On slow devices, ver
 
 ### Sequential Batch Export
 
-Batch export processes positions one at a time in sequence. There is a small `setTimeout` delay between positions to yield to the browser event loop, but large batches will still occupy the tab for an extended period.
+Batch export processes valid positions one at a time and gives each exported file a numbered name. This keeps memory usage lower than rendering several large canvases at once.
 
 ---
 
@@ -142,16 +142,16 @@ Batch export processes positions one at a time in sequence. There is a small `se
 
 `src/utils/performance.js` exports:
 
-| Export | Signature | Description |
-|---|---|---|
-| `debounce` | `(fn, wait = 300) => fn` | Returns a debounced version of `fn` |
-| `throttle` | `(fn, limit = 300) => fn` | Returns a time-throttled version of `fn` |
-| `rafThrottle` | `(fn) => fn & { cancel() }` | Returns an rAF-throttled version with a cancel method |
+| Export           | Signature                        | Description                                           |
+| ---------------- | -------------------------------- | ----------------------------------------------------- |
+| `debounce`       | `(fn, wait = 300) => fn`         | Returns a debounced version of `fn`                   |
+| `throttle`       | `(fn, limit = 300) => fn`        | Returns a time-throttled version of `fn`              |
+| `rafThrottle`    | `(fn) => fn & { cancel() }`      | Returns an rAF-throttled version with a cancel method |
 | `lazyLoadImages` | `(selector, options) => cleanup` | Sets up `IntersectionObserver` for lazy image loading |
 
 `src/hooks/usePerformance.js` wraps `performance.mark` / `performance.measure` for timing individual operations during development.
 
 ---
 
-**Last Updated:** March 3, 2026  
+**Last Updated:** April 27, 2026
 **Version:** 5.0.0

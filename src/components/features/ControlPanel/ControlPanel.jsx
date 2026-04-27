@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import DisplayOptions from '@/components/features/DisplayOptions';
 import { FENInputField, PieceSelector } from '@/components/features/Fen';
 import { useFENHistory } from '@/hooks';
+import { getFENValidationError } from '@/utils';
 
 /**
  * @param {Object} props
@@ -40,7 +41,7 @@ const ControlPanel = memo(function ControlPanel(props) {
     addCurrentToFavorites: externalAddCurrentToFavorites
   } = props;
   const [copySuccess, setCopySuccess] = useState(false);
-  const fenError = '';
+  const fenError = fen && fen.trim() ? getFENValidationError(fen) : '';
   const copyTimeoutRef = useRef(null);
   useEffect(() => {
     const timeout = copyTimeoutRef.current;

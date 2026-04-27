@@ -69,12 +69,23 @@ export function parseFEN(fenString) {
  * @returns {boolean} True if the FEN piece placement is valid
  */
 export function validateFEN(fen) {
+  return getFENValidationError(fen) === '';
+}
+
+/**
+ * Returns a short user-facing error for invalid piece placement.
+ *
+ * @param {string} fen - FEN notation string
+ * @returns {string} Empty string when valid
+ */
+export function getFENValidationError(fen) {
   try {
-    if (!fen || typeof fen !== 'string') return false;
+    if (!fen || typeof fen !== 'string') return 'FEN is empty';
     const position = fen.trim().split(/\s+/)[0];
     const rows = position.split('/');
-    if (rows.length !== 8) return false;
-    for (const row of rows) {
+    if (rows.length !== 8) return 'Board must have 8 ranks';
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex];
       let count = 0;
       for (const char of row) {
         if (VALID_DIGITS.has(char)) {
@@ -82,14 +93,16 @@ export function validateFEN(fen) {
         } else if (VALID_PIECES.has(char)) {
           count++;
         } else {
-          return false;
+          return 'Invalid piece character: ' + char;
         }
       }
-      if (count !== 8) return false;
+      if (count !== 8) {
+        return 'Rank ' + (rowIndex + 1) + ' has ' + count + ' squares';
+      }
     }
-    return true;
+    return '';
   } catch {
-    return false;
+    return 'Invalid FEN';
   }
 }
 

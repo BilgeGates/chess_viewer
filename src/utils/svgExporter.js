@@ -1,4 +1,5 @@
 import { parseFEN } from './fenParser';
+import { shouldForceCoordinateBorder } from './imageOptimizer';
 import { logger } from './logger';
 import { sanitizeFileName } from './validation';
 
@@ -59,7 +60,8 @@ export async function generateBoardSVG(config) {
     pieceImages,
     showCoords,
     showCoordinateBorder,
-    showThinFrame
+    showThinFrame,
+    exportQuality
   } = config;
   const boardPx = SVG_BOARD_PX;
   const squarePx = boardPx / 8;
@@ -67,7 +69,11 @@ export async function generateBoardSVG(config) {
   const borderPx = withCoords
     ? Math.round(Math.max(18, Math.min(800, boardPx * SVG_COORD_BORDER_RATIO)))
     : 0;
-  const withFrame = !!showThinFrame;
+  const withBorder =
+    withCoords &&
+    (showCoordinateBorder || shouldForceCoordinateBorder(exportQuality));
+  const withFrame =
+    !!showThinFrame && (exportQuality === 8 || exportQuality === 16);
   const framePx = withFrame ? Math.max(2, Math.round(boardPx * 0.003)) * 2 : 0;
   const totalWidth = borderPx + boardPx + framePx;
   const totalHeight = boardPx + borderPx + framePx;
@@ -87,14 +93,14 @@ export async function generateBoardSVG(config) {
   );
   const fontSize = Math.round(Math.max(10, Math.min(480, borderPx * 0.72)));
   const fontFamily = "system-ui, -apple-system, 'Segoe UI', sans-serif";
-  const coordTextColor = darkSquare;
+  const coordTextColor = '#000000';
   const parts = [];
   parts.push(
     `<svg xmlns="http://www.w3.org/2000/svg" ` +
       `viewBox="0 0 ${totalWidth} ${totalHeight}" ` +
       `width="${totalWidth}" height="${totalHeight}">`
   );
-  if (withCoords && showCoordinateBorder) {
+  if (withBorder) {
     parts.push(
       `<rect x="${boardX - borderPx + (withFrame ? framePx / 2 : 0)}" y="${boardY}" ` +
         `width="${borderPx}" height="${boardPx}" fill="#ffffff"/>`
@@ -189,9 +195,9 @@ export async function downloadSVG(config, fileName, onProgress) {
       throw new Error('pieceImages is empty or missing');
     }
     const safeFileName = sanitizeFileName(fileName);
-    if (onProgress) onProgress(5);
+    if (onProgress) onProgress(5, 'Preparing');
     const svgString = await generateBoardSVG(config);
-    if (onProgress) onProgress(80);
+    if (onProgress) onProgress(80, 'SVG ready');
     const blob = new Blob([svgString], {
       type: 'image/svg+xml;charset=utf-8'
     });
@@ -201,7 +207,7 @@ export async function downloadSVG(config, fileName, onProgress) {
     link.download = safeFileName + '.svg';
     document.body.appendChild(link);
     link.click();
-    if (onProgress) onProgress(100);
+    if (onProgress) onProgress(100, 'Done');
     setTimeout(() => {
       if (document.body.contains(link)) document.body.removeChild(link);
       URL.revokeObjectURL(url);

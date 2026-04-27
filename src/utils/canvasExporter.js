@@ -45,22 +45,14 @@ function checkCancellation() {
     throw new Error('Export cancelled');
   }
 }
-async function simulateProgress(onProgress, start, end, duration) {
-  const steps = 20;
-  const stepSize = (end - start) / steps;
-  const stepDuration = duration / steps;
-  for (let i = 0; i < steps; i++) {
-    await waitWhilePaused();
-    checkCancellation();
-    const progress = start + stepSize * (i + 1);
-    const clampedProgress = Math.min(progress, end);
-    if (onProgress) {
-      onProgress(clampedProgress);
-    }
-    await new Promise(function (resolve) {
-      setTimeout(resolve, stepDuration);
-    });
+function setProgress(onProgress, value, label) {
+  if (onProgress) {
+    onProgress(value, label);
   }
+}
+
+function estimateMemoryMB(width, height) {
+  return Math.round((width * height * 4) / 1024 / 1024);
 }
 /**
  * Returns metadata about the planned export (dimensions, DPI, file size estimate).
@@ -90,7 +82,9 @@ export function getExportInfo(config) {
     requestedQuality: exportQuality,
     actualQuality: exportSize.scaleFactor,
     maxCanvasSize: maxSize,
-    willBeReduced: exportSize.width > maxSize || exportSize.height > maxSize,
+    willBeReduced: exportSize.scaleFactor < 1,
+    memoryEstimateMB: estimateMemoryMB(exportSize.width, exportSize.height),
+    isLargeExport: estimateMemoryMB(exportSize.width, exportSize.height) > 512,
     fileSizeEstimate: fileSizes,
     mode: mode,
     physicalSizeCm: exportSize.physicalSizeCm,
@@ -140,10 +134,7 @@ export async function downloadPNG(config, fileName, onProgress) {
   try {
     validateExportConfig(config);
     const safeFileName = sanitizeFileName(fileName);
-    if (onProgress) {
-      onProgress(5);
-    }
-    await simulateProgress(onProgress, 5, 15, 300);
+    setProgress(onProgress, 5, 'Preparing');
     await waitWhilePaused();
     checkCancellation();
     const pngConfig = Object.assign({}, config, {
@@ -153,10 +144,7 @@ export async function downloadPNG(config, fileName, onProgress) {
     if (!canvas) {
       throw new Error('Canvas creation returned null');
     }
-    if (onProgress) {
-      onProgress(30);
-    }
-    await simulateProgress(onProgress, 30, 50, 400);
+    setProgress(onProgress, 45, 'Canvas ready');
     await waitWhilePaused();
     checkCancellation();
     const blob = await new Promise(function (resolve, reject) {
@@ -184,7 +172,7 @@ export async function downloadPNG(config, fileName, onProgress) {
         reject(err);
       }
     });
-    await simulateProgress(onProgress, 50, 80, 300);
+    setProgress(onProgress, 85, 'Image encoded');
     await waitWhilePaused();
     checkCancellation();
     const url = URL.createObjectURL(blob);
@@ -193,9 +181,7 @@ export async function downloadPNG(config, fileName, onProgress) {
     link.download = safeFileName + '.png';
     document.body.appendChild(link);
     link.click();
-    if (onProgress) {
-      onProgress(100);
-    }
+    setProgress(onProgress, 100, 'Done');
     setTimeout(function () {
       if (document.body.contains(link)) {
         document.body.removeChild(link);
@@ -228,10 +214,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
   try {
     validateExportConfig(config);
     const safeFileName = sanitizeFileName(fileName);
-    if (onProgress) {
-      onProgress(5);
-    }
-    await simulateProgress(onProgress, 5, 15, 300);
+    setProgress(onProgress, 5, 'Preparing');
     await waitWhilePaused();
     checkCancellation();
     const jpegConfig = Object.assign({}, config, {
@@ -241,10 +224,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
     if (!canvas) {
       throw new Error('Canvas creation returned null');
     }
-    if (onProgress) {
-      onProgress(25);
-    }
-    await simulateProgress(onProgress, 25, 35, 300);
+    setProgress(onProgress, 35, 'Canvas ready');
     await waitWhilePaused();
     checkCancellation();
     const tempCanvas = document.createElement('canvas');
@@ -263,10 +243,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(canvas, 0, 0);
-    if (onProgress) {
-      onProgress(45);
-    }
-    await simulateProgress(onProgress, 45, 60, 400);
+    setProgress(onProgress, 60, 'JPEG background ready');
     await waitWhilePaused();
     checkCancellation();
     const jpegQuality = 0.92;
@@ -295,7 +272,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
         reject(err);
       }
     });
-    await simulateProgress(onProgress, 60, 85, 300);
+    setProgress(onProgress, 85, 'Image encoded');
     await waitWhilePaused();
     checkCancellation();
     const url = URL.createObjectURL(blob);
@@ -304,9 +281,7 @@ export async function downloadJPEG(config, fileName, onProgress) {
     link.download = safeFileName + '.jpg';
     document.body.appendChild(link);
     link.click();
-    if (onProgress) {
-      onProgress(100);
-    }
+    setProgress(onProgress, 100, 'Done');
     setTimeout(function () {
       if (document.body.contains(link)) {
         document.body.removeChild(link);

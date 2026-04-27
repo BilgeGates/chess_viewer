@@ -3,6 +3,7 @@ import { memo, useEffect, useState } from 'react';
 import { FileImage, Pause, Play, XCircle } from 'lucide-react';
 
 import { Modal } from '@/components/ui';
+import { getExportInfo } from '@/utils';
 
 /**
  * @param {Object} props
@@ -12,6 +13,8 @@ const ExportProgress = memo(function ExportProgress({
   isExporting,
   progress,
   currentFormat,
+  config,
+  statusText,
   onClose,
   onPause,
   onResume,
@@ -38,6 +41,12 @@ const ExportProgress = memo(function ExportProgress({
   }, [isExporting]);
   if (!isExporting) return null;
   const format = currentFormat || 'png';
+  let exportInfo = null;
+  try {
+    exportInfo = config ? getExportInfo(config) : null;
+  } catch {
+    exportInfo = null;
+  }
   return (
     <Modal
       isOpen={isExporting}
@@ -51,8 +60,20 @@ const ExportProgress = memo(function ExportProgress({
     >
       <div className="space-y-5">
         <p className="text-sm text-text-secondary">
-          {isPaused ? '⏸ Paused' : 'Creating high-quality image...'}
+          {isPaused ? 'Paused' : statusText || 'Creating image...'}
         </p>
+
+        {exportInfo && (
+          <div className="text-xs text-text-muted bg-surface-elevated border border-border rounded-lg px-3 py-2 space-y-1">
+            <div>Size: {exportInfo.displaySize}</div>
+            <div>Memory estimate: {exportInfo.memoryEstimateMB} MB</div>
+            {exportInfo.isLargeExport && (
+              <div className="text-warning">
+                Large export. It may take longer on low-memory devices.
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="space-y-3">
           <div
