@@ -131,29 +131,26 @@ export function useTheme({
    * @param {string} themeKey - Theme identifier key
    * @param {{ name?: string, light: string, dark: string }} themeData - Theme color data
    */
-  const applyTheme = useCallback(
-    (themeKey, themeData) => {
-      setLightSquare(themeData.light);
-      setDarkSquare(themeData.dark);
-      setCurrentTheme(themeKey);
+  const applyTheme = useCallback((themeKey, themeData) => {
+    setLightSquare(themeData.light);
+    setDarkSquare(themeData.dark);
+    setCurrentTheme(themeKey);
 
-      const newHistoryItem = {
-        id: Date.now(),
-        name: themeData.name || themeKey,
-        light: themeData.light,
-        dark: themeData.dark,
-        timestamp: Date.now()
-      };
+    const newHistoryItem = {
+      id: Date.now(),
+      name: themeData.name || themeKey,
+      light: themeData.light,
+      dark: themeData.dark,
+      timestamp: Date.now()
+    };
 
+    setThemeHistory((prev) => {
       const updatedHistory = [
         newHistoryItem,
-        ...themeHistory.filter(
+        ...prev.filter(
           (h) => h.light !== themeData.light || h.dark !== themeData.dark
         )
       ].slice(0, 10);
-
-      setThemeHistory(updatedHistory);
-
       try {
         window.localStorage.setItem(
           'theme-history',
@@ -162,9 +159,9 @@ export function useTheme({
       } catch (err) {
         logger.error('Failed to save theme history:', err);
       }
-    },
-    [themeHistory]
-  );
+      return updatedHistory;
+    });
+  }, []);
 
   /**
    * Apply custom light and dark square colors.
@@ -173,27 +170,24 @@ export function useTheme({
    * @param {string} dark - Dark square hex color
    * @param {string} [name='Custom'] - Theme name for history
    */
-  const applyCustomTheme = useCallback(
-    (light, dark, name = 'Custom') => {
-      setLightSquare(light);
-      setDarkSquare(dark);
-      setCurrentTheme(name);
+  const applyCustomTheme = useCallback((light, dark, name = 'Custom') => {
+    setLightSquare(light);
+    setDarkSquare(dark);
+    setCurrentTheme(name);
 
-      const newHistoryItem = {
-        id: Date.now(),
-        name,
-        light,
-        dark,
-        timestamp: Date.now()
-      };
+    const newHistoryItem = {
+      id: Date.now(),
+      name,
+      light,
+      dark,
+      timestamp: Date.now()
+    };
 
+    setThemeHistory((prev) => {
       const updatedHistory = [
         newHistoryItem,
-        ...themeHistory.filter((h) => h.light !== light || h.dark !== dark)
+        ...prev.filter((h) => h.light !== light || h.dark !== dark)
       ].slice(0, 10);
-
-      setThemeHistory(updatedHistory);
-
       try {
         window.localStorage.setItem(
           'theme-history',
@@ -202,9 +196,9 @@ export function useTheme({
       } catch (err) {
         logger.error('Failed to save theme history:', err);
       }
-    },
-    [themeHistory]
-  );
+      return updatedHistory;
+    });
+  }, []);
 
   /**
    * Reset board colors to the initial (default) values.
