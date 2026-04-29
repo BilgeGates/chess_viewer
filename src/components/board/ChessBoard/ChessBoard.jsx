@@ -44,6 +44,7 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
     flipped
   } = props;
   const canvasRef = useRef(null);
+  const lastTotalSizeRef = useRef(null);
   const { pieceImages, isLoading, error, loadProgress } =
     usePieceImages(pieceStyle);
   const [board, setBoard] = useState([]);
@@ -81,6 +82,18 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
       return;
     }
     const canvas = canvasRef.current;
+    const borderSize = showCoords
+      ? getCoordinateParams(boardSize).borderSize
+      : 0;
+    const totalSize = boardSize + borderSize * 2;
+    const scale = 4;
+    if (lastTotalSizeRef.current !== totalSize) {
+      canvas.width = totalSize * scale;
+      canvas.height = totalSize * scale;
+      canvas.style.width = totalSize + 'px';
+      canvas.style.height = totalSize + 'px';
+      lastTotalSizeRef.current = totalSize;
+    }
     const ctx = canvas.getContext('2d', {
       alpha: true,
       willReadFrequently: false,
@@ -90,16 +103,7 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
       logger.error('Failed to get canvas context');
       return;
     }
-    const borderSize = showCoords
-      ? getCoordinateParams(boardSize).borderSize
-      : 0;
-    const totalSize = boardSize + borderSize * 2;
-    const scale = 4;
-    canvas.width = totalSize * scale;
-    canvas.height = totalSize * scale;
-    canvas.style.width = totalSize + 'px';
-    canvas.style.height = totalSize + 'px';
-    ctx.scale(scale, scale);
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     const squareSize = boardSize / 8;
@@ -192,7 +196,7 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
   }
   return (
     <div
-      className="relative inline-block w-full max-w-full"
+      className="relative block w-full max-w-full"
       role="img"
       aria-label={getBoardDescription()}
     >
@@ -201,7 +205,7 @@ const ChessBoard = React.forwardRef(function ChessBoard(props, ref) {
         className="transition-all duration-300 w-full h-auto"
         style={{
           display: 'block',
-          imageRendering: '-webkit-optimize-contrast',
+          imageRendering: 'crisp-edges',
           background: 'transparent'
         }}
         aria-hidden="true"
