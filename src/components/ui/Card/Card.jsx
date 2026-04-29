@@ -12,7 +12,9 @@ function Card({
   padding = 'md'
 }) {
   return (
-    <div className={`overflow-hidden ${getCardClasses(gradient, glass, padding, className)}`}>
+    <div
+      className={`overflow-hidden ${getCardClasses(gradient, glass, padding, className)}`}
+    >
       {children}
     </div>
   );
