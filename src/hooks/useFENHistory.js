@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 import { validateFEN } from '@/utils';
 import {
   archiveEntries as archiveEntriesUtil,
@@ -20,205 +19,205 @@ import { logger } from '@/utils/logger';
 import { safeJSONParse } from '@/utils/validation';
 
 const DRAG_INACTIVITY_TIMEOUT = 60000;
+
 const persistHistory = (history) => {
-  const jsonData = JSON.stringify(history);
   try {
+    const jsonData = JSON.stringify(history);
     window.localStorage.setItem('fen-history', jsonData);
-    if (window.storage && typeof window.storage.set === 'function') {
-      window.storage.set('fen-history', jsonData).catch((err) => {
-        logger.error('Failed to save to cloud storage:', err);
-      });
+    if (window.storage?.set) {
+      window.storage
+        .set('fen-history', jsonData)
+        .catch((err) => logger.error('Cloud save failed:', err));
     }
   } catch (err) {
     logger.error('Failed to save history:', err);
   }
 };
-/**
- * Manages FEN history, pinning, filtering, archiving, and auto-archival lifecycle.
- *
- * @param {string} fen - Current FEN string
- * @param {function(string, boolean): void} onFavoriteStatusChange - Called when a FEN's favorite status changes
- * @returns {Object} History state and actions
- */
+
 export function useFENHistory(fen, onFavoriteStatusChange) {
   const [fenHistory, setFenHistory] = useState([]);
   const [archive, setArchive] = useState([]);
   const [filters, setFilters] = useState({});
   const [archiveFilters, setArchiveFilters] = useState({});
   const [isLoadingArchive, setIsLoadingArchive] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Refs for stability
   const dragTimerRef = useRef(null);
   const dragSessionIdRef = useRef(null);
-  const dragSessionFenRef = useRef(null);
   const latestFenRef = useRef(fen);
-  const autoArchiveTimerRef = useRef(null);
   const fenHistoryRef = useRef(fenHistory);
+  const isMountedRef = useRef(true);
+
+  // Sync refs
   useEffect(() => {
     latestFenRef.current = fen;
   }, [fen]);
   useEffect(() => {
     fenHistoryRef.current = fenHistory;
   }, [fenHistory]);
+
+  // 1. Initial Load (Hydration) - FIXED: survives rapid remounts
   useEffect(() => {
-    const id = setTimeout(() => {
-      persistHistory(fenHistory);
-    }, 300);
-    return () => clearTimeout(id);
-  }, [fenHistory]);
-  useEffect(() => {
+    isMountedRef.current = true;
     const loadHistory = async () => {
       try {
-        const result = await window.storage.get('fen-history');
-        if (result && typeof result.value === 'string') {
-          const parsed = safeJSONParse(result.value, null);
-          if (Array.isArray(parsed)) {
-            setFenHistory(parsed);
-            return;
-          }
+        let data = null;
+        try {
+          const cloud = await window.storage?.get?.('fen-history');
+          if (cloud?.value) data = safeJSONParse(cloud.value, null);
+        } catch {
+          /* cloud fail silent */
         }
-      } catch {
-        logger.log('Cloud storage not available');
-      }
-      try {
-        const localData = window.localStorage.getItem('fen-history');
-        if (localData) {
-          const parsed = safeJSONParse(localData, null);
-          if (Array.isArray(parsed)) {
-            setFenHistory(parsed);
-          }
+
+        if (!data) {
+          const local = window.localStorage.getItem('fen-history');
+          if (local) data = safeJSONParse(local, null);
         }
-      } catch (err) {
-        logger.error('Failed to load history:', err);
+
+        if (Array.isArray(data) && isMountedRef.current) {
+          setFenHistory(data);
+        }
+      } finally {
+        if (isMountedRef.current) setIsHydrated(true);
       }
     };
     loadHistory();
-  }, []);
-  useEffect(() => {
     return () => {
-      if (dragTimerRef.current) {
-        clearTimeout(dragTimerRef.current);
-        dragTimerRef.current = null;
-      }
-      dragSessionIdRef.current = null;
-      dragSessionFenRef.current = null;
-      if (autoArchiveTimerRef.current) {
-        clearInterval(autoArchiveTimerRef.current);
-      }
+      isMountedRef.current = false;
     };
   }, []);
+
+  // 2. Optimized Persistence - serialize off the critical path via idle callback
+  useEffect(() => {
+    if (!isHydrated) return;
+    const timeoutId = setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => persistHistory(fenHistory));
+      } else {
+        persistHistory(fenHistory);
+      }
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [fenHistory, isHydrated]);
+
+  // 3. Status Change Notification - FIXED: Prevents infinite loops
   const fenIndex = useMemo(
     () => new Map(fenHistory.map((h) => [h.fen, h])),
     [fenHistory]
   );
+  const currentIsFavorite = fenIndex.get(fen)?.isFavorite ?? false;
+  const lastNotifiedRef = useRef(null);
+
   useEffect(() => {
-    onFavoriteStatusChange?.(fenIndex.get(fen)?.isFavorite ?? false);
-  }, [fen, fenIndex, onFavoriteStatusChange]);
+    if (isHydrated && lastNotifiedRef.current !== currentIsFavorite) {
+      onFavoriteStatusChange?.(currentIsFavorite);
+      lastNotifiedRef.current = currentIsFavorite;
+    }
+  }, [currentIsFavorite, isHydrated, onFavoriteStatusChange]);
+
+  // 4. Auto-Archive - FIXED: uses proper cleanup
   useEffect(() => {
-    const performAutoArchive = async () => {
+    if (!isHydrated) return;
+    const runAutoArchive = async () => {
       try {
         const result = await performAutoArchival();
-        if (result.archivedCount > 0) {
+        if (result.archivedCount > 0 && isMountedRef.current) {
           setFenHistory(result.entries);
           setArchive(result.archive);
-          logger.log(`Auto-archived ${result.archivedCount} entries`);
         }
       } catch (err) {
         logger.error('Auto-archival failed:', err);
       }
     };
-    performAutoArchive();
-    autoArchiveTimerRef.current = setInterval(
-      performAutoArchive,
-      60 * 60 * 1000
-    );
+
+    runAutoArchive();
+    const intervalId = setInterval(runAutoArchive, 3600000); // 1 hour
+    return () => clearInterval(intervalId);
+  }, [isHydrated]);
+
+  // Cleanup for drag timers
+  useEffect(() => {
     return () => {
-      if (autoArchiveTimerRef.current) {
-        clearInterval(autoArchiveTimerRef.current);
-      }
+      if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
     };
   }, []);
-  const filteredHistory = useMemo(() => {
-    return applyFilters(fenHistory, filters);
-  }, [fenHistory, filters]);
-  const filteredArchive = useMemo(() => {
-    return applyFilters(archive, archiveFilters);
-  }, [archive, archiveFilters]);
+
+  // Actions
   const commitToHistory = useCallback(
     (fenToSave, source, dragSessionId = null) => {
       if (!validateFEN(fenToSave)) return;
-      setFenHistory((prevHistory) => {
-        if (prevHistory.length > 0 && prevHistory[0].fen === fenToSave) {
-          return prevHistory.map((entry, index) =>
-            index === 0 ? touchEntry(entry) : entry
-          );
+      setFenHistory((prev) => {
+        if (prev.length > 0 && prev[0].fen === fenToSave) {
+          return prev.map((entry, i) => (i === 0 ? touchEntry(entry) : entry));
         }
         const newEntry = createHistoryEntry(fenToSave, source, dragSessionId);
-        const updatedHistory = sortByMostRecent([newEntry, ...prevHistory]);
-        return updatedHistory;
+        return sortByMostRecent([newEntry, ...prev]);
       });
     },
     []
   );
+
   const saveManualFen = useCallback(
     (fenToSave) => {
-      if (dragTimerRef.current) {
-        clearTimeout(dragTimerRef.current);
-        dragTimerRef.current = null;
-      }
+      if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
       dragSessionIdRef.current = null;
-      dragSessionFenRef.current = null;
       commitToHistory(fenToSave, 'manual');
     },
     [commitToHistory]
   );
-  const saveExportFen = useCallback(
-    (fenToSave) => {
-      commitToHistory(fenToSave, 'export');
-    },
-    [commitToHistory]
-  );
+
   const notifyDragAction = useCallback(() => {
-    if (!dragSessionIdRef.current) {
+    if (!dragSessionIdRef.current)
       dragSessionIdRef.current = `drag-${Date.now()}`;
-    }
-    dragSessionFenRef.current = latestFenRef.current;
-    if (dragTimerRef.current) {
-      clearTimeout(dragTimerRef.current);
-    }
+    if (dragTimerRef.current) clearTimeout(dragTimerRef.current);
+
     const sessionId = dragSessionIdRef.current;
     dragTimerRef.current = setTimeout(() => {
-      const fenToSave = latestFenRef.current;
-      commitToHistory(fenToSave, 'drag', sessionId);
+      commitToHistory(latestFenRef.current, 'drag', sessionId);
       dragTimerRef.current = null;
       dragSessionIdRef.current = null;
-      dragSessionFenRef.current = null;
     }, DRAG_INACTIVITY_TIMEOUT);
   }, [commitToHistory]);
-  const toggleFavorite = useCallback(async (id) => {
+
+  // Other methods (Simplified for brevity but kept functional)
+  const toggleFavorite = useCallback((id) => {
     setFenHistory((prev) =>
-      prev.map((h) =>
-        h.id === id
-          ? {
-              ...h,
-              isFavorite: !h.isFavorite
-            }
-          : h
-      )
+      prev.map((h) => (h.id === id ? { ...h, isFavorite: !h.isFavorite } : h))
     );
   }, []);
-  const deleteHistory = useCallback(async (id) => {
+
+  const deleteHistory = useCallback((id) => {
     setFenHistory((prev) => prev.filter((h) => h.id !== id));
   }, []);
+
   const clearHistory = useCallback(async () => {
     setFenHistory([]);
-    try {
-      window.localStorage.removeItem('fen-history');
-      if (window.storage && typeof window.storage.delete === 'function') {
-        await window.storage.delete('fen-history');
-      }
-    } catch (err) {
-      logger.error('Failed to clear:', err);
-    }
+    window.localStorage.removeItem('fen-history');
+    await window.storage?.delete?.('fen-history').catch(() => {});
   }, []);
+
+  const archiveHistoryEntries = useCallback(
+    async (ids) => {
+      const toArchive = fenHistoryRef.current.filter((e) => ids.includes(e.id));
+      const remaining = fenHistoryRef.current.filter(
+        (e) => !ids.includes(e.id)
+      );
+      try {
+        const { archive: newArchive } = await archiveEntriesUtil(
+          toArchive,
+          archive,
+          'manual'
+        );
+        setFenHistory(remaining);
+        setArchive(newArchive);
+      } catch (err) {
+        logger.error(err);
+      }
+    },
+    [archive]
+  );
+
   const addCurrentToFavorites = useCallback(
     async (currentFen, onNotification) => {
       if (!validateFEN(currentFen)) {
@@ -257,37 +256,7 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
     },
     []
   );
-  const loadArchiveData = useCallback(async () => {
-    setIsLoadingArchive(true);
-    try {
-      const archiveData = await loadArchive();
-      setArchive(archiveData);
-    } catch (err) {
-      logger.error('Failed to load archive:', err);
-    } finally {
-      setIsLoadingArchive(false);
-    }
-  }, []);
-  const archiveHistoryEntries = useCallback(
-    async (ids) => {
-      const current = fenHistoryRef.current;
-      const toArchive = current.filter((entry) => ids.includes(entry.id));
-      const remaining = current.filter((entry) => !ids.includes(entry.id));
-      try {
-        const { archive: newArchive } = await archiveEntriesUtil(
-          toArchive,
-          archive,
-          'manual'
-        );
-        setFenHistory(remaining);
-        setArchive(newArchive);
-      } catch (err) {
-        logger.error('Failed to archive entries:', err);
-        throw err;
-      }
-    },
-    [archive]
-  );
+
   const reactivateArchivedEntry = useCallback(
     async (id) => {
       try {
@@ -304,6 +273,7 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
     },
     [archive]
   );
+
   const deleteFromArchive = useCallback(
     async (id) => {
       try {
@@ -316,6 +286,7 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
     },
     [archive]
   );
+
   const clearArchiveData = useCallback(async () => {
     try {
       await clearArchiveUtil();
@@ -325,16 +296,17 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
       throw err;
     }
   }, []);
-  const setHistoryFilters = useCallback((newFilters) => {
-    setFilters(newFilters);
-  }, []);
-  const setArchiveFiltersState = useCallback((newFilters) => {
-    setArchiveFilters(newFilters);
-  }, []);
+
   return {
-    fenHistory: filteredHistory,
+    fenHistory: useMemo(
+      () => applyFilters(fenHistory, filters),
+      [fenHistory, filters]
+    ),
     rawHistory: fenHistory,
-    archive: filteredArchive,
+    archive: useMemo(
+      () => applyFilters(archive, archiveFilters),
+      [archive, archiveFilters]
+    ),
     rawArchive: archive,
     isLoadingArchive,
     toggleFavorite,
@@ -342,15 +314,22 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
     clearHistory,
     addCurrentToFavorites,
     saveManualFen,
-    saveExportFen,
+    saveExportFen: (f) => commitToHistory(f, 'export'),
     notifyDragAction,
-    loadArchiveData,
     archiveHistoryEntries,
     reactivateArchivedEntry,
     deleteFromArchive,
     clearArchiveData,
-    setHistoryFilters,
-    setArchiveFilters: setArchiveFiltersState,
+    loadArchiveData: useCallback(async () => {
+      setIsLoadingArchive(true);
+      try {
+        setArchive(await loadArchive());
+      } finally {
+        setIsLoadingArchive(false);
+      }
+    }, []),
+    setHistoryFilters: setFilters,
+    setArchiveFilters: setArchiveFilters,
     calculateStatus
   };
 }
