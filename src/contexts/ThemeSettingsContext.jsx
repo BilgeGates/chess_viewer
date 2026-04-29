@@ -164,29 +164,33 @@ export function ThemeSettingsProvider({ children }) {
    * @param {'click'|'success'|'error'} [type='click'] - Sound type
    */
   const playSound = useCallback(
-    (type = 'click') => {
+    async (type = 'click') => {
       if (!settings.enableSoundEffects) return;
 
       try {
         const audioCtx = getAudioCtx();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
 
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-        const frequencies = {
-          click: 800,
-          success: 1200,
-          error: 400
+        osc.frequency.value =
+          { click: 800, success: 1200, error: 400 }[type] ?? 800;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          audioCtx.currentTime + 0.05
+        );
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.06);
+        osc.onended = () => {
+          osc.disconnect();
+          gain.disconnect();
         };
-
-        oscillator.frequency.value = frequencies[type] || 800;
-        oscillator.type = 'sine';
-        gainNode.gain.value = 0.1;
-
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.05);
       } catch {
         return;
       }
@@ -194,17 +198,38 @@ export function ThemeSettingsProvider({ children }) {
     [settings.enableSoundEffects]
   );
 
-  const value = useMemo(() => ({
-    settings,
-    updateSetting,
-    updateSettings,
-    resetSettings,
-    recentColors,
-    addRecentColor,
-    clearRecentColors,
-    playSound,
-    defaultSettings
-  }), [settings, updateSetting, updateSettings, resetSettings, recentColors, addRecentColor, clearRecentColors, playSound]);
+  useEffect(() => {
+    return () => {
+      if (_sharedAudioCtx && _sharedAudioCtx.state !== 'closed') {
+        _sharedAudioCtx.close();
+        _sharedAudioCtx = null;
+      }
+    };
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      settings,
+      updateSetting,
+      updateSettings,
+      resetSettings,
+      recentColors,
+      addRecentColor,
+      clearRecentColors,
+      playSound,
+      defaultSettings
+    }),
+    [
+      settings,
+      updateSetting,
+      updateSettings,
+      resetSettings,
+      recentColors,
+      addRecentColor,
+      clearRecentColors,
+      playSound
+    ]
+  );
 
   return (
     <ThemeSettingsContext.Provider value={value}>
