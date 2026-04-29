@@ -5,6 +5,14 @@ import { useDragLayer } from 'react-dnd';
 
 import { ItemTypes } from '@/constants';
 
+const selectDragState = (monitor) => ({
+  item: monitor.getItem(),
+  itemType: monitor.getItemType(),
+  currentOffset: monitor.getClientOffset(),
+  sourceOffset: monitor.getSourceClientOffset(),
+  isDragging: monitor.isDragging()
+});
+
 /**
  * @param {Object} props
  * @returns {JSX.Element}
@@ -14,13 +22,7 @@ const CustomDragLayer = memo(function CustomDragLayer({
   boardSize = 400
 }) {
   const { itemType, isDragging, item, currentOffset, sourceOffset } =
-    useDragLayer((monitor) => ({
-      item: monitor.getItem(),
-      itemType: monitor.getItemType(),
-      currentOffset: monitor.getClientOffset(),
-      sourceOffset: monitor.getSourceClientOffset(),
-      isDragging: monitor.isDragging()
-    }));
+    useDragLayer(selectDragState);
   if (
     !isDragging ||
     itemType !== ItemTypes.PIECE ||
