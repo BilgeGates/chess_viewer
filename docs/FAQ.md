@@ -68,12 +68,12 @@ Only the piece placement field is required. Others default to standard values.
 
 Print mode resolutions depend on board size selection (4 cm, 6 cm, 8 cm):
 
-| Quality | Mode | Example dimension (8 cm) |
-|---|---|---|
-| 8× | Print | 7,552 × 7,552 px |
-| 16× | Print | 15,104 × 15,104 px |
-| 24× | Social | 18,112 × 18,112 px |
-| 32× | Social | 24,192 × 24,192 px |
+| Quality | Mode   | Example dimension (8 cm) |
+| ------- | ------ | ------------------------ |
+| 8×      | Print  | 7,552 × 7,552 px         |
+| 16×     | Print  | 15,104 × 15,104 px       |
+| 24×     | Social | 18,112 × 18,112 px       |
+| 32×     | Social | 24,192 × 24,192 px       |
 
 ### Export Issues
 
