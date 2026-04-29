@@ -231,9 +231,7 @@ Memory usage: X MB → Y MB
 <!-- Delete this section if not applicable -->
 
 -
--
-
-**Migration Guide:**
+- **Migration Guide:**
 
 <!-- How users should update their usage -->
 
