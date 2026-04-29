@@ -52,40 +52,50 @@ const ThemeCustomization = memo(function ThemeCustomization() {
   const hasChanges = previewLight !== savedLight || previewDark !== savedDark;
   const canAddPreset = sortedPresets.length < MAX_TOTAL_PRESETS;
   const customPresetCount = sortedPresets.filter((p) => !p.isDefault).length;
-  const editingPreset = sortedPresets.find((p) => p.id === editingPresetId) ?? null;
+  const editingPreset =
+    sortedPresets.find((p) => p.id === editingPresetId) ?? null;
 
-  const handleEnableEditMode = useCallback(function handleEnableEditMode() {
-    setPresetsBackup(JSON.parse(JSON.stringify(presets)));
-    setEditMode(true);
-    setEditingPresetId(null);
-    setIsAddingNew(false);
-    setActivePanelTab('main');
-  }, [presets]);
+  const handleEnableEditMode = useCallback(
+    function handleEnableEditMode() {
+      setPresetsBackup(JSON.parse(JSON.stringify(presets)));
+      setEditMode(true);
+      setEditingPresetId(null);
+      setIsAddingNew(false);
+      setActivePanelTab('main');
+    },
+    [presets]
+  );
 
-  const handleCancelEditMode = useCallback(function handleCancelEditMode() {
-    if (presetsBackup) setPresets(presetsBackup);
-    setPresetsBackup(null);
-    setEditMode(false);
-    setEditingPresetId(null);
-    setIsAddingNew(false);
-    setActivePanelTab('main');
-    setPreviewLight(savedLight);
-    setPreviewDark(savedDark);
-  }, [presetsBackup, savedLight, savedDark]);
+  const handleCancelEditMode = useCallback(
+    function handleCancelEditMode() {
+      if (presetsBackup) setPresets(presetsBackup);
+      setPresetsBackup(null);
+      setEditMode(false);
+      setEditingPresetId(null);
+      setIsAddingNew(false);
+      setActivePanelTab('main');
+      setPreviewLight(savedLight);
+      setPreviewDark(savedDark);
+    },
+    [presetsBackup, savedLight, savedDark]
+  );
 
-  const handleApplyChanges = useCallback(function handleApplyChanges() {
-    savePresets(presets);
-    localStorage.setItem(STORAGE_KEYS.LIGHT_SQUARE, previewLight);
-    localStorage.setItem(STORAGE_KEYS.DARK_SQUARE, previewDark);
-    setSavedLight(previewLight);
-    setSavedDark(previewDark);
-    setPresetsBackup(null);
-    setEditMode(false);
-    setEditingPresetId(null);
-    setIsAddingNew(false);
-    setActivePanelTab('main');
-    window.dispatchEvent(new Event('storage'));
-  }, [presets, previewLight, previewDark]);
+  const handleApplyChanges = useCallback(
+    function handleApplyChanges() {
+      savePresets(presets);
+      localStorage.setItem(STORAGE_KEYS.LIGHT_SQUARE, previewLight);
+      localStorage.setItem(STORAGE_KEYS.DARK_SQUARE, previewDark);
+      setSavedLight(previewLight);
+      setSavedDark(previewDark);
+      setPresetsBackup(null);
+      setEditMode(false);
+      setEditingPresetId(null);
+      setIsAddingNew(false);
+      setActivePanelTab('main');
+      window.dispatchEvent(new Event('storage'));
+    },
+    [presets, previewLight, previewDark]
+  );
 
   const handlePresetClick = useCallback(
     function handlePresetClick(preset) {
@@ -96,14 +106,17 @@ const ThemeCustomization = memo(function ThemeCustomization() {
     [editMode]
   );
 
-  const handleSave = useCallback(function handleSave() {
-    localStorage.setItem(STORAGE_KEYS.LIGHT_SQUARE, previewLight);
-    localStorage.setItem(STORAGE_KEYS.DARK_SQUARE, previewDark);
-    savePresets(presets);
-    setSavedLight(previewLight);
-    setSavedDark(previewDark);
-    window.dispatchEvent(new Event('storage'));
-  }, [previewLight, previewDark, presets]);
+  const handleSave = useCallback(
+    function handleSave() {
+      localStorage.setItem(STORAGE_KEYS.LIGHT_SQUARE, previewLight);
+      localStorage.setItem(STORAGE_KEYS.DARK_SQUARE, previewDark);
+      savePresets(presets);
+      setSavedLight(previewLight);
+      setSavedDark(previewDark);
+      window.dispatchEvent(new Event('storage'));
+    },
+    [previewLight, previewDark, presets]
+  );
 
   const handleCustomColorChange = useCallback(function handleCustomColorChange(
     light,
@@ -142,15 +155,18 @@ const ThemeCustomization = memo(function ThemeCustomization() {
     setActivePanelTab('custom');
   }, []);
 
-  const handleDeletePreset = useCallback(function handleDeletePreset(id) {
-    if (id === WOOD_PRESET.id) return;
-    setPresets((prev) => prev.filter((p) => p.id !== id));
-    if (editingPresetId === id) {
-      setEditingPresetId(null);
-      setIsAddingNew(false);
-      setActivePanelTab('main');
-    }
-  }, [editingPresetId]);
+  const handleDeletePreset = useCallback(
+    function handleDeletePreset(id) {
+      if (id === WOOD_PRESET.id) return;
+      setPresets((prev) => prev.filter((p) => p.id !== id));
+      if (editingPresetId === id) {
+        setEditingPresetId(null);
+        setIsAddingNew(false);
+        setActivePanelTab('main');
+      }
+    },
+    [editingPresetId]
+  );
 
   const handleRenamePreset = useCallback(function handleRenamePreset(
     id,
@@ -168,76 +184,85 @@ const ThemeCustomization = memo(function ThemeCustomization() {
     );
   }, []);
 
-  const handleAddPreset = useCallback(function handleAddPreset() {
-    if (!canAddPreset) return;
-    setEditingPresetId(null);
-    setIsAddingNew(true);
-    setPreviewLight('#e8d5b5');
-    setPreviewDark('#a0784c');
-    setActivePanelTab('custom');
-  }, [canAddPreset]);
+  const handleAddPreset = useCallback(
+    function handleAddPreset() {
+      if (!canAddPreset) return;
+      setEditingPresetId(null);
+      setIsAddingNew(true);
+      setPreviewLight('#e8d5b5');
+      setPreviewDark('#a0784c');
+      setActivePanelTab('custom');
+    },
+    [canAddPreset]
+  );
 
-  const handleConfirmAdd = useCallback(function handleConfirmAdd() {
-    const duplicate = presets.find(
-      (p) =>
-        p.light.toLowerCase() === previewLight.toLowerCase() &&
-        p.dark.toLowerCase() === previewDark.toLowerCase()
-    );
+  const handleConfirmAdd = useCallback(
+    function handleConfirmAdd() {
+      const duplicate = presets.find(
+        (p) =>
+          p.light.toLowerCase() === previewLight.toLowerCase() &&
+          p.dark.toLowerCase() === previewDark.toLowerCase()
+      );
 
-    if (duplicate) {
-      setDuplicateCheck({
+      if (duplicate) {
+        setDuplicateCheck({
+          light: previewLight,
+          dark: previewDark,
+          existingId: duplicate.id
+        });
+        return;
+      }
+
+      const maxId = presets.reduce((max, p) => {
+        const num =
+          typeof p.id === 'string' && p.id.startsWith('custom-')
+            ? parseInt(p.id.split('-')[1], 10)
+            : 0;
+        return Math.max(max, num);
+      }, 0);
+
+      const newPreset = {
+        id: `custom-${maxId + 1}`,
+        name: `Custom ${maxId + 1}`,
         light: previewLight,
         dark: previewDark,
-        existingId: duplicate.id
-      });
-      return;
-    }
+        isDefault: false,
+        isDeletable: true
+      };
 
-    const maxId = presets.reduce((max, p) => {
-      const num =
-        typeof p.id === 'string' && p.id.startsWith('custom-')
-          ? parseInt(p.id.split('-')[1], 10)
-          : 0;
-      return Math.max(max, num);
-    }, 0);
+      setPresets((prev) => [...prev, newPreset]);
+      setIsAddingNew(false);
+      setActivePanelTab('main');
+    },
+    [presets, previewLight, previewDark]
+  );
 
-    const newPreset = {
-      id: `custom-${maxId + 1}`,
-      name: `Custom ${maxId + 1}`,
-      light: previewLight,
-      dark: previewDark,
-      isDefault: false,
-      isDeletable: true
-    };
+  const handleDuplicateRename = useCallback(
+    function handleDuplicateRename() {
+      const maxId = presets.reduce((max, p) => {
+        const num =
+          typeof p.id === 'string' && p.id.startsWith('custom-')
+            ? parseInt(p.id.split('-')[1], 10)
+            : 0;
+        return Math.max(max, num);
+      }, 0);
 
-    setPresets((prev) => [...prev, newPreset]);
-    setIsAddingNew(false);
-    setActivePanelTab('main');
-  }, [presets, previewLight, previewDark]);
+      const newPreset = {
+        id: `custom-${maxId + 1}`,
+        name: `Custom ${maxId + 1}`,
+        light: previewLight,
+        dark: previewDark,
+        isDefault: false,
+        isDeletable: true
+      };
 
-  const handleDuplicateRename = useCallback(function handleDuplicateRename() {
-    const maxId = presets.reduce((max, p) => {
-      const num =
-        typeof p.id === 'string' && p.id.startsWith('custom-')
-          ? parseInt(p.id.split('-')[1], 10)
-          : 0;
-      return Math.max(max, num);
-    }, 0);
-
-    const newPreset = {
-      id: `custom-${maxId + 1}`,
-      name: `Custom ${maxId + 1}`,
-      light: previewLight,
-      dark: previewDark,
-      isDefault: false,
-      isDeletable: true
-    };
-
-    setPresets((prev) => [...prev, newPreset]);
-    setDuplicateCheck(null);
-    setIsAddingNew(false);
-    setActivePanelTab('main');
-  }, [presets, previewLight, previewDark]);
+      setPresets((prev) => [...prev, newPreset]);
+      setDuplicateCheck(null);
+      setIsAddingNew(false);
+      setActivePanelTab('main');
+    },
+    [presets, previewLight, previewDark]
+  );
 
   const handleDuplicateMerge = useCallback(function handleDuplicateMerge() {
     setDuplicateCheck(null);
@@ -265,8 +290,12 @@ const ThemeCustomization = memo(function ThemeCustomization() {
 
       setPresets((prev) => {
         const newPresets = [...prev];
-        const dragIndex = newPresets.findIndex((p) => p.id === draggedPreset.id);
-        const targetIndex = newPresets.findIndex((p) => p.id === targetPreset.id);
+        const dragIndex = newPresets.findIndex(
+          (p) => p.id === draggedPreset.id
+        );
+        const targetIndex = newPresets.findIndex(
+          (p) => p.id === targetPreset.id
+        );
         if (dragIndex === -1 || targetIndex === -1) return prev;
         const [removed] = newPresets.splice(dragIndex, 1);
         newPresets.splice(targetIndex, 0, removed);
@@ -279,12 +308,15 @@ const ThemeCustomization = memo(function ThemeCustomization() {
     [draggedPreset]
   );
 
-  const handleChangePanelTab = useCallback((tabId) => {
-    setActivePanelTab(tabId);
-    if (tabId === 'main' && !isAddingNew) {
-      setEditingPresetId(null);
-    }
-  }, [isAddingNew]);
+  const handleChangePanelTab = useCallback(
+    (tabId) => {
+      setActivePanelTab(tabId);
+      if (tabId === 'main' && !isAddingNew) {
+        setEditingPresetId(null);
+      }
+    },
+    [isAddingNew]
+  );
 
   useEffect(() => {
     function handleEscapeKey(e) {
@@ -306,7 +338,9 @@ const ThemeCustomization = memo(function ThemeCustomization() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Palette className="w-4 h-4 text-accent" />
-              <h2 className="text-sm font-bold text-text-primary">Theme Studio</h2>
+              <h2 className="text-sm font-bold text-text-primary">
+                Theme Studio
+              </h2>
               {editMode && (
                 <span className="text-[10px] font-bold text-accent bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20">
                   Edit Mode
@@ -424,7 +458,10 @@ const ThemeCustomization = memo(function ThemeCustomization() {
               ))}
 
               {editMode && (
-                <AddPresetCard onClick={handleAddPreset} disabled={!canAddPreset} />
+                <AddPresetCard
+                  onClick={handleAddPreset}
+                  disabled={!canAddPreset}
+                />
               )}
             </div>
           ) : (
