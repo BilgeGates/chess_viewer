@@ -90,24 +90,24 @@ const defaultSettings = {
 
 **Side effects applied to `<html>`:**
 
-| Setting | DOM effect |
-|---|---|
-| `enableAnimations: false` | Adds `no-animations` class; sets `--transition-speed: 0s` |
-| `compactMode: true` | Adds `compact-mode` class |
-| `enableColorBlindMode: true` | Adds `color-blind-mode` class |
+| Setting                      | DOM effect                                                |
+| ---------------------------- | --------------------------------------------------------- |
+| `enableAnimations: false`    | Adds `no-animations` class; sets `--transition-speed: 0s` |
+| `compactMode: true`          | Adds `compact-mode` class                                 |
+| `enableColorBlindMode: true` | Adds `color-blind-mode` class                             |
 
 **Provided values:**
 
-| Value | Type | Description |
-|---|---|---|
-| `settings` | object | Current settings object |
-| `updateSetting(key, value)` | function | Update one setting |
-| `updateSettings(obj)` | function | Replace full settings object |
-| `resetSettings()` | function | Restore defaults |
-| `recentColors` | string[] | Up to 12 recent hex colors |
-| `addRecentColor(hex)` | function | Prepend color, trim to 12 |
-| `clearRecentColors()` | function | Clear recent colors list |
-| `playSound(type)` | function | Play UI sound (if enabled) |
+| Value                       | Type     | Description                  |
+| --------------------------- | -------- | ---------------------------- |
+| `settings`                  | object   | Current settings object      |
+| `updateSetting(key, value)` | function | Update one setting           |
+| `updateSettings(obj)`       | function | Replace full settings object |
+| `resetSettings()`           | function | Restore defaults             |
+| `recentColors`              | string[] | Up to 12 recent hex colors   |
+| `addRecentColor(hex)`       | function | Prepend color, trim to 12    |
+| `clearRecentColors()`       | function | Clear recent colors list     |
+| `playSound(type)`           | function | Play UI sound (if enabled)   |
 
 **Persistence:** settings and recentColors are written to localStorage on every change.
 
@@ -122,13 +122,13 @@ Manages the ordered list of FEN strings used for batch export on the Advanced FE
 
 **Provided values:**
 
-| Value | Type | Description |
-|---|---|---|
-| `batchList` | string[] | Current list of valid FEN strings |
-| `addToBatch(fen)` | function → boolean | Add FEN if valid and not duplicate |
-| `removeFromBatch(index)` | function | Remove entry by index |
-| `clearBatch()` | function | Empty the list |
-| `updateBatchItem(index, fen)` | function → boolean | Replace entry if valid |
+| Value                         | Type               | Description                        |
+| ----------------------------- | ------------------ | ---------------------------------- |
+| `batchList`                   | string[]           | Current list of valid FEN strings  |
+| `addToBatch(fen)`             | function → boolean | Add FEN if valid and not duplicate |
+| `removeFromBatch(index)`      | function           | Remove entry by index              |
+| `clearBatch()`                | function           | Empty the list                     |
+| `updateBatchItem(index, fen)` | function → boolean | Replace entry if valid             |
 
 **Persistence:** `batchList` is written to `localStorage` key `'fenBatchList'` on every change.
 
@@ -164,15 +164,15 @@ Manages board square colors (light square color and dark square color), current 
 
 **Returned values:**
 
-| Value | Type | Description |
-|---|---|---|
-| `lightSquare` | string | Hex color for light squares (default `#f0d9b5`) |
-| `darkSquare` | string | Hex color for dark squares (default `#b58863`) |
-| `currentTheme` | string | Name of active theme preset or `'custom'` |
-| `themeHistory` | object[] | Recent theme changes |
-| `setLightSquare(hex)` | function | Update light square color |
-| `setDarkSquare(hex)` | function | Update dark square color |
-| `applyTheme(preset)` | function | Apply a named theme preset |
+| Value                 | Type     | Description                                     |
+| --------------------- | -------- | ----------------------------------------------- |
+| `lightSquare`         | string   | Hex color for light squares (default `#f0d9b5`) |
+| `darkSquare`          | string   | Hex color for dark squares (default `#b58863`)  |
+| `currentTheme`        | string   | Name of active theme preset or `'custom'`       |
+| `themeHistory`        | object[] | Recent theme changes                            |
+| `setLightSquare(hex)` | function | Update light square color                       |
+| `setDarkSquare(hex)`  | function | Update dark square color                        |
+| `applyTheme(preset)`  | function | Apply a named theme preset                      |
 
 **Persistence:** Colors saved to `localStorage` keys `'chess-light-square'` and `'chess-dark-square'`. Also attempts cloud storage via `window.storage` if available.
 
@@ -194,21 +194,21 @@ const historyApi = useFENHistory(fen, onFavoriteStatusChange);
 
 **Key returned values:**
 
-| Value | Description |
-|---|---|
-| `fenHistory` | Current active history entries |
-| `archive` | Archived (inactive) entries |
-| `filters` / `archiveFilters` | Active filter state |
-| `isLoadingArchive` | Async loading flag |
-| `addToHistory(fen)` | Add new FEN entry |
-| `toggleFavorite(id)` | Mark/unmark as favorite |
-| `removeEntry(id)` | Delete entry |
-| `clearHistory()` | Delete all entries |
-| `archiveEntries(ids)` | Move entries to archive |
-| `reactivateEntry(id)` | Move archived entry back |
-| `filteredHistory` | Memoised filtered list |
-| `startDragSession(fen)` | Begin inactivity timer (60s) |
-| `endDragSession()` | Commit drag session to history |
+| Value                        | Description                    |
+| ---------------------------- | ------------------------------ |
+| `fenHistory`                 | Current active history entries |
+| `archive`                    | Archived (inactive) entries    |
+| `filters` / `archiveFilters` | Active filter state            |
+| `isLoadingArchive`           | Async loading flag             |
+| `addToHistory(fen)`          | Add new FEN entry              |
+| `toggleFavorite(id)`         | Mark/unmark as favorite        |
+| `removeEntry(id)`            | Delete entry                   |
+| `clearHistory()`             | Delete all entries             |
+| `archiveEntries(ids)`        | Move entries to archive        |
+| `reactivateEntry(id)`        | Move archived entry back       |
+| `filteredHistory`            | Memoised filtered list         |
+| `startDragSession(fen)`      | Begin inactivity timer (60s)   |
+| `endDragSession()`           | Commit drag session to history |
 
 **Persistence:** History is written to `localStorage` key `'fen-history'` with a 300ms debounce. Archive is managed separately via `archiveManager.js`.
 
@@ -230,16 +230,16 @@ const api = useInteractiveBoard(initialFen, onFenChange);
 
 **Key returned values:**
 
-| Value | Description |
-|---|---|
-| `board` | Current 8×8 board array |
-| `boardKey` | Incremented key that forces re-mount on reset |
-| `syncFromFen(fen)` | Update board from external FEN change |
-| `movePiece(from, to)` | Move piece between squares |
-| `placePiece(square, piece)` | Place piece on square |
-| `removePiece(square)` | Remove piece from square |
-| `clearBoard()` | Empty all squares |
-| `resetBoard(fen)` | Reset to a given FEN |
+| Value                       | Description                                   |
+| --------------------------- | --------------------------------------------- |
+| `board`                     | Current 8×8 board array                       |
+| `boardKey`                  | Incremented key that forces re-mount on reset |
+| `syncFromFen(fen)`          | Update board from external FEN change         |
+| `movePiece(from, to)`       | Move piece between squares                    |
+| `placePiece(square, piece)` | Place piece on square                         |
+| `removePiece(square)`       | Remove piece from square                      |
+| `clearBoard()`              | Empty all squares                             |
+| `resetBoard(fen)`           | Reset to a given FEN                          |
 
 Internally converts the board array to FEN using `boardUtils.boardToFEN` and calls `onFenChange` whenever the position changes.
 
@@ -257,17 +257,17 @@ Local state for a single color picker instance.
 
 ### Other Hooks
 
-| Hook | Purpose |
-|---|---|
-| `useCanvasPicker` | Canvas-based color sampling from chess board |
-| `useColorConversion` | HSV ↔ RGB ↔ Hex color format conversion |
-| `useLocalStorage` | Generic typed localStorage getter/setter with JSON serialisation |
-| `useNotifications` | Toast notification queue (add, dismiss, auto-expire) |
-| `useOutsideClick` | Ref + event listener for detecting clicks outside an element |
-| `usePieceImages` | Loads and caches all piece SVG images for the selected piece set |
-| `usePerformance` | Optional performance timing markers (dev only) |
-| `useScrollLock` | Locks `<body>` scroll when a modal is open |
-| `useIntersectionObserver` | Wrapper for `IntersectionObserver` used in virtualised lists |
+| Hook                      | Purpose                                                          |
+| ------------------------- | ---------------------------------------------------------------- |
+| `useCanvasPicker`         | Canvas-based color sampling from chess board                     |
+| `useColorConversion`      | HSV ↔ RGB ↔ Hex color format conversion                          |
+| `useLocalStorage`         | Generic typed localStorage getter/setter with JSON serialisation |
+| `useNotifications`        | Toast notification queue (add, dismiss, auto-expire)             |
+| `useOutsideClick`         | Ref + event listener for detecting clicks outside an element     |
+| `usePieceImages`          | Loads and caches all piece SVG images for the selected piece set |
+| `usePerformance`          | Optional performance timing markers (dev only)                   |
+| `useScrollLock`           | Locks `<body>` scroll when a modal is open                       |
+| `useIntersectionObserver` | Wrapper for `IntersectionObserver` used in virtualised lists     |
 
 ---
 
@@ -292,16 +292,16 @@ const [selectedFormat, setSelectedFormat] = useState('png');
 
 All persistence uses `localStorage`. On pages that also support an optional `window.storage` interface (a cloud storage shim), both are written with localStorage as the guaranteed fallback.
 
-| localStorage Key | Owner Hook / Context | Data |
-|---|---|---|
-| `chess-theme` | `App.jsx` | `'light'` or `'dark'` |
-| `chess-light-square` | `useTheme` | Hex color string |
-| `chess-dark-square` | `useTheme` | Hex color string |
-| `themeSettings` | `ThemeSettingsContext` | Settings object (JSON) |
-| `recentColors` | `ThemeSettingsContext` | Array of hex strings (JSON) |
-| `fenBatchList` | `FENBatchContext` | Array of FEN strings (JSON) |
-| `fen-history` | `useFENHistory` | Array of history entries (JSON) |
-| `fen-history-archive` | `archiveManager` | Array of archived entries (JSON) |
+| localStorage Key      | Owner Hook / Context   | Data                             |
+| --------------------- | ---------------------- | -------------------------------- |
+| `chess-theme`         | `App.jsx`              | `'light'` or `'dark'`            |
+| `chess-light-square`  | `useTheme`             | Hex color string                 |
+| `chess-dark-square`   | `useTheme`             | Hex color string                 |
+| `themeSettings`       | `ThemeSettingsContext` | Settings object (JSON)           |
+| `recentColors`        | `ThemeSettingsContext` | Array of hex strings (JSON)      |
+| `fenBatchList`        | `FENBatchContext`      | Array of FEN strings (JSON)      |
+| `fen-history`         | `useFENHistory`        | Array of history entries (JSON)  |
+| `fen-history-archive` | `archiveManager`       | Array of archived entries (JSON) |
 
 ---
 
@@ -314,7 +314,10 @@ Expensive computations are memoised with `useMemo` to avoid redundant recalculat
 const board = useMemo(() => parseFEN(fen), [fen]);
 
 // History filtering (useFENHistory)
-const filteredHistory = useMemo(() => applyFilters(fenHistory, filters), [fenHistory, filters]);
+const filteredHistory = useMemo(
+  () => applyFilters(fenHistory, filters),
+  [fenHistory, filters]
+);
 
 // Color conversion (useColorConversion)
 const rgb = useMemo(() => hexToRgb(hex), [hex]);
