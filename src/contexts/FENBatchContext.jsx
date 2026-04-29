@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { validateFEN } from '@/utils';
 import { safeJSONParse } from '@/utils/validation';
@@ -58,13 +53,16 @@ export function FENBatchProvider({ children }) {
     });
     return true;
   }, []);
-  const value = useMemo(() => ({
-    batchList,
-    addToBatch,
-    removeFromBatch,
-    clearBatch,
-    updateBatchItem
-  }), [batchList, addToBatch, removeFromBatch, clearBatch, updateBatchItem]);
+  const value = useMemo(
+    () => ({
+      batchList,
+      addToBatch,
+      removeFromBatch,
+      clearBatch,
+      updateBatchItem
+    }),
+    [batchList, addToBatch, removeFromBatch, clearBatch, updateBatchItem]
+  );
   return (
     <FENBatchContext.Provider value={value}>
       {children}
