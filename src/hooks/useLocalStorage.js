@@ -82,8 +82,7 @@ export function useLocalStorage(key, initialValue) {
     (value) => {
       try {
         setStoredValue((prev) => {
-          const valueToStore =
-            value instanceof Function ? value(prev) : value;
+          const valueToStore = value instanceof Function ? value(prev) : value;
           debouncedWrite(key, valueToStore);
           return valueToStore;
         });
