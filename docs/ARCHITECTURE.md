@@ -233,19 +233,19 @@ chessviewer/
 
 Components are grouped by feature domain inside `src/components/features/`:
 
-| Group | Contents |
-|---|---|
-| `ActionButtons` | Primary export/copy action buttons |
-| `ClipboardHistory` | Clipboard copy history panel |
-| `ColorPicker` | Board color picker with views and parts |
-| `ControlPanel` | Board flip, reset, and control buttons |
-| `DisplayOptions` | Coordinates, labels display toggles |
-| `Export` | Export settings, dialog, progress, size control |
-| `Fen` | FEN input field, input list, board preview, piece selector |
-| `HelpCenter` | In-app help content |
-| `History` | FEN history list, filters, status badge, confirmation modal |
-| `Theme` | Board theme preset selector |
-| `UserGuide` | First-time user onboarding guide |
+| Group              | Contents                                                    |
+| ------------------ | ----------------------------------------------------------- |
+| `ActionButtons`    | Primary export/copy action buttons                          |
+| `ClipboardHistory` | Clipboard copy history panel                                |
+| `ColorPicker`      | Board color picker with views and parts                     |
+| `ControlPanel`     | Board flip, reset, and control buttons                      |
+| `DisplayOptions`   | Coordinates, labels display toggles                         |
+| `Export`           | Export settings, dialog, progress, size control             |
+| `Fen`              | FEN input field, input list, board preview, piece selector  |
+| `HelpCenter`       | In-app help content                                         |
+| `History`          | FEN history list, filters, status badge, confirmation modal |
+| `Theme`            | Board theme preset selector                                 |
+| `UserGuide`        | First-time user onboarding guide                            |
 
 ### 2. Separation of Concerns
 
@@ -301,16 +301,16 @@ const TOOL_PAGES = ['/settings', '/fen-history', '/advanced-fen'];
 
 All pages are lazy-loaded with `React.lazy` and wrapped in a single `<Suspense>` boundary with a chess-themed loading spinner. Routes:
 
-| Path | Component |
-|---|---|
-| `/` | `HomePage` |
-| `/about` | `AboutPage` |
-| `/download` | `DownloadPage` |
-| `/support` | `SupportPage` |
-| `/settings` | `SettingsPage` |
-| `/fen-history` | `FENHistoryPage` |
+| Path            | Component              |
+| --------------- | ---------------------- |
+| `/`             | `HomePage`             |
+| `/about`        | `AboutPage`            |
+| `/download`     | `DownloadPage`         |
+| `/support`      | `SupportPage`          |
+| `/settings`     | `SettingsPage`         |
+| `/fen-history`  | `FENHistoryPage`       |
 | `/advanced-fen` | `AdvancedFENInputPage` |
-| `*` | `NotFoundPage` |
+| `*`             | `NotFoundPage`         |
 
 ### ChessBoard.jsx
 
@@ -358,13 +358,13 @@ See [STATE_MANAGEMENT.md](STATE_MANAGEMENT.md) for the full guide.
 
 **Summary:**
 
-| Layer | Tool | Examples |
-|---|---|---|
-| Component state | `useState` | Modal open/close, form values |
-| Derived state | `useMemo` | Parsed FEN → board array |
-| Cross-tree state | Context API | Theme settings, FEN batch list |
-| Persistence | localStorage | FEN history, theme, settings |
-| Drag state | React DnD | Piece being dragged |
+| Layer            | Tool         | Examples                       |
+| ---------------- | ------------ | ------------------------------ |
+| Component state  | `useState`   | Modal open/close, form values  |
+| Derived state    | `useMemo`    | Parsed FEN → board array       |
+| Cross-tree state | Context API  | Theme settings, FEN batch list |
+| Persistence      | localStorage | FEN history, theme, settings   |
+| Drag state       | React DnD    | Piece being dragged            |
 
 ---
 
@@ -386,12 +386,12 @@ See [STATE_MANAGEMENT.md](STATE_MANAGEMENT.md) for the full guide.
 
 **Quality levels and maximum resolutions:**
 
-| Mode | Quality | Max Resolution |
-|---|---|---|
-| Print | 8× | ~3,776–7,552 px depending on board size |
-| Print | 16× | ~5,664–15,104 px depending on board size |
-| Social | 24× | 18,112 × 18,112 px |
-| Social | 32× | 24,192 × 24,192 px |
+| Mode   | Quality | Max Resolution                           |
+| ------ | ------- | ---------------------------------------- |
+| Print  | 8×      | ~3,776–7,552 px depending on board size  |
+| Print  | 16×     | ~5,664–15,104 px depending on board size |
+| Social | 24×     | 18,112 × 18,112 px                       |
+| Social | 32×     | 24,192 × 24,192 px                       |
 
 ---
 
