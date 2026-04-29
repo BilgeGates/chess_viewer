@@ -107,7 +107,9 @@ function ThemeSettingsView({ onSettingsChange }) {
           <div className="flex items-center gap-2 min-w-0">
             <Icon className="w-4 h-4 text-text-muted shrink-0" />
             <div className="text-left min-w-0">
-              <div className="text-xs font-medium text-text-primary">{label}</div>
+              <div className="text-xs font-medium text-text-primary">
+                {label}
+              </div>
               <div className="text-[10px] text-text-muted">{desc}</div>
             </div>
           </div>
