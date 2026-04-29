@@ -13,9 +13,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ---
 
 ## [5.0.0] - 2026-04-17
- 
+
 ### Fixed
- 
+
 - **CRITICAL — Export Dimension Bug:** Board size selection (4cm / 6cm / 8cm) now correctly determines the physical pixel output of all exports. Previously, the size selector had no effect on actual export dimensions.
   - `Print 8×` @ 4cm → 3,776px (small print diagram)
   - `Print 8×` @ 6cm → 5,664px (medium print diagram)
@@ -26,8 +26,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - **Coordinate Container Borders:** Removed visual borders around coordinate label containers for clean export output.
 - **Circular Export Dependencies:** Resolved all circular export issues across component index files throughout the codebase.
 - **React Build Errors:** Fixed component export patterns that caused Vite build failures on fresh installs.
+
 ### Added
- 
+
 - **Dynamic Board Size Scaling System:** Export pipeline now accurately maps physical size selection to pixel output across all four quality tiers: Print 8×, Print 16×, Social 24×, Max 32×.
 - **Advanced FEN Editor:** New `/advanced-fen` route providing multi-position management. Includes a Positions tab for listing and editing multiple FEN strings, and a Preview/Export tab with single-position and batch export (PNG, JPEG, SVG) and slideshow playback with configurable interval.
 - **FEN History — Archive System:** Positions can now be moved from Active to Archive. Archived items display a Reactivate button. Header badge reflects the currently active tab count.
@@ -38,13 +39,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - **Help Center Panel:** Slide-in panel accessible from the main toolbar with searchable articles covering Interactive Board Editor, FEN Notation Support, Export Options, and all major features.
 - **Light/Dark Mode Toggle:** Persistent light and dark theme preference stored across sessions.
 - **Comprehensive JSDoc Documentation:** Detailed JSDoc comments added across the entire codebase covering all public functions, parameters, return types, and complex logic blocks.
+
 ### Changed
- 
+
 - **Piece Palette Layout:** Redesigned with clearly labeled WHITE and BLACK section headers for improved usability.
 - **Import Organization:** All source files now follow a consistent import ordering: React/framework → third-party libraries → internal utilities → components → styles. Imports within each group are alphabetically sorted.
 - **Documentation:** All markdown files (`README.md`, `CONTRIBUTING.md`, feature docs) rewritten in professional technical style without emoji decorations.
 - **Comment Cleanup:** Removed low-value inline comments (e.g., `// set state`, `// return value`) while preserving explanations for non-obvious logic.
 - **Export Logic Refactored:** Dimension calculation extracted into a dedicated scaling utility for accuracy and testability across all quality/size matrix combinations.
+
 ---
 
 ---
@@ -440,12 +443,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## Version Support
 
-| Version   | Status                  | Security Updates |
-| --------- | ----------------------- | ---------------- |
-| v5.0.x    | Active                  | Yes              |
-| v4.0.x    | Supported until 2026-09 | Yes              |
-| v3.5.x    | Supported until 2026-06 | Security only    |
-| v1.x–v3.0.x | Deprecated            | No               |
+| Version     | Status                  | Security Updates |
+| ----------- | ----------------------- | ---------------- |
+| v5.0.x      | Active                  | Yes              |
+| v4.0.x      | Supported until 2026-09 | Yes              |
+| v3.5.x      | Supported until 2026-06 | Security only    |
+| v1.x–v3.0.x | Deprecated              | No               |
 
 ---
 
