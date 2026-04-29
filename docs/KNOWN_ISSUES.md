@@ -28,6 +28,7 @@ None currently tracked.
 Currently tracking **0** high priority issues.
 
 > **Security hardening completed 2026-03-12:**
+>
 > - Inline `<script>` blocks removed from `index.html`; moved to external files
 >   (`/public/theme-init.js`, `/public/preload-cleanup.js`) to allow a strict
 >   `script-src 'self'` CSP without `'unsafe-inline'`.
@@ -537,17 +538,17 @@ Statistics are not actively tracked. See sections above for current open issues.
 
 ✅ **Fixed:** Export dimension bug — board size selection now produces correct physical dimensions  
 ✅ **Fixed:** Coordinate system positioning — labels now scale proportionally  
-✅ **Fixed:** Circular export dependency issues  
+✅ **Fixed:** Circular export dependency issues
 
 ### v4.0.0 (2026-02-02)
 
 ✅ **Fixed:** PWA manifest and installability  
-✅ **Fixed:** Service worker and offline caching  
+✅ **Fixed:** Service worker and offline caching
 
 ### v3.5.4 (2026-02-01)
 
 ✅ **Fixed:** ThemeModal piece preview rendering  
-✅ **Fixed:** AdvancedFENInputModal board preview  
+✅ **Fixed:** AdvancedFENInputModal board preview
 
 ### v3.5.2 (2026-01-18)
 
