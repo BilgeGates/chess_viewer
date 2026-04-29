@@ -121,19 +121,19 @@ Each directory exports symbols through an `index.js` barrel file.
 
 ## Technology Stack
 
-| Category       | Library / Tool   | Version |
-| -------------- | ---------------- | ------- |
-| UI framework   | React            | 19.x    |
-| Build tool     | Vite             | 6.x     |
-| Styling        | Tailwind CSS     | 3.3.5   |
-| Routing        | React Router DOM | 7.x     |
-| Drag and drop  | React DnD        | 16.x    |
-| Animations     | Framer Motion    | 12.x    |
-| Virtual lists  | react-window     | 2.x     |
-| Icons          | Lucide React     | latest  |
-| Rendering      | HTML5 Canvas     | —       |
-| Storage        | localStorage     | —       |
-| Deployment     | Vercel           | —       |
+| Category      | Library / Tool   | Version |
+| ------------- | ---------------- | ------- |
+| UI framework  | React            | 19.x    |
+| Build tool    | Vite             | 6.x     |
+| Styling       | Tailwind CSS     | 3.3.5   |
+| Routing       | React Router DOM | 7.x     |
+| Drag and drop | React DnD        | 16.x    |
+| Animations    | Framer Motion    | 12.x    |
+| Virtual lists | react-window     | 2.x     |
+| Icons         | Lucide React     | latest  |
+| Rendering     | HTML5 Canvas     | —       |
+| Storage       | localStorage     | —       |
+| Deployment    | Vercel           | —       |
 
 ---
 
