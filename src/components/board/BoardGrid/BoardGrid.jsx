@@ -2,28 +2,22 @@ import { memo } from 'react';
 
 import BoardSquare from '../BoardSquare';
 
-function arePropsEqual(prevProps, nextProps) {
-  if (prevProps.board === nextProps.board) {
-    return (
-      prevProps.lightSquare === nextProps.lightSquare &&
-      prevProps.darkSquare === nextProps.darkSquare &&
-      prevProps.flipped === nextProps.flipped &&
-      prevProps.pieceImages === nextProps.pieceImages
-    );
+function arePropsEqual(prev, next) {
+  if (prev.isLoading !== next.isLoading) return false;
+  if (prev.lightSquare !== next.lightSquare) return false;
+  if (prev.darkSquare !== next.darkSquare) return false;
+  if (prev.flipped !== next.flipped) return false;
+  if (prev.pieceImages !== next.pieceImages) return false;
+  if (prev.board === next.board) return true;
+  const pb = prev.board,
+    nb = next.board;
+  if (!pb || !nb || pb.length !== nb.length) return false;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (pb[r]?.[c] !== nb[r]?.[c]) return false;
+    }
   }
-  try {
-    const prevFlat = (prevProps.board || []).flat().join(',');
-    const nextFlat = (nextProps.board || []).flat().join(',');
-    return (
-      prevFlat === nextFlat &&
-      prevProps.lightSquare === nextProps.lightSquare &&
-      prevProps.darkSquare === nextProps.darkSquare &&
-      prevProps.flipped === nextProps.flipped &&
-      prevProps.pieceImages === nextProps.pieceImages
-    );
-  } catch {
-    return false;
-  }
+  return true;
 }
 
 /**
@@ -31,7 +25,7 @@ function arePropsEqual(prevProps, nextProps) {
  * @returns {JSX.Element}
  */
 const BoardGrid = memo(function BoardGrid(props) {
-  const { board, lightSquare, darkSquare, pieceImages } = props;
+  const { board, lightSquare, darkSquare, pieceImages, isLoading } = props;
   return (
     <div className="grid grid-cols-8 gap-0">
       {Array.from({
@@ -49,6 +43,7 @@ const BoardGrid = memo(function BoardGrid(props) {
             lightSquare={lightSquare}
             darkSquare={darkSquare}
             pieceImages={pieceImages}
+            isLoading={isLoading}
             row={row}
             col={col}
           />
