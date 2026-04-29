@@ -93,25 +93,22 @@ const Modal = memo(function Modal({
             aria-hidden="true"
           />
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-            className="fixed inset-0 z-[85] flex items-center justify-center p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title"
-            onClick={handleBackdropClick}
-          >
-            <div
+          <div className="fixed inset-0 z-[85] flex items-center justify-center p-4 pointer-events-none">
+            <motion.div
               ref={modalRef}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               className={`relative ${maxWidth} w-full bg-surface border border-border rounded-2xl shadow-xl`}
               style={{
-                maxHeight: 'calc(100vh - 2rem)',
+                maxHeight: 'calc(100dvh - 2rem)',
                 overflowY: 'auto',
                 pointerEvents: 'auto'
               }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modal-title"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-5 sm:px-6 py-3 sm:py-4 border-b border-border">
@@ -144,8 +141,8 @@ const Modal = memo(function Modal({
               </div>
 
               <div className="px-5 sm:px-6 py-4 sm:py-5">{children}</div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>
