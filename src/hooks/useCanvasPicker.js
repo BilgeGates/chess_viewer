@@ -13,7 +13,7 @@ export function useCanvasPicker(canvasRef, currentColor) {
   const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const width = canvas.width;
     const height = canvas.height;
     const rgb = hexToRgb(currentColor);
@@ -43,7 +43,7 @@ export function useCanvasPicker(canvasRef, currentColor) {
       const scaleY = canvas.height / rect.height;
       const x = (e.clientX - rect.left) * scaleX;
       const y = (e.clientY - rect.top) * scaleY;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
       const imageData = ctx.getImageData(x, y, 1, 1).data;
       const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
       if (onColorSelect) {
