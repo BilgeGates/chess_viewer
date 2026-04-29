@@ -31,9 +31,18 @@ function setThemeRevealVars(x, y) {
   const maxDy = Math.max(clampedY, window.innerHeight - clampedY);
   const radius = Math.hypot(maxDx, maxDy);
 
-  document.documentElement.style.setProperty('--theme-reveal-x', `${clampedX}px`);
-  document.documentElement.style.setProperty('--theme-reveal-y', `${clampedY}px`);
-  document.documentElement.style.setProperty('--theme-reveal-radius', `${radius}px`);
+  document.documentElement.style.setProperty(
+    '--theme-reveal-x',
+    `${clampedX}px`
+  );
+  document.documentElement.style.setProperty(
+    '--theme-reveal-y',
+    `${clampedY}px`
+  );
+  document.documentElement.style.setProperty(
+    '--theme-reveal-radius',
+    `${radius}px`
+  );
 }
 
 /**
@@ -138,7 +147,8 @@ function App() {
         return;
       }
 
-      const transitionDirection = nextTheme === 'light' ? 'to-light' : 'to-dark';
+      const transitionDirection =
+        nextTheme === 'light' ? 'to-light' : 'to-dark';
       document.documentElement.setAttribute(
         'data-theme-transition',
         transitionDirection
