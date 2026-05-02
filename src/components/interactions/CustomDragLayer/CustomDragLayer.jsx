@@ -21,7 +21,7 @@ const CustomDragLayer = memo(function CustomDragLayer({
   pieceImages,
   boardSize = 400
 }) {
-  const { itemType, isDragging, item, currentOffset, sourceOffset } =
+  const { itemType, isDragging, item, currentOffset } =
     useDragLayer(selectDragState);
   if (
     !isDragging ||
@@ -44,13 +44,12 @@ const CustomDragLayer = memo(function CustomDragLayer({
     right: 0,
     bottom: 0
   };
-  const offset = sourceOffset || currentOffset;
+  const offset = currentOffset;
   if (!offset) {
     return null;
   }
-  const shift = sourceOffset ? 0 : pieceSize / 2;
-  const x = Math.round(offset.x - shift);
-  const y = Math.round(offset.y - shift);
+  const x = Math.round(offset.x - pieceSize / 2);
+  const y = Math.round(offset.y - pieceSize / 2);
   const itemStyles = {
     position: 'fixed',
     left: 0,

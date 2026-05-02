@@ -87,6 +87,7 @@ const PositionsTab = memo(function PositionsTab({
               value={fen}
               onChange={(e) => onUpdateFen(idx, e.target.value)}
               placeholder="Paste FEN notation here…"
+              maxLength={256}
               className={`w-full px-3 py-2.5 bg-surface-elevated border rounded-lg font-mono text-xs transition-all placeholder:text-text-muted/50 ${hasError ? 'border-error/60 focus:border-error focus:ring-1 focus:ring-error/30' : hasDuplicate ? 'border-warning/60 focus:border-warning focus:ring-1 focus:ring-warning/30' : 'border-border focus:border-accent focus:ring-1 focus:ring-accent/20'} focus:outline-none`}
             />
 

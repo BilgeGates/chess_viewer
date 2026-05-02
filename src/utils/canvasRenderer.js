@@ -64,6 +64,10 @@ export async function createUltraQualityCanvas(config) {
   if (!board || !Array.isArray(board) || board.length !== 8) {
     throw new Error('Invalid FEN: Failed to parse board');
   }
+  const hasAnyPiece = board.some((row) => row.some((cell) => cell !== ''));
+  if (!hasAnyPiece) {
+    throw new Error('Invalid FEN: board is empty — check your FEN string');
+  }
   if (!pieceImages || Object.keys(pieceImages).length === 0) {
     throw new Error('Invalid board or piece images');
   }

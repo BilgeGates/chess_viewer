@@ -1,3 +1,5 @@
+import { MAX_FEN_LENGTH } from '@/utils/validation';
+
 const VALID_PIECES = new Set([
   'p',
   'n',
@@ -81,6 +83,7 @@ export function validateFEN(fen) {
 export function getFENValidationError(fen) {
   try {
     if (!fen || typeof fen !== 'string') return 'FEN is empty';
+    if (fen.length > MAX_FEN_LENGTH) return 'FEN string is too long';
     const position = fen.trim().split(/\s+/)[0];
     const rows = position.split('/');
     if (rows.length !== 8) return 'Board must have 8 ranks';

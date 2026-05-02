@@ -339,13 +339,9 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
       );
       return;
     }
-    if (index < batchList.length && trimmedValue) {
-      updateBatchItem(index, trimmedValue);
-    } else if (
-      index >= batchList.length &&
-      trimmedValue &&
-      batchList.length < MAX_FENS
-    ) {
+    if (index < batchList.length) {
+      updateBatchItem(index, value);
+    } else if (trimmedValue && batchList.length < MAX_FENS) {
       addToBatch(trimmedValue);
     }
   }

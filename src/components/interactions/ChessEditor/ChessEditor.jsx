@@ -4,7 +4,6 @@ import { RotateCcw, X } from 'lucide-react';
 
 import {
   CustomDragLayer,
-  DndProvider,
   InteractiveBoard,
   PiecePalette,
   TrashZone
@@ -96,7 +95,7 @@ const ChessEditor = memo(function ChessEditor({
   };
 
   return (
-    <DndProvider>
+    <>
       <CustomDragLayer pieceImages={pieceImages} boardSize={FIXED_BOARD_SIZE} />
 
       <div className={`flex flex-col gap-4 w-full h-full ${className}`}>
@@ -224,7 +223,7 @@ const ChessEditor = memo(function ChessEditor({
           </div>
         </div>
       </div>
-    </DndProvider>
+    </>
   );
 });
 
