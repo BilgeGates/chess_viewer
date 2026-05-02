@@ -17,8 +17,8 @@
     'Poppins', 'Poppins-fallback', -apple-system, BlinkMacSystemFont,
     'Segoe UI', sans-serif;
   --font-data:
-    'Inter', ui-monospace, 'Cascadia Code', 'DejaVu Mono', 'Liberation Mono',
-    'Courier New', monospace;
+    ui-monospace, 'Cascadia Code', 'DejaVu Mono', 'Liberation Mono',
+    'Courier New', 'Inter', monospace;
 
   /* Animation System */
   --animation-duration: 200ms;
