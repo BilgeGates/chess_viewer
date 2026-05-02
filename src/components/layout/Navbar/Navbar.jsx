@@ -29,13 +29,13 @@ function Navbar({ theme, toggleTheme }) {
           <div className="flex justify-between items-center h-16 sm:h-20">
             <button
               onClick={handleLogoClick}
-              className="flex items-center space-x-2 transition-all duration-300 text-text-primary hover:text-accent hover:scale-105 active:scale-95"
+              className="flex items-center space-x-2 transition-colors duration-300 text-text-primary hover:text-accent"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 animate-iconBounceIn hover:scale-105 active:scale-95 transition-transform duration-300">
                 <img
                   src={Logo}
                   alt="Logo"
-                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain animate-iconBounceIn"
+                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                 />
                 <span className="font-display font-bold text-text-primary leading-tight transition-all duration-300 hover:text-accent">
                   FENForsty Pro
