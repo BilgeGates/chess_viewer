@@ -217,13 +217,15 @@ git push origin feature/your-feature
 
 ## Contributors
 
+<h2>Thank you for your support!</h2>
+
 <p>
-  <a href="https://github.com/BilgeGates">
-    <img src="https://github.com/bilgegates.png?size=100" width="80" height="80" style="border-radius:50%;" alt="Khatai Huseynzade" />
-  </a>
-  &nbsp;
   <a href="https://github.com/vektorhub">
     <img src="https://github.com/vektorhub.png?size=100" width="80" height="80" style="border-radius:50%;" alt="Vektor Hub" />
+  </a>
+    &nbsp;
+  <a href="https://github.com/u102118">
+      <img src="https://github.com/u102118.png?size=100" width="80" height="80" style="border-radius:50%;" alt="Vektor Hub" />
   </a>
 </p>
 
