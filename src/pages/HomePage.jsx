@@ -7,7 +7,7 @@ import {
   ControlPanel,
   ExportProgress
 } from '@/components/features';
-import { ChessEditor } from '@/components/interactions';
+import { ChessEditor, DndProvider } from '@/components/interactions';
 import { NotificationContainer } from '@/components/ui';
 import { useFENHistory, useLocalStorage, useNotifications } from '@/hooks';
 import {
@@ -18,7 +18,8 @@ import {
   downloadPNG,
   pauseExport,
   resumeExport,
-  shouldForceCoordinateBorder
+  shouldForceCoordinateBorder,
+  validateFEN
 } from '@/utils';
 import { safeJSONParse, sanitizeHexColor } from '@/utils/validation';
 
@@ -210,6 +211,10 @@ function HomePage() {
    * @returns {Promise<void>}
    */
   const handleDownloadPNG = useCallback(async () => {
+    if (!validateFEN(fen)) {
+      error('Invalid FEN — cannot export');
+      return;
+    }
     dispatchExport({ type: 'START_EXPORT', format: 'png' });
     saveExportFen(fen);
 
@@ -235,6 +240,10 @@ function HomePage() {
    * @returns {Promise<void>}
    */
   const handleDownloadJPEG = useCallback(async () => {
+    if (!validateFEN(fen)) {
+      error('Invalid FEN — cannot export');
+      return;
+    }
     dispatchExport({ type: 'START_EXPORT', format: 'jpeg' });
     saveExportFen(fen);
 
@@ -260,6 +269,10 @@ function HomePage() {
    * @returns {Promise<void>}
    */
   const handleCopyImage = useCallback(async () => {
+    if (!validateFEN(fen)) {
+      error('Invalid FEN — cannot export');
+      return;
+    }
     try {
       await copyToClipboard(getExportConfig());
       saveExportFen(fen);
@@ -358,88 +371,90 @@ function HomePage() {
   );
 
   return (
-    <div className="min-h-full overflow-y-auto pt-16 sm:pt-20 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4">
-      <div className="max-w-[1720px] mx-auto w-full">
-        <div className="flex flex-col xl:flex-row gap-4 lg:gap-5 xl:gap-6 items-stretch xl:min-h-0 xl:h-[calc(100vh-6.75rem)]">
-          <div className="w-full xl:flex-1 xl:h-full space-y-3 sm:space-y-4 animate-pageEnter min-h-0 min-w-0 flex flex-col">
-            <div className="relative glass-card rounded-xl p-3 sm:p-4 xl:flex-1 xl:min-h-0 animate-revealUp stagger-1">
-              <div className="h-full">
-                <ChessEditor
-                  fen={fen}
-                  onFenChange={handleEditorFenChange}
-                  pieceStyle={pieceStyle}
-                  showCoords={showCoords}
-                  lightSquare={lightSquare}
-                  darkSquare={darkSquare}
-                  flipped={flipped}
-                  onPieceImagesChange={handlePieceImagesChange}
-                  className="xl:h-full"
+    <DndProvider>
+      <div className="min-h-full overflow-y-auto pt-16 sm:pt-20 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4">
+        <div className="max-w-[1720px] mx-auto w-full">
+          <div className="flex flex-col xl:flex-row gap-4 lg:gap-5 xl:gap-6 items-stretch xl:min-h-0 xl:h-[calc(100vh-6.75rem)]">
+            <div className="w-full xl:flex-1 xl:h-full space-y-3 sm:space-y-4 animate-pageEnter min-h-0 min-w-0 flex flex-col">
+              <div className="relative glass-card rounded-xl p-3 sm:p-4 xl:flex-1 xl:min-h-0 animate-revealUp stagger-1">
+                <div className="h-full">
+                  <ChessEditor
+                    fen={fen}
+                    onFenChange={handleEditorFenChange}
+                    pieceStyle={pieceStyle}
+                    showCoords={showCoords}
+                    lightSquare={lightSquare}
+                    darkSquare={darkSquare}
+                    flipped={flipped}
+                    onPieceImagesChange={handlePieceImagesChange}
+                    className="xl:h-full"
+                  />
+                </div>
+              </div>
+
+              <div className="glass-card rounded-xl p-3 sm:p-4 lg:p-5 animate-revealUp stagger-3">
+                <ActionButtons
+                  onDownloadPNG={handleDownloadPNG}
+                  onDownloadJPEG={handleDownloadJPEG}
+                  onCopyImage={handleCopyImage}
+                  onFlip={handleFlip}
+                  onBatchExport={handleBatchExport}
+                  onAddToFavorites={handleAddToFavorites}
+                  isExporting={exportState.isExporting}
+                  currentFen={fen}
+                  isFavorite={isFavorite}
                 />
               </div>
             </div>
 
-            <div className="glass-card rounded-xl p-3 sm:p-4 lg:p-5 animate-revealUp stagger-3">
-              <ActionButtons
-                onDownloadPNG={handleDownloadPNG}
-                onDownloadJPEG={handleDownloadJPEG}
-                onCopyImage={handleCopyImage}
-                onFlip={handleFlip}
-                onBatchExport={handleBatchExport}
-                onAddToFavorites={handleAddToFavorites}
-                isExporting={exportState.isExporting}
-                currentFen={fen}
-                isFavorite={isFavorite}
+            <div className="w-full xl:w-[clamp(380px,28vw,520px)] xl:flex-shrink-0 xl:min-h-0 xl:h-full animate-slideInRight stagger-2">
+              <ControlPanel
+                fen={fen}
+                setFen={setFen}
+                pieceStyle={pieceStyle}
+                setPieceStyle={setPieceStyle}
+                showCoords={showCoords}
+                setShowCoords={setShowCoords}
+                showCoordinateBorder={showCoordinateBorder}
+                setShowCoordinateBorder={setShowCoordinateBorder}
+                showThinFrame={showThinFrame}
+                setShowThinFrame={setShowThinFrame}
+                exportQuality={exportQuality}
+                addToFavoritesRef={addToFavoritesRef}
+                onFavoriteStatusChange={setIsFavorite}
+                saveManualFen={saveManualFen}
+                saveExportFen={saveExportFen}
+                addCurrentToFavorites={addCurrentToFavorites}
+                onNotification={(message, type) => {
+                  if (type === 'success') success(message);
+                  else if (type === 'error') error(message);
+                  else if (type === 'warning') info(message);
+                }}
               />
             </div>
           </div>
-
-          <div className="w-full xl:w-[clamp(380px,28vw,520px)] xl:flex-shrink-0 xl:min-h-0 xl:h-full animate-slideInRight stagger-2">
-            <ControlPanel
-              fen={fen}
-              setFen={setFen}
-              pieceStyle={pieceStyle}
-              setPieceStyle={setPieceStyle}
-              showCoords={showCoords}
-              setShowCoords={setShowCoords}
-              showCoordinateBorder={showCoordinateBorder}
-              setShowCoordinateBorder={setShowCoordinateBorder}
-              showThinFrame={showThinFrame}
-              setShowThinFrame={setShowThinFrame}
-              exportQuality={exportQuality}
-              addToFavoritesRef={addToFavoritesRef}
-              onFavoriteStatusChange={setIsFavorite}
-              saveManualFen={saveManualFen}
-              saveExportFen={saveExportFen}
-              addCurrentToFavorites={addCurrentToFavorites}
-              onNotification={(message, type) => {
-                if (type === 'success') success(message);
-                else if (type === 'error') error(message);
-                else if (type === 'warning') info(message);
-              }}
-            />
-          </div>
         </div>
-      </div>
 
-      <NotificationContainer
-        notifications={notifications}
-        onRemove={removeNotification}
-      />
-
-      {exportState.showProgress && (
-        <ExportProgress
-          isExporting={exportState.isExporting}
-          progress={exportState.exportProgress}
-          currentFormat={exportState.currentFormat}
-          config={getExportConfig()}
-          isPaused={exportState.isPaused}
-          onClose={() => dispatchExport({ type: 'TOGGLE_PROGRESS' })}
-          onPause={handlePause}
-          onResume={handleResume}
-          onCancel={handleCancelExport}
+        <NotificationContainer
+          notifications={notifications}
+          onRemove={removeNotification}
         />
-      )}
-    </div>
+
+        {exportState.showProgress && (
+          <ExportProgress
+            isExporting={exportState.isExporting}
+            progress={exportState.exportProgress}
+            currentFormat={exportState.currentFormat}
+            config={getExportConfig()}
+            isPaused={exportState.isPaused}
+            onClose={() => dispatchExport({ type: 'TOGGLE_PROGRESS' })}
+            onPause={handlePause}
+            onResume={handleResume}
+            onCancel={handleCancelExport}
+          />
+        )}
+      </div>
+    </DndProvider>
   );
 }
 
