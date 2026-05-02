@@ -32,20 +32,17 @@ let _cachedMaxCanvasSize = null;
  */
 export function getMaxCanvasSize() {
   if (_cachedMaxCanvasSize !== null) return _cachedMaxCanvasSize;
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  let maxSize = 16384;
   try {
-    canvas.width = 1;
-    canvas.height = 1;
-    if (!ctx) {
-      maxSize = 8192;
+    const ua = navigator.userAgent;
+    if (/Safari/.test(ua) && !/Chrome/.test(ua)) {
+      _cachedMaxCanvasSize = 16384;
+    } else {
+      _cachedMaxCanvasSize = 32767;
     }
   } catch {
-    maxSize = 8192;
+    _cachedMaxCanvasSize = 16384;
   }
-  _cachedMaxCanvasSize = maxSize;
-  return maxSize;
+  return _cachedMaxCanvasSize;
 }
 /**
  * Returns the export mode ('print' or 'social') for a given quality multiplier.
