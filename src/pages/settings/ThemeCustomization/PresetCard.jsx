@@ -63,9 +63,7 @@ const PresetCard = memo(function PresetCard({
   }
 
   return (
-    <div
-      className={`relative transition-all duration-300 ${isDragTarget ? 'scale-95' : ''}`}
-    >
+    <div className="relative transition-shadow duration-200">
       {isDragTarget && (
         <div className="absolute inset-0 border-2 border-dashed border-accent/60 rounded-lg bg-accent/5 z-10 pointer-events-none" />
       )}
@@ -88,7 +86,7 @@ const PresetCard = memo(function PresetCard({
             ? 'Default theme — cannot be edited or deleted'
             : undefined
         }
-        className={`group relative rounded-lg transition-all duration-200 overflow-hidden w-full border ${isActive ? 'border-accent ring-2 ring-accent/60 shadow-[0_0_0_1px_rgba(210,155,30,0.65),0_10px_24px_-14px_rgba(210,155,30,0.65)] scale-[1.01]' : 'border-border/60 hover:border-accent/40 hover:scale-[1.02] hover:shadow-sm'} ${editMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        className={`group relative rounded-lg transition-colors duration-200 overflow-hidden w-full border ${isActive ? 'border-accent ring-2 ring-accent/60 shadow-[0_0_0_1px_rgba(210,155,30,0.65),0_10px_24px_-14px_rgba(210,155,30,0.65)]' : 'border-border/60 hover:border-accent/40 hover:shadow-sm'} ${editMode ? 'cursor-grab active:cursor-grabbing' : ''}`}
       >
         <div className="relative overflow-hidden rounded-lg">
           <div className="flex w-full h-14" aria-hidden="true">
@@ -127,7 +125,7 @@ const PresetCard = memo(function PresetCard({
                 e.stopPropagation();
                 setIsRenaming(true);
               }}
-              className="p-1 bg-white/20 hover:bg-white/30 rounded transition-all"
+              className="p-1 bg-white/20 hover:bg-white/30 rounded transition-colors duration-200"
               aria-label={`Rename ${preset.name}`}
             >
               <Pencil className="w-2.5 h-2.5 text-white" />
@@ -137,7 +135,7 @@ const PresetCard = memo(function PresetCard({
                 e.stopPropagation();
                 onEdit(preset);
               }}
-              className="p-1 bg-accent/80 hover:bg-accent rounded transition-all"
+              className="p-1 bg-accent/80 hover:bg-accent rounded transition-colors duration-200"
               aria-label={`Edit ${preset.name} colors`}
             >
               <Palette className="w-2.5 h-2.5 text-bg" />
@@ -148,7 +146,7 @@ const PresetCard = memo(function PresetCard({
                   e.stopPropagation();
                   onDelete(preset.id);
                 }}
-                className="p-1 bg-error/80 hover:bg-error rounded transition-all"
+                className="p-1 bg-error/80 hover:bg-error rounded transition-colors duration-200"
                 aria-label={`Delete ${preset.name}`}
               >
                 <Trash2 className="w-2.5 h-2.5 text-white" />
