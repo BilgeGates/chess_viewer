@@ -15,8 +15,8 @@ import {
  */
 function SupportPage() {
   return (
-    <div className="h-full max-h-full overflow-hidden pt-16 sm:pt-20 pb-4 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto h-full overflow-y-auto pr-1">
+    <div className="w-full pt-[4rem] sm:pt-[5rem] lg:pt-[6rem] 3xl:pt-[8rem] pb-[2rem] sm:pb-[3rem] px-[2%] sm:px-[3%] lg:px-[4%]">
+      <div className="w-[95%] max-w-[2400px] mx-auto transition-all duration-500 ease-in-out">
         {}
         <div className="text-center mb-10 animate-fadeIn">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-info/10 text-info text-sm font-semibold mb-5">
@@ -100,7 +100,7 @@ function SupportPage() {
 function SupportCard({ icon, title, desc, link, linkText, primary }) {
   return (
     <div
-      className={`glass-card p-5 rounded-xl shadow-md transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${primary ? 'border-2 border-accent' : 'border border-border'}`}
+      className={`glass-card p-5 rounded-xl shadow-md transition-shadow duration-200 hover:shadow-lg ${primary ? 'border-2 border-accent' : 'border border-border'}`}
     >
       <div
         className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${primary ? 'bg-accent/10 text-accent' : 'bg-surface-elevated text-text-primary'}`}
@@ -115,7 +115,7 @@ function SupportCard({ icon, title, desc, link, linkText, primary }) {
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 ${primary ? 'text-accent' : 'text-text-secondary hover:text-accent'}`}
+        className={`inline-flex items-center gap-2 text-sm font-semibold transition-colors duration-200 ${primary ? 'text-accent' : 'text-text-secondary hover:text-accent'}`}
       >
         {linkText}
         <ExternalLink className="w-4 h-4" />
