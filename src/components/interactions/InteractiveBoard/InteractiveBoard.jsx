@@ -16,8 +16,7 @@ const InteractiveBoard = memo(function InteractiveBoard({
   pieceImages,
   isLoading,
   flipped,
-  onPieceDrop,
-  onPieceRemove: _onPieceRemove
+  onPieceDrop
 }) {
   const boardRef = useRef(null);
   const handleDrop = useCallback(
@@ -30,12 +29,7 @@ const InteractiveBoard = memo(function InteractiveBoard({
   );
   const [, boardDropRef] = useDrop(
     () => ({
-      accept: ItemTypes.PIECE,
-      collect: (monitor) => ({
-        isOver: monitor.isOver({
-          shallow: true
-        })
-      })
+      accept: ItemTypes.PIECE
     }),
     []
   );
@@ -87,7 +81,10 @@ const InteractiveBoard = memo(function InteractiveBoard({
     handleDrop
   ]);
   return (
-    <div className="w-full" style={{ aspectRatio: '1 / 1', contain: 'layout' }}>
+    <div
+      className="w-full max-w-full"
+      style={{ aspectRatio: '1 / 1', contain: 'layout' }}
+    >
       <div
         ref={setRefs}
         className="grid grid-cols-8 grid-rows-8 gap-0 overflow-hidden w-full h-full"
