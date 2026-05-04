@@ -20,12 +20,7 @@ const PlaybackControls = memo(function PlaybackControls({
   onNext
 }) {
   return (
-    <div
-      className="flex items-center justify-between mt-6 bg-surface border border-border rounded-2xl p-2 text-center"
-      style={{
-        width: 'min(52vh, 46vw)'
-      }}
-    >
+    <div className="mt-6 w-full max-w-[520px] flex items-center justify-between bg-surface border border-border rounded-2xl p-2 text-center">
       <div className="flex items-center gap-2">
         <button
           onClick={onTogglePlay}
