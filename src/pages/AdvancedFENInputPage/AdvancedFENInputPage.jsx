@@ -20,7 +20,7 @@ import {
   resumeExport,
   validateFEN
 } from '@/utils';
-import { safeJSONParse } from '@/utils/validation';
+import { MAX_FEN_LENGTH, safeJSONParse } from '@/utils/validation';
 
 import BoardDisplay from './BoardDisplay';
 import PlaybackControls from './PlaybackControls';
@@ -70,8 +70,13 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
     darkSquare: initialDarkSquare
   });
   const fens = useMemo(() => {
-    const arr = [...batchList];
+    const arr = batchList.map((fen) =>
+      typeof fen === 'string' ? fen.slice(0, MAX_FEN_LENGTH) : ''
+    );
     while (arr.length < 3) arr.push('');
+    if (arr.every((f) => f.trim().length > 0) && arr.length < MAX_FENS) {
+      arr.push('');
+    }
     return arr;
   }, [batchList]);
   const [favorites, setFavorites] = useState(() => {
@@ -263,7 +268,11 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
 
   useEffect(() => {
     if (location.state?.addFen && !addedFenRef.current) {
-      const fenToAdd = location.state.addFen;
+      const rawFenToAdd = location.state.addFen;
+      const fenToAdd =
+        typeof rawFenToAdd === 'string'
+          ? rawFenToAdd.slice(0, MAX_FEN_LENGTH)
+          : '';
       if (!fens.some((f) => f.trim() === fenToAdd)) {
         const emptyIndex = fens.findIndex((f) => !f.trim());
         if (emptyIndex !== -1 && emptyIndex < batchList.length) {
@@ -325,7 +334,11 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
    * @returns {void}
    */
   function updateFen(index, value) {
-    const trimmedValue = value.trim();
+    const clampedValue =
+      typeof value === 'string'
+        ? value.slice(0, MAX_FEN_LENGTH)
+        : String(value ?? '').slice(0, MAX_FEN_LENGTH);
+    const trimmedValue = clampedValue.trim();
     if (
       trimmedValue &&
       batchList.some((f, i) => i !== index && f === trimmedValue)
@@ -340,7 +353,7 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
       return;
     }
     if (index < batchList.length) {
-      updateBatchItem(index, value);
+      updateBatchItem(index, clampedValue);
     } else if (trimmedValue && batchList.length < MAX_FENS) {
       addToBatch(trimmedValue);
     }
@@ -593,7 +606,7 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
   }
 
   return (
-    <div className="h-full max-h-full flex flex-col bg-bg overflow-hidden">
+    <div className="flex flex-col bg-bg">
       <ToolPageHeader title="Advanced FEN Editor" onBack={handleBack} />
       <div className="flex-shrink-0 bg-surface border-b border-border">
         <div className="px-3 sm:px-6 overflow-x-auto">
@@ -613,7 +626,7 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
       </div>
 
       <main className="flex-1 overflow-hidden min-h-0">
-        <div className="h-full overflow-y-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="w-full px-[2%] sm:px-[3%] lg:px-[4%] py-[2rem] sm:py-[3rem] transition-all duration-500 ease-in-out">
           {activeTab === TABS.POSITIONS && (
             <PositionsTab
               fens={fens}
@@ -650,8 +663,8 @@ const AdvancedFENInputPage = memo(function AdvancedFENInputPage({
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-col lg:flex-row gap-5 max-w-[1600px] mx-auto">
-                  <div className="max-w-[1600px] mx-auto">
+                <div className="flex flex-col lg:flex-row gap-5 w-[95%] max-w-[2400px] mx-auto">
+                  <div className="w-[95%] max-w-[2400px] mx-auto">
                     <div className="bg-surface border border-border rounded-xl p-5">
                       <div className="flex flex-col xl:flex-row gap-12">
                         <div className="flex-shrink-0 flex flex-col items-center gap-0">
