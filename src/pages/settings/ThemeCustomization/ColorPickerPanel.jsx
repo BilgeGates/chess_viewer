@@ -119,34 +119,34 @@ const ColorPickerPanel = memo(function ColorPickerPanel({
     return rgb ? rgbToHsv(rgb.r, rgb.g, rgb.b).h : 0;
   }, [tempColor]);
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex gap-2 p-1 bg-surface rounded-lg border border-border">
+    <div className="flex flex-col gap-2.5">
+      <div className="flex gap-1.5 p-1 bg-surface rounded-lg border border-border">
         {['light', 'dark'].map((sq) => (
           <button
             key={sq}
             onClick={() => setActiveSquare(sq)}
-            className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1.5 ${activeSquare === sq ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
+            className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all flex items-center justify-center gap-1 ${activeSquare === sq ? 'bg-accent text-bg shadow' : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'}`}
           >
             {sq.charAt(0).toUpperCase() + sq.slice(1)} Square
           </button>
         ))}
       </div>
-      <div className="bg-surface rounded-lg p-2.5 border border-border">
+      <div className="bg-surface rounded-lg p-2 border border-border">
         <canvas
           ref={canvasRef}
           width={240}
-          height={150}
+          height={100}
           onPointerDown={handleCanvasPointerDown}
           onPointerMove={handleCanvasPointerMove}
           onPointerUp={handleCanvasPointerUp}
-          className="w-full rounded-md cursor-crosshair border border-border/50"
+          className="w-full h-[100px] rounded-md cursor-crosshair border border-border/50"
           style={{
             touchAction: 'none'
           }}
         />
       </div>
-      <div className="bg-surface rounded-lg p-2.5 border border-border">
-        <div className="flex justify-between text-xs text-text-muted mb-1.5">
+      <div className="bg-surface rounded-lg p-2 border border-border">
+        <div className="flex justify-between text-[10px] text-text-muted mb-1">
           <span className="font-bold">Hue</span>
           <span className="font-mono bg-surface-elevated px-2 py-0.5 rounded text-[10px]">
             {Math.round(getCurrentHue())}°
@@ -158,7 +158,7 @@ const ColorPickerPanel = memo(function ColorPickerPanel({
           max="360"
           value={getCurrentHue()}
           onChange={handleHueChange}
-          className="w-full h-2.5 rounded-full cursor-pointer appearance-none"
+          className="w-full h-2 rounded-full cursor-pointer appearance-none"
           style={{
             background:
               'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)'
