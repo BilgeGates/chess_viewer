@@ -25,7 +25,7 @@ const ThemePresetButton = memo(function ThemePresetButton({
       ref={ref}
       onClick={() => onClick(themeKey, theme)}
       aria-label={`Apply ${theme.name || themeKey} theme: light ${theme.light}, dark ${theme.dark}`}
-      className={`group relative p-2 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 hover:scale-[1.02] overflow-hidden ${isActive ? 'bg-accent/20 shadow-lg shadow-accent/20' : 'hover:bg-surface-elevated'}`}
+      className={`group relative p-2 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 hover:shadow-md hover:bg-surface-hover overflow-hidden ${isActive ? 'bg-accent/20 shadow-lg shadow-accent/20' : 'hover:bg-surface-elevated'}`}
     >
       {isVisible ? (
         <div className="relative">
@@ -70,7 +70,7 @@ const CustomThemeCard = memo(function CustomThemeCard({ isActive, onClick }) {
     <button
       onClick={onClick}
       aria-label="Create custom theme"
-      className={`group relative p-2 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 hover:scale-[1.02] overflow-hidden ${isActive ? 'bg-accent/20 shadow-lg shadow-accent/20' : 'hover:bg-surface-elevated'}`}
+      className={`group relative p-2 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 hover:shadow-md hover:bg-surface-hover overflow-hidden ${isActive ? 'bg-accent/20 shadow-lg shadow-accent/20' : 'hover:bg-surface-elevated'}`}
     >
       <div className="relative">
         <div
