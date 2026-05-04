@@ -44,6 +44,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.2",
     "@commitlint/config-conventional": "^20.5.0",
+    "@craco/craco": "^7.1.0",
     "@eslint/js": "9.39.4",
     "@vitejs/plugin-react": "5.2.0",
     "@welldone-software/why-did-you-render": "^10.0.1",
