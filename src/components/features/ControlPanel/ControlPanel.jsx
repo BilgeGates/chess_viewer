@@ -14,6 +14,7 @@ import DisplayOptions from '@/components/features/DisplayOptions';
 import { FENInputField, PieceSelector } from '@/components/features/Fen';
 import { useFENHistory } from '@/hooks';
 import { getFENValidationError } from '@/utils';
+import { MAX_FEN_LENGTH } from '@/utils/validation';
 
 /**
  * @param {Object} props
@@ -56,7 +57,12 @@ const ControlPanel = memo(function ControlPanel(props) {
     externalAddCurrentToFavorites || localHistory.addCurrentToFavorites;
   const handleFenChange = useCallback(
     (e) => {
-      setFen(e.target.value);
+      const nextValue = e.target.value;
+      setFen(
+        nextValue.length > MAX_FEN_LENGTH
+          ? nextValue.slice(0, MAX_FEN_LENGTH)
+          : nextValue
+      );
     },
     [setFen]
   );
@@ -85,12 +91,25 @@ const ControlPanel = memo(function ControlPanel(props) {
     try {
       const text = await navigator.clipboard.readText();
       if (text && text.trim()) {
-        const pastedFen = text.trim();
+        const rawFen = text.trim();
+        const pastedFen =
+          rawFen.length > MAX_FEN_LENGTH
+            ? rawFen.slice(0, MAX_FEN_LENGTH)
+            : rawFen;
+
         setFen(pastedFen);
         if (externalSaveManualFen) {
           externalSaveManualFen(pastedFen);
         }
-        onNotification?.('FEN pasted successfully', 'success');
+
+        if (rawFen.length > MAX_FEN_LENGTH) {
+          onNotification?.(
+            `FEN too long — truncated to ${MAX_FEN_LENGTH} chars`,
+            'warning'
+          );
+        } else {
+          onNotification?.('FEN pasted successfully', 'success');
+        }
       }
     } catch {
       onNotification?.('Failed to paste from clipboard', 'error');
