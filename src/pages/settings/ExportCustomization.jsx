@@ -80,13 +80,17 @@ const BoardSizeSection = memo(function BoardSizeSection({
         <h3 className="text-sm font-semibold text-text-primary">Board Size</h3>
       </div>
 
-      {}
-      <div className="grid grid-cols-3 gap-2">
+      <div
+        className="grid gap-2"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fit, minmax(6.5rem, 1fr))'
+        }}
+      >
         {presets.map((preset) => (
           <button
             key={preset.value}
             onClick={() => handlePresetClick(preset.value)}
-            className={`flex flex-col items-center justify-center gap-1 px-3 py-3 text-sm font-medium rounded-lg transition-all ${selectedPreset === preset.value ? 'bg-accent text-bg shadow-sm' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'}`}
+            className={`flex flex-col items-center justify-center gap-1 px-3 py-3 text-sm font-medium rounded-lg transition-[background-color,color,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${selectedPreset === preset.value ? 'bg-accent text-bg shadow-sm' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border'}`}
           >
             <span className="font-semibold">{preset.label}</span>
             <span className="text-xs opacity-75">{preset.desc}</span>
@@ -94,7 +98,6 @@ const BoardSizeSection = memo(function BoardSizeSection({
         ))}
       </div>
 
-      {}
       <div className="space-y-2">
         <label className="text-xs font-medium text-text-secondary">
           Custom Size (cm)
@@ -135,8 +138,7 @@ const ExportCustomization = memo(function ExportCustomization({
   const socialPresets = QUALITY_PRESETS.filter((p) => p.mode === 'social');
   const currentPreset = QUALITY_PRESETS.find((p) => p.value === exportQuality);
   return (
-    <div className="h-full flex flex-col lg:flex-row gap-0 overflow-hidden">
-      {}
+    <div className="h-full flex flex-col lg:flex-row gap-0 overflow-x-hidden overflow-y-auto lg:overflow-hidden">
       <div className="flex-1 p-4 lg:p-6 lg:border-r border-border flex flex-col justify-center">
         <div className="max-w-md mx-auto w-full space-y-6">
           <BoardSizeSection boardSize={boardSize} setBoardSize={setBoardSize} />
@@ -166,7 +168,6 @@ const ExportCustomization = memo(function ExportCustomization({
         </div>
       </div>
 
-      {}
       <div className="flex-1 p-4 lg:p-6 flex flex-col justify-center">
         <div className="max-w-md mx-auto w-full space-y-5">
           <div className="space-y-3">
@@ -176,12 +177,17 @@ const ExportCustomization = memo(function ExportCustomization({
                 Print Quality
               </h3>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(8rem, 1fr))'
+              }}
+            >
               {printPresets.map((preset) => (
                 <button
                   key={preset.value}
                   onClick={() => setExportQuality(preset.value)}
-                  className={`px-3 py-3 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
+                  className={`px-3 py-3 rounded-lg text-sm font-semibold transition-[background-color,color,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
                   title={preset.description}
                 >
                   <div className="flex flex-col items-center gap-0.5">
@@ -202,12 +208,17 @@ const ExportCustomization = memo(function ExportCustomization({
                 Social
               </h3>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(8rem, 1fr))'
+              }}
+            >
               {socialPresets.map((preset) => (
                 <button
                   key={preset.value}
                   onClick={() => setExportQuality(preset.value)}
-                  className={`px-3 py-3 rounded-lg text-sm font-semibold transition-all ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
+                  className={`px-3 py-3 rounded-lg text-sm font-semibold transition-[background-color,color,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${exportQuality === preset.value ? 'bg-accent text-bg shadow-lg shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
                   title={preset.description}
                 >
                   <div className="flex flex-col items-center gap-0.5">
