@@ -1,4 +1,4 @@
-export const MAX_TOTAL_PRESETS = 48;
+export const MAX_TOTAL_PRESETS = 80;
 export const STANDARD_PRESETS_COUNT = 19;
 export const RANK_GUTTER = 20;
 export const BOARD_SIZE_EXPR = 'min(48vh, 40vw, 420px)';
