@@ -7,7 +7,8 @@ import { memo } from 'react';
 const PaginationDots = memo(function PaginationDots({
   currentPage,
   totalPages,
-  onPageChange
+  onPageChange,
+  isPageDisabled
 }) {
   if (totalPages <= 1) return null;
   return (
@@ -17,14 +18,19 @@ const PaginationDots = memo(function PaginationDots({
           length: totalPages
         },
         (_, i) => i
-      ).map((pageNum) => (
-        <button
-          key={`page-dot-${pageNum}`}
-          onClick={() => onPageChange(pageNum)}
-          className={`w-2 h-2 rounded-full transition-all duration-300 ${pageNum === currentPage ? 'bg-accent w-5' : 'bg-border hover:bg-text-muted'}`}
-          aria-label={`Go to page ${pageNum + 1}`}
-        />
-      ))}
+      ).map((pageNum) => {
+        const disabled = Boolean(isPageDisabled?.(pageNum));
+        return (
+          <button
+            key={`page-dot-${pageNum}`}
+            onClick={() => !disabled && onPageChange(pageNum)}
+            disabled={disabled}
+            className={`h-2.5 rounded-full transition-all duration-300 ${pageNum === currentPage ? 'w-6 bg-accent shadow-[0_0_0_1px_rgba(210,155,30,0.45)]' : 'w-2.5 bg-border'} ${disabled ? 'opacity-45 cursor-not-allowed' : 'hover:bg-text-muted'}`}
+            aria-label={`Go to page ${pageNum + 1}`}
+            aria-current={pageNum === currentPage ? 'page' : undefined}
+          />
+        );
+      })}
     </div>
   );
 });
