@@ -31,14 +31,14 @@ function Navbar({ theme, toggleTheme }) {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-surface-primary/90 backdrop-blur-md animate-navbarSlideDown border-b border-border/50">
-        <div className="w-[95%] max-w-[2400px] mx-auto">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-surface-primary/85 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+        <div className="w-[96%] max-w-[2200px] mx-auto">
           <div className="flex justify-between items-center h-[4rem] sm:h-[5rem] lg:h-[6rem] 3xl:h-[8rem]">
             <button
               onClick={handleLogoClick}
-              className="flex items-center space-x-[0.5em] transition-all duration-300 ease-in-out text-text-primary hover:text-accent"
+              className="flex items-center gap-2 transition-colors duration-300 text-text-primary hover:text-accent"
             >
-              <div className="flex items-center gap-[0.5em] animate-iconBounceIn">
+              <div className="flex items-center gap-2">
                 <img
                   src={Logo}
                   alt="Logo"
@@ -51,7 +51,7 @@ function Navbar({ theme, toggleTheme }) {
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden sm:flex items-center space-x-2 animate-fadeIn stagger-2">
+            <div className="hidden sm:flex items-center gap-1.5">
               <button
                 onClick={toggleTheme}
                 className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-hover active:bg-surface-elevated"
