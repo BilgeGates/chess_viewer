@@ -70,12 +70,17 @@ function BoardSizeControl({ boardSize, setBoardSize }) {
         Board Size
       </label>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div
+        className="grid gap-2"
+        style={{
+          gridTemplateColumns: 'repeat(auto-fit, minmax(5.75rem, 1fr))'
+        }}
+      >
         {presets.map((preset) => (
           <button
             key={preset.value}
             onClick={() => handlePresetClick(preset.value)}
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${selectedPreset === preset.value ? 'bg-accent text-bg shadow-md shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
+            className={`px-3 py-2 text-sm font-medium rounded-lg transition-[background-color,color,box-shadow,border-color] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${selectedPreset === preset.value ? 'bg-accent text-bg shadow-md shadow-accent/20' : 'bg-surface-elevated text-text-secondary hover:bg-surface-hover hover:text-text-primary border border-border/50'}`}
           >
             {preset.label}
           </button>
