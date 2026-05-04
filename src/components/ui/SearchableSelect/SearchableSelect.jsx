@@ -44,7 +44,7 @@ function SearchableSelect({
             boxShadow: 'none',
             WebkitTapHighlightColor: 'transparent'
           }}
-          className={`relative select-custom w-full px-4 py-3 pr-12 bg-surface-hover/50 border border-border text-sm text-text-primary text-left font-medium cursor-pointer transition-all duration-300 ${isOpen ? 'rounded-t-xl rounded-b-none border-b-0' : 'rounded-xl hover:border-accent/50'} ${!isOpen ? 'active:scale-[0.98]' : ''}`}
+          className={`relative select-custom w-full px-4 py-3 pr-12 bg-surface-hover/50 border border-border text-sm text-text-primary text-left font-medium cursor-pointer transition-colors duration-200 ${isOpen ? 'rounded-t-xl rounded-b-none border-b-0' : 'rounded-xl hover:border-accent/50'}`}
         >
           {!isOpen && selectedOption ? (
             <span className="font-semibold hover:text-accent transition-colors">
@@ -73,7 +73,7 @@ function SearchableSelect({
         </button>
 
         <ul
-          className={`w-full bg-surface-elevated/95 backdrop-blur-lg border border-border border-t-0 rounded-b-xl transition-all duration-300 ease-in-out origin-top select-custom ${isOpen ? 'opacity-100 scale-y-100 max-h-60 overflow-y-auto' : 'opacity-0 scale-y-95 max-h-0 overflow-hidden pointer-events-none'}`}
+          className={`w-full bg-surface-elevated/95 backdrop-blur-lg border border-border border-t-0 rounded-b-xl transition-[opacity,transform,max-height] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] origin-top select-custom ${isOpen ? 'opacity-100 translate-y-0 max-h-60 overflow-y-auto' : 'opacity-0 -translate-y-1 max-h-0 overflow-hidden pointer-events-none'}`}
         >
           {displayOptions.length === 0 && search.trim() !== '' && (
             <li className="px-4 py-3 flex items-center text-sm text-error gap-2 select-none">
@@ -92,7 +92,7 @@ function SearchableSelect({
                   setIsOpen(false);
                   setSearch('');
                 }}
-                className={`group px-4 py-3 cursor-pointer flex justify-between items-center transition-all duration-200 hover:bg-accent/10 hover:pl-5 ${isSelected ? 'text-accent font-semibold' : 'text-text-secondary hover:text-text-primary'}`}
+                className={`group px-4 py-3 cursor-pointer flex justify-between items-center transition-colors duration-200 hover:bg-accent/10 ${isSelected ? 'text-accent font-semibold' : 'text-text-secondary hover:text-text-primary'}`}
               >
                 <span>{option.name}</span>
                 {isSelected && <CheckCircle className="w-4 h-4 text-accent" />}
