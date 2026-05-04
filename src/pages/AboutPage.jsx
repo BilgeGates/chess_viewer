@@ -19,8 +19,8 @@ import {
  */
 function AboutPage() {
   return (
-    <div className="h-full max-h-full overflow-hidden pt-16 sm:pt-20 pb-4 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto h-full overflow-y-auto space-y-6 pr-1">
+    <div className="w-full pt-[4rem] sm:pt-[5rem] lg:pt-[6rem] 3xl:pt-[8rem] pb-[2rem] sm:pb-[3rem] px-[2%] sm:px-[3%] lg:px-[4%]">
+      <div className="w-[95%] max-w-[2400px] mx-auto space-y-6 lg:space-y-10 transition-all duration-500 ease-in-out">
         {}
         <div className="text-center mb-10 animate-fadeIn">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-semibold mb-5">
@@ -179,7 +179,7 @@ function AboutPage() {
 
 function QualityCard({ level, label, desc }) {
   return (
-    <div className="p-3 rounded-lg bg-surface-elevated border border-border hover:border-accent text-center transition-all duration-200 hover:scale-105">
+    <div className="p-3 rounded-lg bg-surface-elevated border border-border hover:border-accent text-center transition-colors duration-200">
       <div className="text-lg font-bold text-accent mb-0.5">{level}</div>
       <div className="text-sm font-semibold text-text-primary mb-0.5">
         {label}
@@ -191,7 +191,7 @@ function QualityCard({ level, label, desc }) {
 
 function ActionCard({ icon, title, desc }) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-elevated border border-border hover:border-accent transition-all duration-200 hover:scale-105">
+    <div className="flex items-center gap-3 p-3 rounded-lg bg-surface-elevated border border-border hover:border-accent transition-colors duration-200">
       <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent shrink-0">
         {icon}
       </div>
