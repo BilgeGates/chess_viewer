@@ -42,7 +42,7 @@ const SelectedPreview = memo(
         <div className="relative flex items-center gap-4 p-5">
           <div className="relative group">
             <div
-              className="w-20 h-20 rounded-2xl border-2 border-border shadow-2xl transition-all duration-300 group-hover:scale-105"
+              className="w-20 h-20 rounded-2xl border-2 border-border shadow-2xl transition-all duration-300 group-hover:shadow-md"
               style={{
                 background: tempColor,
                 boxShadow: `0 10px 40px ${tempColor}40, 0 0 0 1px ${tempColor}20`
@@ -78,7 +78,7 @@ const SelectedPreview = memo(
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                  <Copy className="w-3.5 h-3.5  transition-transform" />
                   <span>RGB: {getRgbValues()}</span>
                 </>
               )}
@@ -88,7 +88,7 @@ const SelectedPreview = memo(
           <button
             onClick={handleApply}
             disabled={applied}
-            className="relative px-6 py-4 bg-gradient-to-br from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 disabled:from-success/80 disabled:to-success text-bg font-bold rounded-xl transition-all duration-300 active:scale-95 shadow-xl hover:shadow-2xl outline-none group overflow-hidden"
+            className="relative px-6 py-4 bg-gradient-to-br from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 disabled:from-success/80 disabled:to-success text-bg font-bold rounded-xl transition-all duration-300  shadow-xl hover:shadow-2xl outline-none group overflow-hidden"
             style={{
               boxShadow: applied
                 ? `0 10px 40px rgb(var(--color-success) / 0.4)`
@@ -104,7 +104,7 @@ const SelectedPreview = memo(
                 </>
               ) : (
                 <>
-                  <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <Check className="w-5 h-5  transition-transform" />
                   <span>Apply</span>
                 </>
               )}
