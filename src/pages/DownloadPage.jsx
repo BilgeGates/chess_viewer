@@ -22,8 +22,8 @@ function DownloadPage() {
     );
   };
   return (
-    <div className="h-full max-h-full overflow-hidden pt-16 sm:pt-20 pb-4 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto h-full overflow-y-auto pr-1">
+    <div className="w-full pt-[4rem] sm:pt-[5rem] lg:pt-[6rem] 3xl:pt-[8rem] pb-[2rem] sm:pb-[3rem] px-[2%] sm:px-[3%] lg:px-[4%]">
+      <div className="w-[95%] max-w-[2400px] mx-auto transition-all duration-500 ease-in-out">
         {}
         <div className="text-center mb-10 animate-fadeIn">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-5">
@@ -41,7 +41,7 @@ function DownloadPage() {
         {}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10 animate-fadeIn">
           {}
-          <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01] border border-border">
+          <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200 border border-border">
             <div className="w-14 h-14 bg-accent/10 rounded-xl flex items-center justify-center mb-5 text-accent">
               <Globe className="w-7 h-7" />
             </div>
@@ -67,14 +67,14 @@ function DownloadPage() {
             </ul>
             <a
               href="/"
-              className="block w-full py-3 px-5 bg-accent hover:bg-accent-hover text-bg text-center rounded-xl font-bold shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+              className="block w-full py-3 px-5 bg-accent hover:bg-accent-hover text-bg text-center rounded-xl font-bold shadow-md hover:shadow-lg transition-colors duration-200"
             >
               Use Web App
             </a>
           </div>
 
           {}
-          <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01] border-2 border-secondary">
+          <div className="glass-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200 border-2 border-secondary">
             <div className="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-5 text-secondary">
               <Smartphone className="w-7 h-7" />
             </div>
@@ -100,7 +100,7 @@ function DownloadPage() {
             </ul>
             <button
               onClick={handleInstallPWA}
-              className="block w-full py-3 px-5 bg-surface-elevated hover:bg-surface-hover text-text-primary text-center rounded-xl font-bold border-2 border-secondary hover:shadow-md transition-all duration-200 active:scale-95"
+              className="block w-full py-3 px-5 bg-surface-elevated hover:bg-surface-hover text-text-primary text-center rounded-xl font-bold border-2 border-secondary hover:shadow-md transition-colors duration-200"
             >
               Install PWA
             </button>
@@ -144,7 +144,7 @@ function DownloadPage() {
 
 function PlatformCard({ icon, title, platforms, browsers }) {
   return (
-    <div className="text-center p-5 rounded-xl bg-surface-elevated border border-border hover:border-accent transition-all duration-200 hover:scale-[1.02]">
+    <div className="text-center p-5 rounded-xl bg-surface-elevated border border-border hover:border-accent transition-colors duration-200">
       <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mx-auto mb-3 text-accent">
         {icon}
       </div>
