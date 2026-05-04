@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom';
  */
 function NotFoundPage() {
   return (
-    <div className="h-full max-h-full overflow-hidden flex items-center justify-center px-4 bg-bg">
+    <div className="w-full flex flex-col flex-1 items-center justify-center px-4 py-12 sm:py-16 bg-bg">
       <div className="text-center max-w-lg animate-fadeIn">
         <div className="relative mb-8">
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mx-auto animate-float">
-            <Crown className="w-12 h-12 text-accent animate-pulse" />
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mx-auto">
+            <Crown className="w-12 h-12 text-accent" />
           </div>
         </div>
 
@@ -29,16 +29,16 @@ function NotFoundPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to="/"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-accent to-accent-hover text-bg rounded-xl font-bold shadow-lg hover:shadow-glow transition-all duration-300 hover:scale-105 active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-accent to-accent-hover text-bg rounded-xl font-bold shadow-lg hover:shadow-glow transition-shadow duration-200"
           >
-            <Home className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+            <Home className="w-5 h-5" />
             Go Home
           </Link>
           <button
             onClick={() => window.history.back()}
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-surface-elevated text-text-primary rounded-xl font-bold hover:bg-surface-hover transition-all duration-300 hover:scale-105 active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-surface-elevated text-text-primary rounded-xl font-bold hover:bg-surface-hover transition-colors duration-200"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
+            <ArrowLeft className="w-5 h-5" />
             Go Back
           </button>
         </div>
