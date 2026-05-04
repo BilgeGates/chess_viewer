@@ -62,7 +62,7 @@ const CustomSelect = memo(function CustomSelect({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 w-full bg-surface-elevated border border-border rounded-lg shadow-2xl overflow-hidden">
+        <div className="absolute z-50 mt-2 w-full bg-surface-elevated border border-border rounded-lg shadow-2xl overflow-hidden animate-scaleIn origin-top">
           <div className="py-1 max-h-64 overflow-y-auto">
             {options.map((option) => {
               const isSelected = option.value === value;
