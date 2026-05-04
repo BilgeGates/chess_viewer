@@ -1,11 +1,23 @@
 /**
  * Maximum allowed length for a FEN string before any parsing attempt.
- * Standard FEN is ≤ 90 characters; 256 provides headroom while blocking
- * excessively long inputs that could be used for denial-of-service.
+ *
+ * The longest practical 6-field FEN (for this app) occurs when the
+ * piece-placement field contains 64 pieces (no digits):
+ * - 64 piece letters + 7 '/' separators = 71 chars
+ *
+ * Then we allow standard fields with bounded numeric widths:
+ * - 5 spaces
+ * - active color: 1
+ * - castling rights: up to 4 (KQkq)
+ * - en-passant: up to 2 (e3)
+ * - halfmove: up to 5 digits
+ * - fullmove: up to 5 digits
+ *
+ * Total: 71 + (5 + 1 + 4 + 2 + 5 + 5) = 93 chars.
  *
  * @type {number}
  */
-export const MAX_FEN_LENGTH = 256;
+export const MAX_FEN_LENGTH = 93;
 
 /**
  * Maximum size (bytes) allowed for a single localStorage entry value.
