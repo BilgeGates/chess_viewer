@@ -2,12 +2,14 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
+import { DndProvider } from 'react-dnd';
+
 import {
   ActionButtons,
   ControlPanel,
   ExportProgress
 } from '@/components/features';
-import { ChessEditor, DndProvider } from '@/components/interactions';
+import { ChessEditor } from '@/components/interactions';
 import { NotificationContainer } from '@/components/ui';
 import { useFENHistory, useLocalStorage, useNotifications } from '@/hooks';
 import {
@@ -372,12 +374,12 @@ function HomePage() {
 
   return (
     <DndProvider>
-      <div className="min-h-full overflow-y-auto pt-16 sm:pt-20 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4">
-        <div className="max-w-[1720px] mx-auto w-full">
-          <div className="flex flex-col xl:flex-row gap-4 lg:gap-5 xl:gap-6 items-stretch xl:min-h-0 xl:h-[calc(100vh-6.75rem)]">
-            <div className="w-full xl:flex-1 xl:h-full space-y-3 sm:space-y-4 animate-pageEnter min-h-0 min-w-0 flex flex-col">
-              <div className="relative glass-card rounded-xl p-3 sm:p-4 xl:flex-1 xl:min-h-0 animate-revealUp stagger-1">
-                <div className="h-full">
+      <div className="w-full pt-[4rem] sm:pt-[5rem] lg:pt-[6rem] 3xl:pt-[8rem] px-[2%] sm:px-[3%] lg:px-[4%] pb-[2rem] sm:pb-[3rem]">
+        <div className="w-[95%] max-w-[2400px] mx-auto transition-all duration-500 ease-in-out">
+          <div className="flex flex-col xl:flex-row xl:items-start gap-4 lg:gap-5 xl:gap-6 min-w-0">
+            <div className="w-full xl:flex-1 space-y-3 sm:space-y-4 animate-pageEnter min-w-0 flex flex-col">
+              <div className="relative glass-card rounded-xl p-3 sm:p-4 xl:flex-1 min-w-0 animate-revealUp stagger-1">
+                <div>
                   <ChessEditor
                     fen={fen}
                     onFenChange={handleEditorFenChange}
@@ -387,12 +389,11 @@ function HomePage() {
                     darkSquare={darkSquare}
                     flipped={flipped}
                     onPieceImagesChange={handlePieceImagesChange}
-                    className="xl:h-full"
                   />
                 </div>
               </div>
 
-              <div className="glass-card rounded-xl p-3 sm:p-4 lg:p-5 animate-revealUp stagger-3">
+              <div className="glass-card rounded-xl p-3 sm:p-4 lg:p-5 animate-revealUp stagger-3 flex-shrink-0">
                 <ActionButtons
                   onDownloadPNG={handleDownloadPNG}
                   onDownloadJPEG={handleDownloadJPEG}
@@ -407,30 +408,32 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="w-full xl:w-[clamp(380px,28vw,520px)] xl:flex-shrink-0 xl:min-h-0 xl:h-full animate-slideInRight stagger-2">
-              <ControlPanel
-                fen={fen}
-                setFen={setFen}
-                pieceStyle={pieceStyle}
-                setPieceStyle={setPieceStyle}
-                showCoords={showCoords}
-                setShowCoords={setShowCoords}
-                showCoordinateBorder={showCoordinateBorder}
-                setShowCoordinateBorder={setShowCoordinateBorder}
-                showThinFrame={showThinFrame}
-                setShowThinFrame={setShowThinFrame}
-                exportQuality={exportQuality}
-                addToFavoritesRef={addToFavoritesRef}
-                onFavoriteStatusChange={setIsFavorite}
-                saveManualFen={saveManualFen}
-                saveExportFen={saveExportFen}
-                addCurrentToFavorites={addCurrentToFavorites}
-                onNotification={(message, type) => {
-                  if (type === 'success') success(message);
-                  else if (type === 'error') error(message);
-                  else if (type === 'warning') info(message);
-                }}
-              />
+            <div className="w-full min-w-0 xl:w-[clamp(400px,35vw,600px)] xl:flex-none xl:self-stretch animate-slideInRight stagger-2 h-full flex flex-col">
+              <div className="flex-1 overflow-y-auto pr-1">
+                <ControlPanel
+                  fen={fen}
+                  setFen={setFen}
+                  pieceStyle={pieceStyle}
+                  setPieceStyle={setPieceStyle}
+                  showCoords={showCoords}
+                  setShowCoords={setShowCoords}
+                  showCoordinateBorder={showCoordinateBorder}
+                  setShowCoordinateBorder={setShowCoordinateBorder}
+                  showThinFrame={showThinFrame}
+                  setShowThinFrame={setShowThinFrame}
+                  exportQuality={exportQuality}
+                  addToFavoritesRef={addToFavoritesRef}
+                  onFavoriteStatusChange={setIsFavorite}
+                  saveManualFen={saveManualFen}
+                  saveExportFen={saveExportFen}
+                  addCurrentToFavorites={addCurrentToFavorites}
+                  onNotification={(message, type) => {
+                    if (type === 'success') success(message);
+                    else if (type === 'error') error(message);
+                    else if (type === 'warning') info(message);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
