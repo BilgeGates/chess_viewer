@@ -28,7 +28,7 @@ const PrimaryActions = memo(
       <div className="grid grid-cols-3 gap-2">
         <button
           onClick={handleRandomClick}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/50 rounded-lg text-purple-300 text-xs font-semibold transition-all active:scale-95 outline-none"
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/50 rounded-lg text-purple-300 text-xs font-semibold transition-colors duration-200 outline-none"
         >
           <Shuffle className="w-3.5 h-3.5" />
           Random
@@ -36,7 +36,7 @@ const PrimaryActions = memo(
 
         <button
           onClick={handleResetClick}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-amber-600/20 to-orange-600/20 hover:from-amber-600/30 hover:to-orange-600/30 border border-amber-500/50 rounded-lg text-amber-300 text-xs font-semibold transition-all active:scale-95 outline-none"
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-amber-600/20 to-orange-600/20 hover:from-amber-600/30 hover:to-orange-600/30 border border-amber-500/50 rounded-lg text-amber-300 text-xs font-semibold transition-colors duration-200 outline-none"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           Reset
@@ -44,7 +44,7 @@ const PrimaryActions = memo(
 
         <button
           onClick={handleCopyClick}
-          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-success/20 to-success/10 hover:from-success/30 hover:to-success/20 border border-success/50 rounded-lg text-success text-xs font-semibold transition-all active:scale-95 outline-none"
+          className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-success/20 to-success/10 hover:from-success/30 hover:to-success/20 border border-success/50 rounded-lg text-success text-xs font-semibold transition-colors duration-200 outline-none"
         >
           <Copy className="w-3.5 h-3.5" />
           {isCopied ? 'Copied!' : 'Copy'}
