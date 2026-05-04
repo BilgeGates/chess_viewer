@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { DndProvider as ReactDndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -7,20 +9,46 @@ import { TouchBackend } from 'react-dnd-touch-backend';
  * @returns {JSX.Element}
  */
 function DndProvider({ children }) {
-  const isTouchDevice =
-    typeof window !== 'undefined' &&
-    (('ontouchstart' in window && navigator.maxTouchPoints > 0) ||
-      !window.matchMedia('(pointer: fine)').matches);
+  const isTouchDevice = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    try {
+      const hasTouchPoints =
+        navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+      const hasFinePointer = window.matchMedia?.('(pointer: fine)').matches;
+      const hasCoarsePointer = window.matchMedia?.('(pointer: coarse)').matches;
+      return Boolean(hasTouchPoints && (hasCoarsePointer || !hasFinePointer));
+    } catch {
+      return false;
+    }
+  }, []);
 
-  const touchBackendOptions = {
-    enableMouseEvents: true,
-    enableTouchEvents: true,
-    delayTouchStart: 150,
-    ignoreContextMenu: true
-  };
+  const { Backend, backendOptions } = useMemo(() => {
+    const touchBackendOptions = {
+      enableMouseEvents: true,
+      enableTouchEvents: true,
+      delayTouchStart: 150,
+      ignoreContextMenu: true
+    };
 
-  const Backend = isTouchDevice ? TouchBackend : HTML5Backend;
-  const backendOptions = isTouchDevice ? touchBackendOptions : undefined;
+    if (isTouchDevice) {
+      return {
+        Backend: TouchBackend,
+        backendOptions: touchBackendOptions
+      };
+    }
+
+    const options =
+      typeof document !== 'undefined' && document.body
+        ? { rootElement: document.body }
+        : {};
+
+    return {
+      Backend: HTML5Backend,
+      backendOptions: options
+    };
+  }, [isTouchDevice]);
 
   return (
     <ReactDndProvider backend={Backend} options={backendOptions}>
@@ -28,4 +56,5 @@ function DndProvider({ children }) {
     </ReactDndProvider>
   );
 }
+
 export default DndProvider;
