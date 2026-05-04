@@ -433,7 +433,10 @@ const ThemeCustomization = memo(function ThemeCustomization() {
         <div className="flex-1 overflow-hidden px-3 pb-3 sm:px-4 sm:pb-4 min-h-0">
           {activePanelTab === 'main' ? (
             <div
-              className="h-full overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-2.5 transition-all duration-300 content-start"
+              className="h-full overflow-y-auto pr-1 grid gap-2 sm:gap-2.5 transition-opacity duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] content-start"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))'
+              }}
               role="group"
               aria-label="Theme preset options"
             >
@@ -504,7 +507,7 @@ const ThemeCustomization = memo(function ThemeCustomization() {
                   {isAddingNew ? (
                     <button
                       onClick={handleConfirmAdd}
-                      className="flex-1 py-2.5 rounded-lg text-sm font-bold bg-accent hover:bg-accent-hover text-bg shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                      className="flex-1 py-2.5 rounded-lg text-sm font-bold bg-accent hover:bg-accent-hover text-bg shadow-md transition-colors duration-200 flex items-center justify-center gap-2"
                     >
                       <Wand2 className="w-4 h-4" />
                       Add Theme
@@ -513,7 +516,7 @@ const ThemeCustomization = memo(function ThemeCustomization() {
                     <button
                       onClick={handleAddPreset}
                       disabled={!canAddPreset}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${canAddPreset ? 'bg-accent hover:bg-accent-hover text-bg shadow-md active:scale-[0.98]' : 'bg-surface-elevated text-text-muted opacity-60 cursor-not-allowed'}`}
+                      className={`flex-1 py-2.5 rounded-lg text-sm font-bold transition-colors duration-200 flex items-center justify-center gap-2 ${canAddPreset ? 'bg-accent hover:bg-accent-hover text-bg shadow-md' : 'bg-surface-elevated text-text-muted opacity-60 cursor-not-allowed'}`}
                     >
                       <Plus className="w-4 h-4" />
                       New Theme
@@ -526,7 +529,7 @@ const ThemeCustomization = memo(function ThemeCustomization() {
                       setEditingPresetId(null);
                       setActivePanelTab('main');
                     }}
-                    className="px-4 py-2.5 rounded-lg text-sm font-semibold bg-surface-elevated hover:bg-surface-hover border border-border text-text-secondary transition-all"
+                    className="px-4 py-2.5 rounded-lg text-sm font-semibold bg-surface-elevated hover:bg-surface-hover border border-border text-text-secondary transition-colors duration-200"
                   >
                     Done
                   </button>
