@@ -1,6 +1,6 @@
 import { memo, useCallback, useState } from 'react';
 
-import { HelpCircle, Moon, Sun } from 'lucide-react';
+import { HelpCircle, Menu, Moon, Sun, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import Logo from '@/assets/Logo.png';
@@ -8,45 +8,53 @@ import HelpCenter from '@/components/features/HelpCenter';
 
 function Navbar({ theme, toggleTheme }) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogoClick = useCallback(() => {
     navigate('/');
+    setIsMobileMenuOpen(false);
   }, [navigate]);
 
   const handleHelpClick = useCallback(() => {
     setIsHelpOpen(true);
+    setIsMobileMenuOpen(false);
   }, []);
 
   const handleCloseHelp = useCallback(() => {
     setIsHelpOpen(false);
   }, []);
 
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen((prev) => !prev);
+  }, []);
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent animate-navbarSlideDown">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 sm:h-20">
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out bg-surface-primary/90 backdrop-blur-md animate-navbarSlideDown border-b border-border/50">
+        <div className="w-[95%] max-w-[2400px] mx-auto">
+          <div className="flex justify-between items-center h-[4rem] sm:h-[5rem] lg:h-[6rem] 3xl:h-[8rem]">
             <button
               onClick={handleLogoClick}
-              className="flex items-center space-x-2 transition-colors duration-300 text-text-primary hover:text-accent"
+              className="flex items-center space-x-[0.5em] transition-all duration-300 ease-in-out text-text-primary hover:text-accent"
             >
-              <div className="flex items-center gap-2 animate-iconBounceIn hover:scale-105 active:scale-95 transition-transform duration-300">
+              <div className="flex items-center gap-[0.5em] animate-iconBounceIn">
                 <img
                   src={Logo}
                   alt="Logo"
-                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                  className="w-[2rem] h-[2rem] sm:w-[2.5rem] sm:h-[2.5rem] lg:w-[3rem] lg:h-[3rem] 3xl:w-[4rem] 3xl:h-[4rem] object-contain transition-transform duration-300 ease-in-out hover:scale-105"
                 />
-                <span className="font-display font-bold text-text-primary leading-tight transition-all duration-300 hover:text-accent">
+                <span className="font-display font-bold text-2xl sm:text-3xl text-text-primary leading-tight transition-colors duration-300 ease-in-out hover:text-accent">
                   FENForsty Pro
                 </span>
               </div>
             </button>
 
-            <div className="flex items-center space-x-2 animate-fadeIn stagger-2">
+            {/* Desktop Navigation */}
+            <div className="hidden sm:flex items-center space-x-2 animate-fadeIn stagger-2">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg transition-all duration-300 text-text-secondary hover:text-text-primary hover:bg-surface-hover hover:scale-110 active:scale-90 hover:rotate-12"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-hover active:bg-surface-elevated"
                 aria-label="Toggle theme"
               >
                 {theme === 'dark' ? (
@@ -58,12 +66,58 @@ function Navbar({ theme, toggleTheme }) {
 
               <button
                 onClick={handleHelpClick}
-                className="flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-text-secondary hover:text-text-primary hover:bg-surface-hover hover:scale-105 active:scale-95"
+                className="flex items-center space-x-2 px-3 sm:px-4 py-2 min-h-[44px] rounded-lg transition-colors duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-hover active:bg-surface-elevated"
               >
-                <HelpCircle className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
+                <HelpCircle className="w-5 h-5" />
                 <span className="font-medium hidden sm:inline">Help</span>
               </button>
             </div>
+
+            {/* Mobile Hamburger Button */}
+            <div className="flex sm:hidden items-center">
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+                aria-expanded={isMobileMenuOpen}
+                aria-label="Toggle navigation menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Menu */}
+        <div
+          className={`sm:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isMobileMenuOpen
+              ? 'max-h-48 border-b border-border/50 bg-surface-primary/95'
+              : 'max-h-0'
+          }`}
+        >
+          <div className="px-4 py-3 space-y-2">
+            <button
+              onClick={toggleTheme}
+              className="flex w-full items-center space-x-3 px-3 py-3 min-h-[44px] rounded-lg transition-colors duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-hover active:bg-surface-elevated"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+              <span className="font-medium text-base">Toggle Theme</span>
+            </button>
+            <button
+              onClick={handleHelpClick}
+              className="flex w-full items-center space-x-3 px-3 py-3 min-h-[44px] rounded-lg transition-colors duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-hover active:bg-surface-elevated"
+            >
+              <HelpCircle className="w-5 h-5" />
+              <span className="font-medium text-base">Help</span>
+            </button>
           </div>
         </div>
       </nav>
