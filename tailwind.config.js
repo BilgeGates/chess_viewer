@@ -8,7 +8,9 @@ module.exports = {
       md: '768px',
       lg: '1024px',
       xl: '1280px',
-      '2xl': '1536px'
+      '2xl': '1536px',
+      '3xl': '1920px',
+      '4xl': '2560px'
     },
     extend: {
       colors: {
@@ -87,12 +89,12 @@ module.exports = {
         glow: 'var(--shadow-glow)'
       },
       animation: {
-        fadeIn: 'fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-        fadeInScale: 'fadeInScale 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-        slideInRight: 'slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-        slideInLeft: 'slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-        slideUp: 'slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-        scaleIn: 'scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        fadeIn: 'fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        fadeInScale: 'fadeInScale 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        slideInRight: 'slideInRight 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        slideInLeft: 'slideInLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        slideUp: 'slideUp 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        scaleIn: 'scaleIn 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         shimmer: 'shimmer 2s infinite linear',
         float: 'float 3s ease-in-out infinite',
         pulse: 'pulse 2s ease-in-out infinite',
@@ -101,7 +103,7 @@ module.exports = {
       },
       transitionTimingFunction: {
         smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
-        bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+        bounce: 'cubic-bezier(0.4, 0, 0.2, 1)'
       },
       backdropBlur: {
         xs: '2px'
