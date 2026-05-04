@@ -16,7 +16,7 @@ const AddPresetCard = memo(function AddPresetCard({ onClick, disabled }) {
       onClick={onClick}
       disabled={disabled}
       aria-label="Add new theme"
-      className={`group relative rounded-lg transition-all duration-200 overflow-hidden border-2 border-dashed ${disabled ? 'border-border/30 opacity-50 cursor-not-allowed' : 'border-border/60 hover:border-accent/60 hover:scale-[1.03]'}`}
+      className={`group relative rounded-lg transition-colors duration-200 overflow-hidden border-2 border-dashed ${disabled ? 'border-border/30 opacity-50 cursor-not-allowed' : 'border-border/60 hover:border-accent/60'}`}
     >
       <div className="flex w-full h-14 bg-surface items-center justify-center gap-1.5">
         <Plus className="w-4 h-4 text-text-muted/50 group-hover:text-accent transition-colors" />
