@@ -14,7 +14,7 @@ import ClipboardHistory from '@/components/features/ClipboardHistory';
 import { useFENBatch } from '@/contexts';
 import { validateFEN } from '@/utils';
 import { logger } from '@/utils/logger';
-import { safeJSONParse } from '@/utils/validation';
+import { MAX_FEN_LENGTH, safeJSONParse } from '@/utils/validation';
 
 /**
  * FEN string input field with copy, paste, batch-add, favorites, and clipboard history actions.
@@ -288,6 +288,7 @@ const FENInputField = memo(
                   ${error ? 'text-error' : ''}
                 `}
                 placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+                maxLength={MAX_FEN_LENGTH}
                 spellCheck="false"
                 autoComplete="off"
               />
