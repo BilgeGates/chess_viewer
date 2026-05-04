@@ -70,15 +70,15 @@ const Toast = memo(function Toast({ notification, onRemove }) {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, x: 80, scale: 0.95 }}
+      initial={{ opacity: 0, x: 24, scale: 0.99 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 80, scale: 0.95 }}
-      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      exit={{ opacity: 0, x: 24, scale: 0.99 }}
+      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
       role="alert"
       aria-label={style.label}
       tabIndex={0}
       className={`group relative pointer-events-auto glass-card bg-gradient-to-r ${style.gradient} text-white px-5 py-4 rounded-xl shadow-xl ${style.shadow}
-        flex items-center gap-4 hover:scale-105 transition-transform duration-300
+        flex items-center gap-4 transition-shadow duration-200
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-bg`}
     >
       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
