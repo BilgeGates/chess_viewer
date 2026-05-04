@@ -13,10 +13,10 @@ const FENHistoryPage = lazy(() => import('@/pages/FENHistoryPage'));
 const AdvancedFENInputPage = lazy(() => import('@/pages/AdvancedFENInputPage'));
 
 const pageTransition = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
-  transition: { duration: 0.3, ease: 'easeInOut' }
+  exit: { opacity: 0, y: -8 },
+  transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] }
 };
 
 /** Suspense fallback spinner displayed while lazy page chunks load. */
