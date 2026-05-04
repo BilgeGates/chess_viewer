@@ -19,7 +19,7 @@ const ColorSwatch = memo(
         className={`
         ${sizes[size]}
         rounded-lg border-2 transition-all
-        hover:scale-105 active:scale-95 relative
+        hover:shadow-md  relative
         ${isSelected ? 'border-accent scale-105 shadow-lg' : 'border-border hover:border-accent/40'}
       `}
         style={{
