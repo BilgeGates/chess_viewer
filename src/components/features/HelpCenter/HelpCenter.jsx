@@ -1,4 +1,5 @@
 import { memo, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import {
   BookOpen,
@@ -261,7 +262,25 @@ const HelpCenterDrawer = memo(function HelpCenterDrawer({ isOpen, onClose }) {
     });
     return results;
   }, [searchQuery]);
-  if (!isOpen) return null;
+
+  const overlayTransition = {
+    duration: 0.34,
+    ease: [0.22, 1, 0.36, 1]
+  };
+  const drawerTransition = {
+    duration: 0.42,
+    ease: [0.22, 1, 0.36, 1]
+  };
+
+  const contentTransition = {
+    duration: 0.38,
+    ease: [0.22, 1, 0.36, 1]
+  };
+
+  const contentKey = searchQuery.trim()
+    ? `search-${searchQuery}`
+    : `section-${activeSection}`;
+
   const renderContent = () => {
     if (searchQuery.trim() && filteredContent) {
       return (
@@ -331,77 +350,95 @@ const HelpCenterDrawer = memo(function HelpCenterDrawer({ isOpen, onClose }) {
     );
   };
   return (
-    <>
-      {}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity duration-300"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={overlayTransition}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60]"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-      {}
-      <div className="fixed inset-y-0 right-0 z-[70] w-full md:w-[50%] lg:w-[55%] xl:w-[45%] min-w-[320px] max-w-[900px] bg-bg border-l border-border shadow-2xl flex flex-col animate-slideInRight">
-        {}
-        <div className="px-6 py-4 border-b border-border bg-surface">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-display font-bold text-text-primary">
-              Help Center
-            </h2>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg hover:bg-surface-hover transition-colors"
-              aria-label="Close help center"
-            >
-              <X className="w-5 h-5 text-text-secondary" />
-            </button>
-          </div>
-
-          {}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search help articles..."
-              className="w-full pl-10 pr-4 py-2.5 bg-bg border border-border rounded-lg text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
-            />
-          </div>
-        </div>
-
-        {}
-        <div className="border-b border-border bg-surface-elevated overflow-x-auto">
-          <div className="flex gap-1 px-4 min-w-max">
-            {TAB_CONFIG.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeSection === tab.id;
-              return (
+          <motion.div
+            initial={{ x: '104%', opacity: 0.94 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '104%', opacity: 0.94 }}
+            transition={drawerTransition}
+            className="fixed inset-y-0 right-0 z-[70] w-full md:w-[50%] lg:w-[55%] xl:w-[45%] sm:min-w-[320px] max-w-[90vw] sm:max-w-[900px] bg-bg border-l border-border shadow-2xl flex flex-col"
+          >
+            <div className="px-6 py-4 border-b border-border bg-surface">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-display font-bold text-text-primary">
+                  Help Center
+                </h2>
                 <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveSection(tab.id);
-                    setSearchQuery('');
-                  }}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all border-b-2 ${isActive ? 'text-accent border-accent' : 'text-text-secondary border-transparent hover:text-text-primary hover:bg-surface-hover'}`}
-                  aria-label={tab.label}
-                  title={tab.label}
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-surface-hover transition-colors"
+                  aria-label="Close help center"
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className={isActive ? 'inline' : 'hidden'}>
-                    {tab.label}
-                  </span>
+                  <X className="w-5 h-5 text-text-secondary" />
                 </button>
-              );
-            })}
-          </div>
-        </div>
+              </div>
 
-        {}
-        <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-          {renderContent()}
-        </div>
-      </div>
-    </>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search help articles..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-bg border border-border rounded-lg text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="border-b border-border bg-surface-elevated overflow-x-auto">
+              <div className="flex gap-1 px-4 min-w-max">
+                {TAB_CONFIG.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeSection === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveSection(tab.id);
+                        setSearchQuery('');
+                      }}
+                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all border-b-2 ${isActive ? 'text-accent border-accent' : 'text-text-secondary border-transparent hover:text-text-primary hover:bg-surface-hover'}`}
+                      aria-label={tab.label}
+                      title={tab.label}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className={isActive ? 'inline' : 'hidden'}>
+                        {tab.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={contentKey}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={contentTransition}
+                >
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 });
 HelpCenterDrawer.displayName = 'HelpCenterDrawer';
