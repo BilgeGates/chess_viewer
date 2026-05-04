@@ -30,12 +30,12 @@ function UserGuide() {
       {}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-6 py-5 flex items-center justify-between text-left group hover:bg-surface-hover/30 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+        className="w-full px-6 py-5 flex items-center justify-between text-left group hover:bg-surface-hover/30 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
         aria-expanded={isExpanded}
         aria-controls="user-guide-content"
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/60 to-secondary/60 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/60 to-secondary/60 flex items-center justify-center shadow-lg">
             <Info className="w-6 h-6 text-bg" aria-hidden="true" />
           </div>
           <div>
@@ -48,7 +48,7 @@ function UserGuide() {
           </div>
         </div>
         <div
-          className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+          className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
           aria-hidden="true"
         >
           <svg
@@ -308,7 +308,7 @@ function QualityCard({
   };
   return (
     <div
-      className={`bg-gradient-to-br ${colors[color]} border rounded-xl p-4 space-y-3 hover:shadow-lg transition-all duration-300 relative`}
+      className={`bg-gradient-to-br ${colors[color]} border rounded-xl p-4 space-y-3 hover:shadow-lg transition-shadow duration-200 relative`}
     >
       {recommended && (
         <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
@@ -342,7 +342,7 @@ function FormatCard({ icon, format, color, pros, cons }) {
   };
   return (
     <div
-      className={`bg-gradient-to-br ${colors[color]} border rounded-xl p-4 space-y-3 hover:shadow-lg transition-all duration-300`}
+      className={`bg-gradient-to-br ${colors[color]} border rounded-xl p-4 space-y-3 hover:shadow-lg transition-shadow duration-200`}
     >
       <div className="flex items-center gap-2">
         {icon}
@@ -381,7 +381,7 @@ function FormatCard({ icon, format, color, pros, cons }) {
  */
 function TipCard({ icon, text }) {
   return (
-    <div className="bg-gray-800/50 rounded-lg p-3 flex items-start gap-3 hover:bg-gray-700/50 transition-all duration-300 border border-gray-700/50">
+    <div className="bg-gray-800/50 rounded-lg p-3 flex items-start gap-3 hover:bg-gray-700/50 transition-colors duration-200 border border-gray-700/50">
       <div className="flex-shrink-0 mt-0.5">{icon}</div>
       <p className="text-sm text-gray-300 leading-relaxed">{text}</p>
     </div>
@@ -399,7 +399,7 @@ function ActionCard({ icon, action, description, color }) {
   };
   return (
     <div
-      className={`bg-gradient-to-br ${colors[color]} border rounded-lg p-4 space-y-2 hover:shadow-lg transition-all duration-300`}
+      className={`bg-gradient-to-br ${colors[color]} border rounded-lg p-4 space-y-2 hover:shadow-lg transition-shadow duration-200`}
     >
       <div className="flex items-center gap-2">
         {icon}
