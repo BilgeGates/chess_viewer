@@ -38,8 +38,7 @@ const PiecePalette = memo(function PiecePalette({
                   bg-surface-elevated hover:bg-surface-hover
                   border border-border/50 hover:border-accent/50
                   flex items-center gap-2 justify-center
-                  transition-all duration-150
-                  hover:scale-[1.02]
+                  transition-colors duration-200
                   min-h-[3.8rem] sm:min-h-[4.1rem]
                   ${isLoading ? 'opacity-50' : ''}
                 `}
