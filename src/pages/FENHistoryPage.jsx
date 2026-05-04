@@ -303,10 +303,10 @@ const FENHistoryPage = memo(function FENHistoryPage() {
             <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 hover:bg-surface-hover rounded-xl transition-all duration-200 group hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 hover:bg-surface-hover rounded-xl transition-colors duration-200 group"
                 aria-label="Go back"
               >
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-accent group-hover:text-accent-hover transition-all duration-200 group-hover:-translate-x-0.5" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-accent group-hover:text-accent-hover transition-colors duration-200" />
                 <span className="text-xs sm:text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors duration-200">
                   Back
                 </span>
@@ -326,7 +326,7 @@ const FENHistoryPage = memo(function FENHistoryPage() {
             {currentData.length > 0 && (
               <button
                 onClick={handleClearAll}
-                className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-error hover:bg-error/10 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+                className="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-error hover:bg-error/10 rounded-xl transition-colors duration-200"
               >
                 Clear All
               </button>
@@ -338,9 +338,9 @@ const FENHistoryPage = memo(function FENHistoryPage() {
           <div className="flex gap-2 items-center">
             <button
               onClick={() => setActiveTab('active')}
-              className={`flex-1 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
+              className={`flex-1 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 activeTab === 'active'
-                  ? 'bg-accent text-bg shadow-sm scale-[1.02]'
+                  ? 'bg-accent text-bg shadow-sm'
                   : 'bg-surface text-text-secondary hover:text-text-primary hover:bg-surface-hover'
               }`}
             >
@@ -354,9 +354,9 @@ const FENHistoryPage = memo(function FENHistoryPage() {
 
             <button
               onClick={() => setActiveTab('favorites')}
-              className={`flex-1 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
+              className={`flex-1 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 activeTab === 'favorites'
-                  ? 'bg-accent text-bg shadow-sm scale-[1.02]'
+                  ? 'bg-accent text-bg shadow-sm'
                   : 'bg-surface text-text-secondary hover:text-text-primary hover:bg-surface-hover'
               }`}
             >
@@ -370,9 +370,9 @@ const FENHistoryPage = memo(function FENHistoryPage() {
 
             <button
               onClick={() => setActiveTab('archive')}
-              className={`flex-1 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
+              className={`flex-1 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 ${
                 activeTab === 'archive'
-                  ? 'bg-accent text-bg shadow-sm scale-[1.02]'
+                  ? 'bg-accent text-bg shadow-sm'
                   : 'bg-surface text-text-secondary hover:text-text-primary hover:bg-surface-hover'
               }`}
             >
@@ -404,11 +404,11 @@ const FENHistoryPage = memo(function FENHistoryPage() {
         showFavoritesCheckbox={activeTab === 'active'}
       />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1">
         <div className="px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
           {currentData.length === 0 ? (
             <div className="bg-surface border border-border rounded-2xl p-8 sm:p-12 text-center max-w-2xl mx-auto animate-fadeInScale">
-              <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-text-muted mx-auto mb-3 animate-float" />
+              <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-text-muted mx-auto mb-3" />
               <p className="text-text-secondary text-base sm:text-lg font-medium">
                 {activeTab === 'archive'
                   ? 'No archived positions yet'
@@ -429,7 +429,7 @@ const FENHistoryPage = memo(function FENHistoryPage() {
               {currentData.map((entry, index) => (
                 <div
                   key={entry.id}
-                  className="bg-surface border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-accent/5 hover:border-accent/30 hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 group flex flex-col min-h-[200px] animate-cardReveal"
+                  className="bg-surface border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-accent/5 hover:border-accent/30 transition-all duration-200 group flex flex-col min-h-[200px] animate-cardReveal"
                   style={{ animationDelay: `${Math.min(index * 0.05, 0.5)}s` }}
                 >
                   <div className="aspect-square bg-bg/30 p-2 flex-shrink-0 border-b border-border/30">
