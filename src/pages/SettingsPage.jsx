@@ -1,9 +1,10 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 
-import { Database, Download, Palette } from 'lucide-react';
+import { Check, Database, Download, Palette, Pencil, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { ToolPageHeader } from '@/components/layout';
+import { Button } from '@/components/ui';
 import { useLocalStorage } from '@/hooks';
 import {
   DataManagement,
@@ -38,6 +39,7 @@ const pageTabs = [
 const SettingsPage = memo(function SettingsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('theme');
+  const [themeEditControls, setThemeEditControls] = useState(null);
   const [boardSize, setBoardSize] = useLocalStorage('chess-board-size', 4);
   const [fileName, setFileName] = useLocalStorage(
     'chess-file-name',
@@ -55,9 +57,62 @@ const SettingsPage = memo(function SettingsPage() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [handleBack]);
+
+  const handleThemeEditControlsChange = useCallback((controls) => {
+    setThemeEditControls(controls);
+  }, []);
+
+  useEffect(() => {
+    if (activeTab !== 'theme' && themeEditControls !== null) {
+      setThemeEditControls(null);
+    }
+  }, [activeTab, themeEditControls]);
+
+  const themeHeaderRightSlot =
+    activeTab === 'theme' && themeEditControls ? (
+      <div className="flex items-center gap-2">
+        {themeEditControls.editMode ? (
+          <>
+            <Button
+              onClick={themeEditControls.onCancelEditMode}
+              variant="outline"
+              size="sm"
+              icon={X}
+              className="px-3 sm:px-4 py-2 text-xs sm:text-sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={themeEditControls.onApplyChanges}
+              size="sm"
+              icon={Check}
+              className="px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold"
+            >
+              Apply
+            </Button>
+          </>
+        ) : (
+          <Button
+            onClick={themeEditControls.onEnableEditMode}
+            variant="outline"
+            size="sm"
+            icon={Pencil}
+            className="px-3 sm:px-4 py-2 text-xs sm:text-sm"
+          >
+            Edit Mode
+          </Button>
+        )}
+      </div>
+    ) : null;
+
   return (
     <div className="h-full max-h-full flex flex-col bg-bg overflow-hidden">
-      <ToolPageHeader title="Settings" onBack={handleBack} showSave={false} />
+      <ToolPageHeader
+        title="Settings"
+        onBack={handleBack}
+        showSave={false}
+        rightSlot={themeHeaderRightSlot}
+      />
 
       <div className="flex-shrink-0 bg-surface-elevated border-b border-border animate-fadeIn">
         <div className="px-3 sm:px-6 overflow-x-auto">
@@ -83,7 +138,9 @@ const SettingsPage = memo(function SettingsPage() {
         <div className="h-full px-3 sm:px-5 py-3 sm:py-4 overflow-hidden">
           {activeTab === 'theme' && (
             <div className="h-full animate-pageEnter">
-              <ThemeCustomization />
+              <ThemeCustomization
+                onEditControlsChange={handleThemeEditControlsChange}
+              />
             </div>
           )}
           {activeTab === 'export' && (
