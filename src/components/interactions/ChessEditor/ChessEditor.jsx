@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { RotateCcw, X } from 'lucide-react';
 
@@ -6,13 +6,25 @@ import {
   CustomDragLayer,
   InteractiveBoard,
   PiecePalette,
-  TrashZone
+  TrashZone,
+  DndProvider
 } from '@/components/interactions';
 import { useInteractiveBoard, usePieceImages } from '@/hooks';
 
-const FIXED_BOARD_SIZE = 400;
-const RANK_GUTTER = 24;
-const CELL_SIZE = FIXED_BOARD_SIZE / 8;
+const BASE_BOARD_SIZE = 400;
+
+function getBoardSize() {
+  if (typeof window === 'undefined') return BASE_BOARD_SIZE;
+  if (window.innerWidth < 640) return Math.min(280, window.innerWidth * 0.9);
+  if (window.innerWidth < 768) return Math.min(320, window.innerWidth * 0.85);
+  if (window.innerWidth < 1024) return Math.min(360, window.innerWidth * 0.55);
+  if (window.innerWidth < 1280) return Math.min(400, window.innerWidth * 0.45);
+  return Math.min(400, window.innerWidth * 0.35);
+}
+
+function getGutterSize(boardSize) {
+  return Math.round(boardSize / 16);
+}
 
 const ChessEditor = memo(function ChessEditor({
   fen,
@@ -26,6 +38,19 @@ const ChessEditor = memo(function ChessEditor({
   className = ''
 }) {
   const { pieceImages, isLoading, loadProgress } = usePieceImages(pieceStyle);
+  const [boardSize, setBoardSize] = useState(() => getBoardSize());
+  const [gutterSize, setGutterSize] = useState(() => getGutterSize(boardSize));
+  const cellSize = useMemo(() => boardSize / 8, [boardSize]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newSize = getBoardSize();
+      setBoardSize(newSize);
+      setGutterSize(getGutterSize(newSize));
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const {
     board,
@@ -57,12 +82,12 @@ const ChessEditor = memo(function ChessEditor({
       : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
     return (
-      <div className="flex mt-1" style={{ paddingLeft: `${RANK_GUTTER}px` }}>
+      <div className="flex mt-1" style={{ paddingLeft: `${gutterSize}px` }}>
         {files.map((file) => (
           <div
             key={file}
             className="text-[11px] font-semibold text-text-secondary text-center select-none"
-            style={{ width: `${CELL_SIZE}px` }}
+            style={{ width: `${cellSize}px` }}
           >
             {file}
           </div>
@@ -79,13 +104,13 @@ const ChessEditor = memo(function ChessEditor({
     return (
       <div
         className="flex flex-col flex-shrink-0"
-        style={{ width: `${RANK_GUTTER}px` }}
+        style={{ width: `${gutterSize}px` }}
       >
         {ranks.map((rank) => (
           <div
             key={rank}
             className="flex items-center justify-center text-[11px] font-bold text-text-secondary select-none"
-            style={{ height: `${CELL_SIZE}px` }}
+            style={{ height: `${cellSize}px` }}
           >
             {rank}
           </div>
@@ -95,29 +120,27 @@ const ChessEditor = memo(function ChessEditor({
   };
 
   return (
-    <>
-      <CustomDragLayer pieceImages={pieceImages} boardSize={FIXED_BOARD_SIZE} />
+    <DndProvider>
+      <CustomDragLayer pieceImages={pieceImages} boardSize={boardSize} />
 
       <div className={`flex flex-col gap-4 w-full h-full ${className}`}>
-        {/* Yuxarı hissə: board + palette yan-yana */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start w-full min-h-0 flex-1">
-          {/* Board */}
-          <div className="flex-shrink-0 flex justify-center w-full sm:w-auto">
+          <div className="flex-shrink-0 flex justify-center w-full sm:w-auto max-w-full">
             <div
               className="relative flex flex-col"
               style={{
-                width: showCoords
-                  ? `${FIXED_BOARD_SIZE + RANK_GUTTER}px`
-                  : `${FIXED_BOARD_SIZE}px`
+                width: showCoords ? boardSize + gutterSize : boardSize,
+                maxWidth: '100%'
               }}
             >
               <div className="flex">
                 {showCoords && renderRankCoordinates()}
                 <div
                   style={{
-                    width: `${FIXED_BOARD_SIZE}px`,
-                    height: `${FIXED_BOARD_SIZE}px`,
-                    flexShrink: 0
+                    width: boardSize,
+                    height: boardSize,
+                    flexShrink: 0,
+                    maxWidth: '100%'
                   }}
                 >
                   <InteractiveBoard
@@ -128,7 +151,6 @@ const ChessEditor = memo(function ChessEditor({
                     isLoading={isLoading}
                     flipped={flipped}
                     onPieceDrop={handlePieceDrop}
-                    onPieceRemove={handlePieceRemove}
                   />
                 </div>
               </div>
@@ -140,9 +162,9 @@ const ChessEditor = memo(function ChessEditor({
                   className="absolute flex flex-col items-center justify-center bg-surface/90 backdrop-blur-sm z-50 animate-fadeInScale"
                   style={{
                     top: 0,
-                    left: showCoords ? `${RANK_GUTTER}px` : 0,
-                    width: `${FIXED_BOARD_SIZE}px`,
-                    height: `${FIXED_BOARD_SIZE}px`
+                    left: showCoords ? gutterSize : 0,
+                    width: boardSize,
+                    height: boardSize
                   }}
                 >
                   <div className="flex flex-col items-center gap-4">
@@ -159,10 +181,9 @@ const ChessEditor = memo(function ChessEditor({
             </div>
           </div>
 
-          {/* Palette + düymələr */}
           <div
             className="flex flex-col justify-between gap-4 flex-1 w-full sm:w-auto min-w-0"
-            style={{ minHeight: `${FIXED_BOARD_SIZE}px` }}
+            style={{ minHeight: `${boardSize}px` }}
           >
             <div className="flex-1">
               <PiecePalette
@@ -185,13 +206,12 @@ const ChessEditor = memo(function ChessEditor({
                     text-sm font-semibold text-bg
                     bg-accent hover:bg-accent-hover
                     border border-accent/20
-                    rounded-lg transition-all duration-200
-                    hover:scale-105 active:scale-95 shadow-sm
+                    rounded-lg transition-colors duration-200 shadow-sm
                     hover:shadow-md hover:shadow-accent/25
                   "
                   title="Reset to starting position"
                 >
-                  <RotateCcw className="w-4 h-4 transition-transform duration-300 hover:rotate-180" />
+                  <RotateCcw className="w-4 h-4" />
                   <span>Reset</span>
                 </button>
                 <button
@@ -205,13 +225,12 @@ const ChessEditor = memo(function ChessEditor({
                     text-sm font-semibold text-text-secondary
                     bg-surface-elevated hover:bg-surface-hover
                     border border-border hover:border-error/40
-                    rounded-lg transition-all duration-200
-                    hover:scale-105 active:scale-95 shadow-sm
+                    rounded-lg transition-colors duration-200 shadow-sm
                     hover:text-error
                   "
                   title="Clear all pieces"
                 >
-                  <X className="w-4 h-4 transition-transform duration-200 hover:rotate-90" />
+                  <X className="w-4 h-4" />
                   <span>Clear</span>
                 </button>
               </div>
@@ -223,7 +242,7 @@ const ChessEditor = memo(function ChessEditor({
           </div>
         </div>
       </div>
-    </>
+    </DndProvider>
   );
 });
 
