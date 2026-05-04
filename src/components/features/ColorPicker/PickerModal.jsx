@@ -158,21 +158,21 @@ function PickerModal({
           >
             <button
               onClick={onRandom}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-info/20 hover:bg-info/30 border border-info/50 rounded-lg text-info text-xs font-semibold transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-info/20 hover:bg-info/30 border border-info/50 rounded-lg text-info text-xs font-semibold transition-all  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               type="button"
             >
               Random
             </button>
             <button
               onClick={onReset}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-warning/20 hover:bg-warning/30 border border-warning/50 rounded-lg text-warning text-xs font-semibold transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-warning/20 hover:bg-warning/30 border border-warning/50 rounded-lg text-warning text-xs font-semibold transition-all  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               type="button"
             >
               Reset
             </button>
             <button
               onClick={onCopy}
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-success/20 to-success/10 hover:from-success/30 hover:to-success/20 border border-success/50 rounded-lg text-success text-xs font-semibold transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-br from-success/20 to-success/10 hover:from-success/30 hover:to-success/20 border border-success/50 rounded-lg text-success text-xs font-semibold transition-all  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               type="button"
               aria-live="polite"
             >
@@ -200,7 +200,7 @@ function PickerModal({
             </div>
             <button
               onClick={onApply}
-              className="px-5 py-3 bg-gradient-to-br from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 text-bg text-sm font-bold rounded-xl transition-all active:scale-95 shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              className="px-5 py-3 bg-gradient-to-br from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 text-bg text-sm font-bold rounded-xl transition-all  shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               type="button"
               aria-label={`Apply color ${tempColor}`}
             >
