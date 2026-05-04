@@ -1,5 +1,6 @@
 import {
   BOARD_THEMES,
+  MAX_TOTAL_PRESETS,
   STANDARD_PRESETS_COUNT,
   STORAGE_KEYS,
   WOOD_PRESET
@@ -27,6 +28,15 @@ export function getDefaultPresets() {
     }))
   ];
 }
+
+function normalizePresets(presets) {
+  const source = Array.isArray(presets) ? presets : [];
+  const withoutWood = source.filter(
+    (preset) =>
+      preset && typeof preset === 'object' && preset.id !== WOOD_PRESET.id
+  );
+  return [WOOD_PRESET, ...withoutWood].slice(0, MAX_TOTAL_PRESETS);
+}
 /**
  * Loads saved presets from localStorage, ensuring the Wood preset is always first.
  *
@@ -37,10 +47,7 @@ export function loadPresets() {
     const raw = localStorage.getItem(STORAGE_KEYS.PRESETS);
     if (raw) {
       const loaded = JSON.parse(raw);
-      const hasWood = loaded.some((p) => p.id === WOOD_PRESET.id);
-      if (!hasWood)
-        return [WOOD_PRESET, ...loaded.filter((p) => p.id !== WOOD_PRESET.id)];
-      return loaded;
+      return normalizePresets(loaded);
     }
   } catch {
     return getDefaultPresets();
@@ -54,7 +61,10 @@ export function loadPresets() {
  */
 export function savePresets(presets) {
   try {
-    localStorage.setItem(STORAGE_KEYS.PRESETS, JSON.stringify(presets));
+    localStorage.setItem(
+      STORAGE_KEYS.PRESETS,
+      JSON.stringify(normalizePresets(presets))
+    );
   } catch {
     return;
   }
