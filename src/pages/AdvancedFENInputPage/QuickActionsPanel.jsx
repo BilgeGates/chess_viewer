@@ -165,7 +165,7 @@ const QuickActionsPanel = memo(function QuickActionsPanel({
   );
 
   return (
-    <div className="flex flex-col gap-4 flex-1 min-w-[200px] max-w-[280px]">
+    <div className="w-full flex flex-col gap-4 2xl:w-[280px] 2xl:max-w-[280px]">
       <div className="space-y-2">
         <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
           Quick Actions
@@ -215,12 +215,14 @@ const QuickActionsPanel = memo(function QuickActionsPanel({
       <div className="border-t border-border" />
 
       <div className="space-y-2">
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-          Batch Export
-          <span className="ml-1.5 px-1.5 py-0.5 bg-surface-elevated rounded text-[10px]">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+            Batch Export
+          </span>
+          <span className="px-1.5 py-0.5 bg-surface-elevated rounded text-[10px] leading-none">
             {validFens.length}
           </span>
-        </span>
+        </div>
         <button
           onClick={() => handleBatchExport('png', 'Batch PNG')}
           className="w-full px-3 py-2.5 bg-warning/20 hover:bg-warning/30 border border-warning/30 text-warning rounded-lg font-semibold transition-colors text-sm"
