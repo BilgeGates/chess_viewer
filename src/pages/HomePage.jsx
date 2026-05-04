@@ -2,14 +2,12 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
 import { useLocation } from 'react-router-dom';
 
-import { DndProvider } from 'react-dnd';
-
 import {
   ActionButtons,
   ControlPanel,
   ExportProgress
 } from '@/components/features';
-import { ChessEditor } from '@/components/interactions';
+import { ChessEditor, DndProvider } from '@/components/interactions';
 import { NotificationContainer } from '@/components/ui';
 import { useFENHistory, useLocalStorage, useNotifications } from '@/hooks';
 import {
