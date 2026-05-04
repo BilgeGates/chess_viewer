@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useEffect, useCallback, useMemo, useRef, useState } from 'react';
 
 import { logger, parseFEN, validateFEN } from '@/utils';
 import { boardToFEN, createEmptyBoard, isBoardEmpty } from '@/utils/boardUtils';
@@ -11,6 +11,7 @@ import { boardToFEN, createEmptyBoard, isBoardEmpty } from '@/utils/boardUtils';
  * @returns {Object} Board state and action handlers
  */
 export function useInteractiveBoard(initialFen, onFenChange) {
+  const pendingBoardRef = useRef(null);
   const [board, setBoard] = useState(() => {
     try {
       if (initialFen && validateFEN(initialFen)) {
@@ -65,23 +66,30 @@ export function useInteractiveBoard(initialFen, onFenChange) {
           newBoard[fromRow][fromCol] = '';
         }
         newBoard[toRow][toCol] = piece;
-        notifyFenChange(newBoard);
+        pendingBoardRef.current = newBoard; // signal, no side effect
         return newBoard;
       });
     },
-    [notifyFenChange]
+    []
   );
-  const handlePieceRemove = useCallback(
-    (row, col) => {
-      setBoard((prevBoard) => {
-        const newBoard = prevBoard.map((r) => [...r]);
-        newBoard[row][col] = '';
-        notifyFenChange(newBoard);
-        return newBoard;
-      });
-    },
-    [notifyFenChange]
-  );
+
+  const handlePieceRemove = useCallback((row, col) => {
+    setBoard((prevBoard) => {
+      const newBoard = prevBoard.map((r) => [...r]);
+      newBoard[row][col] = '';
+      pendingBoardRef.current = newBoard;
+      return newBoard;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (pendingBoardRef.current !== null) {
+      const boardToNotify = pendingBoardRef.current;
+      pendingBoardRef.current = null;
+      notifyFenChange(boardToNotify);
+    }
+  }, [board, notifyFenChange]);
+
   const clearBoard = useCallback(() => {
     setBoard((prevBoard) => {
       if (isBoardEmpty(prevBoard)) {
