@@ -54,7 +54,7 @@ const TrashZone = memo(function TrashZone({
         flex items-center justify-center gap-2 px-4 py-2.5
         rounded-lg border-2 border-dashed
         transition-all duration-200
-        ${isOver && canDrop ? 'bg-error/30 border-error text-error shadow-lg shadow-error/30 scale-105' : canDrop ? 'bg-surface-elevated/50 border-warning/40 hover:border-warning/60 text-text-muted hover:text-warning' : 'bg-surface-elevated/30 border-border/30 text-text-muted'}
+        ${isOver && canDrop ? 'bg-error/30 border-error text-error shadow-lg shadow-error/30' : canDrop ? 'bg-surface-elevated/50 border-warning/40 hover:border-warning/60 text-text-muted hover:text-warning' : 'bg-surface-elevated/30 border-border/30 text-text-muted'}
         ${className}
       `}
       role="button"
