@@ -22,7 +22,12 @@ export function useNotifications() {
     }
   }, []);
   const addNotification = useCallback(
-    (message, type = 'info', duration = 3000) => {
+    (message, type = 'info', duration = 5000) => {
+      // Clear existing notifications to ensure max 1
+      setNotifications([]);
+      Object.values(timeoutRefs.current).forEach(clearTimeout);
+      timeoutRefs.current = {};
+
       const id = Date.now() + Math.random();
       const notification = {
         id,
@@ -30,7 +35,7 @@ export function useNotifications() {
         type,
         duration
       };
-      setNotifications((prev) => [...prev, notification]);
+      setNotifications([notification]);
       if (duration > 0) {
         timeoutRefs.current[id] = setTimeout(() => {
           removeNotification(id);
@@ -40,25 +45,25 @@ export function useNotifications() {
     [removeNotification]
   );
   const success = useCallback(
-    (message, duration = 3000) => {
+    (message, duration = 5000) => {
       addNotification(message, 'success', duration);
     },
     [addNotification]
   );
   const error = useCallback(
-    (message, duration = 4000) => {
+    (message, duration = 5000) => {
       addNotification(message, 'error', duration);
     },
     [addNotification]
   );
   const info = useCallback(
-    (message, duration = 3000) => {
+    (message, duration = 5000) => {
       addNotification(message, 'info', duration);
     },
     [addNotification]
   );
   const warning = useCallback(
-    (message, duration = 3500) => {
+    (message, duration = 5000) => {
       addNotification(message, 'warning', duration);
     },
     [addNotification]
