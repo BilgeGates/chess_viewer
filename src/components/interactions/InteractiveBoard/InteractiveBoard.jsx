@@ -48,12 +48,11 @@ const InteractiveBoard = memo(function InteractiveBoard({
         const actualCol = flipped ? 7 - displayCol : displayCol;
         const isLight = (actualRow + actualCol) % 2 === 0;
         const piece = board[actualRow]?.[actualCol] || '';
-        let pieceImage = null;
-        if (piece) {
-          const color = piece === piece.toUpperCase() ? 'w' : 'b';
-          const pieceKey = color + piece.toUpperCase();
-          pieceImage = pieceImages[pieceKey];
-        }
+        const pieceImage = piece
+          ? pieceImages[
+              (piece === piece.toUpperCase() ? 'w' : 'b') + piece.toUpperCase()
+            ]
+          : null;
         result.push(
           <DroppableSquare
             key={`square-${actualRow}-${actualCol}`}
@@ -75,10 +74,10 @@ const InteractiveBoard = memo(function InteractiveBoard({
     board,
     lightSquare,
     darkSquare,
-    pieceImages,
     isLoading,
     flipped,
-    handleDrop
+    handleDrop,
+    pieceImages
   ]);
   return (
     <div
