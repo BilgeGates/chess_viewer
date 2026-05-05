@@ -4,10 +4,7 @@
 echo "Validating commit message..."
 
 # Run commitlint
-npx --no -- commitlint --edit "$1"
-
-# Check if there are any errors
-if [ $? -ne 0 ]; then
+if ! pnpm exec commitlint --edit "$1"; then
   echo ""
   echo "Commit message does not follow Conventional Commits format!"
   echo ""
