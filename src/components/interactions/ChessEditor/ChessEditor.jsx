@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState, useRef } from 'react';
 
 import { RotateCcw, X } from 'lucide-react';
 
@@ -6,8 +6,7 @@ import {
   CustomDragLayer,
   InteractiveBoard,
   PiecePalette,
-  TrashZone,
-  DndProvider
+  TrashZone
 } from '@/components/interactions';
 import { useInteractiveBoard, usePieceImages } from '@/hooks';
 
@@ -41,6 +40,11 @@ const ChessEditor = memo(function ChessEditor({
   const [boardSize, setBoardSize] = useState(() => getBoardSize());
   const [gutterSize, setGutterSize] = useState(() => getGutterSize(boardSize));
   const cellSize = useMemo(() => boardSize / 8, [boardSize]);
+
+  const pieceImagesRef = useRef(pieceImages);
+  useEffect(() => {
+    pieceImagesRef.current = pieceImages;
+  }, [pieceImages]);
 
   useEffect(() => {
     const handleResize = () => {
