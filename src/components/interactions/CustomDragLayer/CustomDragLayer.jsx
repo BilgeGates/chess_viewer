@@ -1,28 +1,43 @@
-import { memo } from 'react';
+import { memo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-
 import { useDragLayer } from 'react-dnd';
-
 import { ItemTypes } from '@/constants';
 
 const selectDragState = (monitor) => ({
   item: monitor.getItem(),
   itemType: monitor.getItemType(),
   currentOffset: monitor.getClientOffset(),
-  sourceOffset: monitor.getSourceClientOffset(),
   isDragging: monitor.isDragging()
 });
 
-/**
- * @param {Object} props
- * @returns {JSX.Element}
- */
 const CustomDragLayer = memo(function CustomDragLayer({
   pieceImages,
   boardSize = 400
 }) {
-  const { itemType, isDragging, item, currentOffset } =
-    useDragLayer(selectDragState);
+  const collected = useDragLayer(selectDragState);
+  const rafRef = useRef(null);
+  const divRef = useRef(null);
+
+  const pieceSize = Math.round((boardSize / 8) * 0.85);
+  const { itemType, isDragging, item, currentOffset } = collected;
+
+  useEffect(() => {
+    if (!currentOffset) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+    rafRef.current = requestAnimationFrame(() => {
+      if (divRef.current) {
+        const x = Math.round(currentOffset.x - pieceSize / 2);
+        const y = Math.round(currentOffset.y - pieceSize / 2);
+        divRef.current.style.transform = `translate3d(${x}px,${y}px,0)`;
+      }
+    });
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [currentOffset, pieceSize]);
+
   if (
     !isDragging ||
     itemType !== ItemTypes.PIECE ||
@@ -30,11 +45,12 @@ const CustomDragLayer = memo(function CustomDragLayer({
   ) {
     return null;
   }
+
   const pieceImage = pieceImages[item?.pieceKey];
-  if (!pieceImage) {
-    return null;
-  }
-  const pieceSize = Math.round((boardSize / 8) * 0.85);
+  if (!pieceImage) return null;
+
+  if (!currentOffset) return null;
+
   const layerStyles = {
     position: 'fixed',
     pointerEvents: 'none',
@@ -44,24 +60,21 @@ const CustomDragLayer = memo(function CustomDragLayer({
     right: 0,
     bottom: 0
   };
-  const offset = currentOffset;
-  if (!offset) {
-    return null;
-  }
-  const x = Math.round(offset.x - pieceSize / 2);
-  const y = Math.round(offset.y - pieceSize / 2);
-  const itemStyles = {
-    position: 'fixed',
-    left: 0,
-    top: 0,
-    transform: `translate3d(${x}px, ${y}px, 0)`,
-    width: `${pieceSize}px`,
-    height: `${pieceSize}px`,
-    pointerEvents: 'none'
-  };
+
   return createPortal(
     <div style={layerStyles} aria-hidden="true">
-      <div style={itemStyles}>
+      <div
+        ref={divRef}
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: `${pieceSize}px`,
+          height: `${pieceSize}px`,
+          pointerEvents: 'none',
+          willChange: 'transform'
+        }}
+      >
         <img
           src={pieceImage.src}
           alt=""
@@ -71,7 +84,7 @@ const CustomDragLayer = memo(function CustomDragLayer({
             height: '100%',
             objectFit: 'contain',
             opacity: 0.95,
-            filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5))',
+            filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))',
             pointerEvents: 'none',
             userSelect: 'none',
             WebkitUserSelect: 'none'
@@ -83,5 +96,6 @@ const CustomDragLayer = memo(function CustomDragLayer({
     document.body
   );
 });
+
 CustomDragLayer.displayName = 'CustomDragLayer';
 export default CustomDragLayer;
