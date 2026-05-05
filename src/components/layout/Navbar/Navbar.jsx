@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Logo from '@/assets/Logo.png';
 import HelpCenter from '@/components/features/HelpCenter';
 
-function Navbar({ theme, toggleTheme }) {
+function Navbar({ theme, toggleTheme, rightSlot }) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ function Navbar({ theme, toggleTheme }) {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-surface-primary/85 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-        <div className="w-[96%] max-w-[2200px] mx-auto">
+        <div className="w-[88%] max-w-[2400px] mx-auto">
           <div className="flex justify-between items-center h-[4rem] sm:h-[5rem] lg:h-[6rem] 3xl:h-[8rem]">
             <button
               onClick={handleLogoClick}
@@ -42,7 +42,7 @@ function Navbar({ theme, toggleTheme }) {
                 <img
                   src={Logo}
                   alt="Logo"
-                  className="w-[2rem] h-[2rem] sm:w-[2.5rem] sm:h-[2.5rem] lg:w-[3rem] lg:h-[3rem] 3xl:w-[4rem] 3xl:h-[4rem] object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+                  className="w-[2rem] h-[2rem] sm:w-[2.5rem] sm:h-[2.5rem] lg:w-[3rem] lg:h-[3rem] 3xl:w-[5rem] 3xl:h-[10rem] object-contain transition-transform duration-300 ease-in-out hover:scale-105"
                 />
                 <span className="font-display font-bold text-2xl sm:text-3xl text-text-primary leading-tight transition-colors duration-300 ease-in-out hover:text-accent">
                   FENForsty Pro
@@ -52,6 +52,8 @@ function Navbar({ theme, toggleTheme }) {
 
             {/* Desktop Navigation */}
             <div className="hidden sm:flex items-center gap-1.5">
+              {rightSlot}
+
               <button
                 onClick={toggleTheme}
                 className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-hover active:bg-surface-elevated"
