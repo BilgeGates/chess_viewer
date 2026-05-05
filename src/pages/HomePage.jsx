@@ -173,7 +173,7 @@ function HomePage() {
     pieceImagesRef.current = images;
   }, []);
 
-  const { notifications, success, error, info, removeNotification } =
+  const { notifications, success, error, info, warning, removeNotification } =
     useNotifications();
 
   /**
@@ -428,7 +428,8 @@ function HomePage() {
                   onNotification={(message, type) => {
                     if (type === 'success') success(message);
                     else if (type === 'error') error(message);
-                    else if (type === 'warning') info(message);
+                    else if (type === 'warning') warning(message);
+                    else info(message);
                   }}
                 />
               </div>
