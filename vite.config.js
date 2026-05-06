@@ -22,7 +22,7 @@ export default defineConfig({
       '@contexts': path.resolve(__dirname, 'src/contexts'),
       '@constants': path.resolve(__dirname, 'src/constants')
     },
-    extensions: ['.js', '.jsx', '.json']
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   },
 
   server: {
