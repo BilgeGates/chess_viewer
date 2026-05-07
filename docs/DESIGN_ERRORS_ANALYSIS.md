@@ -34,7 +34,7 @@ Identified design issues and their resolution status.
 
 - usePieceImages.js
 - ChessBoard.jsx
-- fenParser.js
+- fenParser.ts
 - useTheme.js
 - useFENHistory.js
 - AdvancedFENInputModal.jsx
@@ -164,4 +164,4 @@ Canvas is a bitmap rendering context. Screen readers cannot parse the visual con
 
 ---
 
-**Last Updated:** January 18, 2026
+**Last Updated:** May 6, 2026

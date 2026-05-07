@@ -309,6 +309,10 @@ Users need to export chess diagrams in various formats for different use cases.
 
 Support PNG and JPEG export formats initially, defer SVG to a future release.
 
+#### Update (2026-05-06)
+
+This ADR was partially superseded in implementation: SVG export is now available in Advanced FEN flows. Home-page export parity is still pending.
+
 #### Consequences
 
 **Positive:**
@@ -843,11 +847,11 @@ components/
 
 ### Decisions to Revisit
 
-#### 1. SVG Export (Planned)
+#### 1. SVG Export Parity
 
-**Current:** PNG/JPEG only  
-**Future:** Add SVG export option  
-**Rationale:** User demand, resolution independence, editability
+**Current:** SVG export exists in Advanced FEN flow  
+**Future:** Expose SVG export in Home page flow as well  
+**Rationale:** Keep export capabilities consistent across entry points
 
 #### 2. Backend (Maybe v5.0+)
 
@@ -924,6 +928,6 @@ Want to propose a new decision or challenge an existing one?
 
 ---
 
-**Last Updated:** March 3, 2026  
+**Last Updated:** May 6, 2026  
 **Version:** 5.0.0  
 **Maintainer:** [@BilgeGates](https://github.com/BilgeGates)
