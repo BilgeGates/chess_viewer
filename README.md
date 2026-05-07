@@ -219,7 +219,7 @@ git push origin feature/your-feature
 
 <p>
   <a href="https://github.com/BilgeGates/chess_viewer/graphs/contributors">
-    <img src="https://github.com/BilgeGates.png?size=100" width="80" height="80" style="border-radius:50%;" alt="BilgeGates" />
+  <img src="https://contrib.rocks/image?repo=BilgeGates/chess_viewer" />
   </a>
 </p>  
 
@@ -227,11 +227,11 @@ git push origin feature/your-feature
 
 <p>
   <a href="https://github.com/vektorhub/chess_viewer/graphs/contributors">
-    <img src="https://github.com/vektorhub.png?size=100" width="80" height="80" style="border-radius:50%;" alt="Vektor Hub" />
+  <img src="https://contrib.rocks/image?repo=vektorhub/chess_viewer" />
   </a>
     &nbsp;
   <a href="https://github.com/yu102118/chess_viewer/graphs/contributors">
-      <img src="https://github.com/yu102118.png?size=100" width="80" height="80" style="border-radius:50%;" alt="yu102118" />
+  <img src="https://contrib.rocks/image?repo=yu102118/chess_viewer" />
   </a>
 </p>
 
