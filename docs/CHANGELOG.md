@@ -7,8 +7,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-- SVG export format
-- Keyboard shortcuts
+Recent development activity observed in commits dated **2026-05-04 → 2026-05-06**.
+
+### Added
+
+- Advanced FEN page SVG export controls (single export + batch SVG export).
+- TypeScript app entry points and config (`src/index.tsx`, `src/App.tsx`, `tsconfig*.json`).
+
+### Changed
+
+- Theme editing and customization flows in Settings and Advanced FEN page.
+- MAX_FEN_LENGTH enforcement applied in FEN input flows.
+
+### Known Remaining Gaps
+
+- Keyboard shortcuts for board actions are still not implemented.
 
 ---
 
@@ -452,5 +465,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ---
 
-**Last Updated:** March 3, 2026  
+**Last Updated:** May 6, 2026  
 **© 2026 Khatai Huseynzada. MIT License.**
