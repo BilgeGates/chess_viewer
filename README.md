@@ -215,29 +215,4 @@ git push origin feature/your-feature
 
 ---
 
-## Author
-
-<p>
-  <a href="https://github.com/BilgeGates/chess_viewer/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=BilgeGates/chess_viewer" />
-  </a>
-</p>  
-
-## Contributors
-
-<p>
-  <a href="https://github.com/vektorhub/chess_viewer/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=vektorhub/chess_viewer" />
-  </a>
-    &nbsp;
-  <a href="https://github.com/yu102118/chess_viewer/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=yu102118/chess_viewer" />
-  </a>
-</p>
-
-<h3>Thank you for your support!</h2>
-
-
----
-
 &copy; 2026 Khatai Huseynzada, Non-Commercial Open Source License
