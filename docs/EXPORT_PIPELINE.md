@@ -2,9 +2,6 @@
 
 Technical documentation for the FENForsty Pro export system.
 
-**Version**: 5.0.0  
-**Last Updated**: March 3, 2026
-
 ---
 
 ## Table of Contents
@@ -32,7 +29,7 @@ The export system converts canvas-based chess board visualisations into high-res
 - **Dual Export Modes**: Print mode (preserves physical dimensions) and Social mode (fixed large output)
 - **Dynamic Scaling**: Board size controls physical print dimensions; quality controls pixel density
 - **High Resolution**: Export up to 24,192×24,192 px (Social 32×)
-- **Multiple Formats**: PNG (lossless) and JPEG (compressed)
+- **Multiple Formats**: PNG, JPEG, and SVG (SVG currently exposed in Advanced FEN actions)
 - **Pause / Resume / Cancel**: Export can be paused, resumed, or cancelled mid-way
 - **Batch Processing**: Export multiple FEN positions simultaneously via `advancedExport.js`
 - **Clipboard Support**: Direct copy to system clipboard
@@ -123,6 +120,15 @@ effectiveDPI = 300 × qualityMultiplier
 | Best for      | Social media, email, web sharing    |
 | Relative size | Smaller (60–80% reduction over PNG) |
 
+### SVG
+
+| Property     | Value                                                           |
+| ------------ | --------------------------------------------------------------- |
+| Type         | Vector                                                          |
+| Transparency | Supported                                                       |
+| Best for     | Scalable diagrams, post-processing in vector tools              |
+| Notes        | Generated from board state + piece assets, then saved as `.svg` |
+
 ---
 
 ## Export Pipeline Architecture
@@ -187,7 +193,7 @@ Progress is reported through an `onProgress(0–100)` callback. The `simulatePro
   pieceImages: object,     // { 'wK': HTMLImageElement, ... }
   isFlipped: boolean,      // Board orientation
   showCoords: boolean,     // Whether to show coordinate labels
-  format: string           // 'png' | 'jpeg'  (set internally per function)
+  format: string           // 'png' | 'jpeg' | 'svg'
 }
 ```
 
@@ -246,7 +252,7 @@ When `showCoords` is enabled, a border region is added. Rank numbers (1–8) are
 
 ## Batch Export
 
-Batch export (`advancedExport.js`) iterates through the `batchList` from `FENBatchContext`, calling `downloadPNG` or `downloadJPEG` for each position in sequence with a short delay between positions to prevent browser freezing. All positions are exported as individual files; optionally they can be packaged with `archiveManager.js`.
+Batch export is available in Advanced FEN quick actions and utility flows. It iterates positions sequentially and supports `downloadPNG`, `downloadJPEG`, and `downloadSVG`. Outputs are individual files per position.
 
 ---
 
@@ -304,18 +310,27 @@ Exports the board as a JPEG file.
 
 ---
 
-### `copyBoardToClipboard(config, onProgress)`
+### `copyToClipboard(config)`
 
 Copies the board image to the system clipboard as PNG.
 
 **Parameters:**
 
-| Name         | Type     | Description                         |
-| ------------ | -------- | ----------------------------------- |
-| `config`     | object   | Export configuration object         |
-| `onProgress` | function | `(0–100) => void` progress callback |
+| Name     | Type   | Description                 |
+| -------- | ------ | --------------------------- |
+| `config` | object | Export configuration object |
 
 **Returns:** `Promise<void>`
+
+---
+
+### `downloadSVG(config, fileName, onProgress)`
+
+Exports the board as an SVG file.
+
+**Parameters:** Same shape as `downloadPNG` / `downloadJPEG`.
+
+**Returns:** `Promise<void>` — triggers browser download.
 
 ---
 
@@ -352,5 +367,5 @@ Control an in-progress export. These functions mutate module-level state and tak
 
 ---
 
-**Last Updated:** March 3, 2026  
+**Last Updated:** May 6, 2026  
 **Version:** 5.0.0
