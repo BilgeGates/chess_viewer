@@ -1,6 +1,6 @@
 # Contributors
 
-Thank you to everyone who has helped improve FENForsty Pro. This file recognizes the people who have contributed code, fixes, and improvements to the project.
+Thank you to everyone who has helped improve Chess Vision. This file recognizes the people who have contributed code, fixes, and improvements to the project.
 
 ---
 
@@ -40,7 +40,7 @@ The logic for computing export dimensions was consolidated into a single source.
 
 The drag preview for pieces was misaligned from the cursor during drag operations. The preview now tracks the cursor accurately throughout the drag interaction.
 
-#### Asset caching improved — [#53](https://github.com/BilgeGates/chess_viewer/pull/53)
+#### Asset caching improved — [#53](https://github.com/BilgeGates/chess-vision/pull/53)
 
 Repeated loading of identical piece images across pages was reduced. This lightens the load during page transitions and general use.
 
@@ -98,4 +98,4 @@ A maximum length constraint was added to the FEN input field to prevent excessiv
 
 ---
 
-_To contribute to FENForsty Pro, please read [CONTRIBUTING.md](CONTRIBUTING.md) and open a pull request._
+_To contribute to Chess Vision, please read [CONTRIBUTING.md](CONTRIBUTING.md) and open a pull request._

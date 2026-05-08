@@ -1,4 +1,4 @@
-# Contributing to FENForsty Pro
+# Contributing to Chess Vision
 
 Contributions of any kind are welcome: bug reports, feature requests, documentation improvements, and code changes.
 
@@ -27,7 +27,7 @@ Before opening an issue:
    - Screenshots or screen recordings if applicable
    - Environment: browser name and version, OS
 
-Submit at: https://github.com/BilgeGates/chess_viewer/issues
+Submit at: https://github.com/BilgeGates/chess-vision/issues
 
 ---
 
@@ -152,5 +152,5 @@ See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Contact
 
-- GitHub Issues: https://github.com/BilgeGates/chess_viewer/issues
-- Repository: https://github.com/BilgeGates/chess_viewer
+- GitHub Issues: https://github.com/BilgeGates/chess-vision/issues
+- Repository: https://github.com/BilgeGates/chess-vision
