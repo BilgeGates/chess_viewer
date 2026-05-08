@@ -130,7 +130,7 @@ Use HTML5 Canvas API instead of DOM-based rendering (SVG or HTML elements).
 
 #### Context
 
-Users need a FENForsty Pro without concerns about data privacy or requiring internet connectivity.
+Users need a Chess Vision without concerns about data privacy or requiring internet connectivity.
 
 #### Decision
 

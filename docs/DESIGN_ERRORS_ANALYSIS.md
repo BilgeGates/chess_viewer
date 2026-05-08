@@ -1,167 +1,34 @@
-# Design Errors Analysis
+# Design Errors & Accessibility Analysis
 
-Identified design issues and their resolution status.
+## 5. RESPONSIVE DESIGN & UI BUGS
 
----
+### 🟢 CRITICAL Touch Target Violations (WCAG 2.5.5)
 
-## Status Summary
+**File:** `src/components/features/ActionButtons/ActionButtons.jsx`, `src/components/features/ColorPicker/parts/PrimaryActions.jsx`
+**Status:** ✅ **Fixed**
+**Description:** Multiple actionable icons (e.g., Download, Image, Check, Copy, Shuffle) previously used small Tailwind sizing classes without adequate padding.
+**Impact:** These targets were significantly smaller than the WCAG 2.5.5 minimum requirement of 44x44px.
+**Fix:** Added `min-h-[44px]` and explicit padding to button containers ensuring all interactive elements have a compliant touch area.
 
-| Issue                       | Priority | Status                         |
-| --------------------------- | -------- | ------------------------------ |
-| Production console logs     | Critical | Fixed v3.5.2                   |
-| setTimeout memory leaks     | Critical | Fixed v3.5.2                   |
-| Missing Error Boundaries    | Critical | Fixed v3.5.2                   |
-| Missing ARIA labels         | Critical | Partial Fix v3.5.2             |
-| Inconsistent error handling | Critical | Fixed v3.5.2                   |
-| Code duplication            | Medium   | Not Fixed                      |
-| No unit tests               | Medium   | Not Fixed                      |
-| Canvas accessibility        | High     | Not Fixable (HTML5 limitation) |
+### 🟠 HIGH Fixed Pixel Values on Responsive Elements
 
----
+**File:** `src/components/board/ChessBoard/ChessBoard.jsx` (line 220)
+**Description:** The board utilizes hardcoded `w-16 h-16` elements which break down on viewports under 375px.
+**Impact:** Horizontal scrolling or overflowing containers on small mobile devices.
+**Fix:** Replace hardcoded values with percentage-based widths or CSS `calc()` combined with `aspect-square`.
 
-## Critical Issues (Fixed)
+## 6. ACCESSIBILITY (WCAG 2.1 AA)
 
-### 1. Production Console Logs
+### 🟠 HIGH Missing Keyboard Interaction & Roles
 
-**Problem:** Multiple console.log statements in production code.
+**File:** `src/components/features/ColorPicker/parts/HueSlider.jsx` (line 145), `src/components/features/ColorPicker/views/ThemeMainView.jsx` (line 353)
+**Description:** `<div>` elements are used as interactive sliders/selectors (using the `cursor-pointer` class) without proper ARIA roles (`role="slider"`, `role="button"`) or keyboard event listeners (`onKeyDown`).
+**Impact:** Screen reader users and keyboard-only users cannot operate these custom controls.
+**Fix:** Add `role="slider"`, `tabIndex={0}`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and handle Space/Enter keyboard events.
 
-**Fix Applied (v3.5.2):**
+### 🟡 MEDIUM Missing Alt Text and ARIA labels in SVG Exports
 
-- Created `src/utils/logger.js` - dev-only logging utility
-- Replaced all console.log/error calls with logger
-
-**Files Modified:**
-
-- usePieceImages.js
-- ChessBoard.jsx
-- fenParser.ts
-- useTheme.js
-- useFENHistory.js
-- AdvancedFENInputModal.jsx
-- imageOptimizer.js
-- MiniChessPreview.jsx
-
----
-
-### 2. Memory Leaks: setTimeout Without Cleanup
-
-**Problem:** setTimeout calls without cleanup on unmount.
-
-**Fix Applied (v3.5.2):**
-
-- Added useRef for timeout tracking
-- Added cleanup in useEffect return functions
-- Added exportCleanupTimeoutRef to AdvancedFENInputModal
-
-**Pattern Used:**
-
-```javascript
-const timeoutRef = useRef(null);
-
-useEffect(() => {
-  return () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
-}, []);
-```
-
----
-
-### 3. Missing Error Boundaries
-
-**Problem:** Unhandled errors crash entire application.
-
-**Fix Applied (v3.5.2):**
-
-- Created `src/components/UI/ErrorBoundary.jsx`
-- Wrapped App component with ErrorBoundary
-- Added ErrorFallback UI component
-
----
-
-### 4. Accessibility Issues (Partial Fix)
-
-**Problem:** Very few ARIA labels in codebase.
-
-**Fix Applied (v3.5.2):**
-
-- Modal: Added `role="dialog"`, `aria-modal`, `aria-labelledby`, focus trap
-- Button: Added `aria-label` prop support, `aria-disabled`
-- ActionButtons: Added ARIA labels to all buttons
-- ChessBoard: Added `role="img"`, `getBoardDescription()`
-
-**Not Fixed:**
-
-- Canvas not accessible to screen readers (HTML5 limitation)
-- No keyboard shortcuts
-- No skip-to-content link
-- Not WCAG compliant
-
----
-
-### 5. Inconsistent Error Handling
-
-**Problem:** Mixed error handling patterns.
-
-**Fix Applied (v3.5.2):**
-
-- Created `src/utils/errorHandler.js`
-- ErrorTypes enum (VALIDATION, NETWORK, EXPORT, RENDER, STORAGE, UNKNOWN)
-- handleError() centralized function
-- getUserFriendlyMessage() for user-facing errors
-
----
-
-## Medium Priority Issues (Not Fixed)
-
-### 6. Code Duplication
-
-**Problem:**
-
-- Similar timeout patterns repeated across files
-- Duplicate color conversion logic
-- Repeated validation patterns
-
-**Impact:** Maintenance burden, inconsistent behavior.
-
----
-
-### 7. No Unit Tests
-
-**Problem:**
-
-- Zero test coverage
-- No automated testing
-- Regressions go undetected
-
-**Impact:** Quality assurance is manual only.
-
----
-
-## Not Fixable
-
-### Canvas Accessibility
-
-**Problem:** HTML5 Canvas elements are fundamentally not accessible to screen readers.
-
-**Current Mitigation:**
-
-- Added `role="img"` and `aria-label` with board description
-- FEN text available as alternative
-
-**Why Not Fixable:**
-Canvas is a bitmap rendering context. Screen readers cannot parse the visual content. Alternative would require SVG-based rendering (major architecture change).
-
----
-
-## Recommendations for Future
-
-1. Add unit tests - Use Jest + React Testing Library
-2. Add E2E tests - Use Playwright or Cypress
-3. Add accessibility tests - Use axe-core in CI
-4. Consider SVG rendering - For better accessibility
-5. Add keyboard shortcuts - For power users
-
----
-
-**Last Updated:** May 6, 2026
+**File:** `src/utils/svgExporter.js` (line 99)
+**Description:** The root `<svg>` tag lacks a `<title>` tag and an `aria-label`.
+**Impact:** Generated SVG images do not announce themselves correctly to assistive technologies.
+**Fix:** Inject `<title>Chess Board Position</title>` immediately after the opening `<svg>` tag.

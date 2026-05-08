@@ -1,4 +1,4 @@
-# FENForsty Pro — Roadmap
+# Chess Vision — Roadmap
 
 Potential future features and known technical debt. No timeline commitments.
 

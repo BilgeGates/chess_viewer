@@ -1,4 +1,4 @@
-# FENForsty Pro - FAQ
+# Chess Vision - FAQ
 
 Common questions and answers.
 
@@ -144,7 +144,7 @@ Print mode resolutions depend on board size selection (4 cm, 6 cm, 8 cm):
 
 ### Report a Bug
 
-[GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues) - Include browser, steps to reproduce, screenshots.
+[GitHub Issues](https://github.com/BilgeGates/chess-vision/issues) - Include browser, steps to reproduce, screenshots.
 
 ### Contribute
 

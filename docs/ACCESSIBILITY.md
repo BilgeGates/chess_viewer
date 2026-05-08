@@ -1,6 +1,6 @@
 # Accessibility Documentation
 
-Current accessibility state of FENForsty Pro.
+Current accessibility state of Chess Vision.
 
 ---
 
@@ -16,7 +16,7 @@ Current accessibility state of FENForsty Pro.
 
 ## Overview
 
-This document honestly describes the accessibility status of FENForsty Pro based on actual implementation.
+This document honestly describes the accessibility status of Chess Vision based on actual implementation.
 
 ### Reality Check
 

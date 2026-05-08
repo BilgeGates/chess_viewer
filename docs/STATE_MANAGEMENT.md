@@ -1,6 +1,6 @@
 # State Management Documentation
 
-Guide to state management architecture in FENForsty Pro.
+Guide to state management architecture in Chess Vision.
 
 ---
 
@@ -20,7 +20,7 @@ Guide to state management architecture in FENForsty Pro.
 
 ## Overview
 
-FENForsty Pro uses **React hooks and the Context API exclusively** for state management. No external state libraries (Redux, Zustand, MobX, etc.) are used.
+Chess Vision uses **React hooks and the Context API exclusively** for state management. No external state libraries (Redux, Zustand, MobX, etc.) are used.
 
 **Reasons:**
 

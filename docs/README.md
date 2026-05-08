@@ -1,6 +1,6 @@
-# FENForsty Pro — Documentation
+# Chess Vision — Documentation
 
-Technical documentation for FENForsty Pro v5.0.0.
+Technical documentation for Chess Vision v5.0.0.
 
 ---
 
@@ -77,9 +77,9 @@ Technical documentation for FENForsty Pro v5.0.0.
 
 ## Repository Links
 
-- **Source:** [github.com/BilgeGates/chess_viewer](https://github.com/BilgeGates/chess_viewer)
-- **Demo:** [chess-viewer-site.vercel.app](https://chess-viewer-site.vercel.app)
-- **Issues:** [GitHub Issues](https://github.com/BilgeGates/chess_viewer/issues)
+- **Source:** [github.com/BilgeGates/chess-vision](https://github.com/BilgeGates/chess-vision)
+- **Demo:** [chess-vision-site.vercel.app](https://chess-vision-site.vercel.app)
+- **Issues:** [GitHub Issues](https://github.com/BilgeGates/chess-vision/issues)
 
 ---
 

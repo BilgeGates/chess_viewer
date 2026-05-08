@@ -1,4 +1,4 @@
-# FENForsty Pro — Architecture Documentation
+# Chess Vision — Architecture Documentation
 
 ## Table of Contents
 
@@ -65,7 +65,7 @@ A React-based web application that renders chess positions from FEN notation, su
 ## Project Structure
 
 ```
-chessviewer/
+chess-vision/
 │
 ├── public/
 │   ├── manifest.json          # PWA manifest
