@@ -46,7 +46,7 @@ const DataManagement = memo(function DataManagement() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'chess-viewer-data.json';
+    link.download = 'chess-vision-data.json';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

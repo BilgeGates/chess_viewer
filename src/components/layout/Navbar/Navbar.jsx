@@ -45,7 +45,7 @@ function Navbar({ theme, toggleTheme, rightSlot }) {
                   className="w-[2rem] h-[2rem] sm:w-[2.5rem] sm:h-[2.5rem] lg:w-[3rem] lg:h-[3rem] 3xl:w-[5rem] 3xl:h-[10rem] object-contain transition-transform duration-300 ease-in-out hover:scale-105"
                 />
                 <span className="font-display font-bold text-2xl sm:text-3xl text-text-primary leading-tight transition-colors duration-300 ease-in-out hover:text-accent">
-                  FENForsty Pro
+                  Chess Vision
                 </span>
               </div>
             </button>

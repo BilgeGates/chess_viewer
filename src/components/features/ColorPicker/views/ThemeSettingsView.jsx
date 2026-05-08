@@ -5,7 +5,7 @@ import { Eye, Grid3X3, RotateCcw, Zap } from 'lucide-react';
 import { logger } from '@/utils/logger';
 import { safeJSONParse } from '@/utils/validation';
 
-const STORAGE_KEY = 'chess-viewer-settings';
+const STORAGE_KEY = 'chess-vision-settings';
 
 /**
  * Settings panel inside the color picker for performance and accessibility tweaks.
