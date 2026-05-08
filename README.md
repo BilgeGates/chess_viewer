@@ -6,7 +6,6 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.5-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![License: AGPL-3.0](https://www.gnu.org/licenses/)](LICENSE)
 
 [Live Demo](https://chess-vision-site.vercel.app) · [Report Bug](https://github.com/BilgeGates/chess-vision/issues) · [Request Feature](https://github.com/BilgeGates/chess-vision/issues)
 
