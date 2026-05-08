@@ -1,4 +1,4 @@
-# FENForsty Pro
+# Chess Vision
 
 **Professional chess position visualizer with ultra-HD export capabilities.**
 
@@ -8,7 +8,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![License: Non-Commercial](https://img.shields.io/badge/License-Non--Commercial-red.svg?style=flat-square)](LICENSE)
 
-[Live Demo](https://chess-viewer-site.vercel.app) · [Report Bug](https://github.com/BilgeGates/chess_viewer/issues) · [Request Feature](https://github.com/BilgeGates/chess_viewer/issues)
+[Live Demo](https://chess-vision-site.vercel.app) · [Report Bug](https://github.com/BilgeGates/chess-vision/issues) · [Request Feature](https://github.com/BilgeGates/chess-vision/issues)
 
 ---
 
@@ -29,7 +29,7 @@
 
 ## Overview
 
-FENForsty Pro parses FEN notation and renders chess positions as high-resolution raster or vector images. It is designed for chess players, coaches, authors, and developers who need precise, customizable board diagrams without a backend dependency.
+Chess Vision parses FEN notation and renders chess positions as high-resolution raster or vector images. It is designed for chess players, coaches, authors, and developers who need precise, customizable board diagrams without a backend dependency.
 
 All processing happens in the browser. No data leaves the user's device.
 
@@ -72,7 +72,7 @@ All processing happens in the browser. No data leaves the user's device.
 ### Installation
 
 ```bash
-git clone https://github.com/BilgeGates/chess_viewer.git
+git clone https://github.com/BilgeGates/chess-vision.git
 cd chess_viewer
 pnpm install
 pnpm dev
@@ -188,7 +188,7 @@ Required browser APIs: Canvas API, Clipboard API (optional), localStorage, ES202
 
 ## Security and Privacy
 
-FENForsty Pro has no backend. All computation runs client-side.
+Chess Vision has no backend. All computation runs client-side.
 
 - No server-side data storage
 - No cookies, trackers, or telemetry
