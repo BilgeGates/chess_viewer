@@ -1,437 +1,84 @@
-# Security Policy# Security Policy
+# Security Policy
 
-## Supported Versions## 🔐 Supported Versions
+## 🔐 Supported Versions
 
-The following versions of FENForsty Pro are currently supported:The following versions of **FENForsty Pro** are currently supported with security updates:
+The following versions of **Chess Vision** are currently supported with security updates:
 
-| Version | Support Status | Security Updates || Version | Support Status | Security Updates | End of Life |
+| Version | Support Status | Security Updates | End of Life |
+| ------- | -------------- | ---------------- | ----------- |
+| v5.x.x  | ✅ Active      | ✅ Yes           | Current     |
+| v4.x.x  | ⚠️ Limited     | ⚠️ Critical Only | 2026-12-31  |
+| < v4.0  | ❌ Unsupported | ❌ No            | N/A         |
 
-|---------|---------------|------------------||---------|---------------|------------------|-------------|
-
-| v5.x.x | Active | Yes || v3.5.x | ✅ Active | ✅ Yes | Current |
-
-| v4.x.x | Limited | Critical only || v3.0.x | ✅ Supported | ✅ Yes | 2026-06-30 |
-
-| < v4.0 | Unsupported | No || v2.x.x | ⚠️ Limited Support | ⚠️ Critical Only | 2026-03-31 |
-
-| v1.x.x | ❌ End of Life | ❌ No | 2026-01-31 |
-
-**Recommendation:** Use the latest v5.x release for best security and features.| < v1.0 | ❌ Unsupported | ❌ No | N/A |
-
----> **Important:** Only the **latest stable versions (v3.0+)** receive regular security patches.
-
-> Please upgrade to **v3.5.x** for the best security and feature support.
-
-## Security Architecture
-
----
-
-### Privacy-First Design
+> **Note:** As this is a client-side only tool, we strongly recommend always using the latest version available on [chess-vision.vercel.app](https://chess-vision.vercel.app).
 
 ## 🛡️ Security Architecture
 
-This project follows a **zero-backend, client-side-only architecture**:
+Chess Vision follows a **zero-backend, client-side-only architecture**. This design inherently minimizes the attack surface.
 
 ### Privacy-First Design
 
-- **No data collection** - All processing happens in your browserThis project follows a **zero-backend, client-side-only architecture**:
+- **No data collection:** All processing happens in your browser.
+- **No server storage:** No positions or images are uploaded to any server.
+- **No tracking:** No analytics, cookies, or telemetry are used.
+- **Local storage only:** Settings and history remain on your device.
 
-- **No server storage** - No positions or images are uploaded
+### Attack Surface
 
-- **No tracking** - No analytics, cookies, or telemetry✅ **No data collection** - All processing happens in your browser
-
-- **No third-party services** - Complete offline functionality (except piece image loading)✅ **No server storage** - No positions or images are uploaded
-
-- **Local storage only** - Settings remain on your device✅ **No tracking** - No analytics, cookies, or telemetry
-
-✅ **No third-party services** - Complete offline functionality
-
-### Attack Surface✅ **Local storage only** - Settings remain on your device
-
-- **Minimal risk:** Static client-side JavaScript only### Attack Surface
-
-- **No authentication:** No user accounts or login system- **Minimal risk:** Static client-side JavaScript only
-
-- **No sensitive data:** Only chess positions (FEN notation)- **No authentication:** No user accounts or login system
-
-- **No external APIs:** All features work offline after initial load- **No sensitive data:** Only chess positions (FEN notation)
-
-- **No external APIs:** All features work offline
+- **Minimal risk:** Static client-side JavaScript only.
+- **No authentication:** No user accounts or login systems to compromise.
+- **No sensitive data:** The application only handles public chess positions (FEN notation).
 
 ### Browser Security Features
 
----
+- **Content Security Policy (CSP):** Strict policy prevents XSS and unauthorized script execution.
+- **HTTPS-only:** Deployed with HSTS and secure headers.
+- **No inline scripts:** All logic is bundled and served from verified sources.
+- **Sanitized Input:** FEN strings are validated and length-limited (`MAX_FEN_LENGTH = 256`) before processing.
+- **Safe State Handling:** LocalStorage parsing uses `safeJSONParse` to prevent prototype pollution.
 
-- Content Security Policy (CSP) headers
+## 🐞 Reporting a Vulnerability
 
-- HTTPS-only deployment (via Vercel)## 🐞 Reporting a Vulnerability
-
-- No inline scripts or eval() usage
-
-- No dangerouslySetInnerHTML usageIf you discover a security vulnerability, please **do not open a public GitHub issue**.
-
-- React's built-in XSS protection
+If you discover a security vulnerability, please **do not open a public GitHub issue**.
 
 ### 📬 Reporting Methods
 
----
-
 #### Option 1: GitHub Security Advisory (Preferred)
 
-## Reporting a Vulnerability1. Go to the [Security tab](https://github.com/BilgeGates/chess_viewer/security)
+1. Go to the [Security tab](https://github.com/BilgeGates/chess-vision/security).
+2. Click **"Report a vulnerability"**.
+3. Fill out the advisory form with details.
 
-2. Click **"Report a vulnerability"**
+#### Option 2: Direct Email
 
-If you discover a security vulnerability, **do not open a public GitHub issue**.3. Fill out the advisory form with details
+Send details to: **[chessvision@protonmail.com](mailto:chessvision@protonmail.com)**  
+Subject: `[SECURITY] <Brief description>`
 
-### Reporting Methods#### Option 2: Direct Email
+### 📋 What to Include
 
-Send details to: **[darkdeveloperassistant@gmail.com](mailto:darkdeveloperassistant@gmail.com)**
+Please provide as much information as possible:
 
-**Preferred: GitHub Security Advisory**
-
-1. Go to the [Security tab](https://github.com/BilgeGates/chess_viewer/security)### 📋 What to Include
-
-2. Click "Report a vulnerability"Please provide as much information as possible:
-
-3. Fill out the advisory form with details- **Type of vulnerability** (XSS, injection, etc.)
-
-- **Affected version(s)**
-
-**Alternative: Direct Email**- **Steps to reproduce** the issue
-
-- **Potential impact** and severity assessment
-
-Send email to: **darkdeveloperassistant@gmail.com**- **Proof of concept** (if available)
-
-- **Suggested fix** (if you have one)
-
-Subject: `[SECURITY] Brief description`
+- Type of vulnerability (XSS, injection, etc.)
+- Steps to reproduce the issue.
+- Potential impact.
+- Proof of concept (if available).
 
 ### ⏱ Response Timeline
 
-Include:- **Initial acknowledgment:** Within 48 hours
+- **Initial acknowledgment:** Within 48 hours.
+- **Fix development:** Typically 5-10 business days depending on severity.
+- **Public disclosure:** After a fix is released (coordinated disclosure).
 
-- Description of the vulnerability- **Vulnerability assessment:** 2–5 business days
+## 📦 Dependency Security
 
-- Steps to reproduce- **Fix development:** 5–10 days (depending on severity)
-
-- Potential impact- **Patch release:** Included in next version or hotfix
-
-- Suggested fix (optional)- **Public disclosure:** After fix is released (coordinated disclosure)
-
-- Your contact information (if you want credit)
-
-### 🏆 Recognition
-
-### Response Timeline- Security researchers will be credited in release notes (unless anonymity is requested)
-
-- Significant findings may be featured in the project README
-
-- **Initial response:** Within 72 hours
-
-- **Status update:** Within 7 days---
-
-- **Fix timeline:** Depends on severity
-  - Critical: 1-7 days## 🚫 Out of Scope
-
-  - High: 7-14 days
-
-  - Medium: 14-30 daysThe following are **not considered security vulnerabilities**:
-
-  - Low: Best effort
-
-### Not Security Issues
-
-### Disclosure Policy- ❌ UI/UX bugs or visual glitches
-
-- ❌ Incorrect chess positions from invalid FEN input
-
-- We follow responsible disclosure- ❌ Performance issues or slow rendering
-
-- You will be credited (unless you prefer anonymity)- ❌ Feature requests or enhancement suggestions
-
-- Security fixes are released without detailed exploit information- ❌ Browser compatibility issues
-
-- Full details disclosed 90 days after fix release (or when agreed)- ❌ Issues requiring user to modify source code
-
-- ❌ Social engineering attacks
-
----- ❌ Physical access to user's device
-
-## Potential Security Concerns### Known Limitations (By Design)
-
-- FEN notation validation is permissive by design
-
-### Input Validation- Browser localStorage is used (can be cleared by user)
-
-- No encryption for local data (not needed for public chess positions)
-
-**FEN String Parsing**
-
-- User input is validated before parsing---
-
-- Invalid FEN rejected with error message
-
-- No code execution from FEN input## 📦 Dependency Security
-
-- Maximum input length enforced
-
-### Third-Party Libraries
-
-**Color Inputs**This project uses the following major dependencies:
-
-- Hex color validation- **React** (v18+, built with v19.x)
-
-- Safe color parsing- **Vite** (build tool)
-
-- No CSS injection possible- **Tailwind CSS** (styling)
-
-- **Lucide React** (icons)
-
-### Canvas Operations
-
-### Dependency Updates
-
-- 🔄 **Automated:** Dependabot monitors for security updates
-- 🔍 **Manual review:** Monthly security audits via `pnpm audit`
-- ⚡ **Quick response:** Critical vulnerabilities patched within 48 hours
-- 📋 **Changelog:** All dependency updates documented
-
-### How to Check Dependencies
-
-```bash
-# Check for vulnerabilities in your local installation
-pnpm audit
-
-# View detailed security report
-pnpm audit --json
-
-# Fix automatically (when possible)
-pnpm audit fix
-```
-
-## Known Non-Issues
-
----
-
-These are **not** security vulnerabilities:
+This project uses **Dependabot** to monitor and update dependencies automatically. We perform regular audits using `pnpm audit` to ensure no known vulnerabilities are shipped to users.
 
 ## 🔒 Best Practices for Users
 
-- **No HTTPS on localhost** - Development only
-
-- **console.log statements** - Removed in production build### For End Users
-
-- **Source maps** - Disabled in production- ✅ Always use the latest version from the official repo
-
-- **Dependency vulnerabilities (dev-only)** - Not shipped to users- ✅ Clear browser cache after updates
-
-- **Large memory usage on exports** - Expected browser behavior- ✅ Report suspicious behavior immediately
-
-- ✅ Don't modify source code from untrusted sources
+- **Use the Latest Version:** Always access the app via the official URL.
+- **Clear LocalStorage:** If using a shared computer, you can clear the application data in your browser settings.
+- **Browser Security:** Keep your browser updated to benefit from the latest security patches.
 
 ---
 
-### For Developers/Contributors
-
-## Security Best Practices for Users- ✅ Review code changes carefully before committing
-
-- ✅ Run `pnpm audit` before submitting PRs
-
-### Recommended Actions- ✅ Follow secure coding practices
-
-- ✅ Never commit sensitive data or API keys
-
-- Use the **latest browser version**- ✅ Use environment variables for configuration
-
-- Enable **browser security features**- ✅ Sanitize user inputs (even though we only accept FEN notation)
-
-- Don't install **browser extensions** from untrusted sources
-
-- Clear **localStorage** if using a shared computer---
-
-### What We Don't Need## 📄 Security Disclosure Policy
-
-- No password requirements (no accounts)### Responsible Disclosure
-
-- No 2FA (no authentication)We follow a **coordinated disclosure** approach:
-
-- No session management (stateless)
-
-- No CORS configuration (no API)1. **Private notification** → Security issue is reported privately
-
-2. **Acknowledgment** → We confirm receipt within 48 hours
-
----3. **Investigation** → We assess and validate the issue
-
-4. **Fix development** → We develop and test a patch
-
-## Third-Party Dependencies5. **Coordinated release** → We release the fix in a new version
-
-6. **Public disclosure** → We publish details after users have time to update (typically 7-14 days)
-
-### Dependency Security
-
-### Public Disclosure
-
-- Dependencies audited regularly with `pnpm audit`
-- Security patches applied promptly
-- Minimal dependency footprint
-- No dependencies with known critical vulnerabilities
-
-### Public Disclosure
-
-After a fix is released, we will:
-
-- 📊 Share lessons learned with the community
-
-### Current Dependencies
-
----
-
-**Production:**
-
-- React 19.2.3## 🔍 Security Audit History
-
-- React Router 7.11.0
-
-- React Window 1.8.10| Date | Audit Type | Findings | Status |
-
-- React DND 16.0.1|------|-----------|----------|--------|
-
-- Lucide React 0.469.0| 2026-03-12 | Source Code Audit | 6 findings (0 critical, 6 high) | ✅ Fixed |
-
-- Canvg 4.0.2| 2026-01-04 | Internal Review | 0 critical, 0 high | ✅ Clear |
-
-**Development:**| 2025-12-28 | Dependency Audit | 1 moderate (qs) | ✅ Fixed in v3.5.1 |
-
-- Vite 6.3.5
-- Tailwind CSS 3.3.5
-- ESLint 9.39.2
-- Prettier 3.2.2
-
-**2026-03-12 Audit Findings (all fixed in this release):**
-
-1. **CSP `'unsafe-inline'` on script-src** — Inline `<script>` blocks in `index.html`
-   allowed any injected script tag to execute. Fixed by extracting both inline scripts
-   to dedicated static files (`/public/theme-init.js`, `/public/preload-cleanup.js`),
-   enabling a strict `script-src 'self'` policy.
-
-2. **Prototype-pollution via `JSON.parse` on localStorage** — All 22 raw `JSON.parse`
-   calls on untrusted localStorage strings were replaced with `safeJSONParse`, which
-   uses a reviver to drop `__proto__`, `constructor`, and `prototype` keys, and
-   validates the parsed type before use.
-
-3. **Missing FEN length guard** — `isValidFENFormat` had no upper bound, enabling
-   resource-exhaustion via extremely long input. Fixed with a `MAX_FEN_LENGTH = 256`
-   guard applied before any regex or string parsing.
-
-4. **`console.*` leaks in production** — Eight `console.error`/`console.warn` calls
-   in component and page code exposed internal stack traces in production builds.
-   All replaced with the dev-only `logger` utility (no-ops in production).
-
-5. **Missing HTTP security headers** — `Strict-Transport-Security`, `Cross-Origin-Opener-Policy`,
-   `Cross-Origin-Resource-Policy`, `base-uri 'self'`, and `form-action 'self'` were
-   absent. All added to `vercel.json`.
-
-6. **`window.__INITIAL_THEME__` not validated** — `App.jsx` used `__INITIAL_THEME__`
-   without an allowlist check, allowing a page-scope script to set it to an
-   arbitrary string. Fixed with `VALID_THEMES` Set guard.
-
-All production dependencies are from trusted sources (npm registry, official packages).
-
----
-
-## 📞 Security Contact
-
-**Project Maintainer:** Khatai Huseynzada
-
-**Email:** [darkdeveloperassistant@gmail.com](mailto:darkdeveloperassistant@gmail.com)
-
-All production dependencies are from trusted sources (npm registry, official packages).**GitHub:** [@BilgeGates](https://github.com/BilgeGates)
-
-**Response Time:** Within 24 hours (business days)
-
----
-
-For urgent critical vulnerabilities, please include **[URGENT SECURITY]** in the email subject.
-
-## Security Checklist
-
----
-
-### For Contributors
-
-## 📚 Additional Resources
-
-When submitting code:
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-
-- [ ] No hardcoded secrets or API keys- [GitHub Security Best Practices](https://docs.github.com/en/code-security)
-
-- [ ] No eval() or Function() constructor- [Responsible Disclosure Guidelines](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html)
-
-- [ ] No dangerouslySetInnerHTML
-
-- [ ] Input validation on user data---
-
-- [ ] No SQL/NoSQL injection risks (N/A - no database)
-
-- [ ] No command injection risks (N/A - no server)## 🙏 Acknowledgments
-
-- [ ] No file system access (browser only)
-
-- [ ] Dependencies checked with pnpm audit
-- [ ] No sensitive data in commit history
-
-### For Maintainers
-
-Before releasing:
-
-- [ ] Run `pnpm audit` and fix critical/high issues
-
-- [ ] Review all PR changes for security implications
-
-- [ ] Test with latest browser versions*Last updated: January 4, 2026*
-- [ ] Verify CSP headers on deployment
-- [ ] Check for exposed secrets in git history
-- [ ] Update security documentation
-
----
-
-## Incident Response
-
-### In Case of Security Incident
-
-1. **Immediate:** Take down affected version if critical
-2. **Assess:** Evaluate impact and affected versions
-3. **Fix:** Develop and test patch
-4. **Release:** Deploy patched version
-5. **Notify:** Inform users via GitHub release notes
-6. **Document:** Update security documentation
-
-### Communication Channels
-
-- GitHub Security Advisory
-- GitHub Releases (for public disclosure)
-- README.md (for major incidents)
-
----
-
-## Contact
-
-For security concerns:
-
-- **Email:** darkdeveloperassistant@gmail.com
-- **GitHub:** [@BilgeGates](https://github.com/BilgeGates)
-- **Security Advisory:** [GitHub Security Tab](https://github.com/BilgeGates/chess_viewer/security)
-
----
-
-Last Updated: February 7, 2026
-
-```
-
-```
+_Last Updated: May 8, 2026_
