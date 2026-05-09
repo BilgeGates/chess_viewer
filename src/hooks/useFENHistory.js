@@ -297,6 +297,11 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
     }
   }, []);
 
+  const saveExportFen = useCallback(
+    (f) => commitToHistory(f, 'export'),
+    [commitToHistory]
+  );
+
   return {
     fenHistory: useMemo(
       () => applyFilters(fenHistory, filters),
@@ -314,7 +319,7 @@ export function useFENHistory(fen, onFavoriteStatusChange) {
     clearHistory,
     addCurrentToFavorites,
     saveManualFen,
-    saveExportFen: (f) => commitToHistory(f, 'export'),
+    saveExportFen,
     notifyDragAction,
     archiveHistoryEntries,
     reactivateArchivedEntry,
