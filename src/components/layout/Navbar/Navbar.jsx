@@ -33,7 +33,7 @@ function Navbar({ theme, toggleTheme, rightSlot }) {
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-surface-primary/85 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.45)] backdrop-blur-xl">
         <div className="w-[88%] max-w-[2400px] mx-auto">
-          <div className="flex justify-between items-center h-[4rem] sm:h-[5rem] lg:h-[6rem] 3xl:h-[8rem]">
+          <div className="flex justify-between items-center h-[4rem] sm:h-[5rem] lg:h-[6rem] 3xl:h-[6rem]">
             <button
               onClick={handleLogoClick}
               className="flex items-center gap-2 transition-colors duration-300 text-text-primary hover:text-accent"
@@ -42,11 +42,16 @@ function Navbar({ theme, toggleTheme, rightSlot }) {
                 <img
                   src={Logo}
                   alt="Logo"
-                  className="w-[2rem] h-[2rem] sm:w-[2.5rem] sm:h-[2.5rem] lg:w-[3rem] lg:h-[3rem] 3xl:w-[5rem] 3xl:h-[10rem] object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+                  className="w-[2rem] h-[2rem] sm:w-[2.5rem] sm:h-[2.5rem] lg:w-[3rem] lg:h-[4rem] 3xl:w-[3rem] 3xl:h-[3rem] object-contain"
                 />
-                <span className="font-display font-bold text-2xl sm:text-3xl text-text-primary leading-tight transition-colors duration-300 ease-in-out hover:text-accent">
-                  Chess Vision
-                </span>
+                <div>
+                  <span className="font-display font-bold text-2xl sm:text-3xl leading-tight text-accent">
+                    Chess
+                  </span>
+                  <span className="font-display font-bold text-2xl sm:text-3xl text-text-primary leading-tight ">
+                    Vision
+                  </span>
+                </div>
               </div>
             </button>
 
