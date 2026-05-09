@@ -27,10 +27,12 @@ function createEmptyBoard() {
  * @param {string} fenString - FEN notation string
  * @returns {string[][]} 8×8 board matrix
  */
-export function parseFEN(fenString) {
+export function parseFEN(fenString: string): string[][] {
   try {
     if (!fenString || typeof fenString !== 'string')
       throw new Error('Invalid FEN string');
+    if (fenString.length > MAX_FEN_LENGTH)
+      throw new Error('FEN string exceeds maximum length');
     const trimmed = fenString.trim();
     if (trimmed.length === 0) throw new Error('FEN string is empty');
 
@@ -39,9 +41,9 @@ export function parseFEN(fenString) {
     if (rows.length !== 8)
       throw new Error('Invalid FEN: expected 8 ranks, got ' + rows.length);
 
-    const board = [];
+    const board: string[][] = [];
     for (const row of rows) {
-      const boardRow = [];
+      const boardRow: string[] = [];
       for (const char of row) {
         if (VALID_DIGITS.has(char)) {
           const count = parseInt(char, 10);
@@ -70,7 +72,7 @@ export function parseFEN(fenString) {
  * @param {string} fen - FEN notation string
  * @returns {boolean} True if the FEN piece placement is valid
  */
-export function validateFEN(fen) {
+export function validateFEN(fen: string): boolean {
   return getFENValidationError(fen) === '';
 }
 
@@ -80,7 +82,7 @@ export function validateFEN(fen) {
  * @param {string} fen - FEN notation string
  * @returns {string} Empty string when valid
  */
-export function getFENValidationError(fen) {
+export function getFENValidationError(fen: string): string {
   try {
     if (!fen || typeof fen !== 'string') return 'FEN is empty';
     if (fen.length > MAX_FEN_LENGTH) return 'FEN string is too long';
@@ -110,15 +112,148 @@ export function getFENValidationError(fen) {
 }
 
 /**
+ * Validates a FEN string and returns highly specific, human-readable error messages.
+ * Checks are performed in strict order: length → structure → piece placement →
+ * active color → castling → en passant → move counters.
+ *
+ * @param fen - Full FEN notation string
+ * @returns Validation result with a detailed error message (null when valid)
+ */
+export function validateFENDetailed(fen: string): { isValid: boolean; errorMessage: string | null } {
+  // Guard: empty / wrong type
+  if (!fen || typeof fen !== 'string') {
+    return { isValid: false, errorMessage: 'Error: FEN string is empty or has an invalid format.' };
+  }
+
+  // 1. Length / DoS check
+  if (fen.length > MAX_FEN_LENGTH) {
+    return { isValid: false, errorMessage: 'Error: FEN string is too long.' };
+  }
+
+  const trimmed = fen.trim();
+  const parts = trimmed.split(/\s+/);
+
+  // 2. Structure – must have exactly 6 space-separated parts
+  if (parts.length !== 6) {
+    return {
+      isValid: false,
+      errorMessage: `Error: A valid FEN must have exactly 6 parts. You provided ${parts.length}.`,
+    };
+  }
+
+  const [position, activeColor, castling, enPassant, halfmove, fullmove] = parts;
+
+  // 3. Piece placement (Part 1)
+  const rows = position.split('/');
+
+  // 3a. Must be exactly 8 ranks
+  if (rows.length !== 8) {
+    return {
+      isValid: false,
+      errorMessage: `Error: The board must have 8 ranks, but yours has ${rows.length}.`,
+    };
+  }
+
+  // 3b–3c. Validate each rank
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    const row = rows[rowIndex];
+    let squareCount = 0;
+
+    for (const char of row) {
+      if (VALID_DIGITS.has(char)) {
+        squareCount += parseInt(char, 10);
+      } else if (VALID_PIECES.has(char)) {
+        squareCount++;
+      } else {
+        return {
+          isValid: false,
+          errorMessage: `Error: Invalid character '${char}' in the piece placement field.`,
+        };
+      }
+    }
+
+    if (squareCount !== 8) {
+      return {
+        isValid: false,
+        errorMessage: `Error: Rank ${rowIndex + 1} has ${squareCount} squares instead of 8.`,
+      };
+    }
+  }
+
+  // 4. Active color (Part 2)
+  if (activeColor !== 'w' && activeColor !== 'b') {
+    return {
+      isValid: false,
+      errorMessage: "Error: Active color must be 'w' (white) or 'b' (black).",
+    };
+  }
+
+  // 5. Castling availability (Part 3)
+  //    '-' or any non-repeating combination of K, Q, k, q (1-4 chars)
+  if (castling !== '-') {
+    if (!/^[KQkq]{1,4}$/.test(castling)) {
+      return { isValid: false, errorMessage: 'Error: Castling field is invalid.' };
+    }
+    // Reject duplicate letters (e.g. "KKq")
+    const unique = new Set(castling);
+    if (unique.size !== castling.length) {
+      return { isValid: false, errorMessage: 'Error: Castling field contains duplicate characters.' };
+    }
+  }
+
+  // 6. En passant target square (Part 4)
+  if (enPassant !== '-') {
+    if (!/^[a-h][36]$/.test(enPassant)) {
+      return {
+        isValid: false,
+        errorMessage: 'Error: En passant square is invalid (must be a file a-h on rank 3 or 6).',
+      };
+    }
+  }
+
+  // 7. Halfmove clock & fullmove number (Parts 5 & 6)
+  if (!/^\d+$/.test(halfmove) || !/^\d+$/.test(fullmove)) {
+    return {
+      isValid: false,
+      errorMessage: 'Error: Halfmove clock and fullmove number must be non-negative integers.',
+    };
+  }
+
+  const fullmoveNum = parseInt(fullmove, 10);
+  if (fullmoveNum < 1) {
+    return {
+      isValid: false,
+      errorMessage: 'Error: Fullmove number must be at least 1.',
+    };
+  }
+
+  return { isValid: true, errorMessage: null };
+}
+
+interface PieceStats {
+  pawns: number;
+  knights: number;
+  bishops: number;
+  rooks: number;
+  queens: number;
+  kings: number;
+}
+
+interface PositionStats {
+  white: PieceStats;
+  black: PieceStats;
+}
+
+/**
  * Counts pieces for each side from a FEN string.
  *
  * @param {string} fen - FEN notation string
- * @returns {{ white: Object, black: Object }|null} Piece counts or null on error
+ * @returns {PositionStats|null} Piece counts or null on error
  */
-export function getPositionStats(fen) {
+export function getPositionStats(fen: string): PositionStats | null {
   try {
     const board = parseFEN(fen);
-    const stats = {
+    const stats: PositionStats = {
       white: {
         pawns: 0,
         knights: 0,
@@ -167,7 +302,7 @@ export function getPositionStats(fen) {
  * @param {string} fen - FEN notation string
  * @returns {boolean} True if no pieces are present on the board
  */
-export function isEmptyPosition(fen) {
+export function isEmptyPosition(fen: string): boolean {
   try {
     return parseFEN(fen).every((row) => row.every((cell) => !cell));
   } catch {
