@@ -150,8 +150,9 @@ export function calculateOptimalQuality(
 export function estimateFileSizes(width, height, exportQuality) {
   const pixels = width * height;
   const mode = getExportMode(exportQuality);
-  const pngFactor = mode === 'print' ? 1.2 : 1.8;
-  const jpegFactor = mode === 'print' ? 0.12 : 0.18;
+  // Chessboards compress very well because of large flat colored areas
+  const pngFactor = mode === 'print' ? 0.05 : 0.08;
+  const jpegFactor = mode === 'print' ? 0.04 : 0.06;
   const pngBytes = Math.round(pixels * pngFactor);
   const jpegBytes = Math.round(pixels * jpegFactor);
   return {
