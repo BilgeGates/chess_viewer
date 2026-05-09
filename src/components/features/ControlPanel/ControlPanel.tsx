@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import DisplayOptions from '@/components/features/DisplayOptions';
 import { FENInputField, PieceSelector } from '@/components/features/Fen';
 import { useFENHistory } from '@/hooks';
-import { getFENValidationError } from '@/utils';
 import { MAX_FEN_LENGTH } from '@/utils/validation';
 import type { NotificationType } from '@/components/features/Fen/FENInputField/FENInputField';
 
@@ -35,7 +34,10 @@ export interface ControlPanelProps {
   onNotification?: (message: string, type: NotificationType) => void;
   saveManualFen?: (fen: string) => void;
   saveExportFen?: (fen: string) => void;
-  addCurrentToFavorites?: (fen: string, notify?: (message: string, type: NotificationType) => void) => void;
+  addCurrentToFavorites?: (
+    fen: string,
+    notify?: (message: string, type: NotificationType) => void
+  ) => void;
 }
 
 const ControlPanel = memo(function ControlPanel({
@@ -59,7 +61,6 @@ const ControlPanel = memo(function ControlPanel({
 }: ControlPanelProps) {
   const navigate = useNavigate();
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
-  const fenError = fen && fen.trim() ? getFENValidationError(fen) : '';
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -170,7 +171,6 @@ const ControlPanel = memo(function ControlPanel({
             fen={fen}
             onChange={handleFenChange}
             onBlur={handleFenBlur}
-            error={fenError}
             onCopy={handleCopyFEN}
             onPaste={handlePasteFEN}
             copySuccess={copySuccess}
