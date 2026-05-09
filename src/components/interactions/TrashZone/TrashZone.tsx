@@ -42,7 +42,7 @@ export const TrashZone = memo(function TrashZone({
     }),
     [onDrop]
   );
-  
+
   if (minimal) {
     return (
       <div
@@ -57,7 +57,7 @@ export const TrashZone = memo(function TrashZone({
       />
     );
   }
-  
+
   return (
     <div
       ref={(node) => {
