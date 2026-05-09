@@ -45,9 +45,7 @@ export function usePieceImages(pieceStyle) {
             setError('Some pieces failed to load');
             setCachedPieces(styleToLoad, images);
           }
-          setPieceImages({
-            ...images
-          });
+          setPieceImages(images);
           setIsLoading(false);
           setLoadProgress(100);
         }
