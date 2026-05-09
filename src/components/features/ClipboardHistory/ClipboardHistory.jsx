@@ -21,16 +21,18 @@ const Row = memo(({ index, style, data }) => {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="font-mono text-xs text-text-primary break-all mb-2 line-clamp-2">
-              {item.fen}
+              {typeof item === 'string' ? item : item?.fen}
             </div>
             <div className="text-xs text-text-muted">
-              {new Date(item.timestamp).toLocaleString()}
+              {item?.timestamp ? new Date(item.timestamp).toLocaleString() : ''}
             </div>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
-              onClick={() => onSelect(item.fen)}
+              onClick={() =>
+                onSelect(typeof item === 'string' ? item : item?.fen)
+              }
               className="px-3 py-1.5 bg-accent hover:bg-accent-hover text-bg rounded-lg text-xs font-medium transition-colors"
               title="Use this FEN"
             >
@@ -38,7 +40,9 @@ const Row = memo(({ index, style, data }) => {
             </button>
 
             <button
-              onClick={() => onCopy(item.fen, index)}
+              onClick={() =>
+                onCopy(typeof item === 'string' ? item : item?.fen, index)
+              }
               className={`p-2 rounded-lg transition-colors ${
                 copiedIndex === index
                   ? 'bg-success/20 text-success'
