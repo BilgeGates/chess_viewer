@@ -370,6 +370,16 @@ function HomePage() {
     [setFen, notifyDragAction]
   );
 
+  const handleNotification = useCallback(
+    (message, type) => {
+      if (type === 'success') success(message);
+      else if (type === 'error') error(message);
+      else if (type === 'warning') warning(message);
+      else info(message);
+    },
+    [success, error, warning, info]
+  );
+
   return (
     <DndProvider>
       <div className="w-full pt-[4rem] sm:pt-[5rem] lg:pt-[6rem] 3xl:pt-[8rem] px-[2%] sm:px-[3%] lg:px-[4%] pb-[2rem] sm:pb-[3rem]">
@@ -425,12 +435,7 @@ function HomePage() {
                   saveManualFen={saveManualFen}
                   saveExportFen={saveExportFen}
                   addCurrentToFavorites={addCurrentToFavorites}
-                  onNotification={(message, type) => {
-                    if (type === 'success') success(message);
-                    else if (type === 'error') error(message);
-                    else if (type === 'warning') warning(message);
-                    else info(message);
-                  }}
+                  onNotification={handleNotification}
                 />
               </div>
             </div>
