@@ -1,6 +1,6 @@
 # Export Pipeline Documentation
 
-Technical documentation for the Chess Vision export system.
+Technical documentation for the ChessVision export system.
 
 ---
 
