@@ -1,6 +1,6 @@
 # Accessibility Documentation
 
-Current accessibility state of Chess Vision.
+Current accessibility state of ChessVision.
 
 ---
 
@@ -16,7 +16,7 @@ Current accessibility state of Chess Vision.
 
 ## Overview
 
-This document honestly describes the accessibility status of Chess Vision based on actual implementation.
+This document honestly describes the accessibility status of ChessVision based on actual implementation.
 
 ### Reality Check
 
