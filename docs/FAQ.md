@@ -1,4 +1,4 @@
-# Chess Vision - FAQ
+# ChessVision - FAQ
 
 Common questions and answers.
 
