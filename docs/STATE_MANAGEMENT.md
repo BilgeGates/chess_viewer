@@ -1,6 +1,6 @@
 # State Management Documentation
 
-Guide to state management architecture in Chess Vision.
+Guide to state management architecture in ChessVision.
 
 ---
 
@@ -20,7 +20,7 @@ Guide to state management architecture in Chess Vision.
 
 ## Overview
 
-Chess Vision uses **React hooks and the Context API exclusively** for state management. No external state libraries (Redux, Zustand, MobX, etc.) are used.
+ChessVision uses **React hooks and the Context API exclusively** for state management. No external state libraries (Redux, Zustand, MobX, etc.) are used.
 
 **Reasons:**
 
